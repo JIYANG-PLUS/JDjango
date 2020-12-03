@@ -1,0 +1,17 @@
+{
+    "dirname": "C:\\Users\\PC\\Desktop\\newnamei",
+    "project_name": "newnamei",
+    "app_names": [
+        "eqwe",
+        "test",
+        "testtest"
+    ],
+    "DATABASES": [],
+    "DEBUG": true,
+    "LANGUAGE_CODE": "",
+    "TIME_ZONE": "",
+    "USE_I18N": true,
+    "USE_L10N": true,
+    "USE_TZ": false,
+    "STATIC_URL": ""
+}
