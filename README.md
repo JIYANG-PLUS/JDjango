@@ -1,6 +1,6 @@
 # JDjango
  一个写Django项目的辅助工具
-V1.0.0版本实现功能：
+<h1>V1.0.0版本实现功能：</h1>
 <ol>
  <li>检测app是否均在INSTALLED_APPS中注册</li>
  <li>自动修复未注册的app</li>
