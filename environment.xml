@@ -1,0 +1,10 @@
+<jdjango>
+    <path>
+        <prop name="path1">{base}</prop>
+        <prop name="path2"></prop>
+    </path>
+
+    <pattern>
+        <prop name="re1">r"[a-z]\s.*?"</prop>
+    </pattern>
+</jdjango>

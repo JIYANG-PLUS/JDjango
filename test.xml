@@ -1,0 +1,7 @@
+<property name='config' version='1.1.0'>
+    <name name="1">
+        <test name="9">okkk</test>
+    </name>
+    <name name="2">小红</name>
+    <age>12</age>
+</property>
