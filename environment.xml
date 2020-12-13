@@ -1,10 +1,15 @@
 <jdjango>
     <path>
-        <prop name="path1">{base}</prop>
-        <prop name="path2"></prop>
+        <json>
+            <prop name="config">{base}config.json</prop>
+            <prop name="args">{base}args.json</prop>
+            <prop name="errors">{base}errors.json</prop>
+            <prop name="tips">{base}tips.json</prop>
+        </json>
     </path>
 
     <pattern>
         <prop name="re1">r"[a-z]\s.*?"</prop>
     </pattern>
+
 </jdjango>
