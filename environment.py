@@ -4,7 +4,6 @@ import xml.etree.ElementTree as ET
 class XMLFileParserException(Exception): pass
 
 class EnvParser:
-    patt_match_xpath = re.compile(r'([a-z]+?)\[([a-z]+?)\]')
 
     def __init__(self, *args, **kwargs):
         if 'xml' in kwargs:
@@ -14,6 +13,7 @@ class EnvParser:
                 raise XMLFileParserException('文件不存在或XML格式不正确。')
         else:
             raise XMLFileParserException('XML文件读取异常。')
+        self._init_pattern()
 
     def _init_tree(self, xml):
         try:
@@ -27,6 +27,9 @@ class EnvParser:
         else:
             self.ROOT = None
 
+    def _init_pattern(self):
+        self.patt_match_xpath = re.compile(r'([a-z]+?)\[([a-z]+?)\]')
+
     def _check_ok(self):
         if not self.TREE or not self.ROOT:
             return False
@@ -34,6 +37,13 @@ class EnvParser:
 
     def get_xpath(self, xpath):
         xpath_split = xpath.split('/')
+
+        for _ in xpath_split:
+            temp = self.patt_match_xpath(_)
+            if temp: # 有参路径
+                pass
+            else: # 无参路径
+                pass
 
         return xpath_split
 
