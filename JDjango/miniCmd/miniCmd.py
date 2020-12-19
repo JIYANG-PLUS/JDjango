@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 import os, json, sys, shutil, re
 from functools import wraps
-from .settings import (LANGUAGE
-    , SUPPORT_UNPACK , SUPPORT_LS, BASE_DIR)    
+from ..settings import (LANGUAGE
+    , SUPPORT_UNPACK , SUPPORT_LS, BASE_DIR as F_BASE_DIR)    
 
-with open('./tips.json', encoding='utf-8') as f: TIPS = json.load(f)
-with open('./errors.json', encoding='utf-8') as f: ERRORS = json.load(f)
-with open('./args.json', encoding='utf-8') as f: ARGS = json.load(f)
+BASE_DIR = os.path.join(F_BASE_DIR, 'miniCmd')
+
+with open(os.path.join(BASE_DIR, 'tips.json'), encoding='utf-8') as f: TIPS = json.load(f)
+with open(os.path.join(BASE_DIR, 'errors.json'), encoding='utf-8') as f: ERRORS = json.load(f)
+with open(os.path.join(BASE_DIR, 'args.json'), encoding='utf-8') as f: ARGS = json.load(f)
 
 
 class BeautifulShow:

@@ -4,9 +4,11 @@ import os
 import json
 import datetime
 import wx.lib.buttons as buttons
-from .dialogs import ConfigDialog
-from .djangoCmd import startapp
-from .miniCmd import CmdTools
+from ..dialogs.dialogOption import ConfigDialog
+from ..miniCmd.djangoCmd import startapp
+from ..miniCmd.miniCmd import CmdTools
+from ..tools._tools import *
+from ..settings import BASE_DIR
 
 cmd = CmdTools()
 
@@ -15,43 +17,8 @@ ID_ABOUT = 201
 ID_FILE = 202
 ID_FLODER = 202
 
-LEVEL = {
-    1: '【成功】',
-    2: '【警告】',
-    3: '【错误】',
-}
 
-
-def out_infos(info, level=None):
-    d = datetime.datetime.now()
-    if level:
-        l_info = LEVEL[level]
-    else:
-        l_info = ''
-    return f'{d:%Y/%m/%d %H:%M:%S}{l_info}：{info}\n'
-
-
-def out_command_infos(info):
-    return f'>>> {info}\n'
-
-
-def read_file(path):
-    with open(path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    return content
-
-
-def write_file(path, content):
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(content)
-
-
-def dump_json(file_name, configs):
-    with open(file_name, 'w', encoding='utf-8') as f:
-        json.dump(configs, f, indent=4)
-
-
-class Frame(wx.Frame):
+class Main(wx.Frame):
 
     def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='《Django辅助工具》-V1.0.0'):
         size = (960, 540)
@@ -101,7 +68,7 @@ class Frame(wx.Frame):
         cmdTip.SetFont(self.font)
         self.cmdInput = wx.TextCtrl(toolRightPanel, -1, size=(200, -1))  # 输入命令
         self.cmdInput.SetFont(self.font)
-        self.btn_exec = buttons.GenButton(toolRightPanel, -1, '执行')
+        self.btn_exec = buttons.GenButton(toolRightPanel, -1, '执行/Enter')
 
         """水平、垂直布局"""
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -175,19 +142,47 @@ class Frame(wx.Frame):
         # menuback = edits.Append(wx.ID_ANY, "&撤回", "撤回")
         # menuAfter = edits.Append(wx.ID_ANY, "&逆向撤回", "逆向撤回")
 
-        # 创建帮助菜单项
+        # 帮助 菜单项
         helps = wx.Menu()
         menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
 
-        # 应用程序菜单项
+        # 应用程序 菜单项
         apps = wx.Menu()
         self.menuGenerate = apps.Append(wx.ID_ANY, "&生成", "生成")
         self.menuGenerate.Enable(False)
+
+        # 视图 菜单项
+        views = wx.Menu()
+
+        # 路由 菜单项
+        urls = wx.Menu()
+
+        # 模板 菜单项
+        templates = wx.Menu()
+
+        # 表单 菜单项
+        forms = wx.Menu()
+
+        # 模型 菜单项
+        models = wx.Menu()
+
+        # 测试 菜单项
+        test = wx.Menu()
+
+        # 管理中心 菜单项
+        admin = wx.Menu()
 
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
         # menuBar.Append(edits, "&编辑")
         menuBar.Append(apps, "&应用程序")
+        menuBar.Append(views, "&视图")
+        menuBar.Append(urls, "&路由")
+        menuBar.Append(templates, "&模板")
+        menuBar.Append(forms, "&表单")
+        menuBar.Append(models, "&模型")
+        menuBar.Append(test, "&测试")
+        menuBar.Append(admin, "&管理中心")
         menuBar.Append(helps, "&帮助")
         self.SetMenuBar(menuBar)
 
@@ -222,7 +217,7 @@ class Frame(wx.Frame):
         self.SetStatusText(f'系统时间：{st}', 1)  # 这里的1代表将时间放入状态栏的第二部分上
 
     def onAbout(self, e):
-        dlg = wx.MessageDialog(self, "关于软件：目前为个人使用版。", "提示信息", wx.OK)
+        dlg = wx.MessageDialog(self, "关于软件：目前为个人使用版。【部分功能正在实现】", "提示信息", wx.OK)
         dlg.ShowModal()
         dlg.Destroy()
         # 截止事件的发生
@@ -350,6 +345,7 @@ class Frame(wx.Frame):
 
     # 修复项目
     def fix_project(self):
+        # 获取settings.py所在的路径
         path_settings = os.path.join(
             self.dirname, os.path.basename(self.dirname), 'settings.py')
         try:
@@ -404,8 +400,8 @@ class Frame(wx.Frame):
         configs['USE_L10N'] = True
         configs['USE_TZ'] = False
         configs['STATIC_URL'] = ''
-
-        dump_json('config.json', configs)  # 写入配置文件
+        
+        dump_json(os.path.join(BASE_DIR, 'config.json'), configs)  # 写入配置文件
         self.menuGenerate.Enable(True)
 
         # self.infos.AppendText(out_infos('项目整合完成，正在进行项目检查和校验......'))

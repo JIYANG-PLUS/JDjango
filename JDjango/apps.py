@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import wx
 
-from .frames import Frame
+from .frames.mainFrame import Main
 
 class App(wx.App):
 
@@ -9,7 +9,7 @@ class App(wx.App):
         wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
 
     def OnInit(self):
-        self.frame = Frame()
+        self.frame = Main()
         self.frame.SetWindowStyle(wx.DEFAULT_FRAME_STYLE | wx.FRAME_TOOL_WINDOW)
         self.frame.Show(True) # frame.Hide() 等价于 frame.Show(False) 
         self.SetTopWindow(self.frame)

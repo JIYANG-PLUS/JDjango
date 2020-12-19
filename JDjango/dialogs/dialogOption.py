@@ -1,26 +1,13 @@
 import wx, json, glob, os, re
 import wx.lib.buttons as buttons
+from ..tools._tools import *
+from .. settings import BASE_DIR
 
 PATT_CHARS = re.compile(r'^[a-zA-Z_].*$')
 
-def get_configs():
-    with open('config.json', 'r', encoding='utf-8') as f:
-        configs = json.load(f)
-    return configs
-
-def read_file(path):
-    with open(path, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    return content
-
-def write_file(path, content):
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(content)
-
 class ConfigDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
-        self.configs = get_configs()
+        self.configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
         self.DIRNAME = self.configs["dirname"]
         
         wx.Dialog.__init__(self, parent, id, '选项配置', size=(600, 400))
