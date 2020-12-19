@@ -172,6 +172,13 @@ class Main(wx.Frame):
         # 管理中心 菜单项
         admin = wx.Menu()
 
+        # 新项目
+        new_project = wx.Menu()
+        self.create_project = apps.Append(wx.ID_ANY, "&新建项目", "新建项目")
+
+        # 数据库
+        database = wx.Menu()
+
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
         # menuBar.Append(edits, "&编辑")
@@ -183,6 +190,8 @@ class Main(wx.Frame):
         menuBar.Append(models, "&模型")
         menuBar.Append(test, "&测试")
         menuBar.Append(admin, "&管理中心")
+        menuBar.Append(new_project, "&新项目")
+        menuBar.Append(database, "&数据库")
         menuBar.Append(helps, "&帮助")
         self.SetMenuBar(menuBar)
 
