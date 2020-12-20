@@ -1,8 +1,4 @@
-import wx
-import time
-import os
-import json
-import datetime
+import wx, time, os, json, datetime
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import ConfigDialog
 from ..miniCmd.djangoCmd import startapp
@@ -20,7 +16,7 @@ ID_FLODER = 202
 
 class Main(wx.Frame):
 
-    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='《Django辅助工具》-V1.0.0'):
+    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='《Django辅助工具》-V1.1.0'):
         size = (960, 540)
 
         wx.Frame.__init__(self, parent, id, title, pos, size)
@@ -358,6 +354,7 @@ class Main(wx.Frame):
         path_settings = os.path.join(
             self.dirname, os.path.basename(self.dirname), 'settings.py')
         try:
+            # 修复未注册应用
             import re
             content = read_file(path_settings)
             temp = re.search(
