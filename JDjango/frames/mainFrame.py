@@ -146,34 +146,89 @@ class Main(wx.Frame):
         apps = wx.Menu()
         self.menuGenerate = apps.Append(wx.ID_ANY, "&生成", "生成")
         self.menuGenerate.Enable(False)
+        apps.AppendSeparator()
+        self.apps_check = apps.Append(wx.ID_ANY, "&校验", "校验")
+        self.apps_check.Enable(False)
+        self.apps_fix = apps.Append(wx.ID_ANY, "&修复", "修复")
+        self.apps_fix.Enable(False)
 
         # 视图 菜单项
         views = wx.Menu()
+        self.viewsGenerate = views.Append(wx.ID_ANY, "&创建", "创建")
+        self.viewsGenerate.Enable(False)
+        views.AppendSeparator()
+        self.views_check = views.Append(wx.ID_ANY, "&校验", "校验")
+        self.views_check.Enable(False)
+        self.views_fix = views.Append(wx.ID_ANY, "&修复", "修复")
+        self.views_fix.Enable(False)
 
         # 路由 菜单项
         urls = wx.Menu()
+        self.urlsGenerate = urls.Append(wx.ID_ANY, "&创建", "创建")
+        self.urlsGenerate.Enable(False)
+        urls.AppendSeparator()
+        self.urls_check = urls.Append(wx.ID_ANY, "&校验", "校验")
+        self.urls_check.Enable(False)
+        self.urls_fix = urls.Append(wx.ID_ANY, "&修复", "修复")
+        self.urls_fix.Enable(False)
 
         # 模板 菜单项
         templates = wx.Menu()
+        self.templatesGenerate = templates.Append(wx.ID_ANY, "&创建", "创建")
+        self.templatesGenerate.Enable(False)
+        templates.AppendSeparator()
+        self.templates_check = templates.Append(wx.ID_ANY, "&校验", "校验")
+        self.templates_check.Enable(False)
+        self.templates_fix = templates.Append(wx.ID_ANY, "&修复", "修复")
+        self.templates_fix.Enable(False)
 
         # 表单 菜单项
         forms = wx.Menu()
+        self.formsGenerate = forms.Append(wx.ID_ANY, "&创建", "创建")
+        self.formsGenerate.Enable(False)
+        forms.AppendSeparator()
+        self.forms_check = forms.Append(wx.ID_ANY, "&校验", "校验")
+        self.forms_check.Enable(False)
+        self.forms_fix = forms.Append(wx.ID_ANY, "&修复", "修复")
+        self.forms_fix.Enable(False)
 
         # 模型 菜单项
         models = wx.Menu()
+        self.modelsGenerate = models.Append(wx.ID_ANY, "&创建", "创建")
+        self.modelsGenerate.Enable(False)
+        models.AppendSeparator()
+        self.models_check = models.Append(wx.ID_ANY, "&校验", "校验")
+        self.models_check.Enable(False)
+        self.models_fix = models.Append(wx.ID_ANY, "&修复", "修复")
+        self.models_fix.Enable(False)
+
+        # 数据库
+        database = wx.Menu()
+        self.databaseGenerate = database.Append(wx.ID_ANY, "&创建", "创建")
+        self.databaseGenerate.Enable(False)
+        database.AppendSeparator()
+        self.database_check = database.Append(wx.ID_ANY, "&校验", "校验")
+        self.database_check.Enable(False)
+        self.database_fix = database.Append(wx.ID_ANY, "&修复", "修复")
+        self.database_fix.Enable(False)
+
+        # 管理中心 菜单项
+        admin = wx.Menu()
+        self.adminGenerate = admin.Append(wx.ID_ANY, "&创建", "创建")
+        self.adminGenerate.Enable(False)
+        admin.AppendSeparator()
+        self.admin_check = admin.Append(wx.ID_ANY, "&校验", "校验")
+        self.admin_check.Enable(False)
+        self.admin_fix = admin.Append(wx.ID_ANY, "&修复", "修复")
+        self.admin_fix.Enable(False)
 
         # 测试 菜单项
         test = wx.Menu()
 
-        # 管理中心 菜单项
-        admin = wx.Menu()
-
         # 新项目
         new_project = wx.Menu()
-        self.create_project = apps.Append(wx.ID_ANY, "&新建项目", "新建项目")
-
-        # 数据库
-        database = wx.Menu()
+        self.create_project = new_project.Append(wx.ID_ANY, "&新建项目", "新建项目")
+        self.create_project.Enable(False)
 
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
@@ -184,10 +239,10 @@ class Main(wx.Frame):
         menuBar.Append(templates, "&模板")
         menuBar.Append(forms, "&表单")
         menuBar.Append(models, "&模型")
-        menuBar.Append(test, "&测试")
         menuBar.Append(admin, "&管理中心")
-        menuBar.Append(new_project, "&新项目")
         menuBar.Append(database, "&数据库")
+        menuBar.Append(new_project, "&新项目")
+        menuBar.Append(test, "&测试")
         menuBar.Append(helps, "&帮助")
         self.SetMenuBar(menuBar)
 
@@ -216,11 +271,13 @@ class Main(wx.Frame):
         self.timer.Start(1000, wx.TIMER_CONTINUOUS)
         self.Notify()
 
+    # 底部信息栏
     def Notify(self):
         t = time.localtime(time.time())
         st = time.strftime('%Y-%m-%d %H:%M:%S', t)
         self.SetStatusText(f'系统时间：{st}', 1)  # 这里的1代表将时间放入状态栏的第二部分上
 
+    # 关于
     def onAbout(self, e):
         dlg = wx.MessageDialog(self, "关于软件：目前为个人使用版。【部分功能正在实现】", "提示信息", wx.OK)
         dlg.ShowModal()
@@ -228,9 +285,11 @@ class Main(wx.Frame):
         # 截止事件的发生
         # event.Skip()
 
+    # 退出
     def onExit(self, e):
         self.Close(True)
 
+    # 查看文件
     def onOpen(self, e):
         self.dirname = r''
         dlg = wx.FileDialog(self, "选择一个文件", self.dirname,
@@ -242,9 +301,11 @@ class Main(wx.Frame):
                 self.infos.SetValue(f.read())
         dlg.Destroy()
 
+    # 清空提示台
     def onClear(self, e):
         self.infos.Clear()
 
+    # 生成应用程序
     def onGenerate(self, e):
         dlg = wx.TextEntryDialog(None, u"请输入应用程序名：", u"创建应用程序", u"")
         if dlg.ShowModal() == wx.ID_OK:
