@@ -4,7 +4,7 @@ from ..dialogs.dialogOption import ConfigDialog
 from ..miniCmd.djangoCmd import startapp
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
-from ..settings import BASE_DIR
+from ..settings import BASE_DIR, CONFIG_PATH
 
 cmd = CmdTools()
 
@@ -57,11 +57,9 @@ class Main(wx.Frame):
         self.btn_fixed_project.Enable(False)
         self.btn_config_project.Enable(False)
         
-        self.allInitBtns['other'].extend([
-            self.btn_check_project
-            , self.btn_fixed_project
-            , self.btn_config_project
-        ])
+        self.allInitBtns['check'].append(self.btn_check_project)
+        self.allInitBtns['fix'].append(self.btn_fixed_project)
+        self.allInitBtns['other'].append(self.btn_config_project)
 
         """文本框控件"""
         self.infos = wx.TextCtrl(midPan, -1, style=wx.TE_MULTILINE)  # 消息框
@@ -338,8 +336,7 @@ class Main(wx.Frame):
     # 查看文件
     def onOpen(self, e):
         self.dirname = r''
-        dlg = wx.FileDialog(self, "选择一个文件", self.dirname,
-                            "", "*.*", wx.FD_OPEN)
+        dlg = wx.FileDialog(self, "选择一个文件", self.dirname,"", "*.*", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
@@ -382,7 +379,7 @@ class Main(wx.Frame):
             self.select_root()
         # 检测/校验项目
         elif bId == self.btn_check_project.GetId():
-            self.generate_check_project()
+            self.generate_check_project(e)
         # 修复项目
         elif bId == self.btn_fixed_project.GetId():
             self.fix_project()
@@ -395,6 +392,7 @@ class Main(wx.Frame):
         elif bId == self.btn_exec.GetId():
             self.exec_command()
 
+    # 仿Linux命令
     def exec_command(self):
         command = self.cmdInput.GetValue().strip()
         try:
@@ -429,90 +427,10 @@ class Main(wx.Frame):
                 if s:
                     self.infos.AppendText(f"{s}\n")
                 self.cmdInput.Clear()
-
         except Exception as e:
             self.infos.AppendText(out_infos(f'{e}'))
 
-    # 选择项目根路径
-    def select_root(self):
-        dlg = wx.FileDialog(self, "选择Django项目的manage.py文件",
-                            r'', "", "*.*", wx.FD_OPEN)
-        if dlg.ShowModal() == wx.ID_OK:
-            filename = dlg.GetFilename()
-            self.dirname = dlg.GetDirectory()
-            if 'manage.py' == filename:
-                self.path.SetValue(f'当前项目路径：{self.dirname}')
-                # self.path.AppendText(f'你的项目路径：{self.dirname}')
-                self.btn_check_project.Enable(True)
-                self.btn_fixed_project.Enable(False)
-                self.btn_config_project.Enable(False)
-                self.infos.AppendText(out_infos('项目导入成功！', level=1))
-                # self.infos.AppendText(out_infos('检测校验功能已开放。'))
-            else:
-                self.infos.AppendText(
-                    out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
-        else:
-            self.infos.AppendText(out_infos('您已取消选择。', level=2))
-        dlg.Destroy()
-
-        # 每次选择都将初始化按钮
-
-
-    # 修复项目
-    def fix_project(self):
-        # 获取settings.py所在的路径
-        path_settings = os.path.join(
-            self.dirname, os.path.basename(self.dirname), 'settings.py')
-        try:
-            # 修复未注册应用
-            import re
-            content = read_file(path_settings)
-            temp = re.search(
-                r"(?ms:INSTALLED_APPS\s.*?=\s.*?\[.*?\])", content).group(0)
-            INSTALLED_APPS = temp.split('\n')
-            for _ in self.unapps:
-                INSTALLED_APPS.insert(-1, f"    '{_}',")
-                self.infos.AppendText(out_infos(f'{_}注册完成。', level=1))
-            self.unapps.clear()  # 清空未注册应用程序
-        except:
-            self.infos.AppendText(
-                out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
-        else:
-            new_content = content.replace(temp, '\n'.join(INSTALLED_APPS))
-            write_file(path_settings, new_content)
-            self.infos.AppendText(out_infos('修复完成。', level=1))
-
-    # 应用程序 检测
-    def onAppsCheck(self, apps, path_settings):
-        settings = {}
-        flag = 0
-        with open(path_settings, 'r', encoding='utf-8') as f:
-            text = f.read().replace('__file__', '"."')
-            exec(text, {}, settings)
-        for app in apps:
-            if app not in settings['INSTALLED_APPS']:
-                self.unapps.append(app)
-                self.infos.AppendText(
-                    out_infos(f'{app}应用程序未注册！（将可能导致项目无法运行）', 2))
-                flag = 1
-
-        if 1 == flag:
-            self.btn_fixed_project.Enable(True) # 开启 全局修复按钮
-            self.btn_config_project.Enable(False) # 关闭 全局配置按钮
-
-            return False
-        else:
-            self.btn_fixed_project.Enable(False) # 关闭 全局修复按钮
-            self.btn_config_project.Enable(True) # 开启 全局配置按钮
-
-            self.infos.AppendText(out_infos('应用程序检测完成。', level=1))
-            return True
-
-    # 检测项目【全局】
-    def generate_check_project(self):
-
-        self.infos.AppendText(out_infos('正在整合和校验项目......'))
-
+    def _init_config(self):
         configs = {} # 全局配置文件待写入
         # 必要前缀赋值
         configs['dirname'] = self.dirname # 项目路径
@@ -528,9 +446,9 @@ class Main(wx.Frame):
 
         configs['app_names'] = [_ for _ in apps if os.path.exists(os.path.join(self.dirname, _, 'migrations'))] # 以迁移目录为依据进行筛选
         
-        path_settings = os.path.join(self.dirname, configs['project_name'], 'settings.py')
+        self.path_settings = os.path.join(self.dirname, configs['project_name'], 'settings.py')
         try:
-            assert os.path.exists(path_settings)
+            assert os.path.exists(self.path_settings)
         except Exception as e:
             self.menuGenerate.Enable(False)
             self.infos.AppendText(out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
@@ -545,11 +463,74 @@ class Main(wx.Frame):
         configs['USE_TZ'] = False
         configs['STATIC_URL'] = ''
         
-        dump_json(os.path.join(BASE_DIR, 'config.json'), configs)  # 写入配置文件
+        dump_json(CONFIG_PATH, configs)  # 写入配置文件
         self.menuGenerate.Enable(True)
 
-        # self.infos.AppendText(out_infos('项目整合完成，正在进行项目检查和校验......'))
-        check_result = self.onAppsCheck(configs['app_names'], path_settings)  # 校验 APP
+    # 选择项目根路径【项目入口】
+    def select_root(self):
+        self._close_all() # 初始化按钮状态
+        dlg = wx.FileDialog(self, "选择Django项目的manage.py文件", r'', "", "*.*", wx.FD_OPEN)
+        if dlg.ShowModal() == wx.ID_OK:
+            filename = dlg.GetFilename()
+            self.dirname = dlg.GetDirectory()
+            if 'manage.py' == filename:
+                self.path.SetValue(f'当前项目路径：{self.dirname}')
+                self.infos.AppendText(out_infos('项目导入成功！', level=1))
+                # 开放所有的检测按钮
+                self._open_all_check()
+            else:
+                self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
+        else:
+            self.infos.AppendText(out_infos('您已取消选择。', level=2))
+        dlg.Destroy()
+        self._init_config() # 初始化配置文件
+
+    # 修复项目
+    def fix_project(self):
+        try:
+            # 修复未注册应用
+            import re
+            content = read_file(self.path_settings)
+            temp = re.search(r"(?ms:INSTALLED_APPS\s.*?=\s.*?\[.*?\])", content).group(0)
+            INSTALLED_APPS = temp.split('\n')
+            for _ in self.unapps:
+                INSTALLED_APPS.insert(-1, f"    '{_}',")
+                self.infos.AppendText(out_infos(f'{_}注册完成。', level=1))
+            self.unapps.clear()  # 清空未注册应用程序
+        except:
+            self.infos.AppendText(
+                out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
+        else:
+            new_content = content.replace(temp, '\n'.join(INSTALLED_APPS))
+            write_file(self.path_settings, new_content)
+            self.infos.AppendText(out_infos('修复完成。', level=1))
+
+    # 应用程序 检测
+    def onAppsCheck(self, e):
+        apps = get_configs(CONFIG_PATH)['app_names']
+        settings = {}
+        flag = 0
+        with open(self.path_settings, 'r', encoding='utf-8') as f:
+            text = f.read().replace('__file__', '"."')
+            exec(text, {}, settings)
+        for app in apps:
+            if app not in settings['INSTALLED_APPS']:
+                self.unapps.append(app)
+                self.infos.AppendText(
+                    out_infos(f'{app}应用程序未注册！（将可能导致项目无法运行）', 2))
+                flag = 1
+        if 1 == flag:
+            self.btn_fixed_project.Enable(True) # 开启 全局修复按钮
+            self.btn_config_project.Enable(False) # 关闭 全局配置按钮
+        else:
+            self.btn_fixed_project.Enable(False) # 关闭 全局修复按钮
+            self.btn_config_project.Enable(True) # 开启 全局配置按钮
+            self.infos.AppendText(out_infos('应用程序检测完成，无已知错误。', level=1))
+
+    # 检测项目【全局】
+    def generate_check_project(self, e):
+        self.infos.AppendText(out_infos('正在进行整体校验，请耐心等待。'))
+        check_result = self.onAppsCheck(e)  # 校验 APP
 
 
     def _close_all(self):
@@ -560,4 +541,5 @@ class Main(wx.Frame):
 
     def _open_all_check(self):
         """ 开启所有检测按钮权限 """
-        pass
+        for _ in self.allInitBtns["check"]:
+            _.Enable(True)
