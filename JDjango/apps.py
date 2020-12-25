@@ -21,7 +21,7 @@ class App(wx.App):
 
 
 def main():
-    app = App(redirect=True) # 【指定filename将输出到文件】
+    app = App(redirect=False) # 【指定filename将输出到文件】
     app.MainLoop()
 
 
