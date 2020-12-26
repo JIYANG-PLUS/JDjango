@@ -24,22 +24,25 @@ class Main(wx.Frame):
         self.font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False)
 
         # 所有的运行后按钮
-        self.allInitBtns = {
-            'check' : [] # 所有检测按钮
-            , 'fix' : [] # 所有的修复按钮
-            , 'create' : [] # 所有的新增按钮
-            , 'other' : []
-        }
+        classifies = ['global', 'apps', 'views', 'urls', 'templates', 'forms', 'models', 'database', 'admin']
+        self.allInitBtns = {}
+        for _ in classifies:
+            self.allInitBtns[_] = {
+                'check' : []
+                , 'fix' : []
+                , 'create' : []
+                , 'other' : []
+            }
 
         self.InitUI()  # 初始化布局
         self.InitMenu()  # 工具栏
         self.setupStatusBar()  # 底部状态栏
 
         self.unapps = []  # 未注册的应用程序
-
+        self._close_all()
 
     def InitUI(self):
-        """面板"""
+        """面板布局"""
         panel = wx.Panel(self)  # 最外层容器
         midPan = wx.Panel(panel)  # 向panel容器添加子容器midpan
         toolPanel = wx.Panel(midPan)
@@ -53,13 +56,10 @@ class Main(wx.Frame):
         self.btn_check_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]校验/检测')
         self.btn_fixed_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]自动修复')
         self.btn_config_project = buttons.GenButton(toolLeftPanel, -1, label='选项/修改')
-        self.btn_check_project.Enable(False)
-        self.btn_fixed_project.Enable(False)
-        self.btn_config_project.Enable(False)
         
-        self.allInitBtns['check'].append(self.btn_check_project)
-        self.allInitBtns['fix'].append(self.btn_fixed_project)
-        self.allInitBtns['other'].append(self.btn_config_project)
+        self.allInitBtns['global']['check'].append(self.btn_check_project)
+        self.allInitBtns['global']['fix'].append(self.btn_fixed_project)
+        self.allInitBtns['global']['other'].append(self.btn_config_project)
 
         """文本框控件"""
         self.infos = wx.TextCtrl(midPan, -1, style=wx.TE_MULTILINE)  # 消息框
@@ -122,9 +122,9 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_config_project)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_exec)
 
-    # 设置工具栏
-    def InitMenu(self):
 
+    def InitMenu(self):
+        """设置工具栏"""
         # 创建文件菜单项
         menus = wx.Menu()
         menuOpen = menus.Append(wx.ID_OPEN, "&选择文件", "选择文件")
@@ -154,114 +154,98 @@ class Main(wx.Frame):
         # 应用程序 菜单项
         apps = wx.Menu()
         self.menuGenerate = apps.Append(wx.ID_ANY, "&生成", "生成")
-        self.menuGenerate.Enable(False)
         apps.AppendSeparator()
         self.apps_check = apps.Append(wx.ID_ANY, "&校验", "校验")
-        self.apps_check.Enable(False)
         self.apps_fix = apps.Append(wx.ID_ANY, "&修复", "修复")
-        self.apps_fix.Enable(False)
 
-        self.allInitBtns['create'].append(self.menuGenerate)
-        self.allInitBtns['check'].append(self.apps_check)
-        self.allInitBtns['fix'].append(self.apps_fix)
+        self.allInitBtns['apps']['create'].append(self.menuGenerate)
+        self.allInitBtns['apps']['check'].append(self.apps_check)
+        self.allInitBtns['apps']['fix'].append(self.apps_fix)
 
         # 视图 菜单项
         views = wx.Menu()
         self.viewsGenerate = views.Append(wx.ID_ANY, "&创建", "创建")
-        self.viewsGenerate.Enable(False)
         views.AppendSeparator()
         self.views_check = views.Append(wx.ID_ANY, "&校验", "校验")
-        self.views_check.Enable(False)
         self.views_fix = views.Append(wx.ID_ANY, "&修复", "修复")
-        self.views_fix.Enable(False)
 
-        self.allInitBtns['create'].append(self.viewsGenerate)
-        self.allInitBtns['check'].append(self.views_check)
-        self.allInitBtns['fix'].append(self.views_fix)
+        self.allInitBtns['views']['create'].append(self.viewsGenerate)
+        self.allInitBtns['views']['check'].append(self.views_check)
+        self.allInitBtns['views']['fix'].append(self.views_fix)
 
         # 路由 菜单项
         urls = wx.Menu()
         self.urlsGenerate = urls.Append(wx.ID_ANY, "&创建", "创建")
-        self.urlsGenerate.Enable(False)
         urls.AppendSeparator()
         self.urls_check = urls.Append(wx.ID_ANY, "&校验", "校验")
-        self.urls_check.Enable(False)
         self.urls_fix = urls.Append(wx.ID_ANY, "&修复", "修复")
-        self.urls_fix.Enable(False)
 
-        self.allInitBtns['create'].append(self.urlsGenerate)
-        self.allInitBtns['check'].append(self.urls_check)
-        self.allInitBtns['fix'].append(self.urls_fix)
+        self.allInitBtns['urls']['create'].append(self.urlsGenerate)
+        self.allInitBtns['urls']['check'].append(self.urls_check)
+        self.allInitBtns['urls']['fix'].append(self.urls_fix)
 
         # 模板 菜单项
         templates = wx.Menu()
         self.templatesGenerate = templates.Append(wx.ID_ANY, "&创建", "创建")
-        self.templatesGenerate.Enable(False)
         templates.AppendSeparator()
         self.templates_check = templates.Append(wx.ID_ANY, "&校验", "校验")
-        self.templates_check.Enable(False)
-        self.templates_fix = templates.Append(wx.ID_ANY, "&修复", "修复")
-        self.templates_fix.Enable(False)
 
-        self.allInitBtns['create'].append(self.templatesGenerate)
-        self.allInitBtns['check'].append(self.templates_check)
-        self.allInitBtns['fix'].append(self.templates_fix)
+        self.templates_fix = templates.Append(wx.ID_ANY, "&修复", "修复")
+
+        self.allInitBtns['templates']['create'].append(self.templatesGenerate)
+        self.allInitBtns['templates']['check'].append(self.templates_check)
+        self.allInitBtns['templates']['fix'].append(self.templates_fix)
 
         # 表单 菜单项
         forms = wx.Menu()
         self.formsGenerate = forms.Append(wx.ID_ANY, "&创建", "创建")
-        self.formsGenerate.Enable(False)
         forms.AppendSeparator()
         self.forms_check = forms.Append(wx.ID_ANY, "&校验", "校验")
-        self.forms_check.Enable(False)
         self.forms_fix = forms.Append(wx.ID_ANY, "&修复", "修复")
-        self.forms_fix.Enable(False)
 
-        self.allInitBtns['create'].append(self.formsGenerate)
-        self.allInitBtns['check'].append(self.forms_check)
-        self.allInitBtns['fix'].append(self.forms_fix)
+        self.allInitBtns['forms']['create'].append(self.formsGenerate)
+        self.allInitBtns['forms']['check'].append(self.forms_check)
+        self.allInitBtns['forms']['fix'].append(self.forms_fix)
 
         # 模型 菜单项
         models = wx.Menu()
         self.modelsGenerate = models.Append(wx.ID_ANY, "&创建", "创建")
-        self.modelsGenerate.Enable(False)
         models.AppendSeparator()
         self.models_check = models.Append(wx.ID_ANY, "&校验", "校验")
-        self.models_check.Enable(False)
         self.models_fix = models.Append(wx.ID_ANY, "&修复", "修复")
-        self.models_fix.Enable(False)
 
-        self.allInitBtns['create'].append(self.modelsGenerate)
-        self.allInitBtns['check'].append(self.models_check)
-        self.allInitBtns['fix'].append(self.models_fix)
+        self.allInitBtns['models']['create'].append(self.modelsGenerate)
+        self.allInitBtns['models']['check'].append(self.models_check)
+        self.allInitBtns['models']['fix'].append(self.models_fix)
 
         # 数据库
         database = wx.Menu()
         self.databaseGenerate = database.Append(wx.ID_ANY, "&创建", "创建")
-        self.databaseGenerate.Enable(False)
         database.AppendSeparator()
         self.database_check = database.Append(wx.ID_ANY, "&校验", "校验")
-        self.database_check.Enable(False)
         self.database_fix = database.Append(wx.ID_ANY, "&修复", "修复")
-        self.database_fix.Enable(False)
 
-        self.allInitBtns['create'].append(self.databaseGenerate)
-        self.allInitBtns['check'].append(self.database_check)
-        self.allInitBtns['fix'].append(self.database_fix)
+        self.allInitBtns['database']['create'].append(self.databaseGenerate)
+        self.allInitBtns['database']['check'].append(self.database_check)
+        self.allInitBtns['database']['fix'].append(self.database_fix)
 
         # 管理中心 菜单项
         admin = wx.Menu()
-        self.adminGenerate = admin.Append(wx.ID_ANY, "&创建", "创建")
-        self.adminGenerate.Enable(False)
+        self.adminGenerateBase = admin.Append(wx.ID_ANY, "&创建简单管理中心", "创建简单管理中心")
+        self.adminGenerateComplex = admin.Append(wx.ID_ANY, "&创建复杂管理中心", "创建复杂管理中心")
         admin.AppendSeparator()
         self.admin_check = admin.Append(wx.ID_ANY, "&校验", "校验")
-        self.admin_check.Enable(False)
         self.admin_fix = admin.Append(wx.ID_ANY, "&修复", "修复")
-        self.admin_fix.Enable(False)
+        admin.AppendSeparator()
+        self.adminRename = admin.Append(wx.ID_ANY, "&修改后台网站名", "修改后台网站名")
 
-        self.allInitBtns['create'].append(self.adminGenerate)
-        self.allInitBtns['check'].append(self.admin_check)
-        self.allInitBtns['fix'].append(self.admin_fix)
+        self.allInitBtns['admin']['create'].extend([
+            self.adminGenerateBase
+            , self.adminGenerateComplex
+            , self.adminRename
+        ])
+        self.allInitBtns['admin']['check'].append(self.admin_check)
+        self.allInitBtns['admin']['fix'].append(self.admin_fix)
 
         # 测试 菜单项
         test = wx.Menu()
@@ -273,6 +257,8 @@ class Main(wx.Frame):
 
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
+        menuBar.Append(new_project, "&新项目")
+        menuBar.Append(admin, "&管理中心")
         # menuBar.Append(edits, "&编辑")
         menuBar.Append(apps, "&应用程序")
         menuBar.Append(views, "&视图")
@@ -280,9 +266,7 @@ class Main(wx.Frame):
         menuBar.Append(templates, "&模板")
         menuBar.Append(forms, "&表单")
         menuBar.Append(models, "&模型")
-        menuBar.Append(admin, "&管理中心")
         menuBar.Append(database, "&数据库")
-        menuBar.Append(new_project, "&新项目")
         menuBar.Append(test, "&测试")
         menuBar.Append(helps, "&帮助")
         self.SetMenuBar(menuBar)
@@ -296,15 +280,16 @@ class Main(wx.Frame):
 
         # 应用程序  事件绑定
         self.Bind(wx.EVT_MENU, self.onAppsCheck, self.apps_check) # 检测
+        self.Bind(wx.EVT_MENU, self.onAppsFix, self.apps_fix) # 修复
 
-    # 键盘监听
     def OnKeyDown(self, event):
+        """键盘监听"""
         code = event.GetKeyCode()
         if wx.WXK_NUMPAD_ENTER == code or 13 == code:
             self.exec_command()
 
-    # 设置状态栏
     def setupStatusBar(self):
+        """设置状态栏"""
         # 状态栏
         sb = self.CreateStatusBar(2)  # 2代表将状态栏分为两个
         self.SetStatusWidths([-1, -2])  # 比例为1：2
@@ -315,26 +300,26 @@ class Main(wx.Frame):
         self.timer.Start(1000, wx.TIMER_CONTINUOUS)
         self.Notify()
 
-    # 底部信息栏
     def Notify(self):
+        """底部信息栏"""
         t = time.localtime(time.time())
         st = time.strftime('%Y-%m-%d %H:%M:%S', t)
         self.SetStatusText(f'系统时间：{st}', 1)  # 这里的1代表将时间放入状态栏的第二部分上
 
-    # 关于
     def onAbout(self, e):
+        """关于"""
         dlg = wx.MessageDialog(self, "关于软件：目前为个人使用版。【部分功能正在实现】", "提示信息", wx.OK)
         dlg.ShowModal()
         dlg.Destroy()
         # 截止事件的发生
         # event.Skip()
 
-    # 退出
     def onExit(self, e):
+        """退出"""
         self.Close(True)
 
-    # 查看文件
     def onOpen(self, e):
+        """查看文件"""
         self.dirname = r''
         dlg = wx.FileDialog(self, "选择一个文件", self.dirname,"", "*.*", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
@@ -344,56 +329,48 @@ class Main(wx.Frame):
                 self.infos.SetValue(f.read())
         dlg.Destroy()
 
-    # 清空提示台
     def onClear(self, e):
+        """清空提示台"""
         self.infos.Clear()
 
-    # 生成应用程序
     def onGenerate(self, e):
+        """生成应用程序"""
         dlg = wx.TextEntryDialog(None, u"请输入应用程序名：", u"创建应用程序", u"")
         if dlg.ShowModal() == wx.ID_OK:
             message = dlg.GetValue()  # 获取文本框中输入的值
             returnStatus = startapp(message)
             if 0 == returnStatus:
-                self.infos.AppendText(
-                    out_infos(f"{message}应用程序创建成功！请重新【校验】后点击【自动修复】按钮，完成应用程序注册。", level=1))
-                dlg_tip = wx.MessageDialog(
-                    None, f"{message}创建成功！", u"成功", wx.OK | wx.ICON_INFORMATION)
-                if dlg_tip.ShowModal() == wx.ID_OK:
-                    pass
+                self.unapps.append(message)
+                self.infos.AppendText(out_infos(f"{message}应用程序创建成功！", level=1))
+                dlg_tip = wx.MessageDialog(None, f"{message}创建成功！", u"成功", wx.OK | wx.ICON_INFORMATION)
+                if dlg_tip.ShowModal() == wx.ID_OK: pass
                 dlg_tip.Destroy()
+                self.onAppsFix(e) # 自动完成注册
+                self._init_config() # 重新初始化 配置文件【此操作为敏感操作】
             else:
-                self.infos.AppendText(
-                    out_infos(f"{message}应用程序名已存在，或不符合纯字母+数字命名的约定！", level=3))
-                dlg_tip = wx.MessageDialog(
-                    None, f"{message}应用程序名已存在，或不符合纯字母+数字命名的约定！", u"失败", wx.OK | wx.ICON_INFORMATION)
-                if dlg_tip.ShowModal() == wx.ID_OK:
-                    pass
+                dlg_tip = wx.MessageDialog(None, f"{message}应用程序名已存在，或不符合纯字母+数字命名的约定！", u"失败", wx.OK | wx.ICON_INFORMATION)
+                if dlg_tip.ShowModal() == wx.ID_OK: pass
                 dlg_tip.Destroy()
         dlg.Destroy()
 
     def ButtonClick(self, e):
+        """界面按钮点击事件"""
         bId = e.GetId()
-        # 选择项目根路径
-        if bId == self.btn_select_project.GetId():
+        if bId == self.btn_select_project.GetId(): # 选择项目根路径
             self.select_root()
-        # 检测/校验项目
-        elif bId == self.btn_check_project.GetId():
-            self.generate_check_project(e)
-        # 修复项目
-        elif bId == self.btn_fixed_project.GetId():
-            self.fix_project()
-        # 项目配置和修改
-        elif bId == self.btn_config_project.GetId():
+        elif bId == self.btn_check_project.GetId(): # 检测/校验项目
+            self.check_project_global(e)
+        elif bId == self.btn_fixed_project.GetId(): # 修复项目
+            self.fix_project_global(e)
+        elif bId == self.btn_config_project.GetId(): # 项目配置和修改
             dlg = ConfigDialog(self, -1)
             dlg.ShowModal()
             dlg.Destroy()
-        # 执行命令
-        elif bId == self.btn_exec.GetId():
+        elif bId == self.btn_exec.GetId(): # 执行命令
             self.exec_command()
 
-    # 仿Linux命令
     def exec_command(self):
+        """仿Linux命令"""
         command = self.cmdInput.GetValue().strip()
         try:
             order_split = [_ for _ in command.split() if _]
@@ -431,6 +408,7 @@ class Main(wx.Frame):
             self.infos.AppendText(out_infos(f'{e}'))
 
     def _init_config(self):
+        """初始化配置文件"""
         configs = {} # 全局配置文件待写入
         # 必要前缀赋值
         configs['dirname'] = self.dirname # 项目路径
@@ -466,8 +444,8 @@ class Main(wx.Frame):
         dump_json(CONFIG_PATH, configs)  # 写入配置文件
         self.menuGenerate.Enable(True)
 
-    # 选择项目根路径【项目入口】
     def select_root(self):
+        """选择项目根路径【项目入口】"""
         self._close_all() # 初始化按钮状态
         dlg = wx.FileDialog(self, "选择Django项目的manage.py文件", r'', "", "*.*", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
@@ -481,32 +459,13 @@ class Main(wx.Frame):
             else:
                 self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
         else:
-            self.infos.AppendText(out_infos('您已取消选择。', level=2))
+            # self.infos.AppendText(out_infos('您已取消选择。', level=2))
+            pass
         dlg.Destroy()
         self._init_config() # 初始化配置文件
 
-    # 修复项目
-    def fix_project(self):
-        try:
-            # 修复未注册应用
-            import re
-            content = read_file(self.path_settings)
-            temp = re.search(r"(?ms:INSTALLED_APPS\s.*?=\s.*?\[.*?\])", content).group(0)
-            INSTALLED_APPS = temp.split('\n')
-            for _ in self.unapps:
-                INSTALLED_APPS.insert(-1, f"    '{_}',")
-                self.infos.AppendText(out_infos(f'{_}注册完成。', level=1))
-            self.unapps.clear()  # 清空未注册应用程序
-        except:
-            self.infos.AppendText(
-                out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
-        else:
-            new_content = content.replace(temp, '\n'.join(INSTALLED_APPS))
-            write_file(self.path_settings, new_content)
-            self.infos.AppendText(out_infos('修复完成。', level=1))
-
-    # 应用程序 检测
     def onAppsCheck(self, e):
+        """应用程序 检测"""
         apps = get_configs(CONFIG_PATH)['app_names']
         settings = {}
         flag = 0
@@ -517,29 +476,60 @@ class Main(wx.Frame):
             if app not in settings['INSTALLED_APPS']:
                 self.unapps.append(app)
                 self.infos.AppendText(
-                    out_infos(f'{app}应用程序未注册！（将可能导致项目无法运行）', 2))
+                    out_infos(f'{app}应用程序未注册！', 2))
                 flag = 1
         if 1 == flag:
-            self.btn_fixed_project.Enable(True) # 开启 全局修复按钮
-            self.btn_config_project.Enable(False) # 关闭 全局配置按钮
+            self._open_point_fix('apps')
         else:
-            self.btn_fixed_project.Enable(False) # 关闭 全局修复按钮
-            self.btn_config_project.Enable(True) # 开启 全局配置按钮
+            self._open_point_fix('apps', f_type='close')
             self.infos.AppendText(out_infos('应用程序检测完成，无已知错误。', level=1))
 
-    # 检测项目【全局】
-    def generate_check_project(self, e):
-        self.infos.AppendText(out_infos('正在进行整体校验，请耐心等待。'))
+    def check_project_global(self, e):
+        """检测项目【全局】"""
         check_result = self.onAppsCheck(e)  # 校验 APP
 
+    def onAppsFix(self, e):
+        """修复未注册应用"""
+        try:
+            import re
+            content = read_file(self.path_settings)
+            temp = re.search(r"(?ms:INSTALLED_APPS\s.*?=\s.*?\[.*?\])", content).group(0)
+            INSTALLED_APPS = temp.split('\n')
+            for _ in self.unapps:
+                INSTALLED_APPS.insert(-1, f"    '{_}',")
+                self.infos.AppendText(out_infos(f'{_}注册完成。', level=1))
+            self.unapps.clear()  # 清空未注册应用程序
+        except:
+            self.infos.AppendText(
+                out_infos('项目残缺，无法修复。请检查本项目是否为Django项目。', level=3))
+        else:
+            new_content = content.replace(temp, '\n'.join(INSTALLED_APPS))
+            write_file(self.path_settings, new_content)
+            self.infos.AppendText(out_infos('应用程序修复完成。', level=1))
+            self._open_point_fix('apps', f_type='close')
+
+    def fix_project_global(self, e):
+        """修复项目 【全局】"""
+        self.onAppsFix(e) # 修复 应用程序
 
     def _close_all(self):
         """关闭所有按钮权限"""
-        for t in self.allInitBtns:
-            for _ in self.allInitBtns.get(t):
-                _.Enable(False)
+        for a in self.allInitBtns:
+            for b in self.allInitBtns[a]:
+                for _ in self.allInitBtns[a][b]:
+                    _.Enable(False)
 
     def _open_all_check(self):
         """ 开启所有检测按钮权限 """
-        for _ in self.allInitBtns["check"]:
-            _.Enable(True)
+        for a in self.allInitBtns:
+            for _ in self.allInitBtns[a]["check"]:
+                _.Enable(True)
+
+    def _open_point_fix(self, model, f_type = 'open'):
+        """开启通过检测的修复按钮"""
+        switch = True if 'open' == f_type else False
+        for _ in self.allInitBtns[model]['fix']:
+            _.Enable(switch)
+        # 开启/关闭全局的修复按钮
+        for _ in self.allInitBtns['global']['fix']:
+            _.Enable(switch)

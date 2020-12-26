@@ -1,0 +1,2 @@
+from ${model_name} import ${site_name}
+admin.site.register(${site_name})

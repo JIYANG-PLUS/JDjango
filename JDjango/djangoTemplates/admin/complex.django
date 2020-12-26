@@ -1,0 +1,26 @@
+from ${model_name} import ${site_name}, ${child_site_name}
+class ${child_site_name}Inline(admin.TabularInline):
+    model = ${child_site_name} # 模型
+    extra = 6 # 关联添加子项的个数（新增编辑用）
+    list_per_page = 5 # 分页
+
+class ${site_name}Admin(admin.ModelAdmin):
+    list_display = ${list_display} # 显示列的列表（外键不能直接写在这里，需要放在fk_fields中）
+    list_filter = ${list_filter} # 添加过滤字段
+    search_fields = ${search_fields} # 添加搜索字段
+    inlines = [${child_site_name}Inline] # 设置关联表同步显示
+    date_hierarchy = ${date_hierarchy} # 设置日期返回选择字段（唯一）
+
+    # 复杂函数
+    def complex_func(self, name, *args, **kwargs):
+        """name: ${site_name} 模型中的列名"""
+        # 这里做逻辑处理
+        return _('这里返回在前端显示的值和格式')
+
+    complex_func.short_description = _('设置complex_func在前端显示的列名')
+
+class ${child_site_name}Admin(admin.ModelAdmin):
+    fk_fields = ${fk_fields} # 显示外键（传入模块名列表）
+
+admin.site.register(${site_name}, ${site_name}Admin)
+admin.site.register(${child_site_name}, ${child_site_name}Admin)

@@ -1,9 +1,9 @@
 import datetime, json
 
 LEVEL = {
-    1: '【成功】',
-    2: '【警告】',
-    3: '【错误】',
+    1: '【success】',
+    2: '【warning】',
+    3: '【error】',
 }
 
 
