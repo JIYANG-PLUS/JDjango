@@ -1,6 +1,6 @@
 import wx, time, os, json, datetime
 import wx.lib.buttons as buttons
-from ..dialogs.dialogOption import ConfigDialog
+from ..dialogs.dialogOption import ConfigDialog, AppsCreateDialog
 from ..miniCmd.djangoCmd import startapp
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -53,8 +53,8 @@ class Main(wx.Frame):
 
         """按钮控件"""
         self.btn_select_project = buttons.GenButton(toolLeftPanel, -1, label='选择Django项目')
-        self.btn_check_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]校验/检测')
-        self.btn_fixed_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]自动修复')
+        self.btn_check_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]校验')
+        self.btn_fixed_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]修复')
         self.btn_config_project = buttons.GenButton(toolLeftPanel, -1, label='选项/修改')
         
         self.allInitBtns['global']['check'].append(self.btn_check_project)
@@ -282,6 +282,9 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onAppsCheck, self.apps_check) # 检测
         self.Bind(wx.EVT_MENU, self.onAppsFix, self.apps_fix) # 修复
 
+        # 管理中心
+        self.Bind(wx.EVT_MENU, self.onAdminGenerateBase, self.adminGenerateBase) # 创建简单管理中心
+
     def OnKeyDown(self, event):
         """键盘监听"""
         code = event.GetKeyCode()
@@ -417,7 +420,6 @@ class Main(wx.Frame):
         try:
             apps.remove(configs['project_name']) # 移除主程序
         except:
-            self.menuGenerate.Enable(False) # 流程控制
             self.infos.AppendText(
                 out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
             return
@@ -428,7 +430,6 @@ class Main(wx.Frame):
         try:
             assert os.path.exists(self.path_settings)
         except Exception as e:
-            self.menuGenerate.Enable(False)
             self.infos.AppendText(out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
             return
 
@@ -442,7 +443,6 @@ class Main(wx.Frame):
         configs['STATIC_URL'] = ''
         
         dump_json(CONFIG_PATH, configs)  # 写入配置文件
-        self.menuGenerate.Enable(True)
 
     def select_root(self):
         """选择项目根路径【项目入口】"""
@@ -456,6 +456,8 @@ class Main(wx.Frame):
                 self.infos.AppendText(out_infos('项目导入成功！', level=1))
                 # 开放所有的检测按钮
                 self._open_all_check()
+                # 开放部分必要按钮
+                self._open_part_btns()
             else:
                 self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
         else:
@@ -512,6 +514,16 @@ class Main(wx.Frame):
         """修复项目 【全局】"""
         self.onAppsFix(e) # 修复 应用程序
 
+    """"""
+
+    def onAdminGenerateBase(self, e):
+        """管理中心 简单配置"""
+        dlg = AppsCreateDialog(self, -1)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    """"""
+
     def _close_all(self):
         """关闭所有按钮权限"""
         for a in self.allInitBtns:
@@ -533,3 +545,10 @@ class Main(wx.Frame):
         # 开启/关闭全局的修复按钮
         for _ in self.allInitBtns['global']['fix']:
             _.Enable(switch)
+
+    def _open_part_btns(self):
+        """开启部分必要的、控制流程之外的按钮"""
+        for _ in self.allInitBtns['apps']['create']:
+            _.Enable(True) # 应用程序
+        for _ in self.allInitBtns['admin']['create']:
+            _.Enable(True) # 管理中心

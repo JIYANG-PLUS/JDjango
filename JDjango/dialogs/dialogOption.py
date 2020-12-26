@@ -94,3 +94,26 @@ class ConfigDialog(wx.Dialog):
             dlg.ShowModal()
             dlg.Destroy()
 
+class AppsCreateDialog(wx.Dialog):
+    def __init__(self, parent, id, **kwargs):
+        wx.Dialog.__init__(self, parent, id, '站点注册(简单配置)', size=(600, 400))
+
+        self.font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False)
+
+        # 面板
+        panel = wx.Panel(self) # 最外层容器
+        pathPanel = wx.Panel(panel) # 选择文件路径
+        panel.SetBackgroundColour('#ededed')  # 最外层容器颜色
+
+        # 按钮
+        btn_select_file_path = buttons.GenButton(pathPanel, -1, label='选择admin.py文件')
+        text_path = wx.TextCtrl(pathPanel, -1)
+        text_path.SetFont(self.font)
+        text_path.SetEditable(False)
+
+        # 垂直布局 和 水平布局
+        
+
+    def ButtonClick(self, e):
+        bId = e.GetId()
+        

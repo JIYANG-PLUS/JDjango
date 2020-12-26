@@ -1,17 +1,9 @@
 {
-    "dirname": "C:\\Users\\PC\\Desktop\\newname",
-    "project_name": "newname",
+    "dirname": "/Users/jiyang/Documents/GitHub/SharePlugIn/nantongCDC",
+    "project_name": "nantongCDC",
     "app_names": [
-        "dajiahao",
-        "eqwe",
-        "gjhgjghjgj",
-        "hello2",
-        "helloworld",
-        "jiyang",
-        "nihaoa",
-        "shgadfhsrwqyte",
-        "test",
-        "testtest"
+        "hello",
+        "main"
     ],
     "DATABASES": [],
     "DEBUG": true,
