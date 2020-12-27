@@ -1,23 +1,7 @@
 <jdjango>
 
-    <path>
-
-        <os>
-            <prop name="djangoTemplates">{BASE_DIR}[djangoTemplates]</prop>
-            <prop name="miniCmd">{BASE_DIR}[miniCmd]</prop>
-        </os>
-
-        <json>
-            <prop name="config">{base}config.json</prop>
-            <prop name="args">{base}args.json</prop>
-            <prop name="errors">{base}errors.json</prop>
-            <prop name="tips">{base}tips.json</prop>
-        </json>
-
-    </path>
-
-    <pattern>
-        <prop name="re1">r"[a-z]\s.*?"</prop>
-    </pattern>
+    <page>
+        <font-size>12</font-size>
+    </page>
 
 </jdjango>

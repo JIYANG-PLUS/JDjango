@@ -157,8 +157,9 @@ class CmdTools:
 
     @BeautifulShow()
     def print(self, code): 
-        try: exec(f'print({code})', {}, self.namespace)
+        # try: exec(f'print({code})', {}, self.namespace)
+        try: exec(f'jdjango_temp = ({code})', {}, self.namespace)
         except Exception as e: return [f'错误：{e}',]
-        else: return []
+        else: return [str(self.namespace["jdjango_temp"]),]
 
     

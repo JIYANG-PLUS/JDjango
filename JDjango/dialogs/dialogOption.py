@@ -1,7 +1,7 @@
 import wx, json, glob, os, re
 import wx.lib.buttons as buttons
 from ..tools._tools import *
-from .. settings import BASE_DIR
+from .. settings import BASE_DIR, CONFIG_PATH
 
 PATT_CHARS = re.compile(r'^[a-zA-Z_].*$')
 
@@ -105,15 +105,48 @@ class AppsCreateDialog(wx.Dialog):
         pathPanel = wx.Panel(panel) # 选择文件路径
         panel.SetBackgroundColour('#ededed')  # 最外层容器颜色
 
-        # 按钮
-        btn_select_file_path = buttons.GenButton(pathPanel, -1, label='选择admin.py文件')
-        text_path = wx.TextCtrl(pathPanel, -1)
-        text_path.SetFont(self.font)
-        text_path.SetEditable(False)
+        # 向 pathPanel 填充控件
+        self.btn_select_file_path = buttons.GenButton(pathPanel, -1, label='选择admin.py文件')
+        self.text_path = wx.TextCtrl(pathPanel, -1)
+        self.text_path.SetFont(self.font)
+        self.text_path.SetEditable(False)
 
         # 垂直布局 和 水平布局
-        
+        panelBox = wx.BoxSizer(wx.VERTICAL)
+        pathPanelBox = wx.BoxSizer(wx.HORIZONTAL)
+
+        # 路径选择填充
+        pathPanelBox.Add(self.text_path, 1, wx.EXPAND | wx.ALL, 2)
+        pathPanelBox.Add(self.btn_select_file_path, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 最外层容器填充
+        panelBox.Add(pathPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 面板绑定布局
+        pathPanel.SetSizer(pathPanelBox)
+        panel.SetSizer(panelBox)
+
+        # 注册事件
+        self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_select_file_path)
 
     def ButtonClick(self, e):
+        """界面按钮点击事件"""
         bId = e.GetId()
-        
+        if bId == self.btn_select_file_path.GetId(): # 选择admin.py所在路径
+            self.select_adminpy(e)
+
+    def select_adminpy(self, e):
+        """获取admin.py文件所在路径"""
+        path = get_configs(CONFIG_PATH)['dirname']
+        dlg = wx.FileDialog(self, "选择admin.py文件", path, "", "*.py", wx.FD_OPEN)
+        if dlg.ShowModal() == wx.ID_OK:
+            filename = dlg.GetFilename()
+            # 待校验：是否是当前项目下的admin.py文件
+            self.dirname = dlg.GetDirectory()
+            if 'admin.py' == filename:
+                self.text_path.SetValue(f'{self.dirname}')
+            else:
+                pass
+        else:
+            pass
+        dlg.Destroy()

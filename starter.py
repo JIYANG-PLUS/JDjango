@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os
 
 os.chdir(os.path.join(os.getcwd(), 'JDjango'))

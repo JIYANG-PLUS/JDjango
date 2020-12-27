@@ -53,6 +53,7 @@ class Main(wx.Frame):
 
         """按钮控件"""
         self.btn_select_project = buttons.GenButton(toolLeftPanel, -1, label='选择Django项目')
+        self.btn_clear_text = buttons.GenButton(toolLeftPanel, -1, label='清空')
         self.btn_check_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]校验')
         self.btn_fixed_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]修复')
         self.btn_config_project = buttons.GenButton(toolLeftPanel, -1, label='选项/修改')
@@ -90,6 +91,7 @@ class Main(wx.Frame):
         toolLeftBox.Add(self.btn_check_project, 0, wx.EXPAND | wx.ALL, 2)
         toolLeftBox.Add(self.btn_fixed_project, 0, wx.EXPAND | wx.ALL, 2)
         toolLeftBox.Add(self.btn_config_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftBox.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 2)
 
         # 右侧工具栏填充
         toolRightBox.Add(cmdTip, 0, wx.EXPAND | wx.ALL, 2)
@@ -121,6 +123,7 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_fixed_project)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_config_project)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_exec)
+        self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_clear_text)
 
 
     def InitMenu(self):
@@ -371,6 +374,8 @@ class Main(wx.Frame):
             dlg.Destroy()
         elif bId == self.btn_exec.GetId(): # 执行命令
             self.exec_command()
+        elif bId == self.btn_clear_text.GetId():
+            self.onClear(e)
 
     def exec_command(self):
         """仿Linux命令"""
