@@ -4,6 +4,7 @@ from ..dialogs.dialogOption import ConfigDialog, AppsCreateDialog
 from ..miniCmd.djangoCmd import startapp
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
+from ..tools import environment as env
 from ..settings import BASE_DIR, CONFIG_PATH
 
 cmd = CmdTools()
@@ -21,8 +22,6 @@ class Main(wx.Frame):
 
         wx.Frame.__init__(self, parent, id, title, pos, size)
 
-        self.font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False)
-
         # 所有的运行后按钮
         classifies = ['global', 'apps', 'views', 'urls', 'templates', 'forms', 'models', 'database', 'admin']
         self.allInitBtns = {}
@@ -33,13 +32,17 @@ class Main(wx.Frame):
                 , 'create' : []
                 , 'other' : []
             }
+        self.needFonts = [] # 待设置字体的空间
 
         self.InitUI()  # 初始化布局
         self.InitMenu()  # 工具栏
         self.setupStatusBar()  # 底部状态栏
 
+        self._close_all() # 统一设置按钮不可用状态
+        self._set_fonts(None)# 统一设置字体大小
+
+        # 独立于初始化之外的其它变量
         self.unapps = []  # 未注册的应用程序
-        self._close_all()
 
     def InitUI(self):
         """面板布局"""
@@ -65,16 +68,20 @@ class Main(wx.Frame):
         """文本框控件"""
         self.infos = wx.TextCtrl(midPan, -1, style=wx.TE_MULTILINE)  # 消息框
         self.path = wx.TextCtrl(midPan, -1)  # 项目选择成功提示框
-        self.infos.SetFont(self.font)
         self.infos.SetEditable(False)
         self.path.SetEditable(False)
+        self.needFonts.extend([
+            self.infos
+        ])
 
         """命令控件"""
         cmdTip = wx.StaticText(toolRightPanel, -1, "命令：")
-        cmdTip.SetFont(self.font)
         self.cmdInput = wx.TextCtrl(toolRightPanel, -1, size=(200, -1))  # 输入命令
-        self.cmdInput.SetFont(self.font)
         self.btn_exec = buttons.GenButton(toolRightPanel, -1, '执行/Enter')
+        self.needFonts.extend([
+            self.cmdInput
+        ])
+        cmdTip.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False))
 
         """水平、垂直布局"""
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -124,7 +131,6 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_config_project)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_exec)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_clear_text)
-
 
     def InitMenu(self):
         """设置工具栏"""
@@ -258,6 +264,14 @@ class Main(wx.Frame):
         self.create_project = new_project.Append(wx.ID_ANY, "&新建项目", "新建项目")
         self.create_project.Enable(True)
 
+        # 设置
+        settings = wx.Menu()
+        fonts = wx.Menu()
+        self.fonts_minus = fonts.Append(wx.ID_ANY, "&字体减小-1", "字体减小-1")
+        self.fonts_add = fonts.Append(wx.ID_ANY, "&字体增大+1", "字体增大+1")
+        settings.Append(wx.ID_ANY, "&字体", fonts)
+
+
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
         menuBar.Append(new_project, "&新项目")
@@ -271,6 +285,7 @@ class Main(wx.Frame):
         menuBar.Append(models, "&模型")
         menuBar.Append(database, "&数据库")
         menuBar.Append(test, "&测试")
+        menuBar.Append(settings, "&设置")
         menuBar.Append(helps, "&帮助")
         self.SetMenuBar(menuBar)
 
@@ -287,6 +302,26 @@ class Main(wx.Frame):
 
         # 管理中心
         self.Bind(wx.EVT_MENU, self.onAdminGenerateBase, self.adminGenerateBase) # 创建简单管理中心
+
+        # 设置
+        self.Bind(wx.EVT_MENU, self.onFontsMinus, self.fonts_minus) # 字体减小
+        self.Bind(wx.EVT_MENU, self.onFontsAdd, self.fonts_add) # 字体减小
+
+    def onFontsMinus(self, e):
+        """显示框字体减小"""
+        env.setFontSize(step = 1, method = 'minus')
+        self._set_fonts(e)
+
+    def onFontsAdd(self, e):
+        """显示框字体增大"""
+        env.setFontSize(step = 1, method = 'add')
+        self._set_fonts(e)
+
+    def _set_fonts(self, e):
+        """统一设置字体"""
+        font = wx.Font(env.getFontSize(), wx.SWISS, wx.NORMAL, wx.BOLD, False)
+        for _ in self.needFonts:
+            _.SetFont(font)
 
     def OnKeyDown(self, event):
         """键盘监听"""

@@ -1,6 +1,6 @@
 import os, re
 import xml.etree.ElementTree as ET
-from ..settings import BASE_DIR
+from ..settings import BASE_DIR, ENV_PATH
 
 class XMLFileParserException(Exception): pass
 class PathNotFoundException(Exception): pass
@@ -10,6 +10,7 @@ class EnvParser:
     def __init__(self, *args, **kwargs):
 
         if 'xml' in kwargs:
+
             self._init_tree(kwargs['xml'])
             self._init_root()
             if not self._check_ok():
@@ -31,7 +32,7 @@ class EnvParser:
             self.ROOT = None
 
     def _init_pattern(self):
-        self.patt_match_xpath = re.compile(r'([a-z]+?)\[([a-z]+?)=([a-z][0-9a-z].*?)\]')
+        self.patt_match_xpath = re.compile(r'([a-z]+?)\[([a-z]+?)=([a-z][0-9a-z].*?)\]') # 'path/json/prop[name=config]'
 
     def _check_ok(self):
         if not self.TREE or not self.ROOT:
@@ -76,12 +77,27 @@ class EnvParser:
     def fill_base_path(self):
         pass
 
+    def write_xml(self):
+        self.TREE.write(ENV_PATH, encoding="utf-8", xml_declaration=True)
 
-if __name__ == "__main__":
-    e = EnvParser(xml = os.path.join(BASE_DIR, './environment.xml'))
-    o = e.get_xpath_node('path/json/prop[name=config]')
-    print(e.get_node_text(o))
+def getEnvXmlObj():
+    return EnvParser(xml = os.path.join(BASE_DIR, ENV_PATH))
 
+def getFontSize():
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('page/font-size')
+    return int(node.text)
+
+def setFontSize(step = 1, method = 'add'):
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('page/font-size')
+    font_size = int(node.text)
+    if 'add' == method: 
+        node.text = str(font_size + step)
+    else:
+        if font_size > 2:
+            node.text = str(font_size - step)
+    obj.write_xml()
 
 # 参考
 # 从字符串读取

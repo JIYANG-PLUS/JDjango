@@ -1,7 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
 <jdjango>
 
     <page>
-        <font-size>12</font-size>
+        <font-size>13</font-size>
     </page>
 
 </jdjango>
