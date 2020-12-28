@@ -16,8 +16,8 @@ class ConfigDialog(wx.Dialog):
         vertical_box = wx.BoxSizer(wx.VERTICAL)
         horizontal_box = wx.BoxSizer(wx.HORIZONTAL)
 
-        nm = wx.StaticBox(panel, -1, 'Django项目：')
-        static_config_box = wx.StaticBoxSizer(nm, wx.VERTICAL)
+        nm = wx.StaticBox(panel, -1, 'Django项目：') # 带边框的盒子
+        static_config_box = wx.StaticBoxSizer(nm, wx.VERTICAL) # 垂直布局
 
         fn = wx.StaticText(panel, -1, "您的项目名称：") # 项目名称
         self.nm1 = wx.TextCtrl(panel, -1, style=wx.ALIGN_LEFT) # 输入框
@@ -94,7 +94,7 @@ class ConfigDialog(wx.Dialog):
             dlg.ShowModal()
             dlg.Destroy()
 
-class AppsCreateDialog(wx.Dialog):
+class AdminCreateSimpleDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
         wx.Dialog.__init__(self, parent, id, '站点注册(简单配置)', size=(600, 400))
 
@@ -111,9 +111,41 @@ class AppsCreateDialog(wx.Dialog):
         self.text_path.SetFont(self.font)
         self.text_path.SetEditable(False)
 
+        # 静态框里的复选框
+        self.checkbox1 = wx.CheckBox(panel, -1, "全选")
+        self.checkbox2 = wx.CheckBox(panel, -1, "选项1")
+        self.checkbox3 = wx.CheckBox(panel, -1, "选项2")
+        self.checkbox4 = wx.CheckBox(panel, -1, "选项3")
+
+        # 区域静态框
+        staticBox = wx.StaticBox(panel, -1, '选择您要在后台注册的站点对象：') # 带边框的盒子
+        
         # 垂直布局 和 水平布局
         panelBox = wx.BoxSizer(wx.VERTICAL)
         pathPanelBox = wx.BoxSizer(wx.HORIZONTAL)
+        static_area_box = wx.StaticBoxSizer(staticBox, wx.VERTICAL) # 垂直布局
+        modelListsBox = wx.BoxSizer(wx.HORIZONTAL) # 水平存放 Models
+
+
+        # 复选框 【后期从真正的model文件中读取】
+        modelListsBox.Add(self.checkbox1, 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(self.checkbox2, 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(self.checkbox3, 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(self.checkbox4, 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项3"), 0, wx.ALL | wx.CENTER, 5)
+        modelListsBox.Add(wx.CheckBox(panel, -1, "选项n"), 0, wx.ALL | wx.CENTER, 5)
+        static_area_box.Add(modelListsBox, 0, wx.ALL | wx.CENTER, 10)
 
         # 路径选择填充
         pathPanelBox.Add(self.text_path, 1, wx.EXPAND | wx.ALL, 2)
@@ -121,6 +153,7 @@ class AppsCreateDialog(wx.Dialog):
 
         # 最外层容器填充
         panelBox.Add(pathPanel, 0, wx.EXPAND | wx.ALL, 2)
+        panelBox.Add(static_area_box, 0, wx.EXPAND | wx.ALL, 2)
 
         # 面板绑定布局
         pathPanel.SetSizer(pathPanelBox)

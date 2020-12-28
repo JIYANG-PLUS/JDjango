@@ -1,6 +1,6 @@
 import wx, time, os, json, datetime
 import wx.lib.buttons as buttons
-from ..dialogs.dialogOption import ConfigDialog, AppsCreateDialog
+from ..dialogs.dialogOption import ConfigDialog, AdminCreateSimpleDialog
 from ..miniCmd.djangoCmd import startapp
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -247,11 +247,16 @@ class Main(wx.Frame):
         self.admin_fix = admin.Append(wx.ID_ANY, "&修复", "修复")
         admin.AppendSeparator()
         self.adminRename = admin.Append(wx.ID_ANY, "&修改后台网站名", "修改后台网站名")
+        admin.AppendSeparator()
+        self.quickAdminGenerateBase = admin.Append(wx.ID_ANY, "&一键创建简单管理中心", "一键创建简单管理中心")
+        self.quickAdminGenerateComplex = admin.Append(wx.ID_ANY, "&一键创建复杂管理中心", "一键创建复杂管理中心")
 
         self.allInitBtns['admin']['create'].extend([
             self.adminGenerateBase
             , self.adminGenerateComplex
             , self.adminRename
+            , self.quickAdminGenerateBase
+            , self.quickAdminGenerateComplex
         ])
         self.allInitBtns['admin']['check'].append(self.admin_check)
         self.allInitBtns['admin']['fix'].append(self.admin_fix)
@@ -473,14 +478,32 @@ class Main(wx.Frame):
             self.infos.AppendText(out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
             return
 
-        configs['DATABASES'] = []
-        configs['DEBUG'] = True
-        configs['LANGUAGE_CODE'] = ''
-        configs['TIME_ZONE'] = ''
-        configs['USE_I18N'] = True
-        configs['USE_L10N'] = True
-        configs['USE_TZ'] = False
-        configs['STATIC_URL'] = ''
+        settings = {}
+        with open(self.path_settings, 'r', encoding='utf-8') as f:
+            text = f.read().replace('__file__', '"."')
+            exec(text, {}, settings)
+
+        configs['DATABASES'] = settings.get('DATABASES') # 数据库
+        configs['DEBUG'] = settings.get("DEBUG") # 调试状态
+        configs['LANGUAGE_CODE'] = settings.get("LANGUAGE_CODE") # 语言环境
+        configs['TIME_ZONE'] = settings.get("TIME_ZONE") # 时区
+        configs['USE_I18N'] = settings.get("USE_I18N") # 全局语言设置
+        configs['USE_L10N'] = settings.get("USE_L10N")
+        configs['USE_TZ'] = settings.get("USE_TZ") # 是否使用标准时区
+        configs['STATIC_URL'] = settings.get("STATIC_URL") # 静态文件路径
+        configs['ALLOWED_HOSTS'] = settings.get("ALLOWED_HOSTS") # 允许连接ip
+        temp_templates_app = settings.get("TEMPLATES")
+        if temp_templates_app and len(temp_templates_app) > 0:
+            try:
+                configs['TEMPLATES_APP_DIRS'] = temp_templates_app[0]['APP_DIRS'] # 是否开启应用程序模板文件路径
+                configs['TEMPLATES_DIRS'] = temp_templates_app[0]['DIRS'] # 默认模板路径
+            except:
+                configs['TEMPLATES_APP_DIRS'] = None
+                configs['TEMPLATES_DIRS'] = None # 默认模板路径
+        else:
+            configs['TEMPLATES_APP_DIRS'] = None
+            configs['TEMPLATES_DIRS'] = None # 默认模板路径
+
         
         dump_json(CONFIG_PATH, configs)  # 写入配置文件
 
@@ -558,7 +581,7 @@ class Main(wx.Frame):
 
     def onAdminGenerateBase(self, e):
         """管理中心 简单配置"""
-        dlg = AppsCreateDialog(self, -1)
+        dlg = AdminCreateSimpleDialog(self, -1)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -592,3 +615,4 @@ class Main(wx.Frame):
             _.Enable(True) # 应用程序
         for _ in self.allInitBtns['admin']['create']:
             _.Enable(True) # 管理中心
+        self.btn_config_project.Enable(True)
