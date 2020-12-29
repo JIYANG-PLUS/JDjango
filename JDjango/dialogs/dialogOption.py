@@ -106,8 +106,9 @@ class AdminCreateSimpleDialog(wx.Dialog):
         self.pathPanel = wx.Panel(self.panel) # 选择应用程序app
         self.panel.SetBackgroundColour('#ededed')  # 最外层容器颜色
         self.pathPanel.SetBackgroundColour('#ededed')
-        self.modelPanel = wx.Panel(self.panel) # 选择模型列表
-        self.containModelPanel = wx.Panel(self.modelPanel)
+        self.scroller = wx.ScrolledWindow(self.panel, -1)
+        self.scroller.SetScrollbars(1, 1, 600, -1)
+        self.modelPanel = wx.Panel(self.scroller) # 选择模型列表
 
         # 向 self.pathPanel 填充控件
         # self.btn_select_file_path = buttons.GenButton(self.pathPanel, -1, label='选择admin.py文件')
@@ -146,23 +147,23 @@ class AdminCreateSimpleDialog(wx.Dialog):
 
 
         # 复选框 【后期从真正的model文件中读取】
-        self.staticAreaBox_1.Add(self.checkbox1, 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(self.checkbox2, 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(self.checkbox3, 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(self.checkbox4, 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项n"), 0, wx.ALL | wx.CENTER, 5)
-        self.staticAreaBox.Add(self.staticAreaBox_1, 0, wx.ALL | wx.CENTER, 10)
+        self.staticAreaBox_1.Add(self.checkbox1, 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(self.checkbox2, 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(self.checkbox3, 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(self.checkbox4, 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项nnn"), 0, wx.LEFT, 5)
+        self.staticAreaBox.Add(self.staticAreaBox_1, 0, wx.LEFT, 10)
 
         # 路径选择填充
         # pathPanelBox.Add(self.text_path, 1, wx.EXPAND | wx.ALL, 2)
