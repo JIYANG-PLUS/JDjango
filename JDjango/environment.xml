@@ -2,7 +2,47 @@
 <jdjango>
 
     <page>
-        <font-size>15</font-size>
+        <font-size>13</font-size>
     </page>
+
+    <env>
+        <python3>#!venv/Scripts/python.exe</python3>
+    </env>
+
+    <alias>
+
+        <file name="manage">
+            <li>manage.py</li>
+        </file>
+
+        <file name="admin">
+            <li>admin.py</li>
+        </file>
+
+        <file name="models">
+            <li>models.py</li>
+        </file>
+
+        <file name="apps">
+            <li>apps.py</li>
+        </file>
+
+        <file name="forms">
+            <li>forms.py</li>
+        </file>
+
+        <file name="tests">
+            <li>tests.py</li>
+        </file>
+
+        <file name="urls">
+            <li>urls.py</li>
+        </file>
+
+        <file name="views">
+            <li>views.py</li>
+        </file>
+
+    </alias>
 
 </jdjango>

@@ -99,48 +99,70 @@ class AdminCreateSimpleDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, id, '站点注册(简单配置)', size=(600, 400))
 
         self.font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False)
+        self.hideObjs = []
 
         # 面板
         self.panel = wx.Panel(self) # 最外层容器
-        pathPanel = wx.Panel(self.panel) # 选择应用程序app
+        self.pathPanel = wx.Panel(self.panel) # 选择应用程序app
         self.panel.SetBackgroundColour('#ededed')  # 最外层容器颜色
-        pathPanel.SetBackgroundColour('#ededed')
+        self.pathPanel.SetBackgroundColour('#ededed')
         self.modelPanel = wx.Panel(self.panel) # 选择模型列表
+        self.containModelPanel = wx.Panel(self.modelPanel)
 
-        # 向 pathPanel 填充控件
-        # self.btn_select_file_path = buttons.GenButton(pathPanel, -1, label='选择admin.py文件')
-        # self.text_path = wx.TextCtrl(pathPanel, -1)
+        # 向 self.pathPanel 填充控件
+        # self.btn_select_file_path = buttons.GenButton(self.pathPanel, -1, label='选择admin.py文件')
+        # self.text_path = wx.TextCtrl(self.pathPanel, -1)
         # self.text_path.SetFont(self.font)
         # self.text_path.SetEditable(False)
         apps = get_configs(CONFIG_PATH)['app_names']
-        self.infoChoiceApp = wx.StaticText(self.panel, -1, "选择要注册的应用程序：")
+        self.infoChoiceApp = wx.StaticText(self.pathPanel, -1, "选择要注册的应用程序：")
         self.infoChoiceApp.SetFont(self.font)
-        self.choiceApp = wx.Choice(self.panel, -1, choices = apps, style = wx.CB_SORT)
+        self.choiceApp = wx.Choice(self.pathPanel, -1, choices = apps, style = wx.CB_SORT) # 复选框
 
         # 静态框里的复选框
-        # self.checkbox1 = wx.CheckBox(self.panel, -1, "全选")
-        # self.checkbox2 = wx.CheckBox(self.panel, -1, "选项1")
-        # self.checkbox3 = wx.CheckBox(self.panel, -1, "选项2")
-        # self.checkbox4 = wx.CheckBox(self.panel, -1, "选项3")
+        self.checkbox1 = wx.CheckBox(self.modelPanel, -1, "全选")
+        self.checkbox2 = wx.CheckBox(self.modelPanel, -1, "选项1")
+        self.checkbox3 = wx.CheckBox(self.modelPanel, -1, "选项2")
+        self.checkbox4 = wx.CheckBox(self.modelPanel, -1, "选项3")
+        self.hideObjs.extend([
+            self.checkbox1
+            , self.checkbox2
+            , self.checkbox3
+            , self.checkbox4
+        ])
 
         # 区域静态框
-        staticBox = wx.StaticBox(self.panel, -1, '选择在后台显示的模型对象：') # 带边框的盒子
+        staticBox = wx.StaticBox(self.modelPanel, -1, '选择在后台显示的模型对象：') # 带边框的盒子
 
         # 确认注册按钮
-        self.btn_register = buttons.GenButton(self.panel, -1, label='注册')
-        # self.btn_register.Enable(False)
-        self.btn_register.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, False))
+        self.btn_register = buttons.GenButton(self.panel, -1, label='确认注册')
+        self.btn_register.Enable(False)
         
         # 垂直布局 和 水平布局
         panelBox = wx.BoxSizer(wx.VERTICAL)
         pathPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 选择app布局
-        static_area_box = wx.StaticBoxSizer(staticBox, wx.VERTICAL) # 中间实线括起部分布局
-        self.modelListsBox = wx.BoxSizer(wx.VERTICAL) # 水平存放 Models
+        self.staticAreaBox = wx.StaticBoxSizer(staticBox, wx.VERTICAL) # 中间实线括起部分布局
+        self.staticAreaBox_1 = wx.BoxSizer(wx.HORIZONTAL) # 存放 Models
 
 
         # 复选框 【后期从真正的model文件中读取】
-        self.modelListsBox.Add(wx.CheckBox(self.modelPanel, -1, f"全选gg"), 0, wx.ALL | wx.CENTER, 5)
-        static_area_box.Add(self.modelListsBox, 0, wx.ALL | wx.CENTER, 10)
+        self.staticAreaBox_1.Add(self.checkbox1, 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(self.checkbox2, 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(self.checkbox3, 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(self.checkbox4, 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项n"), 0, wx.ALL | wx.CENTER, 5)
+        self.staticAreaBox.Add(self.staticAreaBox_1, 0, wx.ALL | wx.CENTER, 10)
 
         # 路径选择填充
         # pathPanelBox.Add(self.text_path, 1, wx.EXPAND | wx.ALL, 2)
@@ -148,14 +170,14 @@ class AdminCreateSimpleDialog(wx.Dialog):
         pathPanelBox.Add(self.infoChoiceApp, 0, wx.EXPAND | wx.ALL, 6)
         pathPanelBox.Add(self.choiceApp, 1, wx.EXPAND | wx.ALL, 6)
 
-        # 最外层容器填充
-        panelBox.Add(pathPanel, 0, wx.EXPAND | wx.ALL, 3)
-        panelBox.Add(static_area_box, 0, wx.EXPAND | wx.ALL, 3)
+        # 最外层容器填充（从上往下）
+        panelBox.Add(self.pathPanel, 0, wx.EXPAND | wx.ALL, 3)
+        panelBox.Add(self.modelPanel, 0, wx.EXPAND | wx.ALL, 3)
         panelBox.Add(self.btn_register, 0, wx.EXPAND | wx.ALL, 3)
 
         # 面板绑定布局
-        pathPanel.SetSizer(pathPanelBox)
-        self.modelPanel.SetSizer(self.modelListsBox)
+        self.pathPanel.SetSizer(pathPanelBox)
+        self.modelPanel.SetSizer(self.staticAreaBox)
         self.panel.SetSizer(panelBox)
 
         # 注册事件
@@ -163,14 +185,20 @@ class AdminCreateSimpleDialog(wx.Dialog):
         # self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_select_file_path)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_register) # 注册按钮
 
+        # 初始化控件状态
+        self._hide_all()
+
     def ChoiceClick(self, e):
         key = e.GetString()
-        if key == 'hello':
-            objs = [
-                wx.CheckBox(self.modelPanel, -1, f"全选{key}")
-            ]
-            for obj in objs:
-                self.modelListsBox.Add(obj, 0, wx.ALL | wx.CENTER, 5)
+        self.checkbox2.Enable(True)
+        self.modelPanel.Refresh()
+        self.pathPanel.Refresh()
+        self.panel.Refresh()
+
+    def _hide_all(self):
+        for _ in self.hideObjs:
+            # _.Hide()
+            _.Enable(False)
 
     def ButtonClick(self, e):
         """界面按钮点击事件"""

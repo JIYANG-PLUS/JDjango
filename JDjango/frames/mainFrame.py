@@ -280,7 +280,7 @@ class Main(wx.Frame):
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
         menuBar.Append(new_project, "&新项目")
-        menuBar.Append(admin, "&管理中心")
+        menuBar.Append(admin, "&后台管理中心")
         # menuBar.Append(edits, "&编辑")
         menuBar.Append(apps, "&应用程序")
         menuBar.Append(views, "&视图")
@@ -465,8 +465,7 @@ class Main(wx.Frame):
         try:
             apps.remove(configs['project_name']) # 移除主程序
         except:
-            self.infos.AppendText(
-                out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
+            self.infos.AppendText(out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
             return
 
         configs['app_names'] = [_ for _ in apps if os.path.exists(os.path.join(self.dirname, _, 'migrations'))] # 以迁移目录为依据进行筛选
