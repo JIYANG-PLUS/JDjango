@@ -14,7 +14,6 @@ ID_ABOUT = 201
 ID_FILE = 202
 ID_FLODER = 202
 
-
 class Main(wx.Frame):
 
     def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='《Django辅助工具》-V1.1.0'):
@@ -173,12 +172,18 @@ class Main(wx.Frame):
 
         # 视图 菜单项
         views = wx.Menu()
-        self.viewsGenerate = views.Append(wx.ID_ANY, "&创建", "创建")
+        self.viewsGenerate = wx.Menu()
+        self.viewsGenerateFunc = self.viewsGenerate.Append(wx.ID_ANY, "&函数视图", "函数视图")
+        self.viewsGenerateClass = self.viewsGenerate.Append(wx.ID_ANY, "&对象视图", "对象视图")
+        views.Append(wx.ID_ANY, "&创建", self.viewsGenerate) # 创建二级菜单项
         views.AppendSeparator()
         self.views_check = views.Append(wx.ID_ANY, "&校验", "校验")
         self.views_fix = views.Append(wx.ID_ANY, "&修复", "修复")
 
-        self.allInitBtns['views']['create'].append(self.viewsGenerate)
+        self.allInitBtns['views']['create'].extend([
+            self.viewsGenerateFunc
+            , self.viewsGenerateClass
+        ])
         self.allInitBtns['views']['check'].append(self.views_check)
         self.allInitBtns['views']['fix'].append(self.views_fix)
 
@@ -367,7 +372,7 @@ class Main(wx.Frame):
     def onOpen(self, e):
         """查看文件"""
         self.dirname = r''
-        dlg = wx.FileDialog(self, "选择一个文件", self.dirname,"", "*.*", wx.FD_OPEN)
+        dlg = wx.FileDialog(self, "选择一个文件", self.dirname, "", "*.*", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
@@ -610,8 +615,7 @@ class Main(wx.Frame):
 
     def _open_part_btns(self):
         """开启部分必要的、控制流程之外的按钮"""
-        for _ in self.allInitBtns['apps']['create']:
-            _.Enable(True) # 应用程序
-        for _ in self.allInitBtns['admin']['create']:
-            _.Enable(True) # 管理中心
+        for a in self.allInitBtns:
+            for _ in self.allInitBtns[a]["create"]:
+                _.Enable(True) # 开启所有的创建按钮
         self.btn_config_project.Enable(True)

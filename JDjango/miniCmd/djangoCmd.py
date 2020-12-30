@@ -12,8 +12,10 @@ PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
 PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 定位模板替换位置
 
 # 补全模板路径
-def django_file_path(file_name):
-    return os.path.join(TEMPLATE_DIR, file_name) # 模板路径
+def django_file_path(file_name, concat=[]):
+    if None == concat:
+        concat = []
+    return os.path.join(TEMPLATE_DIR, *concat, file_name) # 模板路径
 
 def read_file_lists(r_path, *args, **kwargs):
     with open(r_path, 'r', encoding='utf-8') as f:
@@ -23,10 +25,11 @@ def read_file_lists(r_path, *args, **kwargs):
     return lines
 
 def get_content(file_name, *args, **kwargs):
-    return read_file_lists(django_file_path(file_name), *args, **kwargs)
+    return read_file_lists(django_file_path(file_name, concat=kwargs.get('concat')), *args, **kwargs)
 
-def append_content(obj, content):
-    pass
+def append_content(path, name, *args, **kwargs):
+    content = get_content(name, *args, **kwargs)
+    append_file(path, content)
 
 def startapp(app_name):
     configs = get_configs(os.path.join(PROJECT_BASE_NAME, 'config.json'))
@@ -80,4 +83,5 @@ def startapp(app_name):
 def write_admin_base(path, importData):
     """管理中心后台简单注册"""
     for k, v in importData.items():
-        pass
+        for site_name in v:
+            append_content(path, 'base.django', concat=['admin'], replace=True, model_name=k, site_name=site_name)

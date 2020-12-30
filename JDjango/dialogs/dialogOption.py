@@ -126,7 +126,7 @@ class AdminCreateSimpleDialog(wx.Dialog):
         apps = get_configs(CONFIG_PATH)['app_names']
         self.infoChoiceApp = wx.StaticText(self.pathPanel, -1, "选择要注册的应用程序：")
         self.infoChoiceApp.SetFont(self.font)
-        self.choiceApp = wx.Choice(self.pathPanel, -1, choices = apps, style = wx.CB_SORT) # 复选框
+        self.choiceApp = wx.Choice(self.pathPanel, -1, choices = [' ']+apps, style = wx.CB_SORT) # 复选框
 
         # 静态框里的复选框
         self.modelChoices = [
@@ -182,19 +182,20 @@ class AdminCreateSimpleDialog(wx.Dialog):
         """下拉框选择App值更新事件"""
         key = e.GetString() # key即是app名
         self.staticAreaBox_1.Clear() # 清空
-        # 指定赋值
-        # 路径筛选
-        APP_PATH = os.path.join(get_configs(CONFIG_PATH)['dirname'], key)
-        if os.path.exists(APP_PATH) and os.path.isdir(APP_PATH):
-            # 获取路径下的所有文件
-            pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True)
-            # 读取配置文件的别名集合
-            alias = env.getModelsAlias()
-            # 通过别名筛选即将读取解析的模型文件
-            pathModels = [_ for _ in pys if os.path.basename(_) in alias]
-            # 赋值的同时标注模块的来源
-            for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in toolModel.get_models_from_modelspy(_)]:
-                self.staticAreaBox_1.Append(' -- '.join(obj))
+        if key.strip():
+            # 指定赋值
+            # 路径筛选
+            APP_PATH = os.path.join(get_configs(CONFIG_PATH)['dirname'], key)
+            if os.path.exists(APP_PATH) and os.path.isdir(APP_PATH):
+                # 获取路径下的所有文件
+                pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True)
+                # 读取配置文件的别名集合
+                alias = [os.path.basename(_) for _ in env.getModelsAlias()]
+                # 通过别名筛选即将读取解析的模型文件
+                pathModels = [_ for _ in pys if os.path.basename(_) in alias]
+                # 赋值的同时标注模块的来源
+                for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in toolModel.get_models_from_modelspy(_)]:
+                    self.staticAreaBox_1.Append(' -- '.join(obj))
 
     def ButtonClick(self, e):
         """界面按钮点击事件"""
@@ -227,7 +228,8 @@ class AdminCreateSimpleDialog(wx.Dialog):
             # 读取admin.py的别名
             alias = env.getAdminAlias()
             for _ in alias:
-                write_admin_base(os.path.join(get_configs(CONFIG_PATH)['dirname'], _), importData) # 写入注册代码
+                # 如果路径改变，可在environment.xml中配置完整的路径别名（如 admin.py 可扩展成 myfloder/admin.py ）
+                write_admin_base(os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _), importData) # 写入注册代码
             wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
         dlg.Destroy()
 

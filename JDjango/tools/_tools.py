@@ -45,7 +45,12 @@ def get_configs(path):
         configs = json.load(f)
     return configs
 
-def new_file(name, content=None):
-    with open(name, 'w', encoding='utf-8') as f:
-        if content: f.writelines(content)
+def new_file(path, content=None):
+    with open(path, 'w', encoding='utf-8') as f:
+        if content:
+            f.writelines(content)
 
+def append_file(path, content=[]):
+    with open(path, 'a', encoding='utf-8') as f:
+        print(path)
+        f.write('\n' + ''.join(content))
