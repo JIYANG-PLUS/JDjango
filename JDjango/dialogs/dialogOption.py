@@ -2,6 +2,12 @@ import wx, json, glob, os, re
 import wx.lib.buttons as buttons
 from ..tools._tools import *
 from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
+import glob
+from ..tools import environment as env
+from ..tools import models as toolModel
+from ..miniCmd.djangoCmd import write_admin_base
+
+env_obj = env.getEnvXmlObj()
 
 PATT_CHARS = re.compile(r'^[a-zA-Z_].*$')
 
@@ -62,44 +68,46 @@ class ConfigDialog(wx.Dialog):
                 dlg.ShowModal()
                 dlg.Destroy()
                 return
+            try:
+                # 重命名项目（先文件，后目录）
+                search_path = os.path.join(self.DIRNAME, '**', '*')
+                alls = glob.glob(search_path, recursive=True)
 
-            # 重命名项目（先文件，后目录）
-            search_path = os.path.join(self.DIRNAME, '**', '*')
-            alls = glob.glob(search_path, recursive=True)
+                # 分类文件和文件夹
+                files, floders = [], []
+                for _ in alls:
+                    if os.path.isfile(_): files.append(_)
+                    else: floders.append(_)
 
-            # 分类文件和文件夹
-            files, floders = [], []
-            for _ in alls:
-                if os.path.isfile(_): files.append(_)
-                else: floders.append(_)
+                for p in files:
+                    # 先读后写
+                    if '.py' == os.path.splitext(p)[1]:
+                        content = read_file(p)
+                        content = content.replace(old_name.strip(), new_name)
+                        write_file(p, content)
 
-            for p in files:
-                # 先读后写
-                if '.py' == os.path.splitext(p)[1]:
-                    content = read_file(p)
-                    content = content.replace(old_name.strip(), new_name)
-                    write_file(p, content)
+                for P in floders:
+                    if old_name.strip().lower() == os.path.basename(P).strip().lower():
+                        temp = os.path.join(os.path.dirname(P), new_name)
+                        os.rename(P, temp)
 
-            for P in floders:
-                if old_name.strip().lower() == os.path.basename(P).strip().lower():
-                    temp = os.path.join(os.path.dirname(P), new_name)
-                    os.rename(P, temp)
-
-            # 修改根目录名称
-            os.rename(self.DIRNAME, os.path.join(os.path.dirname(self.DIRNAME), new_name))
-            
-            dlg = wx.MessageDialog( self, "修改成功，请退出所有窗口后重新打开，进行后续操作。", "成功", wx.OK)
-            if dlg.ShowModal() == wx.ID_OK:
-                self.Close(True)
-            dlg.ShowModal()
-            dlg.Destroy()
+                # 修改根目录名称
+                os.rename(self.DIRNAME, os.path.join(os.path.dirname(self.DIRNAME), new_name))
+                
+                dlg = wx.MessageDialog( self, "修改成功，请退出所有窗口后重新打开，进行后续操作。", "成功", wx.OK)
+                if dlg.ShowModal() == wx.ID_OK:
+                    self.Close(True)
+                dlg.ShowModal()
+                dlg.Destroy()
+            except:
+                """操作回退，将之前所有的改动还原"""
+                pass # 待完成
 
 class AdminCreateSimpleDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
         wx.Dialog.__init__(self, parent, id, '站点注册(简单配置)', size=(600, 400))
 
         self.font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False)
-        self.hideObjs = []
 
         # 面板
         self.panel = wx.Panel(self) # 最外层容器
@@ -121,19 +129,12 @@ class AdminCreateSimpleDialog(wx.Dialog):
         self.choiceApp = wx.Choice(self.pathPanel, -1, choices = apps, style = wx.CB_SORT) # 复选框
 
         # 静态框里的复选框
-        self.checkbox1 = wx.CheckBox(self.modelPanel, -1, "全选")
-        self.checkbox2 = wx.CheckBox(self.modelPanel, -1, "选项1")
-        self.checkbox3 = wx.CheckBox(self.modelPanel, -1, "选项2")
-        self.checkbox4 = wx.CheckBox(self.modelPanel, -1, "选项3")
-        self.hideObjs.extend([
-            self.checkbox1
-            , self.checkbox2
-            , self.checkbox3
-            , self.checkbox4
-        ])
+        self.modelChoices = [
+            # 置空
+        ]
 
         # 区域静态框
-        staticBox = wx.StaticBox(self.modelPanel, -1, '选择在后台显示的模型对象：') # 带边框的盒子
+        staticBox = wx.StaticBox(self.modelPanel, -1, '选择需要在后台操作的模型对象：') # 带边框的盒子
 
         # 确认注册按钮
         self.btn_register = buttons.GenButton(self.panel, -1, label='确认注册')
@@ -143,31 +144,12 @@ class AdminCreateSimpleDialog(wx.Dialog):
         panelBox = wx.BoxSizer(wx.VERTICAL)
         pathPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 选择app布局
         self.staticAreaBox = wx.StaticBoxSizer(staticBox, wx.VERTICAL) # 中间实线括起部分布局
-        self.staticAreaBox_1 = wx.BoxSizer(wx.HORIZONTAL) # 存放 Models
+        self.staticAreaBox_1 = wx.ListBox(self.modelPanel, -1, size=(600, 250), choices = self.modelChoices, style = wx.LB_MULTIPLE | wx.LB_HSCROLL | wx.LB_ALWAYS_SB) # 存放 Models
 
-
-        # 复选框 【后期从真正的model文件中读取】
-        self.staticAreaBox_1.Add(self.checkbox1, 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(self.checkbox2, 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(self.checkbox3, 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(self.checkbox4, 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项"), 0, wx.LEFT, 5)
-        self.staticAreaBox_1.Add(wx.CheckBox(self.modelPanel, -1, "选项nnn"), 0, wx.LEFT, 5)
+        # 复选框 【后期从真正的models文件中读取】
         self.staticAreaBox.Add(self.staticAreaBox_1, 0, wx.LEFT, 10)
 
         # 路径选择填充
-        # pathPanelBox.Add(self.text_path, 1, wx.EXPAND | wx.ALL, 2)
-        # pathPanelBox.Add(self.btn_select_file_path, 0, wx.EXPAND | wx.ALL, 2)
         pathPanelBox.Add(self.infoChoiceApp, 0, wx.EXPAND | wx.ALL, 6)
         pathPanelBox.Add(self.choiceApp, 1, wx.EXPAND | wx.ALL, 6)
 
@@ -183,23 +165,36 @@ class AdminCreateSimpleDialog(wx.Dialog):
 
         # 注册事件
         self.Bind(wx.EVT_CHOICE, self.ChoiceClick, self.choiceApp) # 下拉列表值更新
-        # self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_select_file_path)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_register) # 注册按钮
+        self.Bind(wx.EVT_LISTBOX, self.OnListBox1Listbox, self.staticAreaBox_1) # 多选模型列表
 
         # 初始化控件状态
-        self._hide_all()
+
+    def OnListBox1Listbox(self, e):
+        """多选列表事件"""
+        bId = e.GetId()
+        if bId == self.staticAreaBox_1.GetId(): # 选择项目根路径
+            selects = self.staticAreaBox_1.GetSelections()
+            if len(selects) > 0: self.btn_register.Enable(True)
+            else: self.btn_register.Enable(False)
 
     def ChoiceClick(self, e):
-        key = e.GetString()
-        self.checkbox2.Enable(True)
-        self.modelPanel.Refresh()
-        self.pathPanel.Refresh()
-        self.panel.Refresh()
-
-    def _hide_all(self):
-        for _ in self.hideObjs:
-            # _.Hide()
-            _.Enable(False)
+        """下拉框选择App值更新事件"""
+        key = e.GetString() # key即是app名
+        self.staticAreaBox_1.Clear() # 清空
+        # 指定赋值
+        # 路径筛选
+        APP_PATH = os.path.join(get_configs(CONFIG_PATH)['dirname'], key)
+        if os.path.exists(APP_PATH) and os.path.isdir(APP_PATH):
+            # 获取路径下的所有文件
+            pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True)
+            # 读取配置文件的别名集合
+            alias = env.getModelsAlias()
+            # 通过别名筛选即将读取解析的模型文件
+            pathModels = [_ for _ in pys if os.path.basename(_) in alias]
+            # 赋值的同时标注模块的来源
+            for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in toolModel.get_models_from_modelspy(_)]:
+                self.staticAreaBox_1.Append(' -- '.join(obj))
 
     def ButtonClick(self, e):
         """界面按钮点击事件"""
@@ -210,21 +205,44 @@ class AdminCreateSimpleDialog(wx.Dialog):
             self.onRegister(e)
 
     def onRegister(self, e):
-        ...
-
-
-    def select_adminpy(self, e):
-        """获取admin.py文件所在路径"""
-        path = get_configs(CONFIG_PATH)['dirname']
-        dlg = wx.FileDialog(self, "选择admin.py文件", path, "", "*.py", wx.FD_OPEN)
-        if dlg.ShowModal() == wx.ID_OK:
-            filename = dlg.GetFilename()
-            # 待校验：是否是当前项目下的admin.py文件
-            self.dirname = dlg.GetDirectory()
-            if 'admin.py' == filename:
-                self.text_path.SetValue(f'{self.dirname}')
-            else:
-                pass
-        else:
-            pass
+        """注册管理后台模型"""
+        dlg = wx.MessageDialog(None, u"确认后，选中的模型将被注册到管理后台。", u"确认注册", wx.YES_NO | wx.ICON_QUESTION)
+        if dlg.ShowModal() == wx.ID_YES:
+            selectNames = self.staticAreaBox_1.GetStrings()
+            selectIndexs = self.staticAreaBox_1.GetSelections()
+            modelModels = [selectNames[_] for _ in selectIndexs]
+            appName = self.choiceApp.GetStrings()[self.choiceApp.GetSelection()] # 当前选中应用程序名
+            # 分类导入admin.py文件
+            modelFiles, models = [], []
+            for _ in modelModels:
+                t1, t2 = _.split(' -- ')
+                modelFiles.append(t2.split('.')[0])
+                models.append(t1)
+            classify = set(modelFiles)
+            importData = {}
+            for _ in classify:
+                importData[_] = []
+            for _ in zip(models, modelFiles):
+                importData[_[1]].append(_[0])
+            # 读取admin.py的别名
+            alias = env.getAdminAlias()
+            for _ in alias:
+                write_admin_base(os.path.join(get_configs(CONFIG_PATH)['dirname'], _), importData) # 写入注册代码
+            wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
         dlg.Destroy()
+
+    # def select_adminpy(self, e):
+    #     """获取admin.py文件所在路径"""
+    #     path = get_configs(CONFIG_PATH)['dirname']
+    #     dlg = wx.FileDialog(self, "选择admin.py文件", path, "", "*.py", wx.FD_OPEN)
+    #     if dlg.ShowModal() == wx.ID_OK:
+    #         filename = dlg.GetFilename()
+    #         # 待校验：是否是当前项目下的admin.py文件
+    #         self.dirname = dlg.GetDirectory()
+    #         if 'admin.py' == filename:
+    #             self.text_path.SetValue(f'{self.dirname}')
+    #         else:
+    #             pass
+    #     else:
+    #         pass
+    #     dlg.Destroy()

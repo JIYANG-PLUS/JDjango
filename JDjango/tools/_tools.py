@@ -25,6 +25,11 @@ def read_file(path):
         content = f.read()
     return content
 
+def read_file_list(path):
+    with open(path, 'r', encoding='utf-8') as f:
+        content = f.readlines()
+    return content
+
 
 def write_file(path, content):
     with open(path, 'w', encoding='utf-8') as f:

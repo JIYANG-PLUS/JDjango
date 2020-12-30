@@ -40,6 +40,7 @@ class EnvParser:
         return True
 
     def get_xpath_node(self, xpath):
+        """通过路径语法获取节点"""
         searcher = self.ROOT
         xpath_split = xpath.split('/')
         for _ in xpath_split:
@@ -64,6 +65,7 @@ class EnvParser:
         return searcher
 
     def _get_node_by_attr(self, nodes, attr, v=''):
+        """通过属性限制获取节点"""
         for node in nodes:
             if attr in node.attrib and v == node.attrib[attr]:
                 return node
@@ -77,18 +79,27 @@ class EnvParser:
     def fill_base_path(self):
         pass
 
+    def get_childnode_lists(self, path):
+        """获取所有直接孩子节点的文本内容"""
+        node = self.get_xpath_node(path)
+        return [_.text for _ in node]
+
     def write_xml(self):
         self.TREE.write(ENV_PATH, encoding="utf-8", xml_declaration=True)
 
+
 def getEnvXmlObj():
+    """获取对象"""
     return EnvParser(xml = os.path.join(BASE_DIR, ENV_PATH))
 
 def getFontSize():
+    """获取字体大小"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('page/font-size')
     return int(node.text)
 
 def setFontSize(step = 1, method = 'add'):
+    """设置字体大小"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('page/font-size')
     font_size = int(node.text)
@@ -98,6 +109,16 @@ def setFontSize(step = 1, method = 'add'):
         if font_size > 2:
             node.text = str(font_size - step)
     obj.write_xml()
+
+def getModelsAlias():
+    """获取所有models.py的别名"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('alias/file[name=models]')
+
+def getAdminAlias():
+    """获取所有admin.py的别名"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('alias/file[name=admin]')
 
 # 参考
 # 从字符串读取

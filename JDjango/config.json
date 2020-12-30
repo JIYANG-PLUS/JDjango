@@ -1,17 +1,10 @@
 {
-    "dirname": "C:\\Users\\PC\\Desktop\\newname",
-    "project_name": "newname",
+    "dirname": "D:\\www\\nantongCDC",
+    "project_name": "nantongCDC",
     "app_names": [
-        "dajiahao",
-        "eqwe",
-        "gjhgjghjgj",
-        "hello2",
-        "helloworld",
-        "jiyang",
-        "nihaoa",
-        "shgadfhsrwqyte",
-        "test",
-        "testtest"
+        "JiYang",
+        "main",
+        "TEMP"
     ],
     "DATABASES": {
         "default": {
@@ -20,13 +13,17 @@
         }
     },
     "DEBUG": true,
-    "LANGUAGE_CODE": "en-us",
-    "TIME_ZONE": "UTC",
+    "LANGUAGE_CODE": "zh-Hans",
+    "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
-    "USE_TZ": true,
+    "USE_TZ": false,
     "STATIC_URL": "/static/",
-    "ALLOWED_HOSTS": [],
+    "ALLOWED_HOSTS": [
+        "*"
+    ],
     "TEMPLATES_APP_DIRS": true,
-    "TEMPLATES_DIRS": []
+    "TEMPLATES_DIRS": [
+        "D:\\sources\\GitHub\\templates"
+    ]
 }
