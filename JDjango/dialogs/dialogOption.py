@@ -106,9 +106,9 @@ class AdminCreateSimpleDialog(wx.Dialog):
         self.pathPanel = wx.Panel(self.panel) # 选择应用程序app
         self.panel.SetBackgroundColour('#ededed')  # 最外层容器颜色
         self.pathPanel.SetBackgroundColour('#ededed')
-        self.scroller = wx.ScrolledWindow(self.panel, -1)
-        self.scroller.SetScrollbars(1, 1, 600, -1)
-        self.modelPanel = wx.Panel(self.scroller) # 选择模型列表
+        # self.scroller = wx.ScrolledWindow(self.panel, -1)
+        # self.scroller.SetScrollbars(1, 1, 600, -1)
+        self.modelPanel = wx.Panel(self.panel) # 选择模型列表
 
         # 向 self.pathPanel 填充控件
         # self.btn_select_file_path = buttons.GenButton(self.pathPanel, -1, label='选择admin.py文件')
