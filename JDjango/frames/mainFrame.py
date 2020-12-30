@@ -280,7 +280,8 @@ class Main(wx.Frame):
         self.fonts_minus = fonts.Append(wx.ID_ANY, "&字体减小-1", "字体减小-1")
         self.fonts_add = fonts.Append(wx.ID_ANY, "&字体增大+1", "字体增大+1")
         settings.Append(wx.ID_ANY, "&字体", fonts)
-
+        settings.AppendSeparator()
+        self.language = settings.Append(wx.ID_ANY, "&语言和时区", "语言和时区")
 
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
