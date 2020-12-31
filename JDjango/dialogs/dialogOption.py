@@ -248,3 +248,10 @@ class AdminCreateSimpleDialog(wx.Dialog):
     #     else:
     #         pass
     #     dlg.Destroy()
+
+class AdminRename(wx.Dialog):
+    def __init__(self, parent, id, **kwargs):
+        wx.Dialog.__init__(self, parent, id, '网站后台重命名', size=(300, 200))
+        # 面板
+        self.panel = wx.Panel(self) # 最外层容器
+        

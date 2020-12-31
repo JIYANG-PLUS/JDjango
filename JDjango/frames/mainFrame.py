@@ -1,6 +1,6 @@
 import wx, time, os, json, datetime
 import wx.lib.buttons as buttons
-from ..dialogs.dialogOption import ConfigDialog, AdminCreateSimpleDialog
+from ..dialogs.dialogOption import *
 from ..miniCmd.djangoCmd import startapp
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -311,12 +311,16 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onAppsCheck, self.apps_check) # 检测
         self.Bind(wx.EVT_MENU, self.onAppsFix, self.apps_fix) # 修复
 
-        # 管理中心
+        # 管理中心 事件绑定
         self.Bind(wx.EVT_MENU, self.onAdminGenerateBase, self.adminGenerateBase) # 创建简单管理中心
+        self.Bind(wx.EVT_MENU, self.onAdminRename, self.adminRename) # 修改后台网站名
 
-        # 设置
+        # 设置 事件绑定
         self.Bind(wx.EVT_MENU, self.onFontsMinus, self.fonts_minus) # 字体减小
         self.Bind(wx.EVT_MENU, self.onFontsAdd, self.fonts_add) # 字体减小
+
+    def onAdminRename(self, e):
+        pass
 
     def onFontsMinus(self, e):
         """显示框字体减小"""

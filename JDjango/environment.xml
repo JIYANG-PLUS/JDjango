@@ -25,7 +25,6 @@
 
         <file name="models">
             <li>models.py</li>
-            <li>tmodels.py</li>
         </file>
 
         <file name="apps">

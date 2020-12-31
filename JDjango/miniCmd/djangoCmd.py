@@ -10,6 +10,8 @@ __all__ = [
 
 PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
 PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 定位模板替换位置
+PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']') # 定位后台登录名称位置
+PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']') # 定位后台网站名称位置
 
 # 补全模板路径
 def django_file_path(file_name, concat=[]):
@@ -85,3 +87,4 @@ def write_admin_base(path, importData):
     for k, v in importData.items():
         for site_name in v:
             append_content(path, 'base.django', concat=['admin'], replace=True, model_name=k, site_name=site_name)
+
