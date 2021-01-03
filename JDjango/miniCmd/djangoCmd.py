@@ -123,6 +123,13 @@ def set_site_header(new_name, mode=0):
         for _ in _get_all_py_path(getAdminAlias()):
             content = PATT_HEADER_NAME.sub('', read_file(_))
             write_file(_, content)
+    # 原地修改
+    if 1 == mode:
+        pass
+
+    # 随机插入
+    if mode in (0, 2):
+        pass
 
 def get_site_title():
     """获取后台标题名称 注释见get_site_header"""

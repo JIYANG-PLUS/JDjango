@@ -227,7 +227,7 @@ class AdminCreateSimpleDialog(wx.Dialog):
             # 读取admin.py的别名
             alias = env.getAdminAlias()
             for _ in alias:
-                # 如果路径改变，可在environment.xml中配置完整的路径别名（如 admin.py 可扩展成 myfloder/admin.py ）
+                # 如果路径改变，可在environment.xml中配置完整的路径别名（如 admin.py 可扩展成 myfloder/admin.py，但是要确保子路径位于该app父路径下 ）
                 # 下面将在所有的模块别名路径中写入注册数据【可能有点不合理】
                 write_admin_base(os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _), importData) # 写入注册代码
             wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
@@ -251,25 +251,30 @@ class AdminCreateSimpleDialog(wx.Dialog):
 
 class AdminRenameDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '网站后台重命名', size=(300, 150))
+        wx.Dialog.__init__(self, parent, id, '网站后台重命名', size=(300, 200))
         # 面板
         self.panel = wx.Panel(self) # 最外层容器
         self.headerPanel = wx.Panel(self.panel) # 登录界面重命名
         self.titlePanel = wx.Panel(self.panel) # 后台标题重命名
+        self.locPanel = wx.Panel(self.panel) # 标题所在位置信息
 
         # 控件
         self.headerFlag = wx.StaticText(self.headerPanel, -1, "登录界面名称：")
         self.inputHeader = wx.TextCtrl(self.headerPanel, -1)
         self.titleFlag = wx.StaticText(self.titlePanel, -1, "后台标题名称：")
         self.inputTitle = wx.TextCtrl(self.titlePanel, -1)
+        self.locFlag = wx.StaticText(self.locPanel, -1, "位置：")
+        self.locTitle = wx.TextCtrl(self.locPanel, -1)
         self.btnModify = buttons.GenButton(self.panel, -1, '修改')
         self.msgName = wx.TextCtrl(self.panel, -1)
+        self.locTitle.SetEditable(False)
         self.msgName.SetEditable(False)
 
         # 布局
         self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
         self.headerPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
         self.titlePanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        self.locPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
 
         # 登录界面名称： 填充
         self.headerPanelBox.Add(self.headerFlag, 0, wx.EXPAND | wx.ALL, 2)
@@ -279,15 +284,21 @@ class AdminRenameDialog(wx.Dialog):
         self.titlePanelBox.Add(self.titleFlag, 0, wx.EXPAND | wx.ALL, 2)
         self.titlePanelBox.Add(self.inputTitle, 1, wx.EXPAND | wx.ALL, 2)
 
+        # 位置：填充
+        self.locPanelBox.Add(self.locFlag, 0, wx.EXPAND | wx.ALL, 2)
+        self.locPanelBox.Add(self.locTitle, 1, wx.EXPAND | wx.ALL, 2)
+
         # 整体 填充
         self.panelBox.Add(self.headerPanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.titlePanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.locPanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.btnModify, 1, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.msgName, 0, wx.EXPAND | wx.ALL, 2)
 
         # 面板绑定布局
         self.headerPanel.SetSizer(self.headerPanelBox)
         self.titlePanel.SetSizer(self.titlePanelBox)
+        self.locPanel.SetSizer(self.locPanelBox)
         self.panel.SetSizer(self.panelBox)
 
         # 初始化数据
@@ -351,7 +362,7 @@ class AdminRenameDialog(wx.Dialog):
         if len_headers > 0:
             self.inputHeader.SetValue(f'{headers[0]}')
             if len_headers > 1:
-                self.msgName.SetValue(f'警告：共有{len_headers}处设置！仅需保留一个')
+                self.msgName.SetValue(f'警告，共有{len_headers}处设置！仅需保留一个')
             else:
                 self.msgName.SetValue(f'读取正常')
         else:
@@ -362,9 +373,9 @@ class AdminRenameDialog(wx.Dialog):
         if len_titles > 0:
             self.inputTitle.SetValue(f'{titles[0]}')
             if len_titles > 1:
-                self.msgName.SetValue(f'警告：共有{len_titles}处设置！仅需保留一个')
+                self.msgName.SetValue(f'警告，共有{len_titles}处设置！仅需保留一个')
             else:
-                self.msgName.SetValue(f'读取正常')
+                self.msgName.SetValue(f'读取正常') # 此处会出现问题，当二者不在一个位置时会引发冲突
         else:
             self.inputTitle.SetValue(f'None')
             self.msgName.SetValue(f'读取正常')
