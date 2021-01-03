@@ -1,0 +1,1 @@
+admin.site.site_title = _("${logo_name}")

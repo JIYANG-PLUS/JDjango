@@ -173,8 +173,7 @@ class Main(wx.Frame):
         # 视图 菜单项
         views = wx.Menu()
         self.viewsGenerate = wx.Menu()
-        self.viewsGenerateFunc = self.viewsGenerate.Append(wx.ID_ANY, "&函数视图", "函数视图")
-        self.viewsGenerateClass = self.viewsGenerate.Append(wx.ID_ANY, "&对象视图", "对象视图")
+        self.viewsGenerateFunc = self.viewsGenerate.Append(wx.ID_ANY, "&视图", "视图")
         views.Append(wx.ID_ANY, "&创建", self.viewsGenerate) # 创建二级菜单项
         views.AppendSeparator()
         self.views_check = views.Append(wx.ID_ANY, "&校验", "校验")
@@ -182,7 +181,6 @@ class Main(wx.Frame):
 
         self.allInitBtns['views']['create'].extend([
             self.viewsGenerateFunc
-            , self.viewsGenerateClass
         ])
         self.allInitBtns['views']['check'].append(self.views_check)
         self.allInitBtns['views']['fix'].append(self.views_fix)
@@ -203,7 +201,6 @@ class Main(wx.Frame):
         self.templatesGenerate = templates.Append(wx.ID_ANY, "&创建", "创建")
         templates.AppendSeparator()
         self.templates_check = templates.Append(wx.ID_ANY, "&校验", "校验")
-
         self.templates_fix = templates.Append(wx.ID_ANY, "&修复", "修复")
 
         self.allInitBtns['templates']['create'].append(self.templatesGenerate)
@@ -246,22 +243,22 @@ class Main(wx.Frame):
         # 管理中心 菜单项
         admin = wx.Menu()
         self.adminGenerateBase = admin.Append(wx.ID_ANY, "&创建简单管理中心", "创建简单管理中心")
-        self.adminGenerateComplex = admin.Append(wx.ID_ANY, "&创建复杂管理中心", "创建复杂管理中心")
+        # self.adminGenerateComplex = admin.Append(wx.ID_ANY, "&创建复杂管理中心", "创建复杂管理中心")
         admin.AppendSeparator()
         self.admin_check = admin.Append(wx.ID_ANY, "&校验", "校验")
         self.admin_fix = admin.Append(wx.ID_ANY, "&修复", "修复")
         admin.AppendSeparator()
         self.adminRename = admin.Append(wx.ID_ANY, "&修改后台网站名", "修改后台网站名")
         admin.AppendSeparator()
-        self.quickAdminGenerateBase = admin.Append(wx.ID_ANY, "&一键创建简单管理中心", "一键创建简单管理中心")
-        self.quickAdminGenerateComplex = admin.Append(wx.ID_ANY, "&一键创建复杂管理中心", "一键创建复杂管理中心")
+        # self.quickAdminGenerateBase = admin.Append(wx.ID_ANY, "&一键创建简单管理中心", "一键创建简单管理中心")
+        # self.quickAdminGenerateComplex = admin.Append(wx.ID_ANY, "&一键创建复杂管理中心", "一键创建复杂管理中心")
 
         self.allInitBtns['admin']['create'].extend([
             self.adminGenerateBase
-            , self.adminGenerateComplex
+            # , self.adminGenerateComplex
             , self.adminRename
-            , self.quickAdminGenerateBase
-            , self.quickAdminGenerateComplex
+            # , self.quickAdminGenerateBase
+            # , self.quickAdminGenerateComplex
         ])
         self.allInitBtns['admin']['check'].append(self.admin_check)
         self.allInitBtns['admin']['fix'].append(self.admin_fix)
@@ -319,8 +316,20 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onFontsMinus, self.fonts_minus) # 字体减小
         self.Bind(wx.EVT_MENU, self.onFontsAdd, self.fonts_add) # 字体减小
 
+        # 视图 事件绑定
+        self.Bind(wx.EVT_MENU, self.onViewsGenerateFunc, self.viewsGenerateFunc) # 新增视图（多样新增）
+
     def onAdminRename(self, e):
-        pass
+        """重命名后台名称"""
+        dlg = AdminRenameDialog(self, -1)
+        dlg.ShowModal()
+        dlg.Destroy()
+
+    def onViewsGenerateFunc(self, e):
+        """多样式新增视图"""
+        dlg = ViewGenerateDialog(self, -1)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def onFontsMinus(self, e):
         """显示框字体减小"""

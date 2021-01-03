@@ -1,11 +1,17 @@
-import os, re, json
+import os, re, json, glob
 from ..tools._tools import *
-from ..settings import BASE_DIR as PROJECT_BASE_NAME
+from ..tools.environment import *
+from ..settings import BASE_DIR as PROJECT_BASE_NAME, CONFIG_PATH
 
 TEMPLATE_DIR = os.path.join(PROJECT_BASE_NAME, 'djangoTemplates')
 
 __all__ = [
     'startapp',
+    'write_admin_base',
+    'get_site_header',
+    'get_site_title',
+    'set_site_header',
+    'set_site_title',
 ]
 
 PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
@@ -88,3 +94,47 @@ def write_admin_base(path, importData):
         for site_name in v:
             append_content(path, 'base.django', concat=['admin'], replace=True, model_name=k, site_name=site_name)
 
+def _get_all_py_path(alias):
+    # 遍历项目路径下的所有admin.py（包括别名）的文件，寻找注册名称信息
+    # 如果没有，则默认为Django，此时前台显示None
+    f_path = get_configs(CONFIG_PATH)["dirname"] # 项目根路径
+    # alias 取所有的admin.py及其别名
+    search_path = os.path.join(f_path, '**', '*')
+    objs = glob.glob(search_path, recursive=True)
+    temp = []
+    for _ in objs:
+        if os.path.basename(_) in alias:
+            temp.append(_)
+    return temp # 当前项目根路径下所有的admin类型源文件路径
+
+def get_site_header():
+    """获取登录界面名称"""
+    options = []
+    for _ in _get_all_py_path(getAdminAlias()): # 逐个文件读取判断
+        source = ' '.join([t.strip() for t in read_file_list_del_comment(_)])
+        options.extend(PATT_HEADER_NAME.findall(source))
+    return options
+
+def set_site_header(new_name, mode=0):
+    """设置 获取登录界面名称"""
+    # mode: 0没有，1仅一个，2多个
+    # 删除所有的名称命名处
+    if 2 == mode:
+        for _ in _get_all_py_path(getAdminAlias()):
+            content = PATT_HEADER_NAME.sub('', read_file(_))
+            write_file(_, content)
+
+def get_site_title():
+    """获取后台标题名称 注释见get_site_header"""
+    options = []
+    for _ in _get_all_py_path(getAdminAlias()):
+        source = ' '.join([t.strip() for t in read_file_list_del_comment(_)])
+        options.extend(PATT_TITLE_NAME.findall(source))
+    return options
+
+def set_site_title(new_name, mode=0):
+    """设置 获取后台标题名称 注释见set_site_header"""
+    if 2 == mode:
+        for _ in _get_all_py_path(getAdminAlias()):
+            content = PATT_TITLE_NAME.sub('', read_file(_))
+            write_file(_, content)

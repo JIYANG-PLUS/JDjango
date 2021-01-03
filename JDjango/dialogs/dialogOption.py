@@ -2,10 +2,9 @@ import wx, json, glob, os, re
 import wx.lib.buttons as buttons
 from ..tools._tools import *
 from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
-import glob
 from ..tools import environment as env
 from ..tools import models as toolModel
-from ..miniCmd.djangoCmd import write_admin_base
+from ..miniCmd.djangoCmd import *
 
 env_obj = env.getEnvXmlObj()
 
@@ -130,7 +129,7 @@ class AdminCreateSimpleDialog(wx.Dialog):
 
         # 静态框里的复选框
         self.modelChoices = [
-            # 置空
+            # 置空 动态生成
         ]
 
         # 区域静态框
@@ -219,16 +218,17 @@ class AdminCreateSimpleDialog(wx.Dialog):
                 t1, t2 = _.split(' -- ')
                 modelFiles.append(t2.split('.')[0])
                 models.append(t1)
-            classify = set(modelFiles)
+            classify = set(modelFiles) # 分类，组成键值对组合
             importData = {}
             for _ in classify:
-                importData[_] = []
+                importData[_] = [] # 初始化键【模块名】
             for _ in zip(models, modelFiles):
                 importData[_[1]].append(_[0])
             # 读取admin.py的别名
             alias = env.getAdminAlias()
             for _ in alias:
                 # 如果路径改变，可在environment.xml中配置完整的路径别名（如 admin.py 可扩展成 myfloder/admin.py ）
+                # 下面将在所有的模块别名路径中写入注册数据【可能有点不合理】
                 write_admin_base(os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _), importData) # 写入注册代码
             wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
         dlg.Destroy()
@@ -249,9 +249,129 @@ class AdminCreateSimpleDialog(wx.Dialog):
     #         pass
     #     dlg.Destroy()
 
-class AdminRename(wx.Dialog):
+class AdminRenameDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '网站后台重命名', size=(300, 200))
+        wx.Dialog.__init__(self, parent, id, '网站后台重命名', size=(300, 150))
         # 面板
         self.panel = wx.Panel(self) # 最外层容器
+        self.headerPanel = wx.Panel(self.panel) # 登录界面重命名
+        self.titlePanel = wx.Panel(self.panel) # 后台标题重命名
+
+        # 控件
+        self.headerFlag = wx.StaticText(self.headerPanel, -1, "登录界面名称：")
+        self.inputHeader = wx.TextCtrl(self.headerPanel, -1)
+        self.titleFlag = wx.StaticText(self.titlePanel, -1, "后台标题名称：")
+        self.inputTitle = wx.TextCtrl(self.titlePanel, -1)
+        self.btnModify = buttons.GenButton(self.panel, -1, '修改')
+        self.msgName = wx.TextCtrl(self.panel, -1)
+        self.msgName.SetEditable(False)
+
+        # 布局
+        self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
+        self.headerPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        self.titlePanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+
+        # 登录界面名称： 填充
+        self.headerPanelBox.Add(self.headerFlag, 0, wx.EXPAND | wx.ALL, 2)
+        self.headerPanelBox.Add(self.inputHeader, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 后台标题名称： 填充
+        self.titlePanelBox.Add(self.titleFlag, 0, wx.EXPAND | wx.ALL, 2)
+        self.titlePanelBox.Add(self.inputTitle, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 整体 填充
+        self.panelBox.Add(self.headerPanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.titlePanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.btnModify, 1, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.msgName, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 面板绑定布局
+        self.headerPanel.SetSizer(self.headerPanelBox)
+        self.titlePanel.SetSizer(self.titlePanelBox)
+        self.panel.SetSizer(self.panelBox)
+
+        # 初始化数据
+        self._init_data()
+
+        # 事件监听
+        self.Bind(wx.EVT_BUTTON, self.onBtnModify, self.btnModify)
+
+    def onBtnModify(self, e):
+        """确认修改，重命名"""
+        # 若没有命名过，则任选一处命名
+        # 若只有一个命名，则修改本处命名
+        # 若有两个及以上命名，则删除所有，再任选一处命名
+        value_header = self.inputHeader.GetValue().strip() # 登录名
+        value_title = self.inputTitle.GetValue().strip() # 后台名
+        result = []
+        if value_header and 'None' != value_header: # 只要不为空，覆盖式赋值
+            headers = get_site_header()
+            len_headers = len(headers)
+            if len_headers > 0:
+                if len_headers > 1:
+                    set_site_header(value_header, mode = 2) # 若有两个及以上命名，则删除所有，再任选一处命名
+                else:
+                    set_site_header(value_header, mode = 1) # 若只有一个命名，则修改本处命名
+            else:
+                set_site_header(value_header, mode = 0) # 若没有命名过，则任选一处命名
+            result.append(True)
+        else:
+            result.append(False)
+
+        if value_title and 'None' != value_title:
+            titles = get_site_title()
+            len_titles = len(titles)
+            if len_titles > 0:
+                if len_titles > 1:
+                    set_site_title(value_title, mode = 2) # 若有两个及以上命名，则删除所有，再任选一处命名
+                else:
+                    set_site_title(value_title, mode = 1) # 若只有一个命名，则修改本处命名
+            else:
+                set_site_title(value_title, mode = 0) # 若没有命名过，则任选一处命名
+            result.append(True)
+        else:
+            result.append(False)
         
+        if any(result):
+            if result[0] and result[1]:
+                wx.MessageBox(f'二者均修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
+                return
+            if result[0]:
+                wx.MessageBox(f'登录界面名称修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
+                return
+            if result[1]:
+                wx.MessageBox(f'后台标题名称修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
+                return
+        else:
+            wx.MessageBox(f'未做任何修改', '错误', wx.OK | wx.ICON_INFORMATION) # 提示成功
+
+    def _init_data(self):
+        headers = get_site_header()
+        len_headers = len(headers)
+        if len_headers > 0:
+            self.inputHeader.SetValue(f'{headers[0]}')
+            if len_headers > 1:
+                self.msgName.SetValue(f'警告：共有{len_headers}处设置！仅需保留一个')
+            else:
+                self.msgName.SetValue(f'读取正常')
+        else:
+            self.inputHeader.SetValue(f'None')
+            self.msgName.SetValue(f'读取正常')
+        titles = get_site_title()
+        len_titles = len(titles)
+        if len_titles > 0:
+            self.inputTitle.SetValue(f'{titles[0]}')
+            if len_titles > 1:
+                self.msgName.SetValue(f'警告：共有{len_titles}处设置！仅需保留一个')
+            else:
+                self.msgName.SetValue(f'读取正常')
+        else:
+            self.inputTitle.SetValue(f'None')
+            self.msgName.SetValue(f'读取正常')
+        
+
+class ViewGenerateDialog(wx.Dialog):
+    def __init__(self, parent, id, **kwargs):
+        wx.Dialog.__init__(self, parent, id, '新增视图', size=(700, 500))
+        # 总面板
+        self.panel = wx.Panel(self) # 最外层容器
