@@ -36,6 +36,7 @@ def get_content(file_name, *args, **kwargs):
     return read_file_lists(django_file_path(file_name, concat=kwargs.get('concat')), *args, **kwargs)
 
 def append_content(path, name, *args, **kwargs):
+    # 调用：append_content(alias_paths[0], 'renameHeader.django', concat=['admin'], replace=True, model_name=k, site_name=site_name)
     content = get_content(name, *args, **kwargs)
     append_file(path, content)
 
@@ -119,17 +120,23 @@ def set_site_header(new_name, mode=0):
     """设置 获取登录界面名称"""
     # mode: 0没有，1仅一个，2多个
     # 删除所有的名称命名处
+    alias_paths = _get_all_py_path(getAdminAlias())
     if 2 == mode:
-        for _ in _get_all_py_path(getAdminAlias()):
+        for _ in alias_paths:
             content = PATT_HEADER_NAME.sub('', read_file(_))
             write_file(_, content)
+
     # 原地修改
     if 1 == mode:
-        pass
+        for _ in alias_paths:
+            t_content = read_file(_)
+            if PATT_HEADER_NAME.search(t_content):
+                write_file(_, PATT_HEADER_NAME.sub(lambda x:x.group(0).replace(x.group(1), new_name), t_content))
+                break
 
     # 随机插入
     if mode in (0, 2):
-        pass
+        append_content(alias_paths[0], 'renameHeader.django', concat=['admin'], replace=True, header_name=new_name)
 
 def get_site_title():
     """获取后台标题名称 注释见get_site_header"""
@@ -141,7 +148,16 @@ def get_site_title():
 
 def set_site_title(new_name, mode=0):
     """设置 获取后台标题名称 注释见set_site_header"""
+    alias_paths = _get_all_py_path(getAdminAlias())
     if 2 == mode:
-        for _ in _get_all_py_path(getAdminAlias()):
+        for _ in alias_paths:
             content = PATT_TITLE_NAME.sub('', read_file(_))
             write_file(_, content)
+    if 1 == mode:
+        for _ in alias_paths:
+            t_content = read_file(_)
+            if PATT_TITLE_NAME.search(t_content):
+                write_file(_, PATT_TITLE_NAME.sub(lambda x:x.group(0).replace(x.group(1), new_name), t_content))
+                break
+    if mode in (0, 2):
+        append_content(alias_paths[0], 'renameTitle.django', concat=['admin'], replace=True, title_name=new_name)

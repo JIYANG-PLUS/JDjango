@@ -345,13 +345,13 @@ class AdminRenameDialog(wx.Dialog):
         
         if any(result):
             if result[0] and result[1]:
-                wx.MessageBox(f'二者均修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
+                wx.MessageBox(f'同步修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
                 return
             if result[0]:
-                wx.MessageBox(f'登录界面名称修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
+                wx.MessageBox(f'仅登录界面名称修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
                 return
             if result[1]:
-                wx.MessageBox(f'后台标题名称修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
+                wx.MessageBox(f'仅后台标题名称修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
                 return
         else:
             wx.MessageBox(f'未做任何修改', '错误', wx.OK | wx.ICON_INFORMATION) # 提示成功
@@ -379,6 +379,8 @@ class AdminRenameDialog(wx.Dialog):
         else:
             self.inputTitle.SetValue(f'None')
             self.msgName.SetValue(f'读取正常')
+
+        self.locTitle.SetValue('本功能规划中，暂不使用')
         
 
 class ViewGenerateDialog(wx.Dialog):
