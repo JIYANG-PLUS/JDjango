@@ -21,7 +21,7 @@ class Main(wx.Frame):
 
         wx.Frame.__init__(self, parent, id, title, pos, size)
 
-        # 所有的运行后按钮
+        # 所有的运行时按钮
         classifies = ['global', 'apps', 'views', 'urls', 'templates', 'forms', 'models', 'database', 'admin']
         self.allInitBtns = {}
         for _ in classifies:
@@ -31,7 +31,7 @@ class Main(wx.Frame):
                 , 'create' : []
                 , 'other' : []
             }
-        self.needFonts = [] # 待设置字体的空间
+        self.needFonts = [] # 待设置字体的控件
 
         self.InitUI()  # 初始化布局
         self.InitMenu()  # 工具栏
@@ -244,12 +244,12 @@ class Main(wx.Frame):
         admin = wx.Menu()
         self.adminGenerateBase = admin.Append(wx.ID_ANY, "&创建简单管理中心", "创建简单管理中心")
         # self.adminGenerateComplex = admin.Append(wx.ID_ANY, "&创建复杂管理中心", "创建复杂管理中心")
-        admin.AppendSeparator()
-        self.admin_check = admin.Append(wx.ID_ANY, "&校验", "校验")
-        self.admin_fix = admin.Append(wx.ID_ANY, "&修复", "修复")
+        # admin.AppendSeparator()
+        # self.admin_check = admin.Append(wx.ID_ANY, "&校验", "校验")
+        # self.admin_fix = admin.Append(wx.ID_ANY, "&修复", "修复")
         admin.AppendSeparator()
         self.adminRename = admin.Append(wx.ID_ANY, "&修改后台网站名", "修改后台网站名")
-        admin.AppendSeparator()
+        # admin.AppendSeparator()
         # self.quickAdminGenerateBase = admin.Append(wx.ID_ANY, "&一键创建简单管理中心", "一键创建简单管理中心")
         # self.quickAdminGenerateComplex = admin.Append(wx.ID_ANY, "&一键创建复杂管理中心", "一键创建复杂管理中心")
 
@@ -260,8 +260,8 @@ class Main(wx.Frame):
             # , self.quickAdminGenerateBase
             # , self.quickAdminGenerateComplex
         ])
-        self.allInitBtns['admin']['check'].append(self.admin_check)
-        self.allInitBtns['admin']['fix'].append(self.admin_fix)
+        # self.allInitBtns['admin']['check'].append(self.admin_check)
+        # self.allInitBtns['admin']['fix'].append(self.admin_fix)
 
         # 测试 菜单项
         test = wx.Menu()
@@ -318,6 +318,20 @@ class Main(wx.Frame):
 
         # 视图 事件绑定
         self.Bind(wx.EVT_MENU, self.onViewsGenerateFunc, self.viewsGenerateFunc) # 新增视图（多样新增）
+
+        # 路由 事件绑定
+        self.Bind(wx.EVT_MENU, self.onUrlsCheck, self.urls_check) # 检查路由
+        self.Bind(wx.EVT_MENU, self.onUrlsFix, self.urls_fix) # 修复路由
+
+    def onUrlsFix(self):
+        pass
+
+    def onUrlsCheck(self, e):
+        """检查路由"""
+        # 检查情形有：
+        # 只针对以本工具生成的app，而不是Django原生命令python manage.py startapp ...
+        # 路由必须在主路径urls.py中用inculde()函数注册
+        # 默认未每个应用程序注册ulrs，取environment.py中的urls别名
 
     def onAdminRename(self, e):
         """重命名后台名称"""

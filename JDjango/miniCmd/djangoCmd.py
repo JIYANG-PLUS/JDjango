@@ -125,7 +125,6 @@ def set_site_header(new_name, mode=0):
         for _ in alias_paths:
             content = PATT_HEADER_NAME.sub('', read_file(_))
             write_file(_, content)
-
     # 原地修改
     if 1 == mode:
         for _ in alias_paths:
@@ -133,7 +132,6 @@ def set_site_header(new_name, mode=0):
             if PATT_HEADER_NAME.search(t_content):
                 write_file(_, PATT_HEADER_NAME.sub(lambda x:x.group(0).replace(x.group(1), new_name), t_content))
                 break
-
     # 随机插入
     if mode in (0, 2):
         append_content(alias_paths[0], 'renameHeader.django', concat=['admin'], replace=True, header_name=new_name)

@@ -1,1 +1,1 @@
-admin.site.site_header = _("${header_name}")
+admin.site.site_header = "${header_name}"

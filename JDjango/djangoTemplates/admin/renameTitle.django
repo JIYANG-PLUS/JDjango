@@ -1,1 +1,1 @@
-admin.site.site_title = _("${title_name}")
+admin.site.site_title = "${title_name}"
