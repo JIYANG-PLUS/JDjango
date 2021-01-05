@@ -1,19 +1,19 @@
 {
-    "dirname": "/Users/jiyang/Desktop/Django/sys_pdf2json/firstapp",
-    "project_name": "firstapp",
+    "dirname": "D:\\www\\nantongCDC",
+    "project_name": "nantongCDC",
     "app_names": [
-        "interest",
-        "accounts",
-        "hello"
+        "JiYang",
+        "main",
+        "TEMP"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Documents/GitHub/db.sqlite3"
+            "NAME": "D:\\sources\\GitHub\\db.sqlite3"
         }
     },
-    "DEBUG": false,
-    "LANGUAGE_CODE": "en-us",
+    "DEBUG": true,
+    "LANGUAGE_CODE": "zh-Hans",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
@@ -24,6 +24,6 @@
     ],
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "/Users/jiyang/Documents/GitHub/templates"
+        "D:\\sources\\GitHub\\templates"
     ]
 }

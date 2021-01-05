@@ -120,6 +120,12 @@ def getAdminAlias():
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('alias/file[name=admin]')
 
+def getUrlsAlias():
+    """获取所有urls.py的别名"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('alias/file[name=urls]')
+
+
 # 参考
 # 从字符串读取
 # root = ET.fromstring(country_data_as_string)

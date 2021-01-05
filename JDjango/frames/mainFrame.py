@@ -187,12 +187,12 @@ class Main(wx.Frame):
 
         # 路由 菜单项
         urls = wx.Menu()
-        self.urlsGenerate = urls.Append(wx.ID_ANY, "&创建", "创建")
-        urls.AppendSeparator()
+        # self.urlsGenerate = urls.Append(wx.ID_ANY, "&创建", "创建")
+        # urls.AppendSeparator()
         self.urls_check = urls.Append(wx.ID_ANY, "&校验", "校验")
         self.urls_fix = urls.Append(wx.ID_ANY, "&修复", "修复")
 
-        self.allInitBtns['urls']['create'].append(self.urlsGenerate)
+        # self.allInitBtns['urls']['create'].append(self.urlsGenerate)
         self.allInitBtns['urls']['check'].append(self.urls_check)
         self.allInitBtns['urls']['fix'].append(self.urls_fix)
 
@@ -330,8 +330,17 @@ class Main(wx.Frame):
         """检查路由"""
         # 检查情形有：
         # 只针对以本工具生成的app，而不是Django原生命令python manage.py startapp ...
-        # 路由必须在主路径urls.py中用inculde()函数注册
+        # 路由必须在主路径urls.py中用include()函数注册
         # 默认未每个应用程序注册ulrs，取environment.py中的urls别名
+
+        config = get_configs(CONFIG_PATH)
+        apps = config['app_names'] # 取所有的app名称
+        toot_path = config['dirname'] # Django项目根路径
+        project_name = config['project_name'] # 项目名称
+        # 取所有的urls别名，（带后缀名）
+        alias = [os.path.basename(_) for _ in env.getUrlsAlias()] # 仅取文件名
+        root_urlspy = os.path.join(BASE_DIR, project_name, 'urls.py') # 定位项目的主urls.py文件
+        
 
     def onAdminRename(self, e):
         """重命名后台名称"""

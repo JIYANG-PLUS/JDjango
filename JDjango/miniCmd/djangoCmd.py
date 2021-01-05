@@ -19,6 +19,8 @@ PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 定位模板替换位置
 PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']') # 定位后台登录名称位置
 PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']') # 定位后台网站名称位置
 
+# PATT_URLPATTERNS = re.compile(r'(?s)urlpatterns\s*=\s*[(.*)]') # 定位 urlpatterns 类html和xml文本不推荐使用正则
+
 # 补全模板路径
 def django_file_path(file_name, concat=[]):
     if None == concat:
@@ -159,3 +161,8 @@ def set_site_title(new_name, mode=0):
                 break
     if mode in (0, 2):
         append_content(alias_paths[0], 'renameTitle.django', concat=['admin'], replace=True, title_name=new_name)
+
+def cut_content_by_bracket(text):
+    """获取成对的中括号中的文本"""
+    # 如：[asd[cvb]] 会获取到 asd[cvb]
+

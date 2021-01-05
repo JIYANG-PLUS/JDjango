@@ -189,7 +189,7 @@ class AdminCreateSimpleDialog(wx.Dialog):
                 # 获取路径下的所有文件
                 pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True)
                 # 读取配置文件的别名集合
-                alias = [os.path.basename(_) for _ in env.getModelsAlias()]
+                alias = [os.path.basename(_) for _ in env.getModelsAlias()] # 仅取文件名
                 # 通过别名筛选即将读取解析的模型文件
                 pathModels = [_ for _ in pys if os.path.basename(_) in alias]
                 # 赋值的同时标注模块的来源
