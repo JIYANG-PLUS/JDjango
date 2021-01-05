@@ -6,6 +6,7 @@ from ..settings import BASE_DIR as PROJECT_BASE_NAME, CONFIG_PATH
 TEMPLATE_DIR = os.path.join(PROJECT_BASE_NAME, 'djangoTemplates')
 
 __all__ = [
+    'startproject',
     'startapp',
     'write_admin_base',
     'get_site_header',
@@ -19,7 +20,6 @@ PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
 PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 定位模板替换位置
 PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']') # 定位后台登录名称位置
 PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']') # 定位后台网站名称位置
-
 PATT_URLPATTERNS = re.compile(r'(?ms:urlpatterns\s*=\s*\[.*)') # 定位 urlpatterns 类html和xml文本不推荐使用正则
 
 # 补全模板路径
@@ -42,6 +42,35 @@ def append_content(path, name, *args, **kwargs):
     # 调用：append_content(alias_paths[0], 'renameHeader.django', concat=['admin'], replace=True, model_name=k, site_name=site_name)
     content = get_content(name, *args, **kwargs)
     append_file(path, content)
+
+def startproject(path, project_name):
+    if PATT_CHARS.match(project_name) and not os.path.exists(os.path.join(path, project_name)):
+        """project_name"""
+        os.mkdir(os.path.join(path, project_name))
+        PDir = os.path.join(path, project_name)
+        new_file(os.path.join(PDir, '__init__.py'))
+        new_file(os.path.join(PDir, 'urls.py'), content=get_content('urls.django', concat=['project']))
+        new_file(os.path.join(PDir, 'asgi.py'), content=get_content('asgi.django', concat=['project'], replace=True, project_name=project_name))
+        new_file(os.path.join(PDir, 'wsgi.py'), content=get_content('wsgi.django', concat=['project'], replace=True, project_name=project_name))
+        new_file(os.path.join(PDir, 'settings.py'), content=get_content('settings.django', concat=['project'], replace=True, project_name=project_name))
+        
+        """templates"""
+        os.mkdir(os.path.join(PDir, 'templates'))
+        os.mkdir(os.path.join(PDir, 'templates', 'includes'))
+        new_file(os.path.join(PDir, 'base.html'), content=get_content('baseHtml.django'))
+
+        """static"""
+        os.mkdir(os.path.join(PDir, 'static'))
+        os.mkdir(os.path.join(PDir, 'static', 'js'))
+        os.mkdir(os.path.join(PDir, 'static', 'img'))
+        os.mkdir(os.path.join(PDir, 'static', 'css'))
+
+        """manage.py"""
+        new_file(os.path.join(path, 'manage.py'), content=get_content('manage.django', concat=['project'], replace=True, project_name=project_name))
+
+        return 0
+    else:
+        return 1
 
 def startapp(app_name):
     configs = get_configs(os.path.join(PROJECT_BASE_NAME, 'config.json'))

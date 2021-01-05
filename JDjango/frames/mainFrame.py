@@ -326,9 +326,11 @@ class Main(wx.Frame):
         # 新项目 事件绑定
         self.Bind(wx.EVT_MENU, self.onCreateProject, self.create_project) # 新建项目
 
-    def onCreateProject(self):
+    def onCreateProject(self, e):
         """新建项目"""
-        # 通过模板建
+        dlg = ProjectCreateDialog(self, -1)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def onUrlsFix(self):
         pass

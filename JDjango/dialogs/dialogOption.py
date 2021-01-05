@@ -388,3 +388,11 @@ class ViewGenerateDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, id, '新增视图', size=(700, 500))
         # 总面板
         self.panel = wx.Panel(self) # 最外层容器
+
+
+class ProjectCreateDialog(wx.Dialog):
+    def __init__(self, parent, id, **kwargs):
+        wx.Dialog.__init__(self, parent, id, '新建项目', size=(700, 500))
+        # 总面板
+        self.panel = wx.Panel(self) # 最外层容器
+        # startproject()
