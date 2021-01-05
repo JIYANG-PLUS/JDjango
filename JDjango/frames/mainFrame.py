@@ -323,6 +323,13 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onUrlsCheck, self.urls_check) # 检查路由
         self.Bind(wx.EVT_MENU, self.onUrlsFix, self.urls_fix) # 修复路由
 
+        # 新项目 事件绑定
+        self.Bind(wx.EVT_MENU, self.onCreateProject, self.create_project) # 新建项目
+
+    def onCreateProject(self):
+        """新建项目"""
+        # 通过模板建
+
     def onUrlsFix(self):
         pass
 
@@ -335,11 +342,15 @@ class Main(wx.Frame):
 
         config = get_configs(CONFIG_PATH)
         apps = config['app_names'] # 取所有的app名称
-        toot_path = config['dirname'] # Django项目根路径
+        root_path = config['dirname'] # Django项目根路径
         project_name = config['project_name'] # 项目名称
         # 取所有的urls别名，（带后缀名）
         alias = [os.path.basename(_) for _ in env.getUrlsAlias()] # 仅取文件名
-        root_urlspy = os.path.join(BASE_DIR, project_name, 'urls.py') # 定位项目的主urls.py文件
+        root_urlspy = os.path.join(root_path, project_name, 'urls.py') # 定位项目的主urls.py文件
+        urlpatterns_content = get_urlpatterns_content(root_urlspy)
+        
+        for app in apps:
+            pass
         
 
     def onAdminRename(self, e):

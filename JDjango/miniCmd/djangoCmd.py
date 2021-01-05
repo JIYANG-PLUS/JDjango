@@ -12,6 +12,7 @@ __all__ = [
     'get_site_title',
     'set_site_header',
     'set_site_title',
+    'get_urlpatterns_content',
 ]
 
 PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
@@ -19,7 +20,7 @@ PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 定位模板替换位置
 PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']') # 定位后台登录名称位置
 PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']') # 定位后台网站名称位置
 
-# PATT_URLPATTERNS = re.compile(r'(?s)urlpatterns\s*=\s*[(.*)]') # 定位 urlpatterns 类html和xml文本不推荐使用正则
+PATT_URLPATTERNS = re.compile(r'(?ms:urlpatterns\s*=\s*\[.*)') # 定位 urlpatterns 类html和xml文本不推荐使用正则
 
 # 补全模板路径
 def django_file_path(file_name, concat=[]):
@@ -162,7 +163,28 @@ def set_site_title(new_name, mode=0):
     if mode in (0, 2):
         append_content(alias_paths[0], 'renameTitle.django', concat=['admin'], replace=True, title_name=new_name)
 
-def cut_content_by_bracket(text):
+def _cut_content_by_doublecode(text, leftCode='[', rightCode=']'):
     """获取成对的中括号中的文本"""
     # 如：[asd[cvb]] 会获取到 asd[cvb]
+    stack = []
+    cut_text = ""
+    for _ in text:
+        if len(stack) > 0:
+            cut_text += _
+        if leftCode == _:
+            stack.append(_)
+        if rightCode == _:
+            stack.pop()
+            if 0 == len(stack):
+                return cut_text[:-1]
+    return ''
 
+def get_urlpatterns_content(path):
+    """获取urlpatterns列表内容区域"""
+    content = read_file(path)
+    obj = PATT_URLPATTERNS.search(content)
+    if obj:
+        complex_content = PATT_URLPATTERNS.findall(content)[0]
+        return _cut_content_by_doublecode(complex_content)
+    else:
+        return ''
