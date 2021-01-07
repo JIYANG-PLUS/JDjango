@@ -44,9 +44,14 @@ def append_content(path, name, *args, **kwargs):
     append_file(path, content)
 
 def startproject(path, project_name):
+    """新建项目"""
     if PATT_CHARS.match(project_name) and not os.path.exists(os.path.join(path, project_name)):
         """project_name"""
         os.mkdir(os.path.join(path, project_name))
+
+        path = os.path.join(path, project_name)
+        os.mkdir(os.path.join(path, project_name))
+
         PDir = os.path.join(path, project_name)
         new_file(os.path.join(PDir, '__init__.py'))
         new_file(os.path.join(PDir, 'urls.py'), content=get_content('urls.django', concat=['project']))
@@ -55,15 +60,15 @@ def startproject(path, project_name):
         new_file(os.path.join(PDir, 'settings.py'), content=get_content('settings.django', concat=['project'], replace=True, project_name=project_name))
         
         """templates"""
-        os.mkdir(os.path.join(PDir, 'templates'))
-        os.mkdir(os.path.join(PDir, 'templates', 'includes'))
-        new_file(os.path.join(PDir, 'base.html'), content=get_content('baseHtml.django'))
+        os.mkdir(os.path.join(path, 'templates'))
+        os.mkdir(os.path.join(path, 'templates', 'includes'))
+        new_file(os.path.join(path, 'templates', 'base.html'), content=get_content('baseHtml.django'))
 
         """static"""
-        os.mkdir(os.path.join(PDir, 'static'))
-        os.mkdir(os.path.join(PDir, 'static', 'js'))
-        os.mkdir(os.path.join(PDir, 'static', 'img'))
-        os.mkdir(os.path.join(PDir, 'static', 'css'))
+        os.mkdir(os.path.join(path, 'static'))
+        os.mkdir(os.path.join(path, 'static', 'js'))
+        os.mkdir(os.path.join(path, 'static', 'img'))
+        os.mkdir(os.path.join(path, 'static', 'css'))
 
         """manage.py"""
         new_file(os.path.join(path, 'manage.py'), content=get_content('manage.django', concat=['project'], replace=True, project_name=project_name))
@@ -73,6 +78,7 @@ def startproject(path, project_name):
         return 1
 
 def startapp(app_name):
+    """新建应用程序"""
     configs = get_configs(os.path.join(PROJECT_BASE_NAME, 'config.json'))
     BASE_DIR = configs['dirname']
     if PATT_CHARS.match(app_name) and not os.path.exists(os.path.join(BASE_DIR, app_name)):

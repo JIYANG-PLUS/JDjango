@@ -141,9 +141,25 @@ class Main(wx.Frame):
         # menuAccent = menus.Append(wx.ID_ANY, "&最近打开", "最近打开")
         # menus.AppendSeparator()
         # menuSave = menus.Append(wx.ID_ANY, "&另存为", "另存为")
-        menus.AppendSeparator()
+        menus.AppendSeparator() # --
+        menusCreate = wx.Menu()
+        self.create_project = menusCreate.Append(wx.ID_ANY, "&项目", "项目")
+        self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
+        self.viewsGenerateFunc = menusCreate.Append(wx.ID_ANY, "&视图", "视图")
+        self.create_project.Enable(True)
+        menus.Append(wx.ID_ANY, "&新建", menusCreate)
+        menus.AppendSeparator() # --
+        settings = wx.Menu()
+        fonts = wx.Menu()
+        self.fonts_minus = fonts.Append(wx.ID_ANY, "&字体减小-1", "字体减小-1")
+        self.fonts_add = fonts.Append(wx.ID_ANY, "&字体增大+1", "字体增大+1")
+        settings.Append(wx.ID_ANY, "&字体", fonts)
+        settings.AppendSeparator() # --
+        self.language = settings.Append(wx.ID_ANY, "&语言和时区", "语言和时区")
+        menus.Append(wx.ID_ANY, "&设置", settings)
+        menus.AppendSeparator() # --
         menuClear = menus.Append(wx.ID_ANY, "&清空", "清空")
-        menus.AppendSeparator()
+        menus.AppendSeparator() # --
         menuExit = menus.Append(wx.ID_ANY, "&退出", "退出")
 
         # # 创建编辑菜单项
@@ -161,8 +177,6 @@ class Main(wx.Frame):
 
         # 应用程序 菜单项
         apps = wx.Menu()
-        self.menuGenerate = apps.Append(wx.ID_ANY, "&生成", "生成")
-        apps.AppendSeparator()
         self.apps_check = apps.Append(wx.ID_ANY, "&校验", "校验")
         self.apps_fix = apps.Append(wx.ID_ANY, "&修复", "修复")
 
@@ -172,10 +186,6 @@ class Main(wx.Frame):
 
         # 视图 菜单项
         views = wx.Menu()
-        self.viewsGenerate = wx.Menu()
-        self.viewsGenerateFunc = self.viewsGenerate.Append(wx.ID_ANY, "&视图", "视图")
-        views.Append(wx.ID_ANY, "&创建", self.viewsGenerate) # 创建二级菜单项
-        views.AppendSeparator()
         self.views_check = views.Append(wx.ID_ANY, "&校验", "校验")
         self.views_fix = views.Append(wx.ID_ANY, "&修复", "修复")
 
@@ -266,24 +276,8 @@ class Main(wx.Frame):
         # 测试 菜单项
         test = wx.Menu()
 
-        # 新项目
-        new_project = wx.Menu()
-        self.create_project = new_project.Append(wx.ID_ANY, "&新建项目", "新建项目")
-        self.create_project.Enable(True)
-
-        # 设置
-        settings = wx.Menu()
-        fonts = wx.Menu()
-        self.fonts_minus = fonts.Append(wx.ID_ANY, "&字体减小-1", "字体减小-1")
-        self.fonts_add = fonts.Append(wx.ID_ANY, "&字体增大+1", "字体增大+1")
-        settings.Append(wx.ID_ANY, "&字体", fonts)
-        settings.AppendSeparator()
-        self.language = settings.Append(wx.ID_ANY, "&语言和时区", "语言和时区")
-
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
-        menuBar.Append(new_project, "&新项目")
-        menuBar.Append(admin, "&后台管理中心")
         # menuBar.Append(edits, "&编辑")
         menuBar.Append(apps, "&应用程序")
         menuBar.Append(views, "&视图")
@@ -293,7 +287,7 @@ class Main(wx.Frame):
         menuBar.Append(models, "&模型")
         menuBar.Append(database, "&数据库")
         menuBar.Append(test, "&测试")
-        menuBar.Append(settings, "&设置")
+        menuBar.Append(admin, "&后台管理中心")
         menuBar.Append(helps, "&帮助")
         self.SetMenuBar(menuBar)
 
@@ -575,13 +569,13 @@ class Main(wx.Frame):
                 self._open_all_check()
                 # 开放部分必要按钮
                 self._open_part_btns()
+                self._init_config() # 初始化配置文件
             else:
                 self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
         else:
             # self.infos.AppendText(out_infos('您已取消选择。', level=2))
             pass
         dlg.Destroy()
-        self._init_config() # 初始化配置文件
 
     def onAppsCheck(self, e):
         """应用程序 检测"""

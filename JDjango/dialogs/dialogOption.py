@@ -233,21 +233,6 @@ class AdminCreateSimpleDialog(wx.Dialog):
             wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
         dlg.Destroy()
 
-    # def select_adminpy(self, e):
-    #     """获取admin.py文件所在路径"""
-    #     path = get_configs(CONFIG_PATH)['dirname']
-    #     dlg = wx.FileDialog(self, "选择admin.py文件", path, "", "*.py", wx.FD_OPEN)
-    #     if dlg.ShowModal() == wx.ID_OK:
-    #         filename = dlg.GetFilename()
-    #         # 待校验：是否是当前项目下的admin.py文件
-    #         self.dirname = dlg.GetDirectory()
-    #         if 'admin.py' == filename:
-    #             self.text_path.SetValue(f'{self.dirname}')
-    #         else:
-    #             pass
-    #     else:
-    #         pass
-    #     dlg.Destroy()
 
 class AdminRenameDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
@@ -392,7 +377,68 @@ class ViewGenerateDialog(wx.Dialog):
 
 class ProjectCreateDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '新建项目', size=(700, 500))
+        wx.Dialog.__init__(self, parent, id, '新建项目', size=(300, 150))
         # 总面板
         self.panel = wx.Panel(self) # 最外层容器
-        # startproject()
+        self.pathPanel = wx.Panel(self.panel) # 选择路径容器
+        self.namePanel = wx.Panel(self.panel)
+
+        # 控件
+        self.path = wx.TextCtrl(self.pathPanel, -1, style=wx.ALIGN_LEFT) # 选择目录
+        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择写入目录')
+        self.flagName = wx.StaticText(self.namePanel, -1, "取名：") # 项目名称
+        self.imputName = wx.TextCtrl(self.namePanel, -1, style=wx.ALIGN_LEFT)
+        self.btnCreate = buttons.GenButton(self.panel, -1, '新建')
+        # self.path.Enable(False)
+
+        # 布局
+        self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
+        self.pathPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        self.namePanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+
+        # 填充
+        self.pathPanelBox.Add(self.path, 1, wx.EXPAND | wx.ALL, 2)
+        self.pathPanelBox.Add(self.btnChoice, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.namePanelBox.Add(self.flagName, 0, wx.EXPAND | wx.ALL, 2)
+        self.namePanelBox.Add(self.imputName, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.panelBox.Add(self.pathPanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.namePanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.btnCreate, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 面板绑定布局
+        self.panel.SetSizer(self.panelBox)
+        self.pathPanel.SetSizer(self.pathPanelBox)
+        self.namePanel.SetSizer(self.namePanelBox)
+
+        # 注册事件监听
+        self.Bind(wx.EVT_BUTTON, self.onBtnChoice, self.btnChoice)
+        self.Bind(wx.EVT_BUTTON, self.onBtnCreate, self.btnCreate)
+
+    def onBtnChoice(self, e):
+        """选择项目写入路径"""
+        dlg = wx.DirDialog(self, "选择写入项目的路径", style = wx.DD_DEFAULT_STYLE)
+        if dlg.ShowModal() == wx.ID_OK:
+            self.path.SetValue(dlg.GetPath())
+        dlg.Destroy()
+
+    def onBtnCreate(self, e):
+        """创建项目"""
+        path = self.path.GetValue()
+        name = self.imputName.GetValue()
+        if not os.path.exists(path) or not os.path.isdir(path):
+            wx.MessageBox(f'非法路径', '错误', wx.OK | wx.ICON_INFORMATION)
+            return
+        if '' == name or not PATT_CHARS.match(name):
+            wx.MessageBox(f'项目名称非法', '错误', wx.OK | wx.ICON_INFORMATION)
+            return
+        status = startproject(path, name)
+        if 0 == status:
+            wx.MessageBox(f'{os.path.join(path, name)}项目创建成功', '成功', wx.OK | wx.ICON_INFORMATION)
+        else:
+            wx.MessageBox(f'项目已存在', '错误', wx.OK | wx.ICON_INFORMATION)
+
+    def select_project_path(self, e):
+        """选择项目所建路径"""
+        
