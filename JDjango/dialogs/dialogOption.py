@@ -373,7 +373,37 @@ class ViewGenerateDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, id, '新增视图', size=(700, 500))
         # 总面板
         self.panel = wx.Panel(self) # 最外层容器
+        self.selectFilePanel = wx.Panel(self.panel)
+        
+        # 控件
+        self.btnWritePath = buttons.GenButton(self.selectFilePanel, -1, '选择写入文件')
+        self.filePath = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
+        self.filePath.Enable(False)
 
+        # 布局
+        self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
+        self.selectFileBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+
+        # 填充
+        self.selectFileBox.Add(self.btnWritePath, 0, wx.EXPAND | wx.ALL, 2)
+        self.selectFileBox.Add(self.filePath, 1, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 绑定
+        self.panel.SetSizer(self.panelBox)
+        self.selectFilePanel.SetSizer(self.selectFileBox)
+
+        # 事件
+        self.Bind(wx.EVT_BUTTON, self.onBtnWritePath, self.btnWritePath)
+
+    def onBtnWritePath(self, e):
+        dirname = get_configs(CONFIG_PATH)['dirname']
+        dlg = wx.FileDialog(self, "选择写入文件", dirname, "", "views.py", wx.FD_OPEN)
+        if dlg.ShowModal() == wx.ID_OK:
+            filename = dlg.GetFilename()
+            dirname = dlg.GetDirectory()
+            self.filePath.SetValue(os.path.join(dirname, filename))
+        dlg.Destroy()
 
 class ProjectCreateDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
@@ -384,8 +414,8 @@ class ProjectCreateDialog(wx.Dialog):
         self.namePanel = wx.Panel(self.panel)
 
         # 控件
-        self.path = wx.TextCtrl(self.pathPanel, -1, style=wx.ALIGN_LEFT) # 选择目录
-        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择写入目录')
+        self.path = wx.TextCtrl(self.pathPanel, -1, style=wx.ALIGN_LEFT)
+        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择写入目录') # 选择目录
         self.flagName = wx.StaticText(self.namePanel, -1, "取名：") # 项目名称
         self.imputName = wx.TextCtrl(self.namePanel, -1, style=wx.ALIGN_LEFT)
         self.btnCreate = buttons.GenButton(self.panel, -1, '新建')

@@ -144,6 +144,7 @@ class Main(wx.Frame):
         menus.AppendSeparator() # --
         menusCreate = wx.Menu()
         self.create_project = menusCreate.Append(wx.ID_ANY, "&项目", "项目")
+        menusCreate.AppendSeparator()
         self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
         self.viewsGenerateFunc = menusCreate.Append(wx.ID_ANY, "&视图", "视图")
         self.create_project.Enable(True)

@@ -1,0 +1,12 @@
+class ${view_name}(LoginRequiredMixin, View):
+
+    TEMPLATE = ''
+
+    def get(self, request):
+        ARGS = {}
+        ARGS['obj'] = None
+        return render(request, self.TEMPLATE, ARGS)
+    
+    def post(self, request):
+        keys = request.POST.get('searcher', '').strip()
+        return redirect('/') # 重定向到首页
