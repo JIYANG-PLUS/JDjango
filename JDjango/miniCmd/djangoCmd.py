@@ -1,6 +1,6 @@
 import os, re, json, glob
 from ..tools._tools import *
-from ..tools.environment import *
+from ..tools import environment as env
 from ..settings import BASE_DIR as PROJECT_BASE_NAME, CONFIG_PATH
 
 TEMPLATE_DIR = os.path.join(PROJECT_BASE_NAME, 'djangoTemplates')
@@ -15,6 +15,7 @@ __all__ = [
     'set_site_title',
     'get_urlpatterns_content',
     'judge_in_main_urls',
+    'fix_urls',
 ]
 
 PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
@@ -150,7 +151,7 @@ def _get_all_py_path(alias):
 def get_site_header():
     """获取登录界面名称"""
     options = []
-    for _ in _get_all_py_path(getAdminAlias()): # 逐个文件读取判断
+    for _ in _get_all_py_path(env.getAdminAlias()): # 逐个文件读取判断
         source = ' '.join([t.strip() for t in read_file_list_del_comment(_)])
         options.extend(PATT_HEADER_NAME.findall(source))
     return options
@@ -159,7 +160,7 @@ def set_site_header(new_name, mode=0):
     """设置 获取登录界面名称"""
     # mode: 0没有，1仅一个，2多个
     # 删除所有的名称命名处
-    alias_paths = _get_all_py_path(getAdminAlias())
+    alias_paths = _get_all_py_path(env.getAdminAlias())
     if 2 == mode:
         for _ in alias_paths:
             content = PATT_HEADER_NAME.sub('', read_file(_))
@@ -178,14 +179,14 @@ def set_site_header(new_name, mode=0):
 def get_site_title():
     """获取后台标题名称 注释见get_site_header"""
     options = []
-    for _ in _get_all_py_path(getAdminAlias()):
+    for _ in _get_all_py_path(env.getAdminAlias()):
         source = ' '.join([t.strip() for t in read_file_list_del_comment(_)])
         options.extend(PATT_TITLE_NAME.findall(source))
     return options
 
 def set_site_title(new_name, mode=0):
     """设置 获取后台标题名称 注释见set_site_header"""
-    alias_paths = _get_all_py_path(getAdminAlias())
+    alias_paths = _get_all_py_path(env.getAdminAlias())
     if 2 == mode:
         for _ in alias_paths:
             content = PATT_TITLE_NAME.sub('', read_file(_))
@@ -228,12 +229,13 @@ def get_urlpatterns_content(path):
 def get_all_need_register_urls(config):
     """获取所有注册名（include('demo.urls')）"""
     apps = config['app_names'] # 取所有的app名称
-    # 取所有的urls别名，（不带后缀名）
-    alias = [os.path.basename(_).split('.')[0] for _ in getUrlsAlias()][0] # 仅取文件名
+    # 取第一个urls别名，（不带后缀名）
+    alias = [os.path.basename(_).split('.')[0] for _ in env.getUrlsAlias()][0] # 仅取文件名
     return [f'{_}.{alias}' for _ in apps] # 将所有的app名拼接上路由文件名（不带后缀名）
 
-def judge_in_main_urls(config):
+def judge_in_main_urls():
     """判断是否注册路由"""
+    config = get_configs(CONFIG_PATH)
     root_path = config['dirname'] # Django项目根路径
     project_name = config['project_name'] # 项目名称
     root_urlspy = os.path.join(root_path, project_name, 'urls.py') # 定位项目的主urls.py文件
@@ -241,6 +243,16 @@ def judge_in_main_urls(config):
     app_urls = get_all_need_register_urls(config)
     return [_ for _ in app_urls if _ not in urlpatterns_content]
 
-def fix_urls():
+def fix_urls(app_url):
     # path('main/', include('main.urls')),
-    ...
+    config = get_configs(CONFIG_PATH)
+    root_path = config['dirname'] # Django项目根路径
+    project_name = config['project_name'] # 项目名称
+    root_urlspy = os.path.join(root_path, project_name, 'urls.py') # 定位项目的主urls.py文件
+    urlpatterns_content = get_urlpatterns_content(root_urlspy) # 锁定路由文本区域
+
+    insert_str = f"path('{app_url.split('.')[0]}/', include('{app_url}')),"
+    whole_text = read_file(root_urlspy)
+    replace_text = whole_text.replace(urlpatterns_content, f"{urlpatterns_content}    {insert_str}\n")
+    # 覆盖写入
+    write_file(root_urlspy, content=replace_text)

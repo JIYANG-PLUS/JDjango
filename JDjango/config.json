@@ -2,6 +2,7 @@
     "dirname": "/Users/jiyang/Desktop/jiyang",
     "project_name": "jiyang",
     "app_names": [
+        "test",
         "main"
     ],
     "DATABASES": {

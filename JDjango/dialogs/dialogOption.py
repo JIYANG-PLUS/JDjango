@@ -506,3 +506,11 @@ class DocumentationDialog(wx.Dialog):
         labels.AddPage(self.formsPanel, '表单')
         labels.AddPage(self.adminsPanel, '管理中心')
         labels.AddPage(self.databasesPanel, '数据库')
+
+class SettingsDialog(wx.Dialog):
+    def __init__(self, parent, id, **kwargs):
+        wx.Dialog.__init__(self, parent, id, 'Settings', size=(800, 600))
+        labels = wx.Notebook(self)
+        self.databasesPanel = wx.Panel(labels) # 数据库
+
+        labels.AddPage(self.databasesPanel, '数据库配置')

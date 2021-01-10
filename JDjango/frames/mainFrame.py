@@ -1,7 +1,7 @@
 import wx, time, os, json, datetime
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
-from ..miniCmd.djangoCmd import startapp, judge_in_main_urls
+from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
 from ..tools import environment as env
@@ -41,7 +41,9 @@ class Main(wx.Frame):
         self._set_fonts(None)# 统一设置字体大小
 
         # 独立于初始化之外的其它变量
-        self.unapps = []  # 未注册的应用程序
+        self.unapps = set()  # 未注册的应用程序
+        self.unurls = set() # 未注册的路由
+        self.needfix = set() # 需要修复的模块
 
     def InitUI(self):
         """面板布局"""
@@ -158,11 +160,12 @@ class Main(wx.Frame):
         settings.AppendSeparator() # --
         self.language = settings.Append(wx.ID_ANY, "&语言和时区", "语言和时区")
         menus.Append(wx.ID_ANY, "&设置", settings)
-        menus.AppendSeparator() # --
-        menuClear = menus.Append(wx.ID_ANY, "&清空", "清空")
+        menus.AppendSeparator()
+        self.menusSettings = menus.Append(wx.ID_ANY, "&Settings", "Settings")
+        self.menusSettings.Enable(False)
         menus.AppendSeparator() # --
         menuExit = menus.Append(wx.ID_ANY, "&退出", "退出")
-
+        
         # # 创建编辑菜单项
         # edits = wx.Menu()
         # menuCopy = edits.Append(wx.ID_ANY, "&复制", "复制")
@@ -300,7 +303,7 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onExit, menuExit)  # 退出菜单项点击事件
         self.Bind(wx.EVT_MENU, self.onOpen, menuOpen)  # 文件打开点击事件
         self.Bind(wx.EVT_MENU, self.onGenerate, self.menuGenerate)  # 代码生成点击事件
-        self.Bind(wx.EVT_MENU, self.onClear, menuClear)  # 清空
+        self.Bind(wx.EVT_MENU, self.onMenusSettings, self.menusSettings)  # Settings
 
         # 应用程序  事件绑定
         self.Bind(wx.EVT_MENU, self.onAppsCheck, self.apps_check) # 检测
@@ -324,6 +327,12 @@ class Main(wx.Frame):
         # 新项目 事件绑定
         self.Bind(wx.EVT_MENU, self.onCreateProject, self.create_project) # 新建项目
 
+    def onMenusSettings(self, e):
+        """Settings"""
+        dlg = SettingsDialog(self, -1)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def onHelpsDocumentation(self, e):
         """帮助文档"""
         dlg = DocumentationDialog(self, -1)
@@ -336,9 +345,17 @@ class Main(wx.Frame):
         dlg.ShowModal()
         dlg.Destroy()
 
-    def onUrlsFix(self):
-        # path('main/', include('main.urls')),
-        pass
+    def onUrlsFix(self, e):
+        """修复路由"""
+        for _ in self.unurls:
+            fix_urls(_) # 逐个修复
+            self.infos.AppendText(out_infos(f"{_}注册完成！", level=1))
+        else:
+            self.unurls.clear()
+            self.infos.AppendText(out_infos(f"路由修复完成！", level=1))
+            if 'urls' in self.needfix:
+                self.needfix.remove('urls')
+            self._open_point_fix('urls', f_type='close')
 
     def onUrlsCheck(self, e):
         """检查路由"""
@@ -346,13 +363,12 @@ class Main(wx.Frame):
         # 只针对以本工具生成的app，而不是Django原生命令python manage.py startapp ...
         # 路由必须在主路径urls.py中用include()函数注册
         # 默认未每个应用程序注册ulrs，取environment.py中的urls别名
-        config = get_configs(CONFIG_PATH)
-        errors = judge_in_main_urls(config)
-        if len(errors) <= 0:
+        self.unurls = set(judge_in_main_urls()) # 全局监测
+        if len(self.unurls) <= 0:
             self._open_point_fix('urls', f_type='close')
             self.infos.AppendText(out_infos(f"路由检测完成，无已知错误。", level=1))
         else:
-            msg = '，'.join(errors)
+            msg = '，'.join(self.unurls)
             self.infos.AppendText(out_infos(f"{msg}未注册。", level=3))
             self._open_point_fix('urls')
         
@@ -443,12 +459,15 @@ class Main(wx.Frame):
             message = dlg.GetValue()  # 获取文本框中输入的值
             returnStatus = startapp(message)
             if 0 == returnStatus:
-                self.unapps.append(message)
+                self.unapps.add(message)
+                url_alias = [os.path.basename(_).split('.')[0] for _ in env.getUrlsAlias()][0]
+                self.unurls.add(f'{message}.{url_alias}')
                 self.infos.AppendText(out_infos(f"{message}应用程序创建成功！", level=1))
                 dlg_tip = wx.MessageDialog(None, f"{message}创建成功！", u"成功", wx.OK | wx.ICON_INFORMATION)
                 if dlg_tip.ShowModal() == wx.ID_OK: pass
                 dlg_tip.Destroy()
                 self.onAppsFix(e) # 自动完成注册
+                self.onUrlsFix(e) # 自动完成路由注册
                 self._init_config() # 重新初始化 配置文件【此操作为敏感操作】
             else:
                 dlg_tip = wx.MessageDialog(None, f"{message}应用程序名已存在，或不符合纯字母+数字命名的约定！", u"失败", wx.OK | wx.ICON_INFORMATION)
@@ -595,7 +614,7 @@ class Main(wx.Frame):
             exec(text, {}, settings)
         for app in apps:
             if app not in settings['INSTALLED_APPS']:
-                self.unapps.append(app)
+                self.unapps.add(app)
                 self.infos.AppendText(out_infos(f'{app}应用程序未注册！', 2))
                 flag = 1
         if 1 == flag:
@@ -606,7 +625,7 @@ class Main(wx.Frame):
 
     def check_project_global(self, e):
         """检测项目【全局】"""
-        check_result = self.onAppsCheck(e)  # 校验 APP
+        self.onAppsCheck(e)  # 校验 APP
         self.onUrlsCheck(e) # 校验 路由
 
     def onAppsFix(self, e):
@@ -627,7 +646,9 @@ class Main(wx.Frame):
             new_content = content.replace(temp, '\n'.join(INSTALLED_APPS))
             write_file(self.path_settings, new_content)
             self.infos.AppendText(out_infos('应用程序修复完成。', level=1))
-            self._open_point_fix('apps', f_type='close')
+            if 'apps' in self.needfix:
+                self.needfix.remove('apps')
+            self._open_point_fix('apps', f_type='close') # 必须最后执行（控件的不可用性）
 
     def fix_project_global(self, e):
         """修复项目 【全局】"""
@@ -658,16 +679,25 @@ class Main(wx.Frame):
 
     def _open_point_fix(self, model, f_type = 'open'):
         """开启通过检测的修复按钮"""
+        if 'open' == f_type:
+            self.needfix.add(model)
         switch = True if 'open' == f_type else False
         for _ in self.allInitBtns[model]['fix']:
             _.Enable(switch)
-        # 开启/关闭全局的修复按钮
-        for _ in self.allInitBtns['global']['fix']:
-            _.Enable(switch)
+        # # 开启/关闭全局的修复按钮
+        # for _ in self.allInitBtns['global']['fix']:
+        #     _.Enable(switch)
+        if len(self.needfix) > 0:
+            for _ in self.allInitBtns['global']['fix']:
+                _.Enable(True)
+        else:
+            for _ in self.allInitBtns['global']['fix']:
+                _.Enable(False)
 
     def _open_part_btns(self):
         """开启部分必要的、控制流程之外的按钮"""
         for a in self.allInitBtns:
             for _ in self.allInitBtns[a]["create"]:
                 _.Enable(True) # 开启所有的创建按钮
-        self.btn_config_project.Enable(True)
+        self.btn_config_project.Enable(True) # 选项
+        self.menusSettings.Enable(True) # Settings
