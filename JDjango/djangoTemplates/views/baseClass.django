@@ -1,4 +1,4 @@
-class ${view_name}(LoginRequiredMixin, View):
+class ${view_name}(View):
 
     TEMPLATE = ''
 
@@ -9,4 +9,4 @@ class ${view_name}(LoginRequiredMixin, View):
     
     def post(self, request):
         keys = request.POST.get('searcher', '').strip()
-        return redirect('/') # 重定向到首页
+        return redirect('/')

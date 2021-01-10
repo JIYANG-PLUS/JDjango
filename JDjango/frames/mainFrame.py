@@ -1,7 +1,7 @@
 import wx, time, os, json, datetime
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
-from ..miniCmd.djangoCmd import startapp
+from ..miniCmd.djangoCmd import startapp, judge_in_main_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
 from ..tools import environment as env
@@ -175,6 +175,8 @@ class Main(wx.Frame):
         # 帮助 菜单项
         helps = wx.Menu()
         menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
+        helps.AppendSeparator()
+        helpsDocumentation = helps.Append(wx.ID_ANY, "&文档", "文档")
 
         # 应用程序 菜单项
         apps = wx.Menu()
@@ -294,6 +296,7 @@ class Main(wx.Frame):
 
         # 子菜单绑定事件
         self.Bind(wx.EVT_MENU, self.onAbout, menuAbout)  # 关于菜单项点击事件
+        self.Bind(wx.EVT_MENU, self.onHelpsDocumentation, helpsDocumentation)  # 帮助文档
         self.Bind(wx.EVT_MENU, self.onExit, menuExit)  # 退出菜单项点击事件
         self.Bind(wx.EVT_MENU, self.onOpen, menuOpen)  # 文件打开点击事件
         self.Bind(wx.EVT_MENU, self.onGenerate, self.menuGenerate)  # 代码生成点击事件
@@ -321,6 +324,12 @@ class Main(wx.Frame):
         # 新项目 事件绑定
         self.Bind(wx.EVT_MENU, self.onCreateProject, self.create_project) # 新建项目
 
+    def onHelpsDocumentation(self, e):
+        """帮助文档"""
+        dlg = DocumentationDialog(self, -1)
+        dlg.ShowModal()
+        dlg.Destroy()
+
     def onCreateProject(self, e):
         """新建项目"""
         dlg = ProjectCreateDialog(self, -1)
@@ -328,6 +337,7 @@ class Main(wx.Frame):
         dlg.Destroy()
 
     def onUrlsFix(self):
+        # path('main/', include('main.urls')),
         pass
 
     def onUrlsCheck(self, e):
@@ -336,18 +346,15 @@ class Main(wx.Frame):
         # 只针对以本工具生成的app，而不是Django原生命令python manage.py startapp ...
         # 路由必须在主路径urls.py中用include()函数注册
         # 默认未每个应用程序注册ulrs，取environment.py中的urls别名
-
         config = get_configs(CONFIG_PATH)
-        apps = config['app_names'] # 取所有的app名称
-        root_path = config['dirname'] # Django项目根路径
-        project_name = config['project_name'] # 项目名称
-        # 取所有的urls别名，（带后缀名）
-        alias = [os.path.basename(_) for _ in env.getUrlsAlias()] # 仅取文件名
-        root_urlspy = os.path.join(root_path, project_name, 'urls.py') # 定位项目的主urls.py文件
-        urlpatterns_content = get_urlpatterns_content(root_urlspy)
-        
-        for app in apps:
-            pass
+        errors = judge_in_main_urls(config)
+        if len(errors) <= 0:
+            self._open_point_fix('urls', f_type='close')
+            self.infos.AppendText(out_infos(f"路由检测完成，无已知错误。", level=1))
+        else:
+            msg = '，'.join(errors)
+            self.infos.AppendText(out_infos(f"{msg}未注册。", level=3))
+            self._open_point_fix('urls')
         
 
     def onAdminRename(self, e):
@@ -589,8 +596,7 @@ class Main(wx.Frame):
         for app in apps:
             if app not in settings['INSTALLED_APPS']:
                 self.unapps.append(app)
-                self.infos.AppendText(
-                    out_infos(f'{app}应用程序未注册！', 2))
+                self.infos.AppendText(out_infos(f'{app}应用程序未注册！', 2))
                 flag = 1
         if 1 == flag:
             self._open_point_fix('apps')
@@ -601,6 +607,7 @@ class Main(wx.Frame):
     def check_project_global(self, e):
         """检测项目【全局】"""
         check_result = self.onAppsCheck(e)  # 校验 APP
+        self.onUrlsCheck(e) # 校验 路由
 
     def onAppsFix(self, e):
         """修复未注册应用"""
@@ -625,7 +632,7 @@ class Main(wx.Frame):
     def fix_project_global(self, e):
         """修复项目 【全局】"""
         self.onAppsFix(e) # 修复 应用程序
-
+        self.onUrlsFix(e) # 修复 路由
     """"""
 
     def onAdminGenerateBase(self, e):

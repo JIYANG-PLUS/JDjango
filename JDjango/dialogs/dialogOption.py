@@ -374,6 +374,14 @@ class ViewGenerateDialog(wx.Dialog):
         # 总面板
         self.panel = wx.Panel(self) # 最外层容器
         self.selectFilePanel = wx.Panel(self.panel)
+        CHOICES = [
+            '简单函数视图'
+            , '简单类视图'
+            , '简单列表视图'
+            , '快速模板视图'
+            , '简单详细视图'
+        ]
+        self.radiosPanel = wx.RadioBox(self.panel, -1, "选择创建视图类型", choices=CHOICES)
         
         # 控件
         self.btnWritePath = buttons.GenButton(self.selectFilePanel, -1, '选择写入文件')
@@ -388,6 +396,7 @@ class ViewGenerateDialog(wx.Dialog):
         self.selectFileBox.Add(self.btnWritePath, 0, wx.EXPAND | wx.ALL, 2)
         self.selectFileBox.Add(self.filePath, 1, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.radiosPanel, 0, wx.EXPAND | wx.ALL, 2)
 
         # 绑定
         self.panel.SetSizer(self.panelBox)
@@ -395,10 +404,15 @@ class ViewGenerateDialog(wx.Dialog):
 
         # 事件
         self.Bind(wx.EVT_BUTTON, self.onBtnWritePath, self.btnWritePath)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadiosPanel, self.radiosPanel)
+
+    def onRadiosPanel(self, e):
+        # print(self.radiosPanel.GetSelection()) # 获取当前选中元素的下标
+        pass
 
     def onBtnWritePath(self, e):
         dirname = get_configs(CONFIG_PATH)['dirname']
-        dlg = wx.FileDialog(self, "选择写入文件", dirname, "", "views.py", wx.FD_OPEN)
+        dlg = wx.FileDialog(self, "选择写入文件", dirname, "", "*.py", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetFilename()
             dirname = dlg.GetDirectory()
@@ -435,7 +449,7 @@ class ProjectCreateDialog(wx.Dialog):
 
         self.panelBox.Add(self.pathPanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.namePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.btnCreate, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.btnCreate, 1, wx.EXPAND | wx.ALL, 2)
 
         # 面板绑定布局
         self.panel.SetSizer(self.panelBox)
@@ -471,4 +485,24 @@ class ProjectCreateDialog(wx.Dialog):
 
     def select_project_path(self, e):
         """选择项目所建路径"""
-        
+
+
+class DocumentationDialog(wx.Dialog):
+    def __init__(self, parent, id, **kwargs):
+        wx.Dialog.__init__(self, parent, id, '帮助文档', size=(800, 600))
+        labels = wx.Notebook(self)
+        self.modelsPanel = wx.Panel(labels) # 模型
+        self.viewsPanel = wx.Panel(labels) # 视图
+        self.urlsPanel = wx.Panel(labels) # 路由
+        self.templatesPanel = wx.Panel(labels) # 模板
+        self.formsPanel = wx.Panel(labels) # 表单
+        self.adminsPanel = wx.Panel(labels) # 管理中心
+        self.databasesPanel = wx.Panel(labels) # 数据库
+
+        labels.AddPage(self.modelsPanel, '模型')
+        labels.AddPage(self.viewsPanel, '视图')
+        labels.AddPage(self.urlsPanel, '路由')
+        labels.AddPage(self.templatesPanel, '模板')
+        labels.AddPage(self.formsPanel, '表单')
+        labels.AddPage(self.adminsPanel, '管理中心')
+        labels.AddPage(self.databasesPanel, '数据库')

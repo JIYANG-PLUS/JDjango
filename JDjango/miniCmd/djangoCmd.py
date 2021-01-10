@@ -14,6 +14,7 @@ __all__ = [
     'set_site_header',
     'set_site_title',
     'get_urlpatterns_content',
+    'judge_in_main_urls',
 ]
 
 PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
@@ -223,3 +224,23 @@ def get_urlpatterns_content(path):
         return _cut_content_by_doublecode(complex_content)
     else:
         return ''
+
+def get_all_need_register_urls(config):
+    """获取所有注册名（include('demo.urls')）"""
+    apps = config['app_names'] # 取所有的app名称
+    # 取所有的urls别名，（不带后缀名）
+    alias = [os.path.basename(_).split('.')[0] for _ in getUrlsAlias()][0] # 仅取文件名
+    return [f'{_}.{alias}' for _ in apps] # 将所有的app名拼接上路由文件名（不带后缀名）
+
+def judge_in_main_urls(config):
+    """判断是否注册路由"""
+    root_path = config['dirname'] # Django项目根路径
+    project_name = config['project_name'] # 项目名称
+    root_urlspy = os.path.join(root_path, project_name, 'urls.py') # 定位项目的主urls.py文件
+    urlpatterns_content = get_urlpatterns_content(root_urlspy) # 锁定路由文本区域
+    app_urls = get_all_need_register_urls(config)
+    return [_ for _ in app_urls if _ not in urlpatterns_content]
+
+def fix_urls():
+    # path('main/', include('main.urls')),
+    ...
