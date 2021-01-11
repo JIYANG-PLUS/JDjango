@@ -188,64 +188,84 @@ class Main(wx.Frame):
 
         # 单项检测
         perCheck = wx.Menu()
-        self.apps_check = perCheck.Append(wx.ID_ANY, "&应用程序", "应用程序")
-        self.urls_check = perCheck.Append(wx.ID_ANY, "&路由", "路由")
-        self.views_check = perCheck.Append(wx.ID_ANY, "&视图", "视图")
-        self.templates_check = perCheck.Append(wx.ID_ANY, "&模板", "模板")
-        self.forms_check = perCheck.Append(wx.ID_ANY, "&表单", "表单")
-        self.models_check = perCheck.Append(wx.ID_ANY, "&模型", "模型")
-        self.database_check = perCheck.Append(wx.ID_ANY, "&数据库", "数据库")
         
+
         # 单项修复
         perFix = wx.Menu()
-        self.apps_fix = perFix.Append(wx.ID_ANY, "&应用程序", "应用程序")
-        self.urls_fix = perFix.Append(wx.ID_ANY, "&路由", "路由")
-        self.views_fix = perFix.Append(wx.ID_ANY, "&视图", "视图")
-        self.templates_fix = perFix.Append(wx.ID_ANY, "&模板", "模板")
-        self.forms_fix = perFix.Append(wx.ID_ANY, "&表单", "表单")
-        self.models_fix = perFix.Append(wx.ID_ANY, "&修复", "修复")
-        self.database_fix = perFix.Append(wx.ID_ANY, "&数据库", "数据库")
 
 
-        # 应用程序
+        # 应用程序 菜单项
+        apps = wx.Menu()
+        self.apps_check = apps.Append(wx.ID_ANY, "&校验", "校验")
+        self.apps_fix = apps.Append(wx.ID_ANY, "&修复", "修复")
+
         self.allInitBtns['apps']['create'].append(self.menuGenerate)
         self.allInitBtns['apps']['check'].append(self.apps_check)
         self.allInitBtns['apps']['fix'].append(self.apps_fix)
 
-        # 视图
+        # 视图 菜单项
+        views = wx.Menu()
+        self.views_check = views.Append(wx.ID_ANY, "&校验", "校验")
+        self.views_fix = views.Append(wx.ID_ANY, "&修复", "修复")
+
         self.allInitBtns['views']['create'].extend([
             self.viewsGenerateFunc
         ])
         self.allInitBtns['views']['check'].append(self.views_check)
         self.allInitBtns['views']['fix'].append(self.views_fix)
 
-        # 路由
+        # 路由 菜单项
+        urls = wx.Menu()
         # self.urlsGenerate = urls.Append(wx.ID_ANY, "&创建", "创建")
+        # urls.AppendSeparator()
+        self.urls_check = urls.Append(wx.ID_ANY, "&校验", "校验")
+        self.urls_fix = urls.Append(wx.ID_ANY, "&修复", "修复")
+
         # self.allInitBtns['urls']['create'].append(self.urlsGenerate)
         self.allInitBtns['urls']['check'].append(self.urls_check)
         self.allInitBtns['urls']['fix'].append(self.urls_fix)
 
-        # 模板
-        # self.templatesGenerate = templates.Append(wx.ID_ANY, "&创建", "创建")
-        # self.allInitBtns['templates']['create'].append(self.templatesGenerate)
+        # 模板 菜单项
+        templates = wx.Menu()
+        self.templatesGenerate = templates.Append(wx.ID_ANY, "&创建", "创建")
+        templates.AppendSeparator()
+        self.templates_check = templates.Append(wx.ID_ANY, "&校验", "校验")
+        self.templates_fix = templates.Append(wx.ID_ANY, "&修复", "修复")
+
+        self.allInitBtns['templates']['create'].append(self.templatesGenerate)
         self.allInitBtns['templates']['check'].append(self.templates_check)
         self.allInitBtns['templates']['fix'].append(self.templates_fix)
 
-        # 表单
-        # self.formsGenerate = forms.Append(wx.ID_ANY, "&创建", "创建")
-        # self.allInitBtns['forms']['create'].append(self.formsGenerate)
+        # 表单 菜单项
+        forms = wx.Menu()
+        self.formsGenerate = forms.Append(wx.ID_ANY, "&创建", "创建")
+        forms.AppendSeparator()
+        self.forms_check = forms.Append(wx.ID_ANY, "&校验", "校验")
+        self.forms_fix = forms.Append(wx.ID_ANY, "&修复", "修复")
+
+        self.allInitBtns['forms']['create'].append(self.formsGenerate)
         self.allInitBtns['forms']['check'].append(self.forms_check)
         self.allInitBtns['forms']['fix'].append(self.forms_fix)
 
-        # 模型
-        # self.modelsGenerate = models.Append(wx.ID_ANY, "&创建", "创建")
-        # self.allInitBtns['models']['create'].append(self.modelsGenerate)
+        # 模型 菜单项
+        models = wx.Menu()
+        self.modelsGenerate = models.Append(wx.ID_ANY, "&创建", "创建")
+        models.AppendSeparator()
+        self.models_check = models.Append(wx.ID_ANY, "&校验", "校验")
+        self.models_fix = models.Append(wx.ID_ANY, "&修复", "修复")
+
+        self.allInitBtns['models']['create'].append(self.modelsGenerate)
         self.allInitBtns['models']['check'].append(self.models_check)
         self.allInitBtns['models']['fix'].append(self.models_fix)
 
         # 数据库
-        # self.databaseGenerate = database.Append(wx.ID_ANY, "&创建", "创建")
-        # self.allInitBtns['database']['create'].append(self.databaseGenerate)
+        database = wx.Menu()
+        self.databaseGenerate = database.Append(wx.ID_ANY, "&创建", "创建")
+        database.AppendSeparator()
+        self.database_check = database.Append(wx.ID_ANY, "&校验", "校验")
+        self.database_fix = database.Append(wx.ID_ANY, "&修复", "修复")
+
+        self.allInitBtns['database']['create'].append(self.databaseGenerate)
         self.allInitBtns['database']['check'].append(self.database_check)
         self.allInitBtns['database']['fix'].append(self.database_fix)
 
@@ -278,8 +298,13 @@ class Main(wx.Frame):
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
         # menuBar.Append(edits, "&编辑")
-        menuBar.Append(perCheck, "&单项检测")
-        menuBar.Append(perFix, "&单项修复")
+        menuBar.Append(apps, "&应用程序")
+        menuBar.Append(views, "&视图")
+        menuBar.Append(urls, "&路由")
+        menuBar.Append(templates, "&模板")
+        menuBar.Append(forms, "&表单")
+        menuBar.Append(models, "&模型")
+        menuBar.Append(database, "&数据库")
         menuBar.Append(test, "&测试")
         menuBar.Append(admin, "&后台管理中心")
         menuBar.Append(helps, "&帮助")

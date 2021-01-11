@@ -1,4 +1,4 @@
-import datetime, json, re
+import datetime, json, re, string, random
 
 LEVEL = {
     1: '【success】',
@@ -65,3 +65,14 @@ def append_file(path, content=[]):
     """向文本末尾追加内容列表"""
     with open(path, 'a', encoding='utf-8') as f:
         f.write('\n' + ''.join(content))
+
+def generate_secret_key(length = 50):
+    """更新 SECRET_KEY"""
+    allChars = list(string.printable)
+    minusChars = f'{string.whitespace}\'"'
+    for _ in minusChars:
+        allChars.remove(_)
+    secret = []
+    for i in range(length):
+        secret.append(random.choice(allChars))
+    return ''.join(secret)

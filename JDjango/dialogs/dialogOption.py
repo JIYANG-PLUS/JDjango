@@ -1,5 +1,6 @@
 import wx, json, glob, os, re
 import wx.lib.buttons as buttons
+from wx.lib import scrolledpanel
 from ..tools._tools import *
 from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
 from ..tools import environment as env
@@ -9,6 +10,17 @@ from ..miniCmd.djangoCmd import *
 env_obj = env.getEnvXmlObj()
 
 PATT_CHARS = re.compile(r'^[a-zA-Z_].*$')
+
+SETTINGSS = {
+    'LANGUAGE_CODE' : {
+        0 : ('zh-Hans', 'zh_Hans'), # 中文
+        1 : ('en-us', 'en_us', ), # 英文
+    },
+    'TIME_ZONE' : {
+        0 : ('UTC',), # 伦敦时区
+        1 : ('Asia/Shanghai',), # 北京时区 
+    },
+}
 
 class ConfigDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
@@ -233,7 +245,6 @@ class AdminCreateSimpleDialog(wx.Dialog):
             wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
         dlg.Destroy()
 
-
 class AdminRenameDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
         wx.Dialog.__init__(self, parent, id, '网站后台重命名', size=(300, 200))
@@ -366,7 +377,6 @@ class AdminRenameDialog(wx.Dialog):
             self.msgName.SetValue(f'读取正常')
 
         self.locTitle.SetValue('本功能规划中，暂不使用')
-        
 
 class ViewGenerateDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
@@ -421,7 +431,7 @@ class ViewGenerateDialog(wx.Dialog):
 
 class ProjectCreateDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '新建项目', size=(300, 150))
+        wx.Dialog.__init__(self, parent, id, '新建项目', size=(360, 150))
         # 总面板
         self.panel = wx.Panel(self) # 最外层容器
         self.pathPanel = wx.Panel(self.panel) # 选择路径容器
@@ -429,8 +439,8 @@ class ProjectCreateDialog(wx.Dialog):
 
         # 控件
         self.path = wx.TextCtrl(self.pathPanel, -1, style=wx.ALIGN_LEFT)
-        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择写入目录') # 选择目录
-        self.flagName = wx.StaticText(self.namePanel, -1, "取名：") # 项目名称
+        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择/输入写入目录') # 选择目录
+        self.flagName = wx.StaticText(self.namePanel, -1, "项目命名：") # 项目名称
         self.imputName = wx.TextCtrl(self.namePanel, -1, style=wx.ALIGN_LEFT)
         self.btnCreate = buttons.GenButton(self.panel, -1, '新建')
         # self.path.Enable(False)
@@ -441,12 +451,12 @@ class ProjectCreateDialog(wx.Dialog):
         self.namePanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
 
         # 填充
-        self.pathPanelBox.Add(self.path, 1, wx.EXPAND | wx.ALL, 2)
-        self.pathPanelBox.Add(self.btnChoice, 0, wx.EXPAND | wx.ALL, 2)
-
         self.namePanelBox.Add(self.flagName, 0, wx.EXPAND | wx.ALL, 2)
         self.namePanelBox.Add(self.imputName, 1, wx.EXPAND | wx.ALL, 2)
 
+        self.pathPanelBox.Add(self.btnChoice, 0, wx.EXPAND | wx.ALL, 2)
+        self.pathPanelBox.Add(self.path, 1, wx.EXPAND | wx.ALL, 2)
+        
         self.panelBox.Add(self.pathPanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.namePanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.btnCreate, 1, wx.EXPAND | wx.ALL, 2)
@@ -486,7 +496,6 @@ class ProjectCreateDialog(wx.Dialog):
     def select_project_path(self, e):
         """选择项目所建路径"""
 
-
 class DocumentationDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
         wx.Dialog.__init__(self, parent, id, '帮助文档', size=(800, 600))
@@ -508,9 +517,129 @@ class DocumentationDialog(wx.Dialog):
         labels.AddPage(self.databasesPanel, '数据库')
 
 class SettingsDialog(wx.Dialog):
+    
     def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, 'Settings', size=(800, 600))
-        labels = wx.Notebook(self)
+
+        wx.Dialog.__init__(self, parent, id, '项目配置', size=(600, 400))
+
+        wholePanel = wx.Panel(self)
+        wholeBox = wx.BoxSizer(wx.VERTICAL) # 垂直
+        wholePanel.SetSizer(wholeBox)
+
+        wholeToolsPanel = wx.Panel(wholePanel) # 顶部工具栏
+        wholeToolsBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        wholeToolsPanel.SetSizer(wholeToolsBox)
+        self.saveConfig = buttons.GenButton(wholeToolsPanel, -1, '保存')
+        wholeToolsBox.Add(self.saveConfig, 0, wx.EXPAND | wx.ALL, 2)
+
+        labels = wx.Notebook(wholePanel)
         self.databasesPanel = wx.Panel(labels) # 数据库
 
+        self.otherPanel = scrolledpanel.ScrolledPanel(labels, -1) # 其它（可滚动面板）
+        self.otherPanel.SetupScrolling() # 开启滚动条
+        otherRefreshKeyPanel = wx.Panel(self.otherPanel) # SECRET_KEY
+        nm = wx.StaticBox(self.otherPanel, -1, 'ALLOWED_HOSTS') # 带边框的盒子
+        otherAllowedHostsPanel = wx.StaticBoxSizer(nm, wx.HORIZONTAL) # 水平
+        otherDebugPanel = wx.Panel(self.otherPanel) # DEBUG
+        otherIframePanel = wx.Panel(self.otherPanel) # iframe
+        otherLanguageCodePanel = wx.Panel(self.otherPanel) # LANGUAGE_CODE
+        otherTimeZonePanel = wx.Panel(self.otherPanel) # TIME_ZONE
+        otherUseI18NPanel = wx.Panel(self.otherPanel) # USE_I18N
+        otherUseL10NPanel = wx.Panel(self.otherPanel) # USE_L10N
+        otherUseTzPanel = wx.Panel(self.otherPanel) # USE_TZ
+
+        # 其它 控件
+        self.btnRefreshSecretKey = buttons.GenButton(otherRefreshKeyPanel, -1, '刷新SECRET_KEY') # 刷新 SECRET_KEY
+        self.inputRefreshSecretKey = wx.TextCtrl(otherRefreshKeyPanel, -1, style=wx.ALIGN_LEFT) # 显示 SECRET_KEY
+        self.inputRefreshSecretKey.Enable(False)
+        self.radiosPanel = wx.RadioBox(otherDebugPanel, -1, "调式模式", choices=['开启', '关闭'])
+        self.radiosIframePanel = wx.RadioBox(otherIframePanel, -1, "iframe模式", choices=['开启', '关闭'])
+        self.radiosLanguageCodePanel = wx.RadioBox(otherLanguageCodePanel, -1, "语言环境", choices=['中文', '英文'])
+        self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区", choices=['伦敦时区', '北京时区'])
+        self.radiosUseI18NPanel = wx.RadioBox(otherUseI18NPanel, -1, "国际化", choices=['开启', '关闭'])
+        self.radiosUseL10NPanel = wx.RadioBox(otherUseL10NPanel, -1, "区域设置优先", choices=['开启', '关闭'])
+        self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区", choices=['开启', '关闭'])
+
+        self.inputAllowedHosts = wx.TextCtrl(self.otherPanel, -1, style = wx.ALIGN_LEFT)
+
+        # 其它 布局
+        otherBox = wx.BoxSizer(wx.VERTICAL) # 垂直
+        otherRefreshKeyBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        otherDebugBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        otherIframeBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        otherLanguageCodeBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        otherTimeZoneBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        otherUseI18NBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        otherUseL10NBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        otherUseTzBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+
+        # 填充
+        otherRefreshKeyBOX.Add(self.btnRefreshSecretKey, 0, wx.EXPAND | wx.ALL, 2)
+        otherRefreshKeyBOX.Add(self.inputRefreshSecretKey, 1, wx.EXPAND | wx.ALL, 2)
+        otherDebugBOX.Add(self.radiosPanel, 1, wx.EXPAND | wx.ALL, 2)
+        otherIframeBOX.Add(self.radiosIframePanel, 1, wx.EXPAND | wx.ALL, 2)
+        otherLanguageCodeBOX.Add(self.radiosLanguageCodePanel, 1, wx.EXPAND | wx.ALL, 2)
+        otherTimeZoneBOX.Add(self.radiosTimeZonePanel, 1, wx.EXPAND | wx.ALL, 2)
+        otherUseI18NBOX.Add(self.radiosUseI18NPanel, 1, wx.EXPAND | wx.ALL, 2)
+        otherUseL10NBOX.Add(self.radiosUseL10NPanel, 1, wx.EXPAND | wx.ALL, 2)
+        otherUseTzBOX.Add(self.radiosUseTzPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        otherAllowedHostsPanel.Add(self.inputAllowedHosts, 1, wx.EXPAND | wx.ALL, 2)
+
+        otherBox.Add(otherRefreshKeyPanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherAllowedHostsPanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherDebugPanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherIframePanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherLanguageCodePanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherTimeZonePanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherUseI18NPanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherUseL10NPanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherUseTzPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 其它 面板绑定布局
+        otherRefreshKeyPanel.SetSizer(otherRefreshKeyBOX)
+        otherDebugPanel.SetSizer(otherDebugBOX)
+        otherIframePanel.SetSizer(otherIframeBOX)
+        otherLanguageCodePanel.SetSizer(otherLanguageCodeBOX)
+        otherTimeZonePanel.SetSizer(otherTimeZoneBOX)
+        otherUseI18NPanel.SetSizer(otherUseI18NBOX)
+        otherUseL10NPanel.SetSizer(otherUseL10NBOX)
+        otherUseTzPanel.SetSizer(otherUseTzBOX)
+        self.otherPanel.SetSizer(otherBox)
+
+        labels.AddPage(self.otherPanel, 'Settings')
         labels.AddPage(self.databasesPanel, '数据库配置')
+
+        wholeBox.Add(labels, 1, wx.EXPAND | wx.ALL, 2) # 添加多页签
+        wholeBox.Add(wholeToolsPanel, 0, wx.EXPAND | wx.ALL, 2) # 添加工具条
+
+        # 事件监听
+        self.Bind(wx.EVT_BUTTON, self.onBtnRefreshSecretKey, self.btnRefreshSecretKey)
+
+        # 基本对象
+        self.DATA_SETTINGS = {}
+
+        # 初始化同步数据
+        self._init_data()
+
+    def _init_data(self):
+        CONFIGS = get_configs(CONFIG_PATH)
+        # 0 开启，1关闭
+        self.radiosPanel.SetSelection(0 if CONFIGS['DEBUG'] else 1)
+        self.radiosIframePanel.SetSelection(0 if CONFIGS['X_FRAME_OPTIONS'] else 1)
+        self.radiosLanguageCodePanel.SetSelection(0 if CONFIGS['LANGUAGE_CODE'].lower() in [_.lower() for _ in SETTINGSS['LANGUAGE_CODE'][0]] else 1)
+        self.radiosTimeZonePanel.SetSelection(0 if CONFIGS['TIME_ZONE'].lower() in [_.lower() for _ in SETTINGSS['TIME_ZONE'][0]] else 1)
+        self.radiosUseI18NPanel.SetSelection(0 if CONFIGS['USE_I18N'] else 1)
+        self.radiosUseL10NPanel.SetSelection(0 if CONFIGS['USE_L10N'] else 1)
+        self.radiosUseTzPanel.SetSelection(0 if CONFIGS['USE_TZ'] else 1)
+        self.inputRefreshSecretKey.SetValue(CONFIGS['SECRET_KEY'])
+        self.inputAllowedHosts.SetValue('、'.join(CONFIGS['ALLOWED_HOSTS']))
+        
+
+        # self.radiosPanel.GetSelection()
+
+    def onBtnRefreshSecretKey(self, e):
+        """刷新SECRET_KEY"""
+        new_key = generate_secret_key()
+        self.DATA_SETTINGS['SECRET_KEY'] = new_key
+        self.inputRefreshSecretKey.SetValue(new_key)
