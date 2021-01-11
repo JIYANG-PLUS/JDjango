@@ -2,6 +2,7 @@ import wx, json, glob, os, re
 import wx.lib.buttons as buttons
 from wx.lib import scrolledpanel
 from ..tools._tools import *
+from ..tools._re import *
 from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
 from ..tools import environment as env
 from ..tools import models as toolModel
@@ -258,7 +259,7 @@ class AdminRenameDialog(wx.Dialog):
                 wx.MessageBox(f'仅后台标题名称修改成功', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
                 return
         else:
-            wx.MessageBox(f'未做任何修改', '错误', wx.OK | wx.ICON_INFORMATION) # 提示成功
+            wx.MessageBox(f'未做任何修改', '错误', wx.OK | wx.ICON_INFORMATION)
 
     def _init_data(self):
         headers = get_site_header()
@@ -428,20 +429,22 @@ class SettingsDialog(wx.Dialog):
     
     def __init__(self, parent, id, **kwargs):
 
-        self.configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
-        self.DIRNAME = self.configs["dirname"]
-        self.DIRSETTINGS = os.path.join(self.DIRNAME, self.configs['project_name'], 'settings.py')
+        configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
+        self.DIRNAME = configs["dirname"]
+        self.DIRSETTINGS = os.path.join(self.DIRNAME, configs['project_name'], 'settings.py')
 
         # 相关替换正则
         self.PATT_SECRET_KEY = re.compile(r"SECRET_KEY\s*=\s*[\'\"](.*?)[\'\"]")
         self.PATT_DEBUG = re.compile(r"DEBUG\s*=\s*(False|True)")
         self.PATT_ALLOWED_HOSTS = re.compile(r"ALLOWED_HOSTS\s*=\s*\['(.*?)'\]")
-        self.PATT_X_FRAME_OPTIONS = None
+        self.PATT_X_FRAME_OPTIONS = re.compile(r"X_FRAME_OPTIONS\s*=\s*'ALLOWALL'")
         self.PATT_LANGUAGE_CODE = re.compile(r"LANGUAGE_CODE\s*=\s*'(.*?)'")
         self.PATT_TIME_ZONE = re.compile(r"TIME_ZONE\s*=\s*'(.*?)'")
         self.PATT_USE_I18N = re.compile(r"USE_I18N\s*=\s*(False|True)")
         self.PATT_USE_L10N = re.compile(r"USE_L10N\s*=\s*(False|True)")
         self.PATT_USE_TZ = re.compile(r"USE_TZ\s*=\s*(False|True)")
+
+        self.PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
 
         """正则结束"""
 
@@ -517,12 +520,12 @@ class SettingsDialog(wx.Dialog):
         otherBox.Add(otherRefreshKeyPanel, 0, wx.EXPAND | wx.ALL, 2)
         otherBox.Add(otherAllowedHostsPanel, 0, wx.EXPAND | wx.ALL, 2)
         otherBox.Add(otherDebugPanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherIframePanel, 0, wx.EXPAND | wx.ALL, 2)
         otherBox.Add(otherLanguageCodePanel, 0, wx.EXPAND | wx.ALL, 2)
         otherBox.Add(otherTimeZonePanel, 0, wx.EXPAND | wx.ALL, 2)
         otherBox.Add(otherUseI18NPanel, 0, wx.EXPAND | wx.ALL, 2)
         otherBox.Add(otherUseL10NPanel, 0, wx.EXPAND | wx.ALL, 2)
         otherBox.Add(otherUseTzPanel, 0, wx.EXPAND | wx.ALL, 2)
+        otherBox.Add(otherIframePanel, 0, wx.EXPAND | wx.ALL, 2)
 
         # 其它 面板绑定布局
         otherRefreshKeyPanel.SetSizer(otherRefreshKeyBOX)
@@ -547,7 +550,7 @@ class SettingsDialog(wx.Dialog):
 
         flagProjectName = wx.StaticText(self.renamePanel, -1, "您的项目名称：") # 项目名称
         self.inputProjectName = wx.TextCtrl(self.renamePanel, -1, style=wx.ALIGN_LEFT) # 输入框
-        project_name = self.configs['project_name']
+        project_name = configs['project_name']
         self.inputProjectName.SetValue(f"{project_name}")
 
         self.flagFirst = wx.StaticText(self.renamePanel, -1, "请先关闭所有占用此Django项目的程序。（否则会遇到修改权限问题）")
@@ -610,13 +613,47 @@ class SettingsDialog(wx.Dialog):
 
     def onBtnSaveConfig(self, e):
         """保存修改"""
+        CONFIGS = get_configs(CONFIG_PATH)
         content_settings = read_file(self.DIRSETTINGS)
+        temp = content_settings
+        if None != self.DATA_SETTINGS.get('DEBUG'):
+            temp = patt_sub_only_capture_obj(self.PATT_DEBUG, self.DATA_SETTINGS['DEBUG'], temp)
+        if None != self.DATA_SETTINGS.get('USE_I18N'):
+            temp = patt_sub_only_capture_obj(self.PATT_USE_I18N, self.DATA_SETTINGS['USE_I18N'], temp)
+        if None != self.DATA_SETTINGS.get('USE_L10N'):
+            temp = patt_sub_only_capture_obj(self.PATT_USE_L10N, self.DATA_SETTINGS['USE_L10N'], temp)
+        if None != self.DATA_SETTINGS.get('USE_TZ'):
+            temp = patt_sub_only_capture_obj(self.PATT_USE_TZ, self.DATA_SETTINGS['USE_TZ'], temp)
+        if None != self.DATA_SETTINGS.get('X_FRAME_OPTIONS'):
+            if self.DATA_SETTINGS['X_FRAME_OPTIONS']: # 开启
+                if not CONFIGS['X_FRAME_OPTIONS']: # 且原文件不存在
+                    TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates', 'settings', 'iframe.django')
+                    # 在文件末尾添加iframe开启代码
+                    write_file(self.DIRSETTINGS, temp) # 刷新
+                    append_file(self.DIRSETTINGS, read_file_list(TEMPLATE_DIR))
+                    temp = read_file(self.DIRSETTINGS) # 刷新
+            else: # 关闭（删除）
+                temp = self.PATT_X_FRAME_OPTIONS.sub('', temp)
+        if None != self.DATA_SETTINGS.get('LANGUAGE_CODE'):
+            re_str = SETTINGSS['LANGUAGE_CODE'][self.DATA_SETTINGS['LANGUAGE_CODE']][0]
+            temp = patt_sub_only_capture_obj(self.PATT_LANGUAGE_CODE, re_str, temp)
+        if None != self.DATA_SETTINGS.get('TIME_ZONE'):
+            re_str = SETTINGSS['TIME_ZONE'][self.DATA_SETTINGS['TIME_ZONE']][0]
+            temp = patt_sub_only_capture_obj(self.PATT_TIME_ZONE, re_str, temp)
+        # 写入SECRET_KEY和HOST
+        temp = patt_sub_only_capture_obj(self.PATT_SECRET_KEY, self.inputRefreshSecretKey.GetValue(), temp)
+        temp = patt_sub_only_capture_obj(self.PATT_ALLOWED_HOSTS, self.inputAllowedHosts.GetValue(), temp)
 
-
+        write_file(self.DIRSETTINGS, temp) # 更新settings.py文件
+        refresh_config() # 更新配置文件【重要！！！】
+        self.DATA_SETTINGS = {} # 防止重复确定
+        wx.MessageBox(f'修改成功！', '成功', wx.OK | wx.ICON_INFORMATION) # 提示成功
+        
     def onBtnModify(self, e):
         """重命名项目名称"""
+        configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
         # 获取新的名称
-        old_name = self.configs['project_name']
+        old_name = configs['project_name']
         new_name = self.inputProjectName.GetValue().strip()
 
         if old_name == new_name:
@@ -667,9 +704,10 @@ class SettingsDialog(wx.Dialog):
 
     def onRadioBox(self, e):
         """单选框组事件"""
+        # 原则上只对需要改变的内容进行修改
         key = e.GetId()
         if key == self.radiosPanel.GetId(): # DEBUG
-            self.DATA_SETTINGS['DEBUG'] = True if 0 == self.radiosPanel.GetSelection() else False
+            self.DATA_SETTINGS['DEBUG'] = 'True' if 0 == self.radiosPanel.GetSelection() else 'False'
         elif key == self.radiosIframePanel.GetId(): # X_FRAME_OPTIONS
             self.DATA_SETTINGS['X_FRAME_OPTIONS'] = True if 0 == self.radiosIframePanel.GetSelection() else False
         elif key == self.radiosLanguageCodePanel.GetId(): # LANGUAGE_CODE
@@ -677,11 +715,11 @@ class SettingsDialog(wx.Dialog):
         elif key == self.radiosTimeZonePanel.GetId(): # TIME_ZONE
             self.DATA_SETTINGS['TIME_ZONE'] = self.radiosTimeZonePanel.GetSelection()
         elif key == self.radiosUseI18NPanel.GetId(): # USE_I18N
-            self.DATA_SETTINGS['USE_I18N'] = True if 0 == self.radiosUseI18NPanel.GetSelection() else False
+            self.DATA_SETTINGS['USE_I18N'] = 'True' if 0 == self.radiosUseI18NPanel.GetSelection() else 'False'
         elif key == self.radiosUseL10NPanel.GetId(): # USE_L10N
-            self.DATA_SETTINGS['USE_L10N'] = True if 0 == self.radiosUseL10NPanel.GetSelection() else False
+            self.DATA_SETTINGS['USE_L10N'] = 'True' if 0 == self.radiosUseL10NPanel.GetSelection() else 'False'
         elif key == self.radiosUseTzPanel.GetId(): # USE_TZ
-            self.DATA_SETTINGS['USE_TZ'] = True if 0 == self.radiosUseTzPanel.GetSelection() else False
+            self.DATA_SETTINGS['USE_TZ'] = 'True' if 0 == self.radiosUseTzPanel.GetSelection() else 'False'
         
     def onBtnRefreshSecretKey(self, e):
         """刷新SECRET_KEY"""

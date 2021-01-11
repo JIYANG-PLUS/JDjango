@@ -4,6 +4,9 @@ from ..tools import environment as env
 from ..settings import BASE_DIR as PROJECT_BASE_NAME, CONFIG_PATH
 
 TEMPLATE_DIR = os.path.join(PROJECT_BASE_NAME, 'djangoTemplates')
+PROJECT_CONFIG = get_configs(CONFIG_PATH)
+DIRNAME = PROJECT_CONFIG['dirname']
+DIRSETTINGS = os.path.join(DIRNAME, PROJECT_CONFIG['project_name'], 'settings.py')
 
 __all__ = [
     'startproject',
@@ -16,6 +19,7 @@ __all__ = [
     'get_urlpatterns_content',
     'judge_in_main_urls',
     'fix_urls',
+    'refresh_config',
 ]
 
 PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
@@ -23,6 +27,7 @@ PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 定位模板替换位置
 PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']') # 定位后台登录名称位置
 PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']') # 定位后台网站名称位置
 PATT_URLPATTERNS = re.compile(r'(?ms:urlpatterns\s*=\s*\[.*)') # 定位 urlpatterns 类html和xml文本不推荐使用正则
+PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
 
 # 补全模板路径
 def django_file_path(file_name, concat=[]):
@@ -256,3 +261,42 @@ def fix_urls(app_url):
     replace_text = whole_text.replace(urlpatterns_content, f"{urlpatterns_content}    {insert_str}\n")
     # 覆盖写入
     write_file(root_urlspy, content=replace_text)
+
+def refresh_config():
+    """初始化配置文件"""
+    # 更新配置文件
+    temp_configs = {} # 全局配置文件待写入
+    # 必要前缀赋值
+    temp_configs['dirname'] = DIRNAME # 项目路径
+    temp_configs['project_name'] = os.path.basename(DIRNAME) # 项目名称
+    apps = os.listdir(DIRNAME) # 所有的应用程序（包含主程序）
+    temp_configs['app_names'] = [_ for _ in apps if os.path.exists(os.path.join(DIRNAME, _, 'migrations'))] # 以迁移目录为依据进行筛选
+    settings = {}
+    with open(DIRSETTINGS, 'r', encoding='utf-8') as f:
+        text = PATT_BASE_DIR.sub('', f.read())
+        exec(f"BASE_DIR = r'{DIRNAME}'", {}, settings)
+        exec(text, {}, settings)
+    temp_configs['DATABASES'] = settings.get('DATABASES') # 数据库
+    temp_configs['DEBUG'] = settings.get("DEBUG") # 调试状态
+    temp_configs['LANGUAGE_CODE'] = settings.get("LANGUAGE_CODE") # 语言环境
+    temp_configs['TIME_ZONE'] = settings.get("TIME_ZONE") # 时区
+    temp_configs['USE_I18N'] = settings.get("USE_I18N") # 全局语言设置
+    temp_configs['USE_L10N'] = settings.get("USE_L10N")
+    temp_configs['USE_TZ'] = settings.get("USE_TZ") # 是否使用标准时区
+    temp_configs['STATIC_URL'] = settings.get("STATIC_URL") # 静态文件路径
+    temp_configs['ALLOWED_HOSTS'] = settings.get("ALLOWED_HOSTS") # 允许连接ip
+    temp_configs['X_FRAME_OPTIONS'] = settings.get("X_FRAME_OPTIONS") # 是否开启iframe
+    temp_configs['SECRET_KEY'] = settings.get("SECRET_KEY") # SECRET_KEY
+    temp_templates_app = settings.get("TEMPLATES")
+    if temp_templates_app and len(temp_templates_app) > 0:
+        try:
+            temp_configs['TEMPLATES_APP_DIRS'] = temp_templates_app[0]['APP_DIRS'] # 是否开启应用程序模板文件路径
+            temp_configs['TEMPLATES_DIRS'] = temp_templates_app[0]['DIRS'] # 默认模板路径
+        except:
+            temp_configs['TEMPLATES_APP_DIRS'] = None
+            temp_configs['TEMPLATES_DIRS'] = None # 默认模板路径
+    else:
+        temp_configs['TEMPLATES_APP_DIRS'] = None
+        temp_configs['TEMPLATES_DIRS'] = None # 默认模板路径
+
+    dump_json(CONFIG_PATH, temp_configs)  # 写入配置文件
