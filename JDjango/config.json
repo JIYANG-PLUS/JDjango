@@ -1,13 +1,13 @@
 {
-    "dirname": "C:\\Users\\PC\\Desktop\\123456\\HELLO",
-    "project_name": "HELLO",
+    "dirname": "C:\\Users\\PC\\Desktop\\123456\\jiyang",
+    "project_name": "jiyang",
     "app_names": [
         "test"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "C:\\Users\\PC\\Desktop\\123456\\HELLO\\db.sqlite3"
+            "NAME": "C:\\Users\\PC\\Desktop\\123456\\jiyang\\db.sqlite3"
         }
     },
     "DEBUG": false,

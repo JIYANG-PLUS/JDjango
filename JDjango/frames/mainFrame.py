@@ -154,22 +154,20 @@ class Main(wx.Frame):
         self.viewsGenerateFunc = menusCreate.Append(wx.ID_ANY, "&视图", "视图")
         self.create_project.Enable(True)
         menus.Append(wx.ID_ANY, "&新建", menusCreate)
-        menus.AppendSeparator() # --
-        settings = wx.Menu()
-        fonts = wx.Menu()
-        self.fonts_minus = fonts.Append(wx.ID_ANY, "&字体减小-1", "字体减小-1")
-        self.fonts_add = fonts.Append(wx.ID_ANY, "&字体增大+1", "字体增大+1")
-        settings.Append(wx.ID_ANY, "&字体", fonts)
-        settings.AppendSeparator() # --
-        self.language = settings.Append(wx.ID_ANY, "&语言和时区", "语言和时区")
-        menus.Append(wx.ID_ANY, "&JDjango设置", settings)
         menus.AppendSeparator()
         menusProject = wx.Menu()
         self.menusSettings = menusProject.Append(wx.ID_ANY, "&Settings", "Settings")
         self.menusSettings.Enable(False)
         menus.Append(wx.ID_ANY, "&Django项目", menusProject)
         menus.AppendSeparator() # --
-        menuExit = menus.Append(wx.ID_ANY, "&退出", "退出")
+        settings = wx.Menu()
+        fonts = wx.Menu()
+        self.fonts_minus = fonts.Append(wx.ID_ANY, "&-1", "-1")
+        self.fonts_add = fonts.Append(wx.ID_ANY, "&+1", "+1")
+        settings.Append(wx.ID_ANY, "&字体", fonts)
+        settings.AppendSeparator() # --
+        self.language = settings.Append(wx.ID_ANY, "&语言", "语言")
+        menus.Append(wx.ID_ANY, "&工具", settings)
         
         # # 创建编辑菜单项
         # edits = wx.Menu()
@@ -182,10 +180,10 @@ class Main(wx.Frame):
 
         # 帮助 菜单项
         helps = wx.Menu()
-        menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
+        helpsDocumentation = helps.Append(wx.ID_ANY, "&参考文档", "参考文档")
         helps.AppendSeparator()
-        helpsDocumentation = helps.Append(wx.ID_ANY, "&文档", "文档")
-
+        menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
+        
         # 单项检测
         perCheck = wx.Menu()
         self.apps_check = perCheck.Append(wx.ID_ANY, "&应用程序", "应用程序")
@@ -272,23 +270,27 @@ class Main(wx.Frame):
         # self.allInitBtns['admin']['check'].append(self.admin_check)
         # self.allInitBtns['admin']['fix'].append(self.admin_fix)
 
-        # 测试 菜单项
-        test = wx.Menu()
+        # 单元测试 菜单项
+        # test = wx.Menu()
+
+        # 退出 菜单项
+        directExit = wx.Menu()
+        self.btnDirectExit = directExit.Append(wx.ID_ANY, "&退出", "退出")
 
         menuBar = wx.MenuBar()  # 创建顶部菜单条
         menuBar.Append(menus, "&文件")  # 将菜单添加进菜单条中（无法两次加入同一个菜单对象）
         # menuBar.Append(edits, "&编辑")
         menuBar.Append(perCheck, "&单项检测")
         menuBar.Append(perFix, "&单项修复")
-        menuBar.Append(test, "&测试")
+        # menuBar.Append(test, "&单元测试")
         menuBar.Append(admin, "&后台管理中心")
         menuBar.Append(helps, "&帮助")
+        menuBar.Append(directExit, "&退出")
         self.SetMenuBar(menuBar)
 
         # 子菜单绑定事件
         self.Bind(wx.EVT_MENU, self.onAbout, menuAbout)  # 关于菜单项点击事件
         self.Bind(wx.EVT_MENU, self.onHelpsDocumentation, helpsDocumentation)  # 帮助文档
-        self.Bind(wx.EVT_MENU, self.onExit, menuExit)  # 退出菜单项点击事件
         self.Bind(wx.EVT_MENU, self.onOpen, menuOpen)  # 文件打开点击事件
         self.Bind(wx.EVT_MENU, self.onGenerate, self.menuGenerate)  # 代码生成点击事件
         self.Bind(wx.EVT_MENU, self.onMenusSettings, self.menusSettings)  # Settings
@@ -314,6 +316,9 @@ class Main(wx.Frame):
 
         # 新项目 事件绑定
         self.Bind(wx.EVT_MENU, self.onCreateProject, self.create_project) # 新建项目
+
+        # 退出 事件绑定
+        self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
 
     def onMenusSettings(self, e):
         """Settings"""
@@ -473,7 +478,7 @@ class Main(wx.Frame):
         elif bId == self.btn_fixed_project.GetId(): # 修复项目
             self.fix_project_global(e)
         elif bId == self.btn_config_project.GetId(): # 项目配置和修改
-            dlg = ConfigDialog(self, -1)
+            dlg = SettingsDialog(self, -1)
             dlg.ShowModal()
             dlg.Destroy()
         elif bId == self.btn_exec.GetId(): # 执行命令
@@ -591,7 +596,7 @@ class Main(wx.Frame):
                 except Exception as e:
                     self.infos.AppendText(out_infos('配置文件config.json初始化失败！', level=3))
                 else:
-                    self.infos.AppendText(out_infos('项目导入成功！', level=1))
+                    self.infos.AppendText(out_infos(f'项目{os.path.basename(self.dirname)}导入成功！', level=1))
             else:
                 self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
         else:

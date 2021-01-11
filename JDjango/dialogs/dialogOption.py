@@ -22,98 +22,6 @@ SETTINGSS = {
     },
 }
 
-class ConfigDialog(wx.Dialog):
-    def __init__(self, parent, id, **kwargs):
-        self.configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
-        self.DIRNAME = self.configs["dirname"]
-        
-        wx.Dialog.__init__(self, parent, id, '选项配置', size=(600, 400))
-
-        self.panel = wx.Panel(self)
-        vertical_box = wx.BoxSizer(wx.VERTICAL)
-        horizontal_box = wx.BoxSizer(wx.HORIZONTAL)
-
-        nm = wx.StaticBox(self.panel, -1, 'Django项目：') # 带边框的盒子
-        static_config_box = wx.StaticBoxSizer(nm, wx.VERTICAL) # 垂直布局
-
-        fn = wx.StaticText(self.panel, -1, "您的项目名称：") # 项目名称
-        self.nm1 = wx.TextCtrl(self.panel, -1, style=wx.ALIGN_LEFT) # 输入框
-        project_name = self.configs['project_name']
-        self.nm1.SetValue(f"{project_name}")
-
-        # 按钮
-        self.first = wx.StaticText(self.panel, -1, "请先关闭所有占用此Django项目的程序。（否则会遇到修改权限问题）")
-        self.modify = buttons.GenButton(self.panel, -1, label='修改（修改前请提前做好备份）')
-        self.tip = wx.StaticText(self.panel, -1, "请确保您的项目名称在您整个项目中是独一无二的，否则本功能会严重破坏您的项目")
-
-        horizontal_box.Add(fn, 0, wx.ALL | wx.CENTER, 5)
-        horizontal_box.Add(self.nm1, 0, wx.ALL | wx.CENTER, 5)
-
-        static_config_box.Add(horizontal_box, 0, wx.ALL | wx.CENTER, 10)
-
-        vertical_box.Add(static_config_box, 0, wx.ALL | wx.CENTER, 5)
-        vertical_box.Add(self.first, 0, wx.ALL | wx.CENTER, 5)
-        vertical_box.Add(self.tip, 0, wx.ALL | wx.CENTER, 5)
-        vertical_box.Add(self.modify, 0, wx.ALL | wx.CENTER, 5)
-
-        self.panel.SetSizer(vertical_box)
-
-        # 事件绑定
-        self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.modify)
-
-    def ButtonClick(self, e):
-        bId = e.GetId()
-        if bId == self.modify.GetId():
-            # 获取新的名称
-            old_name = self.configs['project_name']
-            new_name = self.nm1.GetValue().strip()
-
-            if old_name == new_name:
-                dlg = wx.MessageDialog( self, "未做任何修改", "警告", wx.OK)
-                dlg.ShowModal()
-                dlg.Destroy()
-                return
-
-            if not PATT_CHARS.match(new_name):
-                dlg = wx.MessageDialog( self, "请使用字母+下划线的方式命名", "错误", wx.OK)
-                dlg.ShowModal()
-                dlg.Destroy()
-                return
-            try:
-                # 重命名项目（先文件，后目录）
-                search_path = os.path.join(self.DIRNAME, '**', '*')
-                alls = glob.glob(search_path, recursive=True)
-
-                # 分类文件和文件夹
-                files, floders = [], []
-                for _ in alls:
-                    if os.path.isfile(_): files.append(_)
-                    else: floders.append(_)
-
-                for p in files:
-                    # 先读后写
-                    if '.py' == os.path.splitext(p)[1]:
-                        content = read_file(p)
-                        content = content.replace(old_name.strip(), new_name)
-                        write_file(p, content)
-
-                for P in floders:
-                    if old_name.strip().lower() == os.path.basename(P).strip().lower():
-                        temp = os.path.join(os.path.dirname(P), new_name)
-                        os.rename(P, temp)
-
-                # 修改根目录名称
-                os.rename(self.DIRNAME, os.path.join(os.path.dirname(self.DIRNAME), new_name))
-                
-                dlg = wx.MessageDialog( self, "修改成功，请退出所有窗口后重新打开，进行后续操作。", "成功", wx.OK)
-                if dlg.ShowModal() == wx.ID_OK:
-                    self.Close(True)
-                dlg.ShowModal()
-                dlg.Destroy()
-            except:
-                """操作回退，将之前所有的改动还原"""
-                pass # 待完成
-
 class AdminCreateSimpleDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
         wx.Dialog.__init__(self, parent, id, '站点注册(简单配置)', size=(600, 400))
@@ -520,6 +428,23 @@ class SettingsDialog(wx.Dialog):
     
     def __init__(self, parent, id, **kwargs):
 
+        self.configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
+        self.DIRNAME = self.configs["dirname"]
+        self.DIRSETTINGS = os.path.join(self.DIRNAME, self.configs['project_name'], 'settings.py')
+
+        # 相关替换正则
+        self.PATT_SECRET_KEY = re.compile(r"SECRET_KEY\s*=\s*[\'\"](.*?)[\'\"]")
+        self.PATT_DEBUG = re.compile(r"DEBUG\s*=\s*(False|True)")
+        self.PATT_ALLOWED_HOSTS = re.compile(r"ALLOWED_HOSTS\s*=\s*\['(.*?)'\]")
+        self.PATT_X_FRAME_OPTIONS = None
+        self.PATT_LANGUAGE_CODE = re.compile(r"LANGUAGE_CODE\s*=\s*'(.*?)'")
+        self.PATT_TIME_ZONE = re.compile(r"TIME_ZONE\s*=\s*'(.*?)'")
+        self.PATT_USE_I18N = re.compile(r"USE_I18N\s*=\s*(False|True)")
+        self.PATT_USE_L10N = re.compile(r"USE_L10N\s*=\s*(False|True)")
+        self.PATT_USE_TZ = re.compile(r"USE_TZ\s*=\s*(False|True)")
+
+        """正则结束"""
+
         wx.Dialog.__init__(self, parent, id, '项目配置', size=(600, 400))
 
         wholePanel = wx.Panel(self)
@@ -533,8 +458,11 @@ class SettingsDialog(wx.Dialog):
         wholeToolsBox.Add(self.saveConfig, 0, wx.EXPAND | wx.ALL, 2)
 
         labels = wx.Notebook(wholePanel)
+
+        """数据库"""
         self.databasesPanel = wx.Panel(labels) # 数据库
 
+        """Settings"""
         self.otherPanel = scrolledpanel.ScrolledPanel(labels, -1) # 其它（可滚动面板）
         self.otherPanel.SetupScrolling() # 开启滚动条
         otherRefreshKeyPanel = wx.Panel(self.otherPanel) # SECRET_KEY
@@ -549,7 +477,7 @@ class SettingsDialog(wx.Dialog):
         otherUseTzPanel = wx.Panel(self.otherPanel) # USE_TZ
 
         # 其它 控件
-        self.btnRefreshSecretKey = buttons.GenButton(otherRefreshKeyPanel, -1, '刷新SECRET_KEY') # 刷新 SECRET_KEY
+        self.btnRefreshSecretKey = buttons.GenButton(otherRefreshKeyPanel, -1, '重置SECRET_KEY') # 刷新 SECRET_KEY
         self.inputRefreshSecretKey = wx.TextCtrl(otherRefreshKeyPanel, -1, style=wx.ALIGN_LEFT) # 显示 SECRET_KEY
         self.inputRefreshSecretKey.Enable(False)
         self.radiosPanel = wx.RadioBox(otherDebugPanel, -1, "调式模式", choices=['开启', '关闭'])
@@ -574,8 +502,8 @@ class SettingsDialog(wx.Dialog):
         otherUseTzBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
 
         # 填充
-        otherRefreshKeyBOX.Add(self.btnRefreshSecretKey, 0, wx.EXPAND | wx.ALL, 2)
         otherRefreshKeyBOX.Add(self.inputRefreshSecretKey, 1, wx.EXPAND | wx.ALL, 2)
+        otherRefreshKeyBOX.Add(self.btnRefreshSecretKey, 0, wx.EXPAND | wx.ALL, 2)
         otherDebugBOX.Add(self.radiosPanel, 1, wx.EXPAND | wx.ALL, 2)
         otherIframeBOX.Add(self.radiosIframePanel, 1, wx.EXPAND | wx.ALL, 2)
         otherLanguageCodeBOX.Add(self.radiosLanguageCodePanel, 1, wx.EXPAND | wx.ALL, 2)
@@ -607,14 +535,59 @@ class SettingsDialog(wx.Dialog):
         otherUseTzPanel.SetSizer(otherUseTzBOX)
         self.otherPanel.SetSizer(otherBox)
 
+        """项目重命名"""
+        self.projectRenamePanel = wx.Panel(labels)
+        self.renamePanel = wx.Panel(self.projectRenamePanel)
+        projectRenameBox = wx.BoxSizer(wx.VERTICAL)
+        renameBox = wx.BoxSizer(wx.VERTICAL)
+        horizontal_box = wx.BoxSizer(wx.HORIZONTAL)
+
+        temp = wx.StaticBox(self.renamePanel, -1, 'Django项目：') # 带边框的盒子
+        static_config_box = wx.StaticBoxSizer(temp, wx.VERTICAL) # 垂直布局
+
+        flagProjectName = wx.StaticText(self.renamePanel, -1, "您的项目名称：") # 项目名称
+        self.inputProjectName = wx.TextCtrl(self.renamePanel, -1, style=wx.ALIGN_LEFT) # 输入框
+        project_name = self.configs['project_name']
+        self.inputProjectName.SetValue(f"{project_name}")
+
+        self.flagFirst = wx.StaticText(self.renamePanel, -1, "请先关闭所有占用此Django项目的程序。（否则会遇到修改权限问题）")
+        self.btnModify = buttons.GenButton(self.renamePanel, -1, label='修改（修改前请提前做好备份）')
+        self.flagTip = wx.StaticText(self.renamePanel, -1, "请确保您的项目名称在您整个项目中是独一无二的，否则本功能会严重破坏您的项目")
+
+        horizontal_box.Add(flagProjectName, 0, wx.ALL | wx.CENTER, 5)
+        horizontal_box.Add(self.inputProjectName, 0, wx.ALL | wx.CENTER, 5)
+
+        static_config_box.Add(horizontal_box, 0, wx.ALL | wx.CENTER, 10)
+
+        renameBox.Add(static_config_box, 0, wx.ALL | wx.CENTER, 5)
+        renameBox.Add(self.flagFirst, 0, wx.ALL | wx.CENTER, 5)
+        renameBox.Add(self.flagTip, 0, wx.ALL | wx.CENTER, 5)
+        renameBox.Add(self.btnModify, 0, wx.ALL | wx.CENTER, 5)
+
+        projectRenameBox.Add(self.renamePanel, 1, wx.ALL | wx.CENTER, 5)
+
+        self.renamePanel.SetSizer(renameBox)
+        self.projectRenamePanel.SetSizer(projectRenameBox)
+
+        """填充页签"""
         labels.AddPage(self.otherPanel, 'Settings')
-        labels.AddPage(self.databasesPanel, '数据库配置')
+        labels.AddPage(self.databasesPanel, '数据库')
+        labels.AddPage(self.projectRenamePanel, '重命名')
 
         wholeBox.Add(labels, 1, wx.EXPAND | wx.ALL, 2) # 添加多页签
         wholeBox.Add(wholeToolsPanel, 0, wx.EXPAND | wx.ALL, 2) # 添加工具条
 
         # 事件监听
         self.Bind(wx.EVT_BUTTON, self.onBtnRefreshSecretKey, self.btnRefreshSecretKey)
+        self.Bind(wx.EVT_BUTTON, self.onBtnModify, self.btnModify)
+        self.Bind(wx.EVT_BUTTON, self.onBtnSaveConfig, self.saveConfig)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosPanel)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosIframePanel)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosLanguageCodePanel)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosTimeZonePanel)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseI18NPanel)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseL10NPanel)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseTzPanel)
 
         # 基本对象
         self.DATA_SETTINGS = {}
@@ -634,12 +607,85 @@ class SettingsDialog(wx.Dialog):
         self.radiosUseTzPanel.SetSelection(0 if CONFIGS['USE_TZ'] else 1)
         self.inputRefreshSecretKey.SetValue(CONFIGS['SECRET_KEY'])
         self.inputAllowedHosts.SetValue('、'.join(CONFIGS['ALLOWED_HOSTS']))
+
+    def onBtnSaveConfig(self, e):
+        """保存修改"""
+        content_settings = read_file(self.DIRSETTINGS)
+
+
+    def onBtnModify(self, e):
+        """重命名项目名称"""
+        # 获取新的名称
+        old_name = self.configs['project_name']
+        new_name = self.inputProjectName.GetValue().strip()
+
+        if old_name == new_name:
+            dlg = wx.MessageDialog( self, "未做任何修改", "警告", wx.OK)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return
+
+        if not PATT_CHARS.match(new_name):
+            dlg = wx.MessageDialog( self, "请使用字母+下划线的方式命名", "错误", wx.OK)
+            dlg.ShowModal()
+            dlg.Destroy()
+            return
+        try:
+            # 重命名项目（先文件，后目录）
+            search_path = os.path.join(self.DIRNAME, '**', '*')
+            alls = glob.glob(search_path, recursive=True)
+
+            # 分类文件和文件夹
+            files, floders = [], []
+            for _ in alls:
+                if os.path.isfile(_): files.append(_)
+                else: floders.append(_)
+
+            for p in files:
+                # 先读后写
+                if '.py' == os.path.splitext(p)[1]:
+                    content = read_file(p)
+                    content = content.replace(old_name.strip(), new_name)
+                    write_file(p, content)
+
+            for P in floders:
+                if old_name.strip().lower() == os.path.basename(P).strip().lower():
+                    temp = os.path.join(os.path.dirname(P), new_name)
+                    os.rename(P, temp)
+
+            # 修改根目录名称
+            os.rename(self.DIRNAME, os.path.join(os.path.dirname(self.DIRNAME), new_name))
+            
+            dlg = wx.MessageDialog( self, "修改成功，请退出所有窗口后重新打开，进行后续操作。", "成功", wx.OK)
+            if dlg.ShowModal() == wx.ID_OK:
+                self.Close(True)
+            dlg.ShowModal()
+            dlg.Destroy()
+        except:
+            """操作回退，将之前所有的改动还原"""
+            pass # 待完成
+
+    def onRadioBox(self, e):
+        """单选框组事件"""
+        key = e.GetId()
+        if key == self.radiosPanel.GetId(): # DEBUG
+            self.DATA_SETTINGS['DEBUG'] = True if 0 == self.radiosPanel.GetSelection() else False
+        elif key == self.radiosIframePanel.GetId(): # X_FRAME_OPTIONS
+            self.DATA_SETTINGS['X_FRAME_OPTIONS'] = True if 0 == self.radiosIframePanel.GetSelection() else False
+        elif key == self.radiosLanguageCodePanel.GetId(): # LANGUAGE_CODE
+            self.DATA_SETTINGS['LANGUAGE_CODE'] = self.radiosLanguageCodePanel.GetSelection()
+        elif key == self.radiosTimeZonePanel.GetId(): # TIME_ZONE
+            self.DATA_SETTINGS['TIME_ZONE'] = self.radiosTimeZonePanel.GetSelection()
+        elif key == self.radiosUseI18NPanel.GetId(): # USE_I18N
+            self.DATA_SETTINGS['USE_I18N'] = True if 0 == self.radiosUseI18NPanel.GetSelection() else False
+        elif key == self.radiosUseL10NPanel.GetId(): # USE_L10N
+            self.DATA_SETTINGS['USE_L10N'] = True if 0 == self.radiosUseL10NPanel.GetSelection() else False
+        elif key == self.radiosUseTzPanel.GetId(): # USE_TZ
+            self.DATA_SETTINGS['USE_TZ'] = True if 0 == self.radiosUseTzPanel.GetSelection() else False
         
-
-        # self.radiosPanel.GetSelection()
-
     def onBtnRefreshSecretKey(self, e):
         """刷新SECRET_KEY"""
         new_key = generate_secret_key()
         self.DATA_SETTINGS['SECRET_KEY'] = new_key
         self.inputRefreshSecretKey.SetValue(new_key)
+

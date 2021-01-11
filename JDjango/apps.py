@@ -10,7 +10,7 @@ class App(wx.App):
 
     def OnInit(self):
         self.frame = Main()
-        self.frame.SetWindowStyle(wx.DEFAULT_FRAME_STYLE | wx.FRAME_TOOL_WINDOW)
+        self.frame.SetWindowStyle(wx.DEFAULT_FRAME_STYLE) #  | wx.FRAME_TOOL_WINDOW
         self.frame.Show(True)
         self.SetTopWindow(self.frame)
         return True

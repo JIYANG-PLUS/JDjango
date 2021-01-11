@@ -76,3 +76,10 @@ def generate_secret_key(length = 50):
     for i in range(length):
         secret.append(random.choice(allChars))
     return ''.join(secret)
+
+def patt_sub_only_capture_obj(patt, replace_str, old_str):
+    """正则表达式sub替换仅限于捕捉内容，而不是整体替换"""
+    if patt.search(old_str):
+        return patt.sub(lambda x:x.group(0).replace(x.group(1), replace_str), old_str)
+    else:
+        return old_str
