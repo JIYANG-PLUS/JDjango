@@ -587,15 +587,16 @@ class Main(wx.Frame):
             self.dirname = dlg.GetDirectory()
             if 'manage.py' == filename:
                 self.path.SetValue(f'当前项目路径：{self.dirname}')
-                # 开放所有的检测按钮
-                self._open_all_check()
-                # 开放部分必要按钮
-                self._open_part_btns()
                 try:
                     self._init_config() # 初始化配置文件
                 except Exception as e:
                     self.infos.AppendText(out_infos('配置文件config.json初始化失败！', level=3))
+
                 else:
+                    # 开放所有的检测按钮
+                    self._open_all_check()
+                    # 开放部分必要按钮
+                    self._open_part_btns()
                     self.infos.AppendText(out_infos(f'项目{os.path.basename(self.dirname)}导入成功！', level=1))
             else:
                 self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))

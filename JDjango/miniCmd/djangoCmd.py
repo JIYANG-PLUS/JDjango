@@ -4,9 +4,6 @@ from ..tools import environment as env
 from ..settings import BASE_DIR as PROJECT_BASE_NAME, CONFIG_PATH
 
 TEMPLATE_DIR = os.path.join(PROJECT_BASE_NAME, 'djangoTemplates')
-PROJECT_CONFIG = get_configs(CONFIG_PATH)
-DIRNAME = PROJECT_CONFIG['dirname']
-DIRSETTINGS = os.path.join(DIRNAME, PROJECT_CONFIG['project_name'], 'settings.py')
 
 __all__ = [
     'startproject',
@@ -264,6 +261,9 @@ def fix_urls(app_url):
 
 def refresh_config():
     """初始化配置文件"""
+    PROJECT_CONFIG = get_configs(CONFIG_PATH)
+    DIRNAME = PROJECT_CONFIG['dirname']
+    DIRSETTINGS = os.path.join(DIRNAME, PROJECT_CONFIG['project_name'], 'settings.py')
     # 更新配置文件
     temp_configs = {} # 全局配置文件待写入
     # 必要前缀赋值
