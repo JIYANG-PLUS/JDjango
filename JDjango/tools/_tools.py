@@ -77,3 +77,18 @@ def generate_secret_key(length = 50):
         secret.append(random.choice(allChars))
     return ''.join(secret)
 
+def cut_content_by_doublecode(text, leftCode='[', rightCode=']'):
+    """获取成对的中括号中的文本（不包含两侧成对符号）"""
+    # 如：[asd[cvb]] 会获取到 asd[cvb]
+    stack = []
+    cut_text = ""
+    for _ in text:
+        if len(stack) > 0:
+            cut_text += _
+        if leftCode == _:
+            stack.append(_)
+        if rightCode == _:
+            stack.pop()
+            if 0 == len(stack):
+                return cut_text[:-1]
+    return ''

@@ -436,7 +436,7 @@ class SettingsDialog(wx.Dialog):
         # 相关替换正则
         self.PATT_SECRET_KEY = re.compile(r"SECRET_KEY\s*=\s*[\'\"](.*?)[\'\"]")
         self.PATT_DEBUG = re.compile(r"DEBUG\s*=\s*(False|True)")
-        self.PATT_ALLOWED_HOSTS = re.compile(r"ALLOWED_HOSTS\s*=\s*\['(.*?)'\]")
+        self.PATT_ALLOWED_HOSTS = re.compile(r"ALLOWED_HOSTS\s*=\s*\[([\'\"]*.*?[\'\"]*)\]")
         self.PATT_X_FRAME_OPTIONS = re.compile(r"X_FRAME_OPTIONS\s*=\s*'ALLOWALL'")
         self.PATT_LANGUAGE_CODE = re.compile(r"LANGUAGE_CODE\s*=\s*'(.*?)'")
         self.PATT_TIME_ZONE = re.compile(r"TIME_ZONE\s*=\s*'(.*?)'")
@@ -448,7 +448,7 @@ class SettingsDialog(wx.Dialog):
 
         """正则结束"""
 
-        wx.Dialog.__init__(self, parent, id, '项目配置', size=(600, 400))
+        wx.Dialog.__init__(self, parent, id, '项目配置', size=(800, 600))
 
         wholePanel = wx.Panel(self)
         wholeBox = wx.BoxSizer(wx.VERTICAL) # 垂直
@@ -609,45 +609,50 @@ class SettingsDialog(wx.Dialog):
         self.radiosUseL10NPanel.SetSelection(0 if CONFIGS['USE_L10N'] else 1)
         self.radiosUseTzPanel.SetSelection(0 if CONFIGS['USE_TZ'] else 1)
         self.inputRefreshSecretKey.SetValue(CONFIGS['SECRET_KEY'])
-        self.inputAllowedHosts.SetValue('、'.join(CONFIGS['ALLOWED_HOSTS']))
+        self.inputAllowedHosts.SetValue(','.join(CONFIGS['ALLOWED_HOSTS']))
 
     def onBtnSaveConfig(self, e):
         """保存修改"""
-        CONFIGS = get_configs(CONFIG_PATH)
-        content_settings = read_file(self.DIRSETTINGS)
-        temp = content_settings
-        if None != self.DATA_SETTINGS.get('DEBUG'):
-            temp = patt_sub_only_capture_obj(self.PATT_DEBUG, self.DATA_SETTINGS['DEBUG'], temp)
-        if None != self.DATA_SETTINGS.get('USE_I18N'):
-            temp = patt_sub_only_capture_obj(self.PATT_USE_I18N, self.DATA_SETTINGS['USE_I18N'], temp)
-        if None != self.DATA_SETTINGS.get('USE_L10N'):
-            temp = patt_sub_only_capture_obj(self.PATT_USE_L10N, self.DATA_SETTINGS['USE_L10N'], temp)
-        if None != self.DATA_SETTINGS.get('USE_TZ'):
-            temp = patt_sub_only_capture_obj(self.PATT_USE_TZ, self.DATA_SETTINGS['USE_TZ'], temp)
-        if None != self.DATA_SETTINGS.get('X_FRAME_OPTIONS'):
-            if self.DATA_SETTINGS['X_FRAME_OPTIONS']: # 开启
-                if not CONFIGS['X_FRAME_OPTIONS']: # 且原文件不存在
-                    TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates', 'settings', 'iframe.django')
-                    # 在文件末尾添加iframe开启代码
-                    write_file(self.DIRSETTINGS, temp) # 刷新
-                    append_file(self.DIRSETTINGS, read_file_list(TEMPLATE_DIR))
-                    temp = read_file(self.DIRSETTINGS) # 刷新
-            else: # 关闭（删除）
-                temp = self.PATT_X_FRAME_OPTIONS.sub('', temp)
-        if None != self.DATA_SETTINGS.get('LANGUAGE_CODE'):
-            re_str = SETTINGSS['LANGUAGE_CODE'][self.DATA_SETTINGS['LANGUAGE_CODE']][0]
-            temp = patt_sub_only_capture_obj(self.PATT_LANGUAGE_CODE, re_str, temp)
-        if None != self.DATA_SETTINGS.get('TIME_ZONE'):
-            re_str = SETTINGSS['TIME_ZONE'][self.DATA_SETTINGS['TIME_ZONE']][0]
-            temp = patt_sub_only_capture_obj(self.PATT_TIME_ZONE, re_str, temp)
-        # 写入SECRET_KEY和HOST
-        temp = patt_sub_only_capture_obj(self.PATT_SECRET_KEY, self.inputRefreshSecretKey.GetValue(), temp)
-        temp = patt_sub_only_capture_obj(self.PATT_ALLOWED_HOSTS, self.inputAllowedHosts.GetValue(), temp)
+        try:
+            CONFIGS = get_configs(CONFIG_PATH)
+            content_settings = read_file(self.DIRSETTINGS)
+            temp = content_settings
+            if None != self.DATA_SETTINGS.get('DEBUG'):
+                temp = patt_sub_only_capture_obj(self.PATT_DEBUG, self.DATA_SETTINGS['DEBUG'], temp)
+            if None != self.DATA_SETTINGS.get('USE_I18N'):
+                temp = patt_sub_only_capture_obj(self.PATT_USE_I18N, self.DATA_SETTINGS['USE_I18N'], temp)
+            if None != self.DATA_SETTINGS.get('USE_L10N'):
+                temp = patt_sub_only_capture_obj(self.PATT_USE_L10N, self.DATA_SETTINGS['USE_L10N'], temp)
+            if None != self.DATA_SETTINGS.get('USE_TZ'):
+                temp = patt_sub_only_capture_obj(self.PATT_USE_TZ, self.DATA_SETTINGS['USE_TZ'], temp)
+            if None != self.DATA_SETTINGS.get('X_FRAME_OPTIONS'):
+                if self.DATA_SETTINGS['X_FRAME_OPTIONS']: # 开启
+                    if not CONFIGS['X_FRAME_OPTIONS']: # 且原文件不存在
+                        TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates', 'settings', 'iframe.django')
+                        # 在文件末尾添加iframe开启代码
+                        write_file(self.DIRSETTINGS, temp) # 刷新
+                        append_file(self.DIRSETTINGS, read_file_list(TEMPLATE_DIR))
+                        temp = read_file(self.DIRSETTINGS) # 刷新
+                else: # 关闭（删除）
+                    temp = self.PATT_X_FRAME_OPTIONS.sub('', temp)
+            if None != self.DATA_SETTINGS.get('LANGUAGE_CODE'):
+                re_str = SETTINGSS['LANGUAGE_CODE'][self.DATA_SETTINGS['LANGUAGE_CODE']][0]
+                temp = patt_sub_only_capture_obj(self.PATT_LANGUAGE_CODE, re_str, temp)
+            if None != self.DATA_SETTINGS.get('TIME_ZONE'):
+                re_str = SETTINGSS['TIME_ZONE'][self.DATA_SETTINGS['TIME_ZONE']][0]
+                temp = patt_sub_only_capture_obj(self.PATT_TIME_ZONE, re_str, temp)
+            # 写入SECRET_KEY和HOST
+            temp = patt_sub_only_capture_obj(self.PATT_SECRET_KEY, self.inputRefreshSecretKey.GetValue(), temp)
+            host_contents = [f"'{_}'" for _ in self.inputAllowedHosts.GetValue().strip().split(',') if _]
+            temp = patt_sub_only_capture_obj_obtain_double(self.PATT_ALLOWED_HOSTS, ','.join(host_contents), temp)
 
-        write_file(self.DIRSETTINGS, temp) # 更新settings.py文件
-        refresh_config() # 更新配置文件【重要！！！】
-        self.DATA_SETTINGS = {} # 防止重复确定
-        wx.MessageBox(f'修改成功！', '成功', wx.OK | wx.ICON_INFORMATION) # 提示成功
+            write_file(self.DIRSETTINGS, temp) # 更新settings.py文件
+            refresh_config() # 更新配置文件【重要！！！】
+            self.DATA_SETTINGS = {} # 防止重复确定
+        except:
+            wx.MessageBox(f'错误，配置文件已损坏。', '错误', wx.OK | wx.ICON_INFORMATION)
+        else:
+            wx.MessageBox(f'修改成功！', '成功', wx.OK | wx.ICON_INFORMATION)
         
     def onBtnModify(self, e):
         """重命名项目名称"""

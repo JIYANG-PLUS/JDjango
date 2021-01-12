@@ -16,14 +16,12 @@ class App(wx.App):
         return True
 
     def OnExit(self):
-        # wx.Exit() // 强制关闭窗口（不推荐使用）
+        # wx.Exit() # 强制关闭窗口（不推荐使用）
         return super().OnExit()
-
 
 def main():
     app = App(redirect=False) # 【指定filename将输出到文件】
     app.MainLoop()
-
 
 if __name__ == "__main__":
     main()

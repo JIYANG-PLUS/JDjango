@@ -6,17 +6,17 @@ from ..settings import BASE_DIR as PROJECT_BASE_NAME, CONFIG_PATH
 TEMPLATE_DIR = os.path.join(PROJECT_BASE_NAME, 'djangoTemplates')
 
 __all__ = [
-    'startproject',
-    'startapp',
-    'write_admin_base',
-    'get_site_header',
-    'get_site_title',
-    'set_site_header',
-    'set_site_title',
-    'get_urlpatterns_content',
-    'judge_in_main_urls',
-    'fix_urls',
-    'refresh_config',
+    'startproject', # 新建项目
+    'startapp', # 新建应用程序
+    'write_admin_base', # 创建最基本的后台管理中心
+    'get_site_header', # 获取后台站点登录名
+    'get_site_title', # 获取后台站点网站名
+    'set_site_header', # 设置后台站点登录名
+    'set_site_title', # 设置后台站点网站名
+    'get_urlpatterns_content', # 获取urls.py中urlpatterns中括号内部的内容
+    'judge_in_main_urls', # 判断应用程序是否均在urls.py中注册
+    'fix_urls', # 修复路由
+    'refresh_config', # 更新配置文件config.json
 ]
 
 PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
@@ -202,29 +202,13 @@ def set_site_title(new_name, mode=0):
     if mode in (0, 2):
         append_content(alias_paths[0], 'renameTitle.django', concat=['admin'], replace=True, title_name=new_name)
 
-def _cut_content_by_doublecode(text, leftCode='[', rightCode=']'):
-    """获取成对的中括号中的文本"""
-    # 如：[asd[cvb]] 会获取到 asd[cvb]
-    stack = []
-    cut_text = ""
-    for _ in text:
-        if len(stack) > 0:
-            cut_text += _
-        if leftCode == _:
-            stack.append(_)
-        if rightCode == _:
-            stack.pop()
-            if 0 == len(stack):
-                return cut_text[:-1]
-    return ''
-
 def get_urlpatterns_content(path):
     """获取urlpatterns列表内容区域"""
     content = read_file(path)
     obj = PATT_URLPATTERNS.search(content)
     if obj:
         complex_content = PATT_URLPATTERNS.findall(content)[0]
-        return _cut_content_by_doublecode(complex_content)
+        return cut_content_by_doublecode(complex_content)
     else:
         return ''
 

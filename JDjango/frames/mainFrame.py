@@ -1,6 +1,7 @@
 import wx, time, os, json, datetime, re
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
+from ..dialogs.sqliteDialog import *
 from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -15,6 +16,29 @@ ID_FILE = 202
 ID_FLODER = 202
 
 PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
+
+class SqliteApp(wx.App):
+
+    def __init__(self, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
+        wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
+
+    def OnInit(self):
+        self.frame = SqliteManageDialog()
+        self.frame.SetWindowStyle(wx.DEFAULT_FRAME_STYLE)
+        self.frame.Show(True)
+        self.SetTopWindow(self.frame)
+        return True
+
+    def OnExit(self):
+        return super().OnExit()
+
+def startSqliteApp():
+    # app = SqliteApp(redirect=False)
+    # app.MainLoop()
+    app = wx.PySimpleApp()
+    frame = SqliteManageDialog()
+    frame.Show()
+    app.MainLoop()
 
 class Main(wx.Frame):
 
@@ -157,6 +181,7 @@ class Main(wx.Frame):
         menus.AppendSeparator()
         menusProject = wx.Menu()
         self.menusSettings = menusProject.Append(wx.ID_ANY, "&Settings", "Settings")
+        self.allInitBtns['global']['other'].append(self.menusSettings)
         self.menusSettings.Enable(False)
         menus.Append(wx.ID_ANY, "&Django项目", menusProject)
         menus.AppendSeparator() # --
@@ -167,6 +192,8 @@ class Main(wx.Frame):
         settings.Append(wx.ID_ANY, "&字体", fonts)
         settings.AppendSeparator() # --
         self.language = settings.Append(wx.ID_ANY, "&语言", "语言")
+        settings.AppendSeparator() # --
+        self.sqliteManageTool = settings.Append(wx.ID_ANY, "&SQLite3", "SQLite3")
         menus.Append(wx.ID_ANY, "&工具", settings)
         
         # # 创建编辑菜单项
@@ -303,9 +330,10 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onAdminGenerateBase, self.adminGenerateBase) # 创建简单管理中心
         self.Bind(wx.EVT_MENU, self.onAdminRename, self.adminRename) # 修改后台网站名
 
-        # 设置 事件绑定
+        # 工具 事件绑定
         self.Bind(wx.EVT_MENU, self.onFontsMinus, self.fonts_minus) # 字体减小
         self.Bind(wx.EVT_MENU, self.onFontsAdd, self.fonts_add) # 字体减小
+        self.Bind(wx.EVT_MENU, self.onSqliteManageTool, self.sqliteManageTool) # SqLite
 
         # 视图 事件绑定
         self.Bind(wx.EVT_MENU, self.onViewsGenerateFunc, self.viewsGenerateFunc) # 新增视图（多样新增）
@@ -319,6 +347,10 @@ class Main(wx.Frame):
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onSqliteManageTool(self, e):
+        """跨平台的Sqlite工具"""
+        startSqliteApp()
 
     def onMenusSettings(self, e):
         """Settings"""
@@ -580,9 +612,9 @@ class Main(wx.Frame):
 
     def select_root(self):
         """选择项目根路径【项目入口】"""
-        self._close_all() # 初始化按钮状态
-        dlg = wx.FileDialog(self, "选择Django项目的manage.py文件", r'', "", "*.*", wx.FD_OPEN)
+        dlg = wx.FileDialog(self, "选择Django项目的manage.py文件", r'', "", "*.py", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
+            self._close_all() # 初始化按钮状态
             filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
             if 'manage.py' == filename:
@@ -591,12 +623,13 @@ class Main(wx.Frame):
                     self._init_config() # 初始化配置文件
                 except Exception as e:
                     self.infos.AppendText(out_infos('配置文件config.json初始化失败！', level=3))
-
                 else:
                     # 开放所有的检测按钮
                     self._open_all_check()
                     # 开放部分必要按钮
                     self._open_part_btns()
+                    self.infos.Clear()
+                    # self.path.Clear()
                     self.infos.AppendText(out_infos(f'项目{os.path.basename(self.dirname)}导入成功！', level=1))
             else:
                 self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
