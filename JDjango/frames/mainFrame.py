@@ -1,7 +1,6 @@
 import wx, time, os, json, datetime, re
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
-from ..dialogs.sqliteDialog import *
 from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -16,29 +15,6 @@ ID_FILE = 202
 ID_FLODER = 202
 
 PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
-
-class SqliteApp(wx.App):
-
-    def __init__(self, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
-        wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
-
-    def OnInit(self):
-        self.frame = SqliteManageDialog()
-        self.frame.SetWindowStyle(wx.DEFAULT_FRAME_STYLE)
-        self.frame.Show(True)
-        self.SetTopWindow(self.frame)
-        return True
-
-    def OnExit(self):
-        return super().OnExit()
-
-def startSqliteApp():
-    # app = SqliteApp(redirect=False)
-    # app.MainLoop()
-    app = wx.PySimpleApp()
-    frame = SqliteManageDialog()
-    frame.Show()
-    app.MainLoop()
 
 class Main(wx.Frame):
 
@@ -350,7 +326,9 @@ class Main(wx.Frame):
 
     def onSqliteManageTool(self, e):
         """跨平台的Sqlite工具"""
-        startSqliteApp()
+        dlg = wx.MessageDialog(self, "正在设计中。", "提示信息", wx.OK)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def onMenusSettings(self, e):
         """Settings"""
