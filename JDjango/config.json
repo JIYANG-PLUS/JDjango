@@ -11,7 +11,7 @@
             "NAME": "/Users/jiyang/Desktop/jiyang/db.sqlite3"
         }
     },
-    "DEBUG": false,
+    "DEBUG": true,
     "LANGUAGE_CODE": "zh-Hans",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,

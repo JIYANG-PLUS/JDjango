@@ -1,13 +1,40 @@
 import wx
-import wx.xrc
 
 class SQLiteManageFrame ( wx.Frame ):
 
-	def __init__( self, parent = None ):
+	def __init__( self, parent ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"SQLite3管理工具", pos = wx.DefaultPosition, size = wx.Size( 851,598 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
-
+		mainSizer = wx.BoxSizer( wx.VERTICAL )
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 
+		self._init_menus()
+		self._init_toolbar()
+		self._init_statusbar()
+
+		self.mainPanel = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		mainPanelSizer = wx.BoxSizer( wx.VERTICAL )
+
+		self.mainPanel.SetSizer( mainPanelSizer )
+		self.mainPanel.Layout()
+		mainPanelSizer.Fit( self.mainPanel )
+
+		mainSizer.Add( self.mainPanel, 1, wx.EXPAND |wx.ALL, 5 )
+		self.SetSizer( mainSizer ) # frame窗口布局
+
+		self.Layout()
+		self.Centre( wx.BOTH )
+
+	def _init_statusbar(self):
+		"""初始化底部状态条"""
+		self.statusBar = self.CreateStatusBar( 1, wx.STB_SIZEGRIP, wx.ID_ANY )
+		
+	def _init_toolbar(self):
+		"""初始化工具条"""
+		self.toolBar = self.CreateToolBar( wx.TB_HORIZONTAL, wx.ID_ANY )
+		self.toolBar.Realize()
+
+	def _init_menus(self):
+		"""初始化菜单项"""
 		self.menubar = wx.MenuBar( 0 )
 		self.linkBar = wx.Menu()
 		self.newSQLite3 = wx.MenuItem( self.linkBar, wx.ID_ANY, u"SQLite3", wx.EmptyString, wx.ITEM_NORMAL )
@@ -58,51 +85,18 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.menubar.Append( self.operateBar, u"数据库操作" )
 
 		self.lltimeMenu = wx.Menu()
-		self.lltimeInsert = wx.MenuItem( self.lltimeMenu, wx.ID_ANY, u"导入", wx.EmptyString, wx.ITEM_NORMAL )
+		self.lltimeInsert = wx.MenuItem( self.lltimeMenu, wx.ID_ANY, u"SQL导入", wx.EmptyString, wx.ITEM_NORMAL )
 		self.lltimeMenu.Append( self.lltimeInsert )
 
-		self.lltimeOutput = wx.MenuItem( self.lltimeMenu, wx.ID_ANY, u"导出", wx.EmptyString, wx.ITEM_NORMAL )
+		self.lltimeOutput = wx.MenuItem( self.lltimeMenu, wx.ID_ANY, u"SQL导出", wx.EmptyString, wx.ITEM_NORMAL )
 		self.lltimeMenu.Append( self.lltimeOutput )
 
 		self.menubar.Append( self.lltimeMenu, u"持久化" )
 
 		self.SetMenuBar( self.menubar )
 
-		self.statusBar = self.CreateStatusBar( 1, wx.STB_SIZEGRIP, wx.ID_ANY )
-		mainSizer = wx.BoxSizer( wx.VERTICAL )
-
-		self.mainPanel = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		mainPanelSizer = wx.BoxSizer( wx.VERTICAL )
-
-		self.splitPanel = wx.SplitterWindow( self.mainPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.SP_3D )
-		self.splitPanel.Bind( wx.EVT_IDLE, self.splitPanelOnIdle )
-
-		self.leftPanel = wx.Panel( self.splitPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.leftPanel.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_HIGHLIGHT ) )
-
-		self.rightPanel = wx.Panel( self.splitPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.rightPanel.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_GRAYTEXT ) )
-
-		self.splitPanel.SplitVertically( self.leftPanel, self.rightPanel, 103 )
-		mainPanelSizer.Add( self.splitPanel, 1, wx.EXPAND, 5 )
-
-
-		self.mainPanel.SetSizer( mainPanelSizer )
-		self.mainPanel.Layout()
-		mainPanelSizer.Fit( self.mainPanel )
-		mainSizer.Add( self.mainPanel, 1, wx.EXPAND |wx.ALL, 5 )
-
-
-		self.SetSizer( mainSizer )
-		self.Layout()
-
-		self.Centre( wx.BOTH )
 
 	def __del__( self ):
+		"""释放资源"""
 		pass
-
-	def splitPanelOnIdle( self, event ):
-		self.splitPanel.SetSashPosition( 103 )
-		self.splitPanel.Unbind( wx.EVT_IDLE )
-
 
