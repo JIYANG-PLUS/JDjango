@@ -186,6 +186,12 @@ class Main(wx.Frame):
         helpsDocumentation = helps.Append(wx.ID_ANY, "&参考文档", "参考文档")
         helps.AppendSeparator()
         menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
+
+        # 端口与进程
+        portProgress = wx.Menu()
+        self.port = portProgress.Append(wx.ID_ANY, "&查看端口", "查看端口")
+        portProgress.AppendSeparator()
+        self.progress = portProgress.Append(wx.ID_ANY, "&关闭进程", "关闭进程")
         
         # 单项检测
         perCheck = wx.Menu()
@@ -287,6 +293,7 @@ class Main(wx.Frame):
         menuBar.Append(perFix, "&单项修复")
         # menuBar.Append(test, "&单元测试")
         menuBar.Append(admin, "&后台管理中心")
+        menuBar.Append(portProgress, "端口/进程")
         menuBar.Append(helps, "&帮助")
         menuBar.Append(directExit, "&退出")
         self.SetMenuBar(menuBar)
@@ -375,7 +382,6 @@ class Main(wx.Frame):
             self.infos.AppendText(out_infos(f"{msg}未注册。", level=3))
             self._open_point_fix('urls')
         
-
     def onAdminRename(self, e):
         """重命名后台名称"""
         dlg = AdminRenameDialog(self, -1)
