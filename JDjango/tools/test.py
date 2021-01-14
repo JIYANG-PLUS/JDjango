@@ -1,24 +1,29 @@
 import wx
- 
-class MyFrame(wx.Frame):
+import wx.grid
+class TestTable(wx.grid.PyGridTableBase):
     def __init__(self):
-        wx.Frame.__init__(self, None, -1, 'MyFrame', pos = (-1,-1), size = (700,700), style = wx.DEFAULT_FRAME_STYLE)
-        self.tree = wx.TreeCtrl(self)
-        self.tree.SetWindowStyle(wx.TR_HAS_VARIABLE_ROW_HEIGHT)
-        self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickLeftKey, self.tree)
-        self.rootdata = self.tree.AddRoot("parent")
-        self.tree.AppendItem(self.rootdata, "child1")
-        self.tree.AppendItem(self.rootdata, "child2")
-        self.tree.AppendItem(self.rootdata, "child3")
- 
-    def OnClickLeftKey(self, event):
-        filename = self.tree.GetItemText(event.GetItem())
-        print(filename)
+        wx.grid.PyGridTableBase.__init__(self)
+        #下面代替取出的数据bai
+        self.data = [ [1, 1],
+            [2, 2] ,
+            [3, 3] ,
+            [4, 4] ,
+        ]
+        # these five are the required methods
+    def GetNumberRows(self): return len(self.data)
+    def GetNumberCols(self): return len(self.data[0])
+    def IsEmptyCell(self, row, col): return True
+    def GetValue(self, row, col): return self.data[row][col]
+    def SetValue(self, row, col, value): pass
 
-app=wx.PySimpleApp()
-
-frame=MyFrame()
-
-frame.Show(True)
-
+class TestFrame(wx.Frame):
+    def __init__(self):
+        wx.Frame.__init__(self, None, title = "Grid Table",
+        size = (640, 480))
+        grid = wx.grid.Grid(self)
+        table = TestTable()
+        grid.SetTable(table, True)
+app = wx.PySimpleApp()
+frame = TestFrame()
+frame.Show()
 app.MainLoop()

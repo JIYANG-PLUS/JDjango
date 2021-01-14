@@ -1,11 +1,15 @@
 {
-    "dirname": "C:\\Users\\PC\\Desktop\\123456\\something",
-    "project_name": "something",
-    "app_names": [],
+    "dirname": "/Users/jiyang/Documents/GitHub/SharePlugIn/family",
+    "project_name": "family",
+    "app_names": [
+        "docs",
+        "blog",
+        "account"
+    ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "C:\\Users\\PC\\Desktop\\123456\\something\\db.sqlite3"
+            "NAME": "/Users/jiyang/Documents/GitHub/SharePlugIn/family/db.sqlite3"
         }
     },
     "DEBUG": true,
@@ -13,15 +17,15 @@
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
-    "USE_TZ": true,
+    "USE_TZ": false,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
         "*"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "pwQ3YX4@mTooQr|i*}bkWUkv>+>#DcO]Q0Xf|;3%m/E;nz}9p[",
+    "SECRET_KEY": "g&gmc75e^(=_9!1vmj$(391tk-ld@18$@f!d(q)f0e2hhx*xu#",
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "C:\\Users\\PC\\Desktop\\123456\\something\\templates"
+        "/Users/jiyang/Documents/GitHub/SharePlugIn/family/templates"
     ]
 }

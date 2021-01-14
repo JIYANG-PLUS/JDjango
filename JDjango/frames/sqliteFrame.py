@@ -1,9 +1,9 @@
 import wx, os
-from ..dialogs.dialogSQLite3 import SelectSQLite3Dialog
+from ..dialogs.dialogSQLite3 import TableAttrbutesDialog
 from ..tools._tools import *
 from ..settings import CONFIG_PATH
 import wx.lib.buttons as buttons
-# import sqlite3
+import sqlite3
 
 class SQLiteManageFrame ( wx.Frame ):
 
@@ -27,41 +27,51 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.Layout()
 		self.Centre( wx.BOTH )
 
+		self.connectSQLiteObj = None # 连接对象
 		self._init_data()
 
+	def _connect_sqlite3_default(self):
+		"""初始化连接"""
+		if os.path.exists(CONFIG_PATH):
+			# 读config.json配置文件
+			CONFIGS = get_configs(CONFIG_PATH)
+			if ('DATABASES' in CONFIGS) and ('default' in CONFIGS['DATABASES']) and ('NAME' in CONFIGS['DATABASES']['default']):
+				sqlite_path = CONFIGS['DATABASES']['default']['NAME']
+				if os.path.isfile(sqlite_path):
+					try:
+						self.connectSQLiteObj = sqlite3.connect(sqlite_path)
+					except:
+						self.connectSQLiteObj = None
+					else:
+						self.cursorObj = self.connectSQLiteObj.cursor()
+						# 初始化树
+						self._init_tree()
+						# 先提示，后显示
+						self.path.SetValue(f"SQLite数据库路径：{sqlite_path}")
+						dlg = wx.MessageDialog(self, f"已自动连接SQLite数据库，读取数据库路径{sqlite_path}", "提示信息", wx.OK)
+						dlg.ShowModal()
+						dlg.Destroy()
+
 	def _init_data(self):
-		"""初始化截面数据"""
-		# 读config.json配置文件
-		CONFIGS = get_configs(CONFIG_PATH)
-		# if ('DATABASES' in CONFIGS) and ('default' in CONFIGS['DATABASES']) and ('NAME' in CONFIGS['DATABASES']['default']):
-		# 	sqlite_path = CONFIGS['DATABASES']['default']['NAME']
-		# 	if os.path.isfile(sqlite_path):
-		# 		try:
-		# 			# self.connectSQLiteObj = sqlite3.connect(sqlite_path)
-		# 			...
-		# 		except:
-		# 			pass
-		# 		else:
-		# 			# 先提示，后显示
-		# 			self.path.SetValue(f"SQLite数据库路径：{sqlite_path}")
-		# 			dlg = wx.MessageDialog(self, f"已自动连接SQLite数据库，读取数据库路径{sqlite_path}", "提示信息", wx.OK)
-		# 			dlg.ShowModal()
-		# 			dlg.Destroy()
+		"""初始化界面数据"""
+		self._connect_sqlite3_default()
 
 	def _init_UI(self):
 		"""初始化页面控件"""
 		self.path = wx.TextCtrl(self.mainPanel, -1)  # sqlite路径
 		self.path.SetEditable(False)
-		self.path.Enable(False)
+		# self.path.Enable(False)
 
 		self.toolPanel = wx.Panel(self.mainPanel) # 工具按钮集
 		toolSizer = wx.BoxSizer( wx.HORIZONTAL ) # 水平
 		# self.btnSelect = buttons.GenButton(self.toolPanel, -1, 'SELECT') # SELECT查询
-		self.btnSelect = wx.Button( self.toolPanel, wx.ID_ANY, u"SELECT", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.btnOpenSQLite3 = wx.Button( self.toolPanel, wx.ID_ANY, u"打开数据库", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.btnSelect = wx.Button( self.toolPanel, wx.ID_ANY, u"SELECT查询", wx.DefaultPosition, wx.DefaultSize, 0 )
 		# self.btnDefault = buttons.GenButton(self.toolPanel, -1, '恢复默认布局')
-		self.btnDefault = wx.Button( self.toolPanel, wx.ID_ANY, u"恢复默认布局", wx.DefaultPosition, wx.DefaultSize, 0 )
+		# self.btnDefault = wx.Button( self.toolPanel, wx.ID_ANY, u"恢复默认布局", wx.DefaultPosition, wx.DefaultSize, 0 )
+		toolSizer.Add(self.btnOpenSQLite3, 0, wx.EXPAND | wx.ALL, 2)
 		toolSizer.Add(self.btnSelect, 0, wx.EXPAND | wx.ALL, 2)
-		toolSizer.Add(self.btnDefault, 0, wx.EXPAND | wx.ALL, 2)
+		# toolSizer.Add(self.btnDefault, 0, wx.EXPAND | wx.ALL, 2)
 		self.toolPanel.SetSizer(toolSizer)
 
 		# 分割面板（上下分割）
@@ -72,7 +82,7 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.splitWindow.Initialize(self.rightPanel)
 		# self.leftPanel.SetBackgroundColour("yellow")
 		# self.rightPanel.SetBackgroundColour("blue")
-		self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 621)
+		self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 681)
 
 
 		# 左子面板继续分割
@@ -82,30 +92,94 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.leftRightPanel = wx.Panel(self.leftSplitWindow, style=wx.SUNKEN_BORDER) # 左-右子面板
 		self.leftSplitWindow.Initialize(self.leftLeftPanel)
 		self.leftSplitWindow.Initialize(self.leftRightPanel)
-		self.leftSplitWindow.SplitVertically(self.leftLeftPanel, self.leftRightPanel, 112)
-		leftPanelSizer.Add(self.leftSplitWindow, 1, wx.EXPAND | wx.ALL, 2)
+		self.leftSplitWindow.SplitVertically(self.leftLeftPanel, self.leftRightPanel, 212)
+		leftPanelSizer.Add(self.leftSplitWindow, 1, wx.EXPAND | wx.ALL, 0)
 		self.leftPanel.SetSizer(leftPanelSizer)	
 
 
 		# 左面板-左面板  树形控件
 		leftLeftPanelSizer = wx.BoxSizer(wx.VERTICAL)
 		self.leftLeftPanel.SetSizer(leftLeftPanelSizer)
-		self.tree = wx.TreeCtrl(self.leftLeftPanel)
+		self.tree = wx.TreeCtrl(self.leftLeftPanel, -1, wx.DefaultPosition, (-1, -1), wx.TR_HAS_BUTTONS)
 		self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickTree, self.tree)
-		self._init_tree()
+		self.Bind( wx.EVT_TREE_ITEM_RIGHT_CLICK, self.onRightTreeClick, self.tree )
 		leftLeftPanelSizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 2)
 
 		self.mainPanelSizer.Add(self.path, 0, wx.EXPAND | wx.ALL, 2)
 		self.mainPanelSizer.Add(self.toolPanel, 0, wx.EXPAND | wx.ALL, 2)
 		self.mainPanelSizer.Add(self.splitWindow, 1, wx.EXPAND | wx.ALL, 2)
 
+		# 左-右面板  表格
+		self.leftRightPanelSizer = wx.BoxSizer(wx.VERTICAL)
+		self.leftRightPanel.SetSizer(self.leftRightPanelSizer)
+		self._init_table()
+
+		# 右面板  SQL查询窗口
+		self.rightPanelSizer = wx.BoxSizer(wx.VERTICAL)
+		self.rightPanel.SetSizer(self.rightPanelSizer)
+		self.labelSelect = wx.StaticText(self.rightPanel, -1, "SQL查询语句：")
+		self.inputSQL = wx.TextCtrl(self.rightPanel, -1, size=(-1, -1))
+		self.btnExecute = buttons.GenButton(self.rightPanel, -1, label='执行')
+		self.rightPanelSizer.Add(self.labelSelect, 0, wx.EXPAND | wx.ALL, 2)
+		self.rightPanelSizer.Add(self.inputSQL, 1, wx.EXPAND | wx.ALL, 2)
+		self.rightPanelSizer.Add(self.btnExecute, 0, wx.EXPAND | wx.ALL, 2)
+
+		# 事件监听
+		self.Bind(wx.EVT_BUTTON, self.onNewSQLite3, self.btnOpenSQLite3)
+
+	def _init_table(self):
+		"""初始化表格数据"""
+		self.attrbutesGrid = wx.grid.Grid( self.leftRightPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+
+		# Grid
+		self.attrbutesGrid.CreateGrid(100, 26)
+		self.attrbutesGrid.EnableEditing(False)
+		self.attrbutesGrid.EnableGridLines(True)
+		self.attrbutesGrid.EnableDragGridSize(False)
+		self.attrbutesGrid.SetMargins(0, 0)
+
+		# Columns
+		self.attrbutesGrid.EnableDragColMove(False)
+		self.attrbutesGrid.EnableDragColSize( True )
+		self.attrbutesGrid.SetColLabelSize( 40 )
+		self.attrbutesGrid.SetColLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
+
+		# Rows
+		self.attrbutesGrid.EnableDragRowSize( True )
+		self.attrbutesGrid.SetRowLabelSize( 80 )
+		self.attrbutesGrid.SetRowLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
+
+		# Label Appearance
+
+		# Cell Defaults
+		self.attrbutesGrid.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
+		self.leftRightPanelSizer.Add( self.attrbutesGrid, 1, wx.EXPAND | wx.ALL, 2 )
+
+	def onRightTreeClick(self, e):
+		"""树子项右击直接查看属性"""
+		nodeName = self.tree.GetItemText(e.GetItem())
+		if nodeName != self.nodeRootName:
+			dlg = TableAttrbutesDialog(self, -1, node_name = nodeName)
+			dlg.ShowModal()
+			dlg.Destroy()
+
 	def _init_tree(self):
 		"""构建左-左目录树"""
-		self.rootdata = self.tree.AddRoot("parent")
-		t = self.tree.AppendItem(self.rootdata, "child1")
-		self.tree.AppendItem(self.rootdata, "child2")
-		self.tree.AppendItem(self.rootdata, "child3")
-		self.tree.AppendItem(t, "哈哈")
+		database_name = [_[1] for _ in self.cursorObj.execute("PRAGMA database_list;")][0] # 数据库列表
+		tables = self.cursorObj.execute("select name from sqlite_master where type='table'").fetchall() # 所有的表名
+		self.nodeRootName = f'{database_name}[右击查看字段属性]'
+		self.root = self.tree.AddRoot(self.nodeRootName) # 根
+		for _ in sorted(tables, key=lambda x:x[0], reverse=False):
+			self.tree.AppendItem(self.root, _[0])
+		self._setStatusRight(f"数据库{database_name}连接成功！")
+
+	def _clear_tree(self):
+		"""清空树"""
+		self.tree.Delete(self.root)
+
+	def _setStatusRight(self, msg):
+		"""设置底部状态栏右侧信息"""
+		self.SetStatusText(msg, 1)
 
 	def OnClickTree(self, e):
 		filename = self.tree.GetItemText(e.GetItem())
@@ -115,7 +189,6 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""初始化底部状态条"""
 		self.statusBar = self.CreateStatusBar( 2, wx.STB_SIZEGRIP, wx.ID_ANY )
 		self.SetStatusWidths([-1, -2])  # 比例为1：2
-		self.SetStatusText("连接成功", 1)  # 0代表第一个栏，Ready为内容
 		
 	def _init_toolbar(self):
 		"""初始化工具条"""
@@ -193,12 +266,34 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.Bind( wx.EVT_MENU, self.onNewSQLite3, id = self.newSQLite3.GetId() )
 		self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
 
+	def _connect_sqlite3(self):
+		"""连接数据库"""
+		# 先关闭之前的连接
+		if self.connectSQLiteObj:
+			self.connectSQLiteObj.close()
+			self._clear_tree()
+		sqlite3_path = os.path.join(self.dirname, self.filename)
+		try:
+			self.connectSQLiteObj = sqlite3.connect(sqlite3_path)
+		except:
+			self.connectSQLiteObj = None
+			self._setStatusRight(f"连接失败！")
+		else:
+			self.cursorObj = self.connectSQLiteObj.cursor()
+			self._init_tree() # 初始化树
+			# 先提示，后显示
+			self.path.SetValue(f"SQLite数据库路径：{sqlite3_path}")
+			dlg = wx.MessageDialog(self, f"已连接SQLite数据库，读取数据库路径{sqlite3_path}", "成功", wx.OK)
+			dlg.ShowModal()
+			dlg.Destroy()
+
 	def onNewSQLite3(self, e):
 		"""创建新的SQLite3连接"""
 		dlg = wx.FileDialog(self, "选择SQLite文件", "", "", "*.*", wx.FD_OPEN)
 		if dlg.ShowModal() == wx.ID_OK:
 			self.filename = dlg.GetFilename()
 			self.dirname = dlg.GetDirectory()
+			self._connect_sqlite3()
 		dlg.Destroy()
 
 	def onExit(self, e):
@@ -207,4 +302,5 @@ class SQLiteManageFrame ( wx.Frame ):
 
 	def __del__( self ):
 		"""释放资源"""
-		self.connectSQLiteObj.close()
+		if self.connectSQLiteObj:
+			self.connectSQLiteObj.close()
