@@ -118,14 +118,35 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.rightPanelSizer = wx.BoxSizer(wx.VERTICAL)
 		self.rightPanel.SetSizer(self.rightPanelSizer)
 		self.labelSelect = wx.StaticText(self.rightPanel, -1, "SQL查询语句：")
-		self.inputSQL = wx.TextCtrl(self.rightPanel, -1, size=(-1, -1))
+		self.inputSQL = wx.TextCtrl(self.rightPanel, -1, size=(-1, -1), style=wx.TE_MULTILINE)
+		self.sql_msg = wx.TextCtrl(self.rightPanel, -1, style=wx.TE_MULTILINE)
+		self.sql_msg.SetEditable(False)
 		self.btnExecute = buttons.GenButton(self.rightPanel, -1, label='执行')
 		self.rightPanelSizer.Add(self.labelSelect, 0, wx.EXPAND | wx.ALL, 2)
 		self.rightPanelSizer.Add(self.inputSQL, 1, wx.EXPAND | wx.ALL, 2)
+		self.rightPanelSizer.Add(self.sql_msg, 1, wx.EXPAND | wx.ALL, 2)
 		self.rightPanelSizer.Add(self.btnExecute, 0, wx.EXPAND | wx.ALL, 2)
 
 		# 事件监听
 		self.Bind(wx.EVT_BUTTON, self.onNewSQLite3, self.btnOpenSQLite3)
+		self.Bind(wx.EVT_BUTTON, self.onBtnExecute, self.btnExecute)
+
+	def onBtnExecute(self, e):
+		"""点击SQL执行按钮"""
+		sql = self.inputSQL.GetValue()
+		try:
+			self.cursorObj.execute(sql)
+		except:
+			self.sql_msg.SetValue("SQL语句错误，请检查后重新执行")
+		else:
+			self.connectSQLiteObj.commit() # 提交保存
+			affect_rows = self.cursorObj.rowcount
+			if affect_rows < 0:
+				self.sql_msg.SetValue("查询成功！")
+				# 显示查询结果
+				self.set_table_data(None, self.cursorObj.fetchall())
+			else:
+				self.sql_msg.SetValue(f"执行成功，受影响行数：{affect_rows}。")
 
 	def _init_table(self):
 		"""初始化表格"""
@@ -141,12 +162,12 @@ class SQLiteManageFrame ( wx.Frame ):
 		# Columns
 		self.attrbutesGrid.EnableDragColMove(False)
 		self.attrbutesGrid.EnableDragColSize( True )
-		self.attrbutesGrid.SetColLabelSize( 40 )
+		self.attrbutesGrid.SetColLabelSize( 30 )
 		self.attrbutesGrid.SetColLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
 
 		# Rows
 		self.attrbutesGrid.EnableDragRowSize( True )
-		self.attrbutesGrid.SetRowLabelSize( 80 )
+		self.attrbutesGrid.SetRowLabelSize( 70 )
 		self.attrbutesGrid.SetRowLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
 
 		# Label Appearance
@@ -164,9 +185,10 @@ class SQLiteManageFrame ( wx.Frame ):
 		# 先清空
 		self._clear_table()
 
-		for i, header in enumerate(headers):
-			self.attrbutesGrid.SetCellValue(0, i, f'{header}')
-			self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
+		if headers:
+			for i, header in enumerate(headers):
+				self.attrbutesGrid.SetCellValue(0, i, f'{header}')
+				self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
 
 		for row, _ in enumerate(datas):
 			for col, data in enumerate(_):
