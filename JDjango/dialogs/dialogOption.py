@@ -405,26 +405,6 @@ class ProjectCreateDialog(wx.Dialog):
     def select_project_path(self, e):
         """选择项目所建路径"""
 
-class DocumentationDialog(wx.Dialog):
-    def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '帮助文档', size=(800, 600))
-        labels = wx.Notebook(self)
-        self.modelsPanel = wx.Panel(labels) # 模型
-        self.viewsPanel = wx.Panel(labels) # 视图
-        self.urlsPanel = wx.Panel(labels) # 路由
-        self.templatesPanel = wx.Panel(labels) # 模板
-        self.formsPanel = wx.Panel(labels) # 表单
-        self.adminsPanel = wx.Panel(labels) # 管理中心
-        self.databasesPanel = wx.Panel(labels) # 数据库
-
-        labels.AddPage(self.modelsPanel, '模型')
-        labels.AddPage(self.viewsPanel, '视图')
-        labels.AddPage(self.urlsPanel, '路由')
-        labels.AddPage(self.templatesPanel, '模板')
-        labels.AddPage(self.formsPanel, '表单')
-        labels.AddPage(self.adminsPanel, '管理中心')
-        labels.AddPage(self.databasesPanel, '数据库')
-
 class SettingsDialog(wx.Dialog):
     
     def __init__(self, parent, id, **kwargs):

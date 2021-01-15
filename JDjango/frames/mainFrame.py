@@ -1,6 +1,7 @@
 import wx, time, os, json, datetime, re
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
+from ..dialogs.dialogDocument import *
 from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -63,6 +64,7 @@ class Main(wx.Frame):
         self.btn_check_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]校验')
         self.btn_fixed_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]修复')
         self.btn_config_project = buttons.GenButton(toolLeftPanel, -1, label='选项/修改')
+        self.btn_docs = buttons.GenButton(toolLeftPanel, -1, label='文档')
         
         self.allInitBtns['global']['check'].append(self.btn_check_project)
         self.allInitBtns['global']['fix'].append(self.btn_fixed_project)
@@ -102,6 +104,7 @@ class Main(wx.Frame):
         toolLeftBox.Add(self.btn_fixed_project, 0, wx.EXPAND | wx.ALL, 2)
         toolLeftBox.Add(self.btn_config_project, 0, wx.EXPAND | wx.ALL, 2)
         toolLeftBox.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftBox.Add(self.btn_docs, 0, wx.EXPAND | wx.ALL, 2)
 
         # 右侧工具栏填充
         toolRightBox.Add(cmdTip, 0, wx.EXPAND | wx.ALL, 2)
@@ -134,6 +137,7 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_config_project)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_exec)
         self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_clear_text)
+        self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_docs)
 
     def InitMenu(self):
         """设置工具栏"""
@@ -501,6 +505,14 @@ class Main(wx.Frame):
             self.exec_command()
         elif bId == self.btn_clear_text.GetId():
             self.onClear(e)
+        elif bId == self.btn_docs.GetId():
+            self.onBtnDocs(e)
+
+    def onBtnDocs(self, e):
+        """查看帮助文档"""
+        dlg = DocumentationDialog(self, -1)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def exec_command(self):
         """仿Linux命令"""
