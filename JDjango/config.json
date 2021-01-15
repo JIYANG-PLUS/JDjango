@@ -1,15 +1,15 @@
 {
-    "dirname": "/Users/jiyang/Documents/GitHub/SharePlugIn/family",
-    "project_name": "family",
+    "dirname": "D:\\www\\nantongCDC",
+    "project_name": "nantongCDC",
     "app_names": [
-        "docs",
-        "blog",
-        "account"
+        "JiYang",
+        "main",
+        "TEMP"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Documents/GitHub/SharePlugIn/family/db.sqlite3"
+            "NAME": "D:\\www\\nantongCDC\\db.sqlite3"
         }
     },
     "DEBUG": true,
@@ -23,9 +23,9 @@
         "*"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "g&gmc75e^(=_9!1vmj$(391tk-ld@18$@f!d(q)f0e2hhx*xu#",
+    "SECRET_KEY": "l4tiqm8rif5v9es&sit^a#)**scx)kfht8-fw4kb1325$hkz2-",
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "/Users/jiyang/Documents/GitHub/SharePlugIn/family/templates"
+        "D:\\www\\nantongCDC\\templates"
     ]
 }

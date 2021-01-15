@@ -65,12 +65,12 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.toolPanel = wx.Panel(self.mainPanel) # 工具按钮集
 		toolSizer = wx.BoxSizer( wx.HORIZONTAL ) # 水平
 		# self.btnSelect = buttons.GenButton(self.toolPanel, -1, 'SELECT') # SELECT查询
-		self.btnOpenSQLite3 = wx.Button( self.toolPanel, wx.ID_ANY, u"打开数据库", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.btnSelect = wx.Button( self.toolPanel, wx.ID_ANY, u"SELECT查询", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.btnOpenSQLite3 = wx.Button( self.toolPanel, wx.ID_ANY, u"打开/切换数据源", wx.DefaultPosition, wx.DefaultSize, 0 )
+		# self.btnSelect = wx.Button( self.toolPanel, wx.ID_ANY, u"SELECT查询", wx.DefaultPosition, wx.DefaultSize, 0 )
 		# self.btnDefault = buttons.GenButton(self.toolPanel, -1, '恢复默认布局')
 		# self.btnDefault = wx.Button( self.toolPanel, wx.ID_ANY, u"恢复默认布局", wx.DefaultPosition, wx.DefaultSize, 0 )
 		toolSizer.Add(self.btnOpenSQLite3, 0, wx.EXPAND | wx.ALL, 2)
-		toolSizer.Add(self.btnSelect, 0, wx.EXPAND | wx.ALL, 2)
+		# toolSizer.Add(self.btnSelect, 0, wx.EXPAND | wx.ALL, 2)
 		# toolSizer.Add(self.btnDefault, 0, wx.EXPAND | wx.ALL, 2)
 		self.toolPanel.SetSizer(toolSizer)
 
@@ -100,7 +100,7 @@ class SQLiteManageFrame ( wx.Frame ):
 		# 左面板-左面板  树形控件
 		leftLeftPanelSizer = wx.BoxSizer(wx.VERTICAL)
 		self.leftLeftPanel.SetSizer(leftLeftPanelSizer)
-		self.tree = wx.TreeCtrl(self.leftLeftPanel, -1, wx.DefaultPosition, (-1, -1), wx.TR_HAS_BUTTONS)
+		self.tree = wx.TreeCtrl(self.leftLeftPanel, -1, wx.DefaultPosition, (-1, -1)) # , wx.TR_HAS_BUTTONS
 		self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickTree, self.tree)
 		self.Bind( wx.EVT_TREE_ITEM_RIGHT_CLICK, self.onRightTreeClick, self.tree )
 		leftLeftPanelSizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 2)
@@ -128,11 +128,11 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.Bind(wx.EVT_BUTTON, self.onNewSQLite3, self.btnOpenSQLite3)
 
 	def _init_table(self):
-		"""初始化表格数据"""
+		"""初始化表格"""
 		self.attrbutesGrid = wx.grid.Grid( self.leftRightPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 
 		# Grid
-		self.attrbutesGrid.CreateGrid(100, 26)
+		self.attrbutesGrid.CreateGrid(1000, 26)
 		self.attrbutesGrid.EnableEditing(False)
 		self.attrbutesGrid.EnableGridLines(True)
 		self.attrbutesGrid.EnableDragGridSize(False)
@@ -155,11 +155,29 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.attrbutesGrid.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
 		self.leftRightPanelSizer.Add( self.attrbutesGrid, 1, wx.EXPAND | wx.ALL, 2 )
 
+	def _clear_table(self):
+		"""清空表格"""
+		self.attrbutesGrid.ClearGrid()
+
+	def set_table_data(self, headers, datas):
+		"""初始化表格数据"""
+		# 先清空
+		self._clear_table()
+
+		for i, header in enumerate(headers):
+			self.attrbutesGrid.SetCellValue(0, i, f'{header}')
+			self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
+
+		for row, _ in enumerate(datas):
+			for col, data in enumerate(_):
+				self.attrbutesGrid.SetCellValue(row+1, col, f'{data}')
+		
+
 	def onRightTreeClick(self, e):
 		"""树子项右击直接查看属性"""
 		nodeName = self.tree.GetItemText(e.GetItem())
 		if nodeName != self.nodeRootName:
-			dlg = TableAttrbutesDialog(self, -1, node_name = nodeName)
+			dlg = TableAttrbutesDialog(self, -1, node_name = nodeName, datas = self.get_columns_name(nodeName))
 			dlg.ShowModal()
 			dlg.Destroy()
 
@@ -181,9 +199,25 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""设置底部状态栏右侧信息"""
 		self.SetStatusText(msg, 1)
 
+	def get_columns_name(self, table_name):
+		"""根据表名获取列名和列属性"""
+		# 序号、列名、类型、允许为NULL、默认值、主键
+		self.cursorObj.execute(f'pragma table_info({table_name})')
+		col_names = self.cursorObj.fetchall()
+		return col_names
+
+	def get_table_datas(self, table_name):
+		"""获取数据表格"""
+		self.cursorObj.execute(f'SELECT * FROM {table_name}')
+		datas = self.cursorObj.fetchall()
+		return datas
+
 	def OnClickTree(self, e):
-		filename = self.tree.GetItemText(e.GetItem())
-		print(filename)
+		"""双击树节点事件"""
+		nodeName = self.tree.GetItemText(e.GetItem())
+		if nodeName != self.nodeRootName:
+			self.set_table_data([_[1] for _ in self.get_columns_name(nodeName)], self.get_table_datas(nodeName))
+			
 
 	def _init_statusbar(self):
 		"""初始化底部状态条"""

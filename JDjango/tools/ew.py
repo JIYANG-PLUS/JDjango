@@ -33,4 +33,9 @@ print(col_names)
 cu.execute("PRAGMA database_list;")
 curr_table = cu.fetchall()
 print(curr_table)
+
+
+
+# https://www.sqlite.org/pragma.html#pragma_table_info
+# SQLite3官方文档
             
