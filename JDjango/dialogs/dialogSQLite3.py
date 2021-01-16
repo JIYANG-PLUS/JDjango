@@ -4,7 +4,7 @@ import wx.grid
 from wx.lib import scrolledpanel
 from ..tools._tools import *
 from ..tools._re import *
-from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
+from ..settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
 from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *

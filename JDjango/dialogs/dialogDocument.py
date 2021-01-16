@@ -1,16 +1,17 @@
 import wx, json, glob, os, re
 import wx.lib.buttons as buttons
 from wx.lib import scrolledpanel
+import wx.html2
 from ..tools._tools import *
 from ..tools._re import *
-from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
+from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH, DJANGO_DOCS_URL
 from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 
 class DocumentationDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '帮助文档', size=(800, 600))
+        wx.Dialog.__init__(self, parent, id, '帮助文档', size=(1200, 800))
         labels = wx.Notebook(self)
         self.modelsPanel = wx.Panel(labels) # 模型
         self.viewsPanel = wx.Panel(labels) # 视图
@@ -49,6 +50,36 @@ class DocumentationDialog(wx.Dialog):
         self.modelsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.modelsPanelSizer.Add(self.splitModelsWindow, 1, wx.EXPAND | wx.ALL, 0)
         self.modelsPanel.SetSizer(self.modelsPanelSizer)
+
+        # 左子面板  树控件
+        leftPanelModelsSizer = wx.BoxSizer(wx.VERTICAL)
+        self.leftPanelModelsTree = wx.TreeCtrl(self.leftPanelModels, -1, wx.DefaultPosition, (-1, -1))
+        leftPanelModelsSizer.Add(self.leftPanelModelsTree, 1, wx.EXPAND | wx.ALL, 2)
+        self.leftPanelModels.SetSizer(leftPanelModelsSizer)
+        self._init_modelsPanel_tree()
+
+        # 右子面板  HTML控件
+        rightPanelModelsSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.browser = wx.html2.WebView.New(self.rightPanelModels)
+        self.browser.LoadURL(DJANGO_DOCS_URL) # 加载页面
+        # html_string = read_file(DJANGO_DOCS_PATH)
+        # self.browser.SetPage(html_string, "") # 加载字符串
+        rightPanelModelsSizer.Add(self.browser, 1, wx.EXPAND | wx.ALL, 2)
+        self.rightPanelModels.SetSizer(rightPanelModelsSizer)
+
+        # 事件绑定
+        self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickTree, self.leftPanelModelsTree)
+
+    def _init_modelsPanel_tree(self):
+        """构建左-左目录树"""
+        self.leftPanelModelsRoot = self.leftPanelModelsTree.AddRoot(f'主目录')
+        # self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "文档1")
+    
+    def OnClickTree(self, e):
+        """双击树节点事件"""
+        nodeName = self.leftPanelModelsTree.GetItemText(e.GetItem())
+        if nodeName != f'主目录':
+            print(nodeName)
 
     def _init_viewsPanel(self):
         """视图界面初始化"""

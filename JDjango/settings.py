@@ -4,6 +4,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
 ENV_PATH = os.path.join(BASE_DIR, 'environment.xml')
 
+DJANGO_DOCS_URL = r'https://docs.djangoproject.com/zh-hans/3.1/'
+
 LANGUAGE = 'C' # 当前语言环境（C中文，E英文）
 
 SUPPORT_UNPACK = (
