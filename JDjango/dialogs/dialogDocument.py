@@ -13,6 +13,7 @@ class DocumentationDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
         wx.Dialog.__init__(self, parent, id, '帮助文档', size=(1200, 800))
         labels = wx.Notebook(self)
+        self.officialdocs = wx.Panel(labels) # 官方文档
         self.modelsPanel = wx.Panel(labels) # 模型
         self.viewsPanel = wx.Panel(labels) # 视图
         self.urlsPanel = wx.Panel(labels) # 路由
@@ -21,6 +22,7 @@ class DocumentationDialog(wx.Dialog):
         self.adminsPanel = wx.Panel(labels) # 管理中心
         self.databasesPanel = wx.Panel(labels) # 数据库
 
+        self._init_officialdocs()
         self._init_modelsPanel()
         self._init_viewsPanel()
         self._init_urlsPanel()
@@ -29,6 +31,7 @@ class DocumentationDialog(wx.Dialog):
         self._init_adminsPanel()
         self._init_databasesPanel()
 
+        labels.AddPage(self.officialdocs, '官方文档')
         labels.AddPage(self.modelsPanel, '模型')
         labels.AddPage(self.viewsPanel, '视图')
         labels.AddPage(self.urlsPanel, '路由')
@@ -36,6 +39,55 @@ class DocumentationDialog(wx.Dialog):
         labels.AddPage(self.formsPanel, '表单')
         labels.AddPage(self.adminsPanel, '管理中心')
         labels.AddPage(self.databasesPanel, '数据库')
+
+    def _init_officialdocs(self):
+        """官方文档初始化"""
+        self.splitOfficialdocs = wx.SplitterWindow(self.officialdocs, -1)
+        self.leftPanelOfficialdocs = wx.Panel(self.splitOfficialdocs, style=wx.SUNKEN_BORDER) # 左子面板
+        self.rightPanelOfficialdocs = wx.Panel(self.splitOfficialdocs, style=wx.SUNKEN_BORDER) # 右子面板
+        self.splitOfficialdocs.Initialize(self.leftPanelOfficialdocs)
+        self.splitOfficialdocs.Initialize(self.rightPanelOfficialdocs)
+        self.rightPanelOfficialdocs.SetBackgroundColour("gray")
+        self.splitOfficialdocs.SplitVertically(self.leftPanelOfficialdocs, self.rightPanelOfficialdocs, 133)
+
+        self.leftPanelOfficialdocsSizer = wx.BoxSizer(wx.VERTICAL)
+        self.leftPanelOfficialdocsSizer.Add(self.splitOfficialdocs, 1, wx.EXPAND | wx.ALL, 0)
+        self.officialdocs.SetSizer(self.leftPanelOfficialdocsSizer)
+
+        # 左子面板  树控件
+        leftPanelOfficialdocsSizer = wx.BoxSizer(wx.VERTICAL)
+        self.leftPanelOfficialdocsTree = wx.TreeCtrl(self.leftPanelOfficialdocs, -1, wx.DefaultPosition, (-1, -1))
+        leftPanelOfficialdocsSizer.Add(self.leftPanelOfficialdocsTree, 1, wx.EXPAND | wx.ALL, 2)
+        self.leftPanelOfficialdocs.SetSizer(leftPanelOfficialdocsSizer)
+        self._init_officialdocs_tree()
+
+        # 右子面板  HTML控件
+        rightPanelOfficialdocsSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.browser = wx.html2.WebView.New(self.rightPanelOfficialdocs)
+        self.browser.LoadURL(DJANGO_DOCS_URL['31']) # 加载页面
+        # html_string = read_file(DJANGO_DOCS_PATH)
+        # self.browser.SetPage(html_string, "") # 加载字符串
+        rightPanelOfficialdocsSizer.Add(self.browser, 1, wx.EXPAND | wx.ALL, 2)
+        self.rightPanelOfficialdocs.SetSizer(rightPanelOfficialdocsSizer)
+
+        # 事件绑定
+        self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickOfficalDocsTree, self.leftPanelOfficialdocsTree)
+
+    def _init_officialdocs_tree(self):
+        """构建左-左目录树"""
+        self.leftPanelOfficialdocsRoot = self.leftPanelOfficialdocsTree.AddRoot(f'选择版本')
+        self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "3.1版本")
+        self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "2.2版本")
+
+    def OnClickOfficalDocsTree(self, e):
+        """双击官方文档树控件事件"""
+        nodeName = self.leftPanelModelsTree.GetItemText(e.GetItem())
+        temp = {
+            '3.1版本' : '31',
+            '2.2版本' : '22',
+        }
+        if nodeName != f'选择版本':
+            self.browser.LoadURL(DJANGO_DOCS_URL[temp[nodeName]])
 
     def _init_modelsPanel(self):
         """模型界面初始化"""
@@ -59,13 +111,6 @@ class DocumentationDialog(wx.Dialog):
         self._init_modelsPanel_tree()
 
         # 右子面板  HTML控件
-        rightPanelModelsSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.browser = wx.html2.WebView.New(self.rightPanelModels)
-        self.browser.LoadURL(DJANGO_DOCS_URL) # 加载页面
-        # html_string = read_file(DJANGO_DOCS_PATH)
-        # self.browser.SetPage(html_string, "") # 加载字符串
-        rightPanelModelsSizer.Add(self.browser, 1, wx.EXPAND | wx.ALL, 2)
-        self.rightPanelModels.SetSizer(rightPanelModelsSizer)
 
         # 事件绑定
         self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickTree, self.leftPanelModelsTree)
