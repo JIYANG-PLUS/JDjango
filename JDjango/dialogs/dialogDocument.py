@@ -132,7 +132,9 @@ class DocumentationDialog(wx.Dialog):
     def OnClickModelsTree(self, e):
         """双击树节点事件"""
         temp = {
-            '创建模型' : 'models_index.html',
+            '创建模型' : 'models_create.html',
+            '创建模型管理器' : 'models_controller.html',
+            '使用模型' : 'models_user.html',
         }
         nodeName = self.leftPanelModelsTree.GetItemText(e.GetItem())
         if nodeName != f'模型-文档':

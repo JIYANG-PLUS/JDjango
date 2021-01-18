@@ -289,7 +289,7 @@ class AdminRenameDialog(wx.Dialog):
 
 class ViewGenerateDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '新增视图', size=(700, 500))
+        wx.Dialog.__init__(self, parent, id, '新增视图', size=(700, 600))
         # 总面板
         self.panel = wx.Panel(self) # 最外层容器
         self.selectFilePanel = wx.Panel(self.panel)
@@ -302,18 +302,31 @@ class ViewGenerateDialog(wx.Dialog):
         ]
         self.radiosPanel = wx.RadioBox(self.panel, -1, "选择创建视图类型", choices=CHOICES) # 单选框组
         self.codeReviewPanel = wx.Panel(self.panel) # 代码预览面板
-        tempUrlNamePanel = wx.StaticBox(self.panel, -1, '路由别名（不填写默认取函数名/类名）') # 带边框的盒子
+        tempWayNamePanel = wx.StaticBox(self.panel, -1, '函数/类命名') # 命名方法
+        self.wayNamePanel = wx.StaticBoxSizer(tempWayNamePanel, wx.HORIZONTAL) # 水平
+        self.openUrlAliasPanel = wx.RadioBox(self.panel, -1, "自动生成路由", choices=['开启', '关闭']) # 是否自动生成路由
+        self.openUrlAliasPanel.SetSelection(1) # 默认不开启
+        tempUrlNamePanel = wx.StaticBox(self.panel, -1, '路由别名（不填写默认取函数名/类名）') # 路由别名
         self.urlNamePanel = wx.StaticBoxSizer(tempUrlNamePanel, wx.HORIZONTAL) # 水平
+        tempUrlViewPanel = wx.StaticBox(self.panel, -1, '路由预览') # 路由预览
+        self.urlViewPanel = wx.StaticBoxSizer(tempUrlViewPanel, wx.HORIZONTAL) # 水平
 
         # 控件
         ### 选择创建视图类型
-        self.btnWritePath = buttons.GenButton(self.selectFilePanel, -1, '选择写入文件')
+        self.btnWritePath = buttons.GenButton(self.selectFilePanel, -1, '选择视图写入文件路径')
         self.filePath = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
         self.filePath.Enable(False)
         ### 预览代码
         self.inputCodeReview = wx.TextCtrl(self.codeReviewPanel, -1, style=wx.TE_MULTILINE)
+        ### 方法命名
+        self.inputWayName = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
         ### 取路由别名
         self.inputUrlName = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
+        ### 路由预览
+        self.inputUrlView = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
+        self.inputUrlView.Enable(False)
+        ### 全局
+        self.btnSubmit = buttons.GenButton(self.panel, -1, '创建')
 
         # 布局
         self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
@@ -326,12 +339,18 @@ class ViewGenerateDialog(wx.Dialog):
 
         self.codeReviewPanelSizer.Add(self.inputCodeReview, 1, wx.EXPAND | wx.ALL, 2)
 
+        self.wayNamePanel.Add(self.inputWayName, 1, wx.EXPAND | wx.ALL, 2)
         self.urlNamePanel.Add(self.inputUrlName, 1, wx.EXPAND | wx.ALL, 2)
+        self.urlViewPanel.Add(self.inputUrlView, 1, wx.EXPAND | wx.ALL, 2)
 
         self.panelBox.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.radiosPanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.codeReviewPanel, 1, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.wayNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.openUrlAliasPanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.urlNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.urlViewPanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.btnSubmit, 0, wx.EXPAND | wx.ALL, 2)
 
         # 绑定
         self.panel.SetSizer(self.panelBox)
@@ -708,7 +727,6 @@ class SettingsDialog(wx.Dialog):
                 """操作回退，将之前所有的改动还原"""
                 pass # 待完成
         dlgA.Destroy()
-
 
     def onRadioBox(self, e):
         """单选框组事件"""
