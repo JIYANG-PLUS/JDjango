@@ -300,26 +300,43 @@ class ViewGenerateDialog(wx.Dialog):
             , '快速模板视图'
             , '简单详细视图'
         ]
-        self.radiosPanel = wx.RadioBox(self.panel, -1, "选择创建视图类型", choices=CHOICES)
-        
+        self.radiosPanel = wx.RadioBox(self.panel, -1, "选择创建视图类型", choices=CHOICES) # 单选框组
+        self.codeReviewPanel = wx.Panel(self.panel) # 代码预览面板
+        tempUrlNamePanel = wx.StaticBox(self.panel, -1, '路由别名（不填写默认取函数名/类名）') # 带边框的盒子
+        self.urlNamePanel = wx.StaticBoxSizer(tempUrlNamePanel, wx.HORIZONTAL) # 水平
+
         # 控件
+        ### 选择创建视图类型
         self.btnWritePath = buttons.GenButton(self.selectFilePanel, -1, '选择写入文件')
         self.filePath = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
         self.filePath.Enable(False)
+        ### 预览代码
+        self.inputCodeReview = wx.TextCtrl(self.codeReviewPanel, -1, style=wx.TE_MULTILINE)
+        ### 取路由别名
+        self.inputUrlName = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
 
         # 布局
         self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
         self.selectFileBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        self.codeReviewPanelSizer = wx.BoxSizer(wx.HORIZONTAL) # 水平
 
         # 填充
         self.selectFileBox.Add(self.btnWritePath, 0, wx.EXPAND | wx.ALL, 2)
         self.selectFileBox.Add(self.filePath, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.codeReviewPanelSizer.Add(self.inputCodeReview, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.urlNamePanel.Add(self.inputUrlName, 1, wx.EXPAND | wx.ALL, 2)
+
         self.panelBox.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
         self.panelBox.Add(self.radiosPanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.codeReviewPanel, 1, wx.EXPAND | wx.ALL, 2)
+        self.panelBox.Add(self.urlNamePanel, 0, wx.EXPAND | wx.ALL, 2)
 
         # 绑定
         self.panel.SetSizer(self.panelBox)
         self.selectFilePanel.SetSizer(self.selectFileBox)
+        self.codeReviewPanel.SetSizer(self.codeReviewPanelSizer)
 
         # 事件
         self.Bind(wx.EVT_BUTTON, self.onBtnWritePath, self.btnWritePath)
@@ -348,7 +365,7 @@ class ProjectCreateDialog(wx.Dialog):
 
         # 控件
         self.path = wx.TextCtrl(self.pathPanel, -1, style=wx.ALIGN_LEFT)
-        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择/输入写入目录') # 选择目录
+        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择/输入项目写入目录') # 选择目录
         self.flagName = wx.StaticText(self.namePanel, -1, "项目命名：") # 项目名称
         self.imputName = wx.TextCtrl(self.namePanel, -1, style=wx.ALIGN_LEFT)
         self.btnCreate = buttons.GenButton(self.panel, -1, '新建')
@@ -398,7 +415,8 @@ class ProjectCreateDialog(wx.Dialog):
             return
         status = startproject(path, name)
         if 0 == status:
-            wx.MessageBox(f'{os.path.join(path, name)}项目创建成功', '成功', wx.OK | wx.ICON_INFORMATION)
+            wx.MessageBox(f'项目{name}创建成功', '成功', wx.OK | wx.ICON_INFORMATION)
+            self.Close()
         else:
             wx.MessageBox(f'项目已存在', '错误', wx.OK | wx.ICON_INFORMATION)
 
@@ -408,6 +426,8 @@ class ProjectCreateDialog(wx.Dialog):
 class SettingsDialog(wx.Dialog):
     
     def __init__(self, parent, id, **kwargs):
+
+        wx.Dialog.__init__(self, parent, id, '项目配置', size=(550, 600))
 
         configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
         self.DIRNAME = configs["dirname"]
@@ -427,8 +447,6 @@ class SettingsDialog(wx.Dialog):
         self.PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
 
         """正则结束"""
-
-        wx.Dialog.__init__(self, parent, id, '项目配置', size=(800, 600))
 
         wholePanel = wx.Panel(self)
         wholeBox = wx.BoxSizer(wx.VERTICAL) # 垂直
@@ -555,7 +573,7 @@ class SettingsDialog(wx.Dialog):
         """填充页签"""
         labels.AddPage(self.otherPanel, 'Settings')
         labels.AddPage(self.databasesPanel, '数据库')
-        labels.AddPage(self.projectRenamePanel, '重命名')
+        labels.AddPage(self.projectRenamePanel, '项目重命名')
 
         wholeBox.Add(labels, 1, wx.EXPAND | wx.ALL, 2) # 添加多页签
         wholeBox.Add(wholeToolsPanel, 0, wx.EXPAND | wx.ALL, 2) # 添加工具条
@@ -636,56 +654,61 @@ class SettingsDialog(wx.Dialog):
         
     def onBtnModify(self, e):
         """重命名项目名称"""
-        configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
-        # 获取新的名称
-        old_name = configs['project_name']
-        new_name = self.inputProjectName.GetValue().strip()
+        # 再次提醒
+        dlgA = wx.MessageDialog(self, u"请再次确认", u"确认信息", wx.YES_NO | wx.ICON_QUESTION)
+        if dlgA.ShowModal() == wx.ID_YES:
+            configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
+            # 获取新的名称
+            old_name = configs['project_name']
+            new_name = self.inputProjectName.GetValue().strip()
 
-        if old_name == new_name:
-            dlg = wx.MessageDialog( self, "未做任何修改", "警告", wx.OK)
-            dlg.ShowModal()
-            dlg.Destroy()
-            return
+            if old_name == new_name:
+                dlg = wx.MessageDialog( self, "未做任何修改", "警告", wx.OK)
+                dlg.ShowModal()
+                dlg.Destroy()
+                return
 
-        if not PATT_CHARS.match(new_name):
-            dlg = wx.MessageDialog( self, "请使用字母+下划线的方式命名", "错误", wx.OK)
-            dlg.ShowModal()
-            dlg.Destroy()
-            return
-        try:
-            # 重命名项目（先文件，后目录）
-            search_path = os.path.join(self.DIRNAME, '**', '*')
-            alls = glob.glob(search_path, recursive=True)
+            if not PATT_CHARS.match(new_name):
+                dlg = wx.MessageDialog( self, "请使用字母+下划线的方式命名", "错误", wx.OK)
+                dlg.ShowModal()
+                dlg.Destroy()
+                return
+            try:
+                # 重命名项目（先文件，后目录）
+                search_path = os.path.join(self.DIRNAME, '**', '*')
+                alls = glob.glob(search_path, recursive=True)
 
-            # 分类文件和文件夹
-            files, floders = [], []
-            for _ in alls:
-                if os.path.isfile(_): files.append(_)
-                else: floders.append(_)
+                # 分类文件和文件夹
+                files, floders = [], []
+                for _ in alls:
+                    if os.path.isfile(_): files.append(_)
+                    else: floders.append(_)
 
-            for p in files:
-                # 先读后写
-                if '.py' == os.path.splitext(p)[1]:
-                    content = read_file(p)
-                    content = content.replace(old_name.strip(), new_name)
-                    write_file(p, content)
+                for p in files:
+                    # 先读后写
+                    if '.py' == os.path.splitext(p)[1]:
+                        content = read_file(p)
+                        content = content.replace(old_name.strip(), new_name)
+                        write_file(p, content)
 
-            for P in floders:
-                if old_name.strip().lower() == os.path.basename(P).strip().lower():
-                    temp = os.path.join(os.path.dirname(P), new_name)
-                    os.rename(P, temp)
+                for P in floders:
+                    if old_name.strip().lower() == os.path.basename(P).strip().lower():
+                        temp = os.path.join(os.path.dirname(P), new_name)
+                        os.rename(P, temp)
 
-            # 修改根目录名称
-            os.rename(self.DIRNAME, os.path.join(os.path.dirname(self.DIRNAME), new_name))
-            
-            dlg = wx.MessageDialog( self, "修改成功，请退出所有窗口后重新打开，进行后续操作。", "成功", wx.OK)
-            if dlg.ShowModal() == wx.ID_OK:
-                self.Close(True)
-            dlg.ShowModal()
-            dlg.Destroy()
-        except:
-            """操作回退，将之前所有的改动还原"""
-            pass # 待完成
+                # 修改根目录名称
+                os.rename(self.DIRNAME, os.path.join(os.path.dirname(self.DIRNAME), new_name))
+                
+                dlg = wx.MessageDialog( self, "修改成功，请退出所有窗口后重新打开，进行后续操作。", "成功", wx.OK)
+                if dlg.ShowModal() == wx.ID_OK:
+                    self.Close(True)
+                dlg.ShowModal()
+                dlg.Destroy()
+            except:
+                """操作回退，将之前所有的改动还原"""
+                pass # 待完成
+        dlgA.Destroy()
+
 
     def onRadioBox(self, e):
         """单选框组事件"""

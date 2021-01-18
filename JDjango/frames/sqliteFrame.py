@@ -349,7 +349,12 @@ class SQLiteManageFrame ( wx.Frame ):
 		if dlg.ShowModal() == wx.ID_OK:
 			self.filename = dlg.GetFilename()
 			self.dirname = dlg.GetDirectory()
-			self._connect_sqlite3()
+			try:
+				self._connect_sqlite3()
+			except:
+				wx.MessageBox(f'打开失败', '错误', wx.OK | wx.ICON_INFORMATION)
+			else:
+				pass
 		dlg.Destroy()
 
 	def onExit(self, e):
