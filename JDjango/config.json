@@ -11,7 +11,7 @@
             "NAME": "D:\\www\\JSJR\\db.sqlite3"
         }
     },
-    "DEBUG": false,
+    "DEBUG": true,
     "LANGUAGE_CODE": "zh-Hans",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
@@ -22,7 +22,7 @@
         "*"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "fa69)qkhr5-&3glvgj5a-t$z002v0so3s&sr1nr$bqbe&mekkh",
+    "SECRET_KEY": "Sx+X8]Lm:k9tUK9uwb?udH041}:TjPNDNo2n>+3MnxJVmF<b-W",
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
         "D:\\www\\JSJR\\templates"

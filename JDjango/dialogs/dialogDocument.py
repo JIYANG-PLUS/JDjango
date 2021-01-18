@@ -4,7 +4,7 @@ from wx.lib import scrolledpanel
 import wx.html2
 from ..tools._tools import *
 from ..tools._re import *
-from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH, DJANGO_DOCS_URL
+from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH, DJANGO_DOCS_URL, LOCAL_DOCS_PATH
 from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
@@ -75,7 +75,7 @@ class DocumentationDialog(wx.Dialog):
 
     def _init_officialdocs_tree(self):
         """构建左-左目录树"""
-        self.leftPanelOfficialdocsRoot = self.leftPanelOfficialdocsTree.AddRoot(f'选择版本')
+        self.leftPanelOfficialdocsRoot = self.leftPanelOfficialdocsTree.AddRoot(f'稳定版本')
         self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "3.1版本")
         self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "2.2版本")
 
@@ -111,20 +111,32 @@ class DocumentationDialog(wx.Dialog):
         self._init_modelsPanel_tree()
 
         # 右子面板  HTML控件
+        rightPanelModelsSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.browserModels = wx.html2.WebView.New(self.rightPanelModels)
+        # self.browser.LoadURL(DJANGO_DOCS_URL['31']) # 加载页面
+        # html_string = read_file(DJANGO_DOCS_PATH)
+        # self.browser.SetPage(html_string, "") # 加载字符串
+        rightPanelModelsSizer.Add(self.browserModels, 1, wx.EXPAND | wx.ALL, 2)
+        self.rightPanelModels.SetSizer(rightPanelModelsSizer)
 
         # 事件绑定
-        self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickTree, self.leftPanelModelsTree)
+        self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickModelsTree, self.leftPanelModelsTree)
 
     def _init_modelsPanel_tree(self):
         """构建左-左目录树"""
-        self.leftPanelModelsRoot = self.leftPanelModelsTree.AddRoot(f'主目录')
-        # self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "文档1")
+        self.leftPanelModelsRoot = self.leftPanelModelsTree.AddRoot(f'模型-文档')
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建模型")
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建模型管理器")
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "使用模型")
     
-    def OnClickTree(self, e):
+    def OnClickModelsTree(self, e):
         """双击树节点事件"""
+        temp = {
+            '创建模型' : 'models_index.html',
+        }
         nodeName = self.leftPanelModelsTree.GetItemText(e.GetItem())
-        if nodeName != f'主目录':
-            print(nodeName)
+        if nodeName != f'模型-文档':
+            self.browserModels.SetPage(read_file(os.path.join(LOCAL_DOCS_PATH, temp[nodeName])), "")
 
     def _init_viewsPanel(self):
         """视图界面初始化"""

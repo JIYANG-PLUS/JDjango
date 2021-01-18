@@ -4,6 +4,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
 ENV_PATH = os.path.join(BASE_DIR, 'environment.xml')
 
+LOCAL_DOCS_PATH = os.path.join(BASE_DIR, 'docs', 'all', 'html')
+
 DJANGO_DOCS_URL = {
     '31' : r'https://docs.djangoproject.com/zh-hans/3.1/',
     '22' : r'https://docs.djangoproject.com/zh-hans/2.2/',
