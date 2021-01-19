@@ -48,7 +48,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitOfficialdocs.Initialize(self.leftPanelOfficialdocs)
         self.splitOfficialdocs.Initialize(self.rightPanelOfficialdocs)
         self.rightPanelOfficialdocs.SetBackgroundColour("gray")
-        self.splitOfficialdocs.SplitVertically(self.leftPanelOfficialdocs, self.rightPanelOfficialdocs, 133)
+        self.splitOfficialdocs.SplitVertically(self.leftPanelOfficialdocs, self.rightPanelOfficialdocs, 165)
 
         self.leftPanelOfficialdocsSizer = wx.BoxSizer(wx.VERTICAL)
         self.leftPanelOfficialdocsSizer.Add(self.splitOfficialdocs, 1, wx.EXPAND | wx.ALL, 0)
@@ -64,7 +64,7 @@ class DocumentationDialog(wx.Dialog):
         # 右子面板  HTML控件
         rightPanelOfficialdocsSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.browser = wx.html2.WebView.New(self.rightPanelOfficialdocs)
-        self.browser.LoadURL(DJANGO_DOCS_URL['31']) # 加载页面
+        # self.browser.LoadURL(DJANGO_DOCS_URL['31']) # 加载页面
         # html_string = read_file(DJANGO_DOCS_PATH)
         # self.browser.SetPage(html_string, "") # 加载字符串
         rightPanelOfficialdocsSizer.Add(self.browser, 1, wx.EXPAND | wx.ALL, 2)
@@ -97,7 +97,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitModelsWindow.Initialize(self.leftPanelModels)
         self.splitModelsWindow.Initialize(self.rightPanelModels)
         self.rightPanelModels.SetBackgroundColour("gray")
-        self.splitModelsWindow.SplitVertically(self.leftPanelModels, self.rightPanelModels, 133)
+        self.splitModelsWindow.SplitVertically(self.leftPanelModels, self.rightPanelModels, 165)
 
         self.modelsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.modelsPanelSizer.Add(self.splitModelsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -125,6 +125,7 @@ class DocumentationDialog(wx.Dialog):
     def _init_modelsPanel_tree(self):
         """构建左-左目录树"""
         self.leftPanelModelsRoot = self.leftPanelModelsTree.AddRoot(f'模型-文档')
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "模型介绍")
         self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建模型")
         self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建模型管理器")
         self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "使用模型")
@@ -132,6 +133,7 @@ class DocumentationDialog(wx.Dialog):
     def OnClickModelsTree(self, e):
         """双击树节点事件"""
         temp = {
+            '模型介绍' : 'models_introduce.html',
             '创建模型' : 'models_create.html',
             '创建模型管理器' : 'models_controller.html',
             '使用模型' : 'models_user.html',
@@ -148,7 +150,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitViewsWindow.Initialize(self.leftPanelViews)
         self.splitViewsWindow.Initialize(self.rightPanelViews)
         self.rightPanelViews.SetBackgroundColour("gray")
-        self.splitViewsWindow.SplitVertically(self.leftPanelViews, self.rightPanelViews, 133)
+        self.splitViewsWindow.SplitVertically(self.leftPanelViews, self.rightPanelViews, 165)
 
         self.viewsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.viewsPanelSizer.Add(self.splitViewsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -162,7 +164,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitUrlsWindow.Initialize(self.leftPanelUrls)
         self.splitUrlsWindow.Initialize(self.rightPanelUrls)
         self.rightPanelUrls.SetBackgroundColour("gray")
-        self.splitUrlsWindow.SplitVertically(self.leftPanelUrls, self.rightPanelUrls, 133)
+        self.splitUrlsWindow.SplitVertically(self.leftPanelUrls, self.rightPanelUrls, 165)
 
         self.urlsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.urlsPanelSizer.Add(self.splitUrlsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -176,7 +178,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitTemplatesWindow.Initialize(self.leftPanelTemplates)
         self.splitTemplatesWindow.Initialize(self.rightPanelTemplates)
         self.rightPanelTemplates.SetBackgroundColour("gray")
-        self.splitTemplatesWindow.SplitVertically(self.leftPanelTemplates, self.rightPanelTemplates, 133)
+        self.splitTemplatesWindow.SplitVertically(self.leftPanelTemplates, self.rightPanelTemplates, 165)
 
         self.templatesPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.templatesPanelSizer.Add(self.splitTemplatesWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -190,7 +192,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitFormsWindow.Initialize(self.leftPanelForms)
         self.splitFormsWindow.Initialize(self.rightPanelForms)
         self.rightPanelForms.SetBackgroundColour("gray")
-        self.splitFormsWindow.SplitVertically(self.leftPanelForms, self.rightPanelForms, 133)
+        self.splitFormsWindow.SplitVertically(self.leftPanelForms, self.rightPanelForms, 165)
 
         self.formsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.formsPanelSizer.Add(self.splitFormsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -204,7 +206,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitAdminsWindow.Initialize(self.leftPanelAdmins)
         self.splitAdminsWindow.Initialize(self.rightPanelAdmins)
         self.rightPanelAdmins.SetBackgroundColour("gray")
-        self.splitAdminsWindow.SplitVertically(self.leftPanelAdmins, self.rightPanelAdmins, 133)
+        self.splitAdminsWindow.SplitVertically(self.leftPanelAdmins, self.rightPanelAdmins, 165)
 
         self.adminsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.adminsPanelSizer.Add(self.splitAdminsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -218,7 +220,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitDatabasesWindow.Initialize(self.leftPanelDatabases)
         self.splitDatabasesWindow.Initialize(self.rightPanelDatabases)
         self.rightPanelDatabases.SetBackgroundColour("gray")
-        self.splitDatabasesWindow.SplitVertically(self.leftPanelDatabases, self.rightPanelDatabases, 133)
+        self.splitDatabasesWindow.SplitVertically(self.leftPanelDatabases, self.rightPanelDatabases, 165)
 
         self.databasesPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.databasesPanelSizer.Add(self.splitDatabasesWindow, 1, wx.EXPAND | wx.ALL, 0)
