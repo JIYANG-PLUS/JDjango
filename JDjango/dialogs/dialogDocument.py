@@ -79,6 +79,8 @@ class DocumentationDialog(wx.Dialog):
         self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "3.1版本")
         self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "2.2版本")
 
+        self.leftPanelOfficialdocsTree.ExpandAll() # 展开所有节点
+
     def OnClickOfficalDocsTree(self, e):
         """双击官方文档树控件事件"""
         nodeName = self.leftPanelModelsTree.GetItemText(e.GetItem())
@@ -112,7 +114,7 @@ class DocumentationDialog(wx.Dialog):
 
         # 右子面板  HTML控件
         rightPanelModelsSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.browserModels = wx.html2.WebView.New(self.rightPanelModels)
+        self.browserModels = wx.html2.WebView.New(self.rightPanelModels) # style=wx.html.HW_NO_SelectION 不可选中文本
         # self.browser.LoadURL(DJANGO_DOCS_URL['31']) # 加载页面
         # html_string = read_file(DJANGO_DOCS_PATH)
         # self.browser.SetPage(html_string, "") # 加载字符串
@@ -124,22 +126,24 @@ class DocumentationDialog(wx.Dialog):
 
     def _init_modelsPanel_tree(self):
         """构建左-左目录树"""
-        self.leftPanelModelsRoot = self.leftPanelModelsTree.AddRoot(f'模型-文档')
-        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "模型介绍")
-        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建模型")
+        self.leftPanelModelsRoot = self.leftPanelModelsTree.AddRoot(f'模型文档-个人总结')
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "简单介绍")
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "定义/创建模型")
         self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建模型管理器")
         self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "使用模型")
+
+        self.leftPanelModelsTree.ExpandAll() # 展开所有节点
     
     def OnClickModelsTree(self, e):
         """双击树节点事件"""
         temp = {
-            '模型介绍' : 'models_introduce.html',
-            '创建模型' : 'models_create.html',
+            '简单介绍' : 'models_introduce.html',
+            '定义/创建模型' : 'models_create.html',
             '创建模型管理器' : 'models_controller.html',
             '使用模型' : 'models_user.html',
         }
         nodeName = self.leftPanelModelsTree.GetItemText(e.GetItem())
-        if nodeName != f'模型-文档':
+        if nodeName != f'模型文档-个人总结':
             self.browserModels.SetPage(read_file(os.path.join(LOCAL_DOCS_PATH, temp[nodeName])), "")
 
     def _init_viewsPanel(self):

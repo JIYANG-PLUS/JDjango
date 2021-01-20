@@ -8,16 +8,43 @@
         *{margin: 0;padding: 0;box-sizing: border-box;}
         .red{color: red;}.green{color: green;}.yellow{color: yellow;}.blue{color: blue;}.black{color: black;}
         .blod400{font-weight: 400;}.blod700{font-weight: 700;}.italic{font-style: italic;}
-        .fontsize18{font-size: 12;}.fontsize18{font-size: 18;}.fontsize24{font-size: 24;}.fontsize32{font-size: 32;}
-        .underline{text-decoration: underline;}.linethrough{text-decoration: line-through;}
+        .fontsize18{font-size: 12px;}.fontsize18{font-size: 18px;}.fontsize24{font-size: 24px;}.fontsize32{font-size: 32px;}
+        .underline{text-decoration: underline;}.linethrough{text-decoration: line-through;}.linedouble{border-bottom: 6px double black;}
         .center{text-align: center;}.left{text-align: left;}.right{text-align: right;}
         .borderbottom{border-bottom: 2px black solid;padding-bottom: 12px;margin-bottom: 12px;}.borderall{border: 2px black solid;padding-bottom: 12px;}
+        main{padding: 12px 24px;margin: 6px;}
+        p,div.common{padding: 6px; margin: 6px;}
+        div.info{padding: 6px; margin: 6px;border: 5px solid green;}
+        div.error{padding: 6px; margin: 6px;border: 5px solid red;}
+        ol,ul{list-style: inside;padding: 2px 24px;}
+        p.question{color: blue;font-size: 18px;font-weight: 700;}
+        p.answer{text-indent: 2em;margin: 1px;padding: 1px;}
     </style>
 </head>
 <body>
-    <div>
-        <h1 class="black center borderbottom">模型介绍</h1>
-        <p>7657576ffh</p>
-    </div>
+    <p class="center blod700 fontsize32">Django模型介绍</p>
+
+    <p class="question">什么是模型？</p>
+    <p class="answer">在与数据库的映射关系中，一个模型就是一张数据库表。</p>
+    <p class="answer">在Django中，一个模型就是继承自django.db.models.Model的一个Python类。</p>
+
+    <p class="question">模型名称代表什么？</p>
+    <p class="answer">模型名称就是继承自django.db.models.Model的类的类名。</p>
+    <p class="answer">假设应用程序名为demo，demo下有一个模型MyModel，那么模型对应的表名默认为demo_mymodel（全小写）。</p>
+    <p class="answer">模型名称可以修改，表名也会随之修改。除此之外，表名可以自定义（此处不介绍）。</p>
+
+    <p class="question">模型的属性代表什么？</p>
+    <p class="answer">模型的属性就是继承自django.db.models.Model的类的属性，模型亦是表，那么模型的各个属性就对应表的各个字段。</p>
+
+    <p class="question">什么是ORM？</p>
+    <p class="answer">简单来说，ORM就是将原本写SQL操作数据库的方式，变为非SQL代码间接操作数据库。</p>
+    <p class="answer">在Django中，ORM就是直接用Python代码操作数据库。</p>
+
+    <p class="question">使用ORM的好处是什么？</p>
+    <p class="answer">简单来说，就是高效。但也有弊端，针对很复杂的查询时，可能需要写原生SQL，这对于Django来说也是简单的。</p>
+
+    <p class="question">ORM和模型的关系是什么？</p>
+    <p class="answer">当新建一个模型时，Django在运行时会自动创建与该模型相关的ORM操作对象，这将极大地方便我们对该模型/表进行增删改查操作。</p>
+
 </body>
 </html>
