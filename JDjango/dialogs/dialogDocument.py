@@ -48,7 +48,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitOfficialdocs.Initialize(self.leftPanelOfficialdocs)
         self.splitOfficialdocs.Initialize(self.rightPanelOfficialdocs)
         self.rightPanelOfficialdocs.SetBackgroundColour("gray")
-        self.splitOfficialdocs.SplitVertically(self.leftPanelOfficialdocs, self.rightPanelOfficialdocs, 165)
+        self.splitOfficialdocs.SplitVertically(self.leftPanelOfficialdocs, self.rightPanelOfficialdocs, 200)
 
         self.leftPanelOfficialdocsSizer = wx.BoxSizer(wx.VERTICAL)
         self.leftPanelOfficialdocsSizer.Add(self.splitOfficialdocs, 1, wx.EXPAND | wx.ALL, 0)
@@ -99,7 +99,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitModelsWindow.Initialize(self.leftPanelModels)
         self.splitModelsWindow.Initialize(self.rightPanelModels)
         self.rightPanelModels.SetBackgroundColour("gray")
-        self.splitModelsWindow.SplitVertically(self.leftPanelModels, self.rightPanelModels, 165)
+        self.splitModelsWindow.SplitVertically(self.leftPanelModels, self.rightPanelModels, 200)
 
         self.modelsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.modelsPanelSizer.Add(self.splitModelsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -128,9 +128,21 @@ class DocumentationDialog(wx.Dialog):
         """构建左-左目录树"""
         self.leftPanelModelsRoot = self.leftPanelModelsTree.AddRoot(f'模型文档-个人总结')
         self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "简单介绍")
-        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "定义/创建模型")
-        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建模型管理器")
-        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "使用模型")
+        t = self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建")
+        self.leftPanelModelsTree.AppendItem(t, "一般步骤")
+        zd = self.leftPanelModelsTree.AppendItem(t, "字段")
+        self.leftPanelModelsTree.AppendItem(zd, "整型")
+        self.leftPanelModelsTree.AppendItem(zd, "浮点型")
+        self.leftPanelModelsTree.AppendItem(zd, "字符型")
+        self.leftPanelModelsTree.AppendItem(zd, "日期型")
+        self.leftPanelModelsTree.AppendItem(zd, "布尔型")
+        glgx = self.leftPanelModelsTree.AppendItem(t, "关联关系")
+        self.leftPanelModelsTree.AppendItem(glgx, "一对一")
+        self.leftPanelModelsTree.AppendItem(glgx, "多对一")
+        self.leftPanelModelsTree.AppendItem(glgx, "多对多")
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "默认行为")
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "管理器")
+        self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "使用")
 
         self.leftPanelModelsTree.ExpandAll() # 展开所有节点
     
@@ -138,12 +150,28 @@ class DocumentationDialog(wx.Dialog):
         """双击树节点事件"""
         temp = {
             '简单介绍' : 'models_introduce.html',
-            '定义/创建模型' : 'models_create.html',
-            '创建模型管理器' : 'models_controller.html',
-            '使用模型' : 'models_user.html',
+
+            '创建' : '',
+            '一般步骤' : 'models_create_introduce.html',
+            '字段' : '',
+            '整型' : 'models_create_attrs_integer.html',
+            '浮点型' : 'models_create_attrs_float.html',
+            '字符型' : 'models_create_attrs_char.html',
+            '日期型' : 'models_create_attrs_date.html',
+            '布尔型' : 'models_create_attrs_bool.html',
+            '关联关系' : '',
+            '一对一' : 'models_create_relate_one2one.html',
+            '多对一' : 'models_create_relate_more2one.html',
+            '多对多' : 'models_create_relate_more2more.html',
+
+            '默认行为' : 'models_create_modify_default.html',
+
+            '管理器' : 'models_controller.html',
+            '使用' : 'models_user.html',
         }
+        unuse = ('模型文档-个人总结', '字段', '创建')
         nodeName = self.leftPanelModelsTree.GetItemText(e.GetItem())
-        if nodeName != f'模型文档-个人总结':
+        if nodeName not in unuse:
             self.browserModels.SetPage(read_file(os.path.join(LOCAL_DOCS_PATH, temp[nodeName])), "")
 
     def _init_viewsPanel(self):
@@ -154,7 +182,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitViewsWindow.Initialize(self.leftPanelViews)
         self.splitViewsWindow.Initialize(self.rightPanelViews)
         self.rightPanelViews.SetBackgroundColour("gray")
-        self.splitViewsWindow.SplitVertically(self.leftPanelViews, self.rightPanelViews, 165)
+        self.splitViewsWindow.SplitVertically(self.leftPanelViews, self.rightPanelViews, 200)
 
         self.viewsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.viewsPanelSizer.Add(self.splitViewsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -168,7 +196,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitUrlsWindow.Initialize(self.leftPanelUrls)
         self.splitUrlsWindow.Initialize(self.rightPanelUrls)
         self.rightPanelUrls.SetBackgroundColour("gray")
-        self.splitUrlsWindow.SplitVertically(self.leftPanelUrls, self.rightPanelUrls, 165)
+        self.splitUrlsWindow.SplitVertically(self.leftPanelUrls, self.rightPanelUrls, 200)
 
         self.urlsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.urlsPanelSizer.Add(self.splitUrlsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -182,7 +210,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitTemplatesWindow.Initialize(self.leftPanelTemplates)
         self.splitTemplatesWindow.Initialize(self.rightPanelTemplates)
         self.rightPanelTemplates.SetBackgroundColour("gray")
-        self.splitTemplatesWindow.SplitVertically(self.leftPanelTemplates, self.rightPanelTemplates, 165)
+        self.splitTemplatesWindow.SplitVertically(self.leftPanelTemplates, self.rightPanelTemplates, 200)
 
         self.templatesPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.templatesPanelSizer.Add(self.splitTemplatesWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -196,7 +224,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitFormsWindow.Initialize(self.leftPanelForms)
         self.splitFormsWindow.Initialize(self.rightPanelForms)
         self.rightPanelForms.SetBackgroundColour("gray")
-        self.splitFormsWindow.SplitVertically(self.leftPanelForms, self.rightPanelForms, 165)
+        self.splitFormsWindow.SplitVertically(self.leftPanelForms, self.rightPanelForms, 200)
 
         self.formsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.formsPanelSizer.Add(self.splitFormsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -210,7 +238,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitAdminsWindow.Initialize(self.leftPanelAdmins)
         self.splitAdminsWindow.Initialize(self.rightPanelAdmins)
         self.rightPanelAdmins.SetBackgroundColour("gray")
-        self.splitAdminsWindow.SplitVertically(self.leftPanelAdmins, self.rightPanelAdmins, 165)
+        self.splitAdminsWindow.SplitVertically(self.leftPanelAdmins, self.rightPanelAdmins, 200)
 
         self.adminsPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.adminsPanelSizer.Add(self.splitAdminsWindow, 1, wx.EXPAND | wx.ALL, 0)
@@ -224,7 +252,7 @@ class DocumentationDialog(wx.Dialog):
         self.splitDatabasesWindow.Initialize(self.leftPanelDatabases)
         self.splitDatabasesWindow.Initialize(self.rightPanelDatabases)
         self.rightPanelDatabases.SetBackgroundColour("gray")
-        self.splitDatabasesWindow.SplitVertically(self.leftPanelDatabases, self.rightPanelDatabases, 165)
+        self.splitDatabasesWindow.SplitVertically(self.leftPanelDatabases, self.rightPanelDatabases, 200)
 
         self.databasesPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.databasesPanelSizer.Add(self.splitDatabasesWindow, 1, wx.EXPAND | wx.ALL, 0)

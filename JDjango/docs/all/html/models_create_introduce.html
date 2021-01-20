@@ -18,6 +18,7 @@
         div.error{padding: 6px; margin: 6px;border: 5px solid red;}
         div.list{padding: 6px; margin: 6px;border: 1px solid black;}
         ol,ul{list-style: inside;padding: 2px 24px;}
+        ol{list-style-type: decimal;}ol>li{margin-left: 2em;}
         p.question{color: blue;font-size: 18px;font-weight: 700;}
         p.answer{text-indent: 2em;margin: 1px;padding: 1px;}
     </style>
@@ -26,7 +27,15 @@
     <p class="center blod700 fontsize32">定义/创建Django模型</p>
 
     <div class="list">
-        <div class="common">定义/创建模型的一般步骤：</div>
+        <div class="common blod700 fontsize24">定义/创建模型的一般步骤：</div>
+        <ol>
+            <li>定义一个类MyModel继承django.db.models.Model。</li>
+            <li>为类MyModel添加字段属性，类的属性变量名即是表的列名。</li>
+            <li>若有特定需要，为模型MyModel编写定制的控制器，并为模型MyModel绑定该控制器。（一个模型可拥有多个ORM控制管理器）</li>
+            <li>若有特定需要，重写模型MyModel的相关自动配置属性。</li>
+            <li>数据模型迁移：python manage.py makemigrations。</li>
+            <li>模型写入数据库：python manage.py migrate。</li>
+        </ol>
     </div>
 </body>
 </html>
