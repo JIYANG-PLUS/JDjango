@@ -31,7 +31,6 @@ class DocumentationDialog(wx.Dialog):
         self._init_adminsPanel()
         self._init_databasesPanel()
 
-        labels.AddPage(self.officialdocs, '官方文档')
         labels.AddPage(self.modelsPanel, '模型')
         labels.AddPage(self.viewsPanel, '视图')
         labels.AddPage(self.urlsPanel, '路由')
@@ -39,6 +38,7 @@ class DocumentationDialog(wx.Dialog):
         labels.AddPage(self.formsPanel, '表单')
         labels.AddPage(self.adminsPanel, '管理中心')
         labels.AddPage(self.databasesPanel, '数据库')
+        labels.AddPage(self.officialdocs, '官方文档')
 
     def _init_officialdocs(self):
         """官方文档初始化"""
@@ -131,11 +131,13 @@ class DocumentationDialog(wx.Dialog):
         t = self.leftPanelModelsTree.AppendItem(self.leftPanelModelsRoot, "创建")
         self.leftPanelModelsTree.AppendItem(t, "一般步骤")
         zd = self.leftPanelModelsTree.AppendItem(t, "字段")
+        self.leftPanelModelsTree.AppendItem(zd, "通用参数选项")
         self.leftPanelModelsTree.AppendItem(zd, "整型")
         self.leftPanelModelsTree.AppendItem(zd, "浮点型")
         self.leftPanelModelsTree.AppendItem(zd, "字符型")
         self.leftPanelModelsTree.AppendItem(zd, "日期型")
         self.leftPanelModelsTree.AppendItem(zd, "布尔型")
+        self.leftPanelModelsTree.AppendItem(zd, "文件类型")
         glgx = self.leftPanelModelsTree.AppendItem(t, "关联关系")
         self.leftPanelModelsTree.AppendItem(glgx, "一对一")
         self.leftPanelModelsTree.AppendItem(glgx, "多对一")
@@ -154,11 +156,13 @@ class DocumentationDialog(wx.Dialog):
             '创建' : '',
             '一般步骤' : 'models_create_introduce.html',
             '字段' : '',
+            '通用参数选项' : 'models_create_attrs_options.html',
             '整型' : 'models_create_attrs_integer.html',
             '浮点型' : 'models_create_attrs_float.html',
             '字符型' : 'models_create_attrs_char.html',
             '日期型' : 'models_create_attrs_date.html',
             '布尔型' : 'models_create_attrs_bool.html',
+            '文件类型' : 'models_create_attrs_file.html',
             '关联关系' : '',
             '一对一' : 'models_create_relate_one2one.html',
             '多对一' : 'models_create_relate_more2one.html',
@@ -169,7 +173,7 @@ class DocumentationDialog(wx.Dialog):
             '管理器' : 'models_controller.html',
             '使用' : 'models_user.html',
         }
-        unuse = ('模型文档-个人总结', '字段', '创建')
+        unuse = ('模型文档-个人总结', '字段', '创建', '关联关系')
         nodeName = self.leftPanelModelsTree.GetItemText(e.GetItem())
         if nodeName not in unuse:
             self.browserModels.SetPage(read_file(os.path.join(LOCAL_DOCS_PATH, temp[nodeName])), "")

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{margin: 0;padding: 0;box-sizing: border-box;}
+        .red{color: red;}.green{color: green;}.yellow{color: yellow;}.blue{color: blue;}.black{color: black;}
+        .blod400{font-weight: 400;}.blod700{font-weight: 700;}.italic{font-style: italic;}
+        .fontsize18{font-size: 12px;}.fontsize18{font-size: 18px;}.fontsize24{font-size: 24px;}.fontsize32{font-size: 32px;}
+        .underline{text-decoration: underline;}.linethrough{text-decoration: line-through;}.linedouble{border-bottom: 6px double black;}
+        .center{text-align: center;}.left{text-align: left;}.right{text-align: right;}
+        .borderbottom{border-bottom: 2px black solid;padding-bottom: 12px;margin-bottom: 12px;}.borderall{border: 2px black solid;padding-bottom: 12px;}
+        main{padding: 12px 24px;margin: 6px;}
+        p,div.common{padding: 6px; margin: 6px;}
+        div.info{padding: 6px; margin: 6px;border: 5px solid green;}
+        div.error{padding: 6px; margin: 6px;border: 5px solid red;}
+        ol,ul{list-style: inside;padding: 2px 24px;}
+        ol{list-style-type: decimal;}ol>li{margin: 9px 2em;}
+        p.question{color: blue;font-size: 18px;font-weight: 700;}
+        p.answer{text-indent: 2em;margin: 1px;padding: 1px;}
+        table{border-collapse: collapse; width: 100%;}
+        table th{border: 1px solid white;background-color: blue;color: white;}
+        table td{border-right: 1px solid black;border-bottom: 1px solid black;}
+        table tr:hover{background: yellowgreen;cursor: pointer;}
+        table td:last-of-type{border-right: none;}
+        table th, table td{padding: 6px 8px;}
+    </style>
+</head>
+<body>
+    <p class="center blod700 fontsize32">Django浮点型字段</p>
+
+    <div class="common">
+        <table>
+            <thead>
+                <tr>
+                    <th>字段类型</th>
+                    <th>字段说明</th>
+                    <th>值范围</th>
+                    <th>对应表单组件</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>FloatField</td>
+                    <td>浮点型字段</td>
+                    <td>float</td>
+                    <td>NumberInput</td>
+                </tr>
+                <tr>
+                    <td>DecimalField</td>
+                    <td>高精度浮点型字段</td>
+                    <td>decimal</td>
+                    <td>NumberInput</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="common">
+        <p class="question">字段特有参数：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段类型</th>
+                    <th>特有参数</th>
+                    <th>参数说明</th>
+                    <th>参数取值类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>DecimalField</td>
+                    <td>max_digits</td>
+                    <td>整数位数和小数位数之和（不包括小数点）</td>
+                    <td>正整型</td>
+                </tr>
+                <tr>
+                    <td>DecimalField</td>
+                    <td>decimal_places</td>
+                    <td>小数位数（不包括小数点）</td>
+                    <td>正整型</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="question">注意点：</p>
+    <ol>
+        <li>DecimalField字段对应Python中的Decimal模块，其具备超高精度的浮点数运算，可进行金融类计算。</li>
+        <li>max_digits和decimal_places两个参数必填，且max_digits的值必须大于等于decimal_places的值。</li>
+        <li>整数位数 = max_digits - decimal_places。</li>
+    </ol>
+
+</body>
+</html>

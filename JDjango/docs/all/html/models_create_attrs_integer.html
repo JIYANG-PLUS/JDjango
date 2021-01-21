@@ -16,15 +16,112 @@
         p,div.common{padding: 6px; margin: 6px;}
         div.info{padding: 6px; margin: 6px;border: 5px solid green;}
         div.error{padding: 6px; margin: 6px;border: 5px solid red;}
-        div.list{padding: 6px; margin: 6px;border: 1px solid black;}
         ol,ul{list-style: inside;padding: 2px 24px;}
-        ol{list-style-type: decimal;}ol>li{margin-left: 2em;}
+        ol{list-style-type: decimal;}ol>li{margin: 9px 2em;}
         p.question{color: blue;font-size: 18px;font-weight: 700;}
         p.answer{text-indent: 2em;margin: 1px;padding: 1px;}
+        table{border-collapse: collapse; width: 100%;}
+        table th{border: 1px solid white;background-color: blue;color: white;}
+        table td{border-right: 1px solid black;border-bottom: 1px solid black;}
+        table tr:hover{background: yellowgreen;cursor: pointer;}
+        table td:last-of-type{border-right: none;}
+        table th, table td{padding: 6px 8px;}
     </style>
 </head>
 <body>
-    <p class="center blod700 fontsize32">整型字段</p>
-    
+    <p class="center blod700 fontsize32">Django整型字段</p>
+
+    <div class="common">
+        <p class="question">所有整型字段类型：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段类型</th>
+                    <th>字段说明</th>
+                    <th>值范围</th>
+                    <th>对应表单组件</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BinaryField</td>
+                    <td>字节型字段</td>
+                    <td>bytes、bytearray、memoryview</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>SmallIntegerField</td>
+                    <td>16位整型字段</td>
+                    <td>-32768~32767</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>PositiveSmallIntegerField</td>
+                    <td>16位正整型字段</td>
+                    <td>0~32767</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>IntegerField</td>
+                    <td>32位整型字段</td>
+                    <td>-2147483648~2147483647</td>
+                    <td>NumberInput</td>
+                </tr>
+                <tr>
+                    <td>PositiveIntegerField</td>
+                    <td>32位正整型字段</td>
+                    <td>0~2147483647</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AutoField</td>
+                    <td>32位自增型字段</td>
+                    <td>1~2147483647</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>BigAutoFiel</td>
+                    <td>64位自增型字段</td>
+                    <td>1~9223372036854775807</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>BigIntegerField</td>
+                    <td>64位整型字段</td>
+                    <td>-9223372036854775808~9223372036854775807</td>
+                    <td>TextInput</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="common">
+        <p class="question">字段特有参数：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段类型</th>
+                    <th>特有参数</th>
+                    <th>参数说明</th>
+                    <th>参数取值类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BinaryField</td>
+                    <td>max_length</td>
+                    <td>长度上限</td>
+                    <td>正整型</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="question">注意点：</p>
+    <ol>
+        <li>若未显示设置主键字段，Django会默认加上 id = models.AutoField(primary_key=True) 这一字段。</li>
+        <li>BinaryField的editable参数默认是False。Django2.1版本之前不允许设置editable参数。</li>
+    </ol>
+
 </body>
 </html>

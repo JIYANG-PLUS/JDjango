@@ -337,7 +337,7 @@ class Main(wx.Frame):
 
     def onSqliteManageTool(self, e):
         """跨平台的Sqlite工具"""
-        dlg = wx.MessageDialog(self, "正在设计中。", "提示信息", wx.OK)
+        dlg = wx.MessageDialog(self, "请双击同级目录下的sqlite3Manager.pyw启动文件。", "提示信息", wx.OK)
         dlg.ShowModal()
         dlg.Destroy()
 

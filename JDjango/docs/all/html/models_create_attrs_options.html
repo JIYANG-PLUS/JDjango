@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{margin: 0;padding: 0;box-sizing: border-box;}
+        .red{color: red;}.green{color: green;}.yellow{color: yellow;}.blue{color: blue;}.black{color: black;}
+        .blod400{font-weight: 400;}.blod700{font-weight: 700;}.italic{font-style: italic;}
+        .fontsize18{font-size: 12px;}.fontsize18{font-size: 18px;}.fontsize24{font-size: 24px;}.fontsize32{font-size: 32px;}
+        .underline{text-decoration: underline;}.linethrough{text-decoration: line-through;}.linedouble{border-bottom: 6px double black;}
+        .center{text-align: center;}.left{text-align: left;}.right{text-align: right;}
+        .borderbottom{border-bottom: 2px black solid;padding-bottom: 12px;margin-bottom: 12px;}.borderall{border: 2px black solid;padding-bottom: 12px;}
+        main{padding: 12px 24px;margin: 6px;}
+        p,div.common{padding: 6px; margin: 6px;}
+        div.info{padding: 6px; margin: 6px;border: 5px solid green;}
+        div.error{padding: 6px; margin: 6px;border: 5px solid red;}
+        ol,ul{list-style: inside;padding: 2px 24px;}
+        ol{list-style-type: decimal;}ol>li{margin: 9px 2em;}
+        p.question{color: blue;font-size: 18px;font-weight: 700;}
+        p.answer{text-indent: 2em;margin: 1px;padding: 1px;}
+        table{border-collapse: collapse; width: 100%;}
+        table th{border: 1px solid white;background-color: blue;color: white;}
+        table td{border-right: 1px solid black;border-bottom: 1px solid black;}
+        table tr:hover{background: yellowgreen;cursor: pointer;}
+        table td:last-of-type{border-right: none;}
+        table th, table td{padding: 6px 8px;}
+    </style>
+</head>
+<body>
+    <p class="center blod700 fontsize32">Django模型字段选项</p>
+
+    <p class="question">什么是字段选项？</p>
+    <p class="answer">字段选项是模型类的属性，也可以理解为数据库表字段的属性。</p>
+    <p class="answer">模型的字段选项，主要用于设置数据库表字段的长度、是否为空、默认值、帮助文本、主键、唯一性等属性。</p>
+    <p class="answer">大部分的字段选项是所有字段共享的，所以这里统一罗列出来。</p>
+
+    <p class="question">可选的字段选项有哪些？</p>
+    <div class="common">
+        <table>
+            <thead>
+                <tr>
+                    <th>参数名称</th><th>参数含义</th><th>值类型</th><th>默认值</th><th>示例代码</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>blank</td>
+                    <td>字段允许为空</td>
+                    <td>布尔型</td>
+                    <td>False</td>
+                    <td>blank=True</td>
+                </tr>
+                <tr>
+                    <td>null</td>
+                    <td>blank=True且字段为空时数据库默认赋值NULL</td>
+                    <td>布尔型</td>
+                    <td>False</td>
+                    <td>null=True</td>
+                </tr>
+                <tr>
+                    <td>default</td>
+                    <td>默认值</td>
+                    <td>不限</td>
+                    <td></td>
+                    <td>default=100</td>
+                </tr>
+                <tr>
+                    <td>primary_key</td>
+                    <td>主键</td>
+                    <td>布尔型</td>
+                    <td>False</td>
+                    <td>primary_key=True</td>
+                </tr>
+                <tr>
+                    <td>unique</td>
+                    <td>字段值唯一</td>
+                    <td>布尔型</td>
+                    <td>False</td>
+                    <td>unique=True</td>
+                </tr>
+                <tr>
+                    <td>unique_for_date</td>
+                    <td>日期组合唯一</td>
+                    <td>字符型</td>
+                    <td></td>
+                    <td>unique_for_date='日期字段名'</td>
+                </tr>
+                <tr>
+                    <td>unique_for_month</td>
+                    <td>月份日期组合唯一</td>
+                    <td>字符型</td>
+                    <td></td>
+                    <td>unique_for_date='日期字段名'</td>
+                </tr>
+                <tr>
+                    <td>unique_for_year</td>
+                    <td>年份日期组合唯一</td>
+                    <td>字符型</td>
+                    <td></td>
+                    <td>unique_for_date='日期字段名'</td>
+                </tr>
+                <tr>
+                    <td>db_column</td>
+                    <td>列名/字段名</td>
+                    <td>字符型</td>
+                    <td>类属性名</td>
+                    <td>db_column='name'</td>
+                </tr>
+                <tr>
+                    <td>db_index</td>
+                    <td>创建索引</td>
+                    <td>布尔值</td>
+                    <td>False</td>
+                    <td>db_index=True</td>
+                </tr>
+                <tr>
+                    <td>db_tablespace</td>
+                    <td>表空间</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>error_messages</td>
+                    <td>表单错误输入提醒</td>
+                    <td>字符型</td>
+                    <td></td>
+                    <td>error_messages='此处必填'</td>
+                </tr>
+                <tr>
+                    <td>editable</td>
+                    <td>表单可编辑显示</td>
+                    <td>布尔型</td>
+                    <td>True</td>
+                    <td>editable=False</td>
+                </tr>
+                <tr>
+                    <td>help_text</td>
+                    <td>表单帮助文本信息</td>
+                    <td>字符型</td>
+                    <td></td>
+                    <td>help_text='输入密码'</td>
+                </tr>
+                <tr>
+                    <td>validators</td>
+                    <td>表单验证器</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>choices</td>
+                    <td>可选列表</td>
+                    <td>二元组</td>
+                    <td></td>
+                    <td>choices=[('存储值','展示值'),]</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="question">注意点：</p>
+    <ol>
+        <li>尽量不要在字符串类型的字段上使用null=True参数设置，因为这会使字符型字段产生两种可能值：NULL和空字符串。</li>
+        <li>字符串类型的字段同时设置unique=True和blank=True时，必须设置null=True。</li>
+        <li>一个模型必须且只能拥有一个显式主键设置，primary_key=True还可以用null=False和unique=True隐式指定，效果等同。</li>
+        <li>在多对多和一对一关系字段中不允许使用unique参数。</li>
+        <li>当unique=True时，不必再指定db_index=True，因为unique=True默认实现了db_index=True。</li>
+        <li>不允许在参数赋值中使用lambda表达式，lambda不会被序列化迁移！</li>
+        <li>凡是【参数含义】以“表单”开头的参数，与表字段的创建无关，只与前台展示的表单有关。</li>
+        <li>关于表单的提示信息若涉及HTML字符，推荐使用django.utils.html.escape()转义HTML字符串。</li>
+    </ol>
+
+</body>
+</html>

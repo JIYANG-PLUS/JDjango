@@ -29,7 +29,7 @@
     </style>
 </head>
 <body>
-    <p class="center blod700 fontsize32">Django字符型字段</p>
+    <p class="center blod700 fontsize32">Django文件类型字段</p>
 
     <div class="common">
         <table>
@@ -43,45 +43,21 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>CharField</td>
-                    <td>字符型字段</td>
+                    <td>FileField</td>
+                    <td>文件上传字段</td>
                     <td></td>
-                    <td>TextInput</td>
+                    <td>ClearableFileInput</td>
                 </tr>
                 <tr>
-                    <td>TextField</td>
-                    <td>大文本字段</td>
+                    <td>ImageField</td>
+                    <td>图片上传字段</td>
                     <td></td>
-                    <td>Textarea</td>
+                    <td>ClearableFileInput</td>
                 </tr>
                 <tr>
-                    <td>EmailField</td>
-                    <td>邮箱字段</td>
+                    <td>FilePathField</td>
+                    <td>文件路径上传字段</td>
                     <td></td>
-                    <td>TextInput</td>
-                </tr>
-                <tr>
-                    <td>GenericIPAddressField</td>
-                    <td>IPv4IPv6字段</td>
-                    <td>ip</td>
-                    <td>TextInput</td>
-                </tr>
-                <tr>
-                    <td>SlugField</td>
-                    <td>只包含字母、数字、下划线或连字符</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>URLField</td>
-                    <td>路由字段</td>
-                    <td>URL</td>
-                    <td>TextInput</td>
-                </tr>
-                <tr>
-                    <td>UUIDField</td>
-                    <td>uuid字段</td>
-                    <td>uuid</td>
                     <td></td>
                 </tr>
             </tbody>
@@ -89,7 +65,7 @@
     </div>
 
     <div class="common">
-        <p class="question">字段特有参数：（无默认值必填）</p>
+        <p class="question">字段特有参数（这里并未写全，用到补充）：</p>
         <table>
             <thead>
                 <tr>
@@ -101,28 +77,16 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>CharField</td>
-                    <td>max_length</td>
-                    <td>长度上限</td>
-                    <td>正整型</td>
+                    <td>FileField</td>
+                    <td>upload_to</td>
+                    <td>上传路径</td>
+                    <td>字符型路径</td>
                 </tr>
                 <tr>
-                    <td>EmailField</td>
+                    <td>FileField</td>
                     <td>max_length</td>
-                    <td>长度上限</td>
-                    <td>正整型（默认254）</td>
-                </tr>
-                <tr>
-                    <td>SlugField</td>
-                    <td>max_length</td>
-                    <td>长度上限</td>
-                    <td>正整型（默认50）</td>
-                </tr>
-                <tr>
-                    <td>URLField</td>
-                    <td>max_length</td>
-                    <td>长度上限</td>
-                    <td>正整型（默认200）</td>
+                    <td>最大路径长度</td>
+                    <td>正整数（默认100）</td>
                 </tr>
             </tbody>
         </table>
@@ -130,10 +94,9 @@
 
     <p class="question">注意点：</p>
     <ol>
-        <li>当字符串长度过长时，推荐使用TextField。</li>
-        <li>EmailField会在表单中自动触发邮箱类型校验。</li>
-        <li>UUIDField字段，默认值设置default=uuid.uuid4。</li>
-        <li>UUIDField可以用于设置主键唯一字段，因为uuid肯定不会重复，但是作为主键的AutoField可能更加适合。UUIDField需要手动设置默认值，并不会自动生成。</li>
+        <li>若要使用FileField字段，必须在settings中设置MEDIA_ROOT基础路径。</li>
+        <li>FileField不允许设置为主键字段。</li>
+        <li>FileField的upload_to参数常用赋值示例：upload_to='uploads/'、upload_to='uploads/%Y/%m/%d/'</li>
     </ol>
 
 </body>

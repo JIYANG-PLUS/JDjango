@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{margin: 0;padding: 0;box-sizing: border-box;}
+        .red{color: red;}.green{color: green;}.yellow{color: yellow;}.blue{color: blue;}.black{color: black;}
+        .blod400{font-weight: 400;}.blod700{font-weight: 700;}.italic{font-style: italic;}
+        .fontsize18{font-size: 12px;}.fontsize18{font-size: 18px;}.fontsize24{font-size: 24px;}.fontsize32{font-size: 32px;}
+        .underline{text-decoration: underline;}.linethrough{text-decoration: line-through;}.linedouble{border-bottom: 6px double black;}
+        .center{text-align: center;}.left{text-align: left;}.right{text-align: right;}
+        .borderbottom{border-bottom: 2px black solid;padding-bottom: 12px;margin-bottom: 12px;}.borderall{border: 2px black solid;padding-bottom: 12px;}
+        main{padding: 12px 24px;margin: 6px;}
+        p,div.common{padding: 6px; margin: 6px;}
+        div.info{padding: 6px; margin: 6px;border: 5px solid green;}
+        div.error{padding: 6px; margin: 6px;border: 5px solid red;}
+        ol,ul{list-style: inside;padding: 2px 24px;}
+        ol{list-style-type: decimal;}ol>li{margin: 9px 2em;}
+        p.question{color: blue;font-size: 18px;font-weight: 700;}
+        p.answer{text-indent: 2em;margin: 1px;padding: 1px;}
+        table{border-collapse: collapse; width: 100%;}
+        table th{border: 1px solid white;background-color: blue;color: white;}
+        table td{border-right: 1px solid black;border-bottom: 1px solid black;}
+        table tr:hover{background: yellowgreen;cursor: pointer;}
+        table td:last-of-type{border-right: none;}
+        table th, table td{padding: 6px 8px;}
+    </style>
+</head>
+<body>
+    <p class="center blod700 fontsize32">Django日期型字段</p>
+
+    <div class="common">
+        <table>
+            <thead>
+                <tr>
+                    <th>字段类型</th>
+                    <th>字段说明</th>
+                    <th>值范围</th>
+                    <th>对应表单组件</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>DateField</td>
+                    <td>日期型字段</td>
+                    <td>datetime.date</td>
+                    <td>TextInput</td>
+                </tr>
+                <tr>
+                    <td>DateTimeField</td>
+                    <td>长日期字段</td>
+                    <td>datetime.datetime</td>
+                    <td>TextInput</td>
+                </tr>
+                <tr>
+                    <td>DurationField</td>
+                    <td>时间戳字段</td>
+                    <td>timedelta</td>
+                    <td>DurationField</td>
+                </tr>
+                <tr>
+                    <td>TimeField</td>
+                    <td>时间字段</td>
+                    <td>datetime.time</td>
+                    <td>TextInput</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="common">
+        <p class="question">字段特有参数：</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>字段类型</th>
+                    <th>特有参数</th>
+                    <th>参数说明</th>
+                    <th>参数取值类型</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>DateField</td>
+                    <td>auto_now</td>
+                    <td>仅在调用save()方法时自动更新时间</td>
+                    <td>True/False</td>
+                </tr>
+                <tr>
+                    <td>DateField</td>
+                    <td>auto_now_add</td>
+                    <td>仅第一次创建时赋值</td>
+                    <td>True/False</td>
+                </tr>
+                <tr>
+                    <td>DateTimeField</td>
+                    <td>auto_now</td>
+                    <td>仅在调用save()方法时自动更新时间</td>
+                    <td>True/False</td>
+                </tr>
+                <tr>
+                    <td>DateTimeField</td>
+                    <td>auto_now_add</td>
+                    <td>仅第一次创建时赋值</td>
+                    <td>True/False</td>
+                </tr>
+                <tr>
+                    <td>TimeField</td>
+                    <td>auto_now</td>
+                    <td>仅在调用save()方法时自动更新时间</td>
+                    <td>True/False</td>
+                </tr>
+                <tr>
+                    <td>TimeField</td>
+                    <td>auto_now_add</td>
+                    <td>仅第一次创建时赋值</td>
+                    <td>True/False</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p class="question">注意点：</p>
+    <ol>
+        <li>DateField和DateTimeField的区别就是：前者在Python中的类型为datetime.date，后者为datetime.datetime。</li>
+        <li>DateField设置默认值时，赋值为default=date.today，取自datetime.date.today()</li>
+        <li>DateTimeField设置默认值时，赋值为default=timezone.now，取自django.utils.timezone.now()</li>
+        <li>当auto_now_add=True和default=timezone.now或default=date.today同时存在时，仅auto_now_add=True有效。</li>
+        <li>auto_now_add、auto_now、default三者互相排斥，同一日期字段只能存在其中一个。</li>
+        <li>当设置auto_now_add=True或auto_now=True时，默认同时设置editable=False和blank=True。</li>
+        <li>当需要具体到时分秒时，推荐使用DateTimeField。</li>
+        <li>在除了PostgreSQL之外的所有数据库类型中，DurationField尽量不要和DateTimeField作比较。</li>
+    </ol>
+
+</body>
+</html>
