@@ -155,6 +155,8 @@ class Main(wx.Frame):
         menusCreate.AppendSeparator()
         self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
         menusCreate.AppendSeparator()
+        self.modelsGenerate = menusCreate.Append(wx.ID_ANY, "&模型", "模型")
+        menusCreate.AppendSeparator()
         self.viewsGenerateFunc = menusCreate.Append(wx.ID_ANY, "&视图", "视图")
         self.create_project.Enable(True)
         menus.Append(wx.ID_ANY, "&新建", menusCreate)
@@ -191,11 +193,9 @@ class Main(wx.Frame):
         helps.AppendSeparator()
         menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
 
-        # 端口与进程
+        # 运行端口与进程
         portProgress = wx.Menu()
-        self.port = portProgress.Append(wx.ID_ANY, "&查看端口", "查看端口")
-        portProgress.AppendSeparator()
-        self.progress = portProgress.Append(wx.ID_ANY, "&关闭进程", "关闭进程")
+        self.portProgressRun = portProgress.Append(wx.ID_ANY, "&调试", "调试")
         
         # 单项检测
         perCheck = wx.Menu()
@@ -249,8 +249,7 @@ class Main(wx.Frame):
         self.allInitBtns['forms']['fix'].append(self.forms_fix)
 
         # 模型
-        # self.modelsGenerate = models.Append(wx.ID_ANY, "&创建", "创建")
-        # self.allInitBtns['models']['create'].append(self.modelsGenerate)
+        self.allInitBtns['models']['create'].append(self.modelsGenerate)
         self.allInitBtns['models']['check'].append(self.models_check)
         self.allInitBtns['models']['fix'].append(self.models_fix)
 
@@ -297,7 +296,7 @@ class Main(wx.Frame):
         menuBar.Append(perFix, "&单项修复")
         # menuBar.Append(test, "&单元测试")
         menuBar.Append(admin, "&后台管理中心")
-        menuBar.Append(portProgress, "端口/进程")
+        menuBar.Append(portProgress, "运行")
         menuBar.Append(helps, "&帮助")
         menuBar.Append(directExit, "&退出")
         self.SetMenuBar(menuBar)
@@ -325,6 +324,9 @@ class Main(wx.Frame):
         # 视图 事件绑定
         self.Bind(wx.EVT_MENU, self.onViewsGenerateFunc, self.viewsGenerateFunc) # 新增视图（多样新增）
 
+        # 模型
+        self.Bind(wx.EVT_MENU, self.onModelsGenerate, self.modelsGenerate)
+
         # 路由 事件绑定
         self.Bind(wx.EVT_MENU, self.onUrlsCheck, self.urls_check) # 检查路由
         self.Bind(wx.EVT_MENU, self.onUrlsFix, self.urls_fix) # 修复路由
@@ -332,8 +334,24 @@ class Main(wx.Frame):
         # 新项目 事件绑定
         self.Bind(wx.EVT_MENU, self.onCreateProject, self.create_project) # 新建项目
 
+        # 运行 事件绑定
+        self.Bind(wx.EVT_MENU, self.onPortProgressRun, self.portProgressRun) # 运行
+
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onPortProgressRun(self, e):
+        """运行Django"""
+        import subprocess
+        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
+        server = subprocess.Popen(f'python {path} runserver 8868', shell=True)
+        # server.wait()
+
+    def onModelsGenerate(self, e):
+        """创建模型"""
+        dlg = ModelsCreateDialog(self, -1)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def onSqliteManageTool(self, e):
         """跨平台的Sqlite工具"""

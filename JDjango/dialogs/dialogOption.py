@@ -313,7 +313,7 @@ class ViewGenerateDialog(wx.Dialog):
 
         # 控件
         ### 选择创建视图类型
-        self.btnWritePath = buttons.GenButton(self.selectFilePanel, -1, '选择视图写入文件路径')
+        self.btnWritePath = buttons.GenButton(self.selectFilePanel, -1, '选择视图写入路径')
         self.filePath = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
         self.filePath.Enable(False)
         ### 预览代码
@@ -753,3 +753,31 @@ class SettingsDialog(wx.Dialog):
         self.DATA_SETTINGS['SECRET_KEY'] = new_key
         self.inputRefreshSecretKey.SetValue(new_key)
 
+class ModelsCreateDialog(wx.Dialog):
+    def __init__(self, parent, id, **kwargs):
+        wx.Dialog.__init__(self, parent, id, '新增视图', size=(666, 888))
+        self.panel = wx.Panel(self)
+        panelSizer = wx.BoxSizer(wx.VERTICAL) # 垂直
+        self.panel.SetSizer(panelSizer)
+
+        self.selectFilePanel = wx.Panel(self.panel)
+        selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        self.selectFilePanel.SetSizer(selectFilePanelSizer)
+        self.btnSelectFile = buttons.GenButton(self.selectFilePanel, -1, '选择模型写入路径')
+        self.inputSelectFile = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
+        selectFilePanelSizer.Add(self.btnSelectFile, 0, wx.EXPAND | wx.ALL, 2)
+        selectFilePanelSizer.Add(self.inputSelectFile, 1, wx.EXPAND | wx.ALL, 2)
+
+        panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 事件
+        self.Bind(wx.EVT_BUTTON, self.onBtnWritePath, self.btnSelectFile)
+
+    def onBtnWritePath(self, e):
+        dirname = get_configs(CONFIG_PATH)['dirname']
+        dlg = wx.FileDialog(self, "选择写入文件", dirname, "", "*.py", wx.FD_OPEN)
+        if dlg.ShowModal() == wx.ID_OK:
+            filename = dlg.GetFilename()
+            dirname = dlg.GetDirectory()
+            self.inputSelectFile.SetValue(os.path.join(dirname, filename))
+        dlg.Destroy()

@@ -1,31 +1,29 @@
 {
-    "dirname": "D:\\www\\nantongCDC",
-    "project_name": "nantongCDC",
+    "dirname": "C:\\Users\\PC\\Desktop\\djangoProject\\HELLOWORD",
+    "project_name": "HELLOWORD",
     "app_names": [
-        "JiYang",
-        "main",
-        "TEMP"
+        "main"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "D:\\www\\nantongCDC\\db.sqlite3"
+            "NAME": "C:\\Users\\PC\\Desktop\\djangoProject\\HELLOWORD\\db.sqlite3"
         }
     },
     "DEBUG": true,
-    "LANGUAGE_CODE": "zh-Hans",
-    "TIME_ZONE": "Asia/Shanghai",
+    "LANGUAGE_CODE": "en-us",
+    "TIME_ZONE": "UTC",
     "USE_I18N": true,
     "USE_L10N": true,
-    "USE_TZ": false,
+    "USE_TZ": true,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
         "*"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "l4tiqm8rif5v9es&sit^a#)**scx)kfht8-fw4kb1325$hkz2-",
+    "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "D:\\www\\nantongCDC\\templates"
+        "C:\\Users\\PC\\Desktop\\djangoProject\\HELLOWORD\\templates"
     ]
 }
