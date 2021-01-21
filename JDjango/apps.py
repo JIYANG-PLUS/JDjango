@@ -21,7 +21,7 @@ class App(wx.App):
         return super().OnExit()
 
 def main():
-    app = App(redirect=False) # 【指定filename将输出到文件】
+    app = App(redirect=True) # 【指定filename将输出到文件】
     app.MainLoop()
 
 class SQLiteApp(wx.App):

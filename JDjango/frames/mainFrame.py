@@ -195,7 +195,10 @@ class Main(wx.Frame):
 
         # 运行端口与进程
         portProgress = wx.Menu()
-        self.portProgressRun = portProgress.Append(wx.ID_ANY, "&调试", "调试")
+        self.portProgressRun = portProgress.Append(wx.ID_ANY, "&运行", "运行")
+        portProgress.AppendSeparator()
+        self.portProgressSeeOrKill = portProgress.Append(wx.ID_ANY, "&查看/终止进程", "查看/终止进程")
+        self.portProgressRun.Enable(False)
         
         # 单项检测
         perCheck = wx.Menu()
@@ -336,15 +339,26 @@ class Main(wx.Frame):
 
         # 运行 事件绑定
         self.Bind(wx.EVT_MENU, self.onPortProgressRun, self.portProgressRun) # 运行
+        self.Bind(wx.EVT_MENU, self.onPortProgressSeeOrKill, self.portProgressSeeOrKill) # 运行
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+    
+    def onPortProgressSeeOrKill(self, e):
+        """查看或终止进程"""
+        dlg = wx.MessageDialog(self, """
+        MacOS：
+        查看PID：sudo lsof -i:8080
+        终止进程：sudo kill PID
+        """, "相关命令", wx.OK)
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def onPortProgressRun(self, e):
         """运行Django"""
         import subprocess
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
-        server = subprocess.Popen(f'python {path} runserver 8868', shell=True)
+        server = subprocess.Popen(f'python3.7 {path} runserver 8868', shell=True)
         # server.wait()
 
     def onModelsGenerate(self, e):
@@ -441,8 +455,8 @@ class Main(wx.Frame):
     def setupStatusBar(self):
         """设置状态栏"""
         # 状态栏
-        sb = self.CreateStatusBar(2)  # 2代表将状态栏分为两个
-        self.SetStatusWidths([-1, -2])  # 比例为1：2
+        sb = self.CreateStatusBar(3)  # 2代表将状态栏分为两个
+        self.SetStatusWidths([-1, -2, -1])  # 比例为1：2
         self.SetStatusText("Ready", 0)  # 0代表第一个栏，Ready为内容
 
         # 循环定时器
@@ -749,3 +763,4 @@ class Main(wx.Frame):
                 _.Enable(True) # 开启所有的创建按钮
         self.btn_config_project.Enable(True) # 选项
         self.menusSettings.Enable(True) # Settings
+        self.portProgressRun.Enable(True) # Settings
