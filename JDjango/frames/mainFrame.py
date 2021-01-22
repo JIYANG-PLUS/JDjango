@@ -360,12 +360,14 @@ class Main(wx.Frame):
         dlg.Destroy()
 
     def onPortProgressRun(self, e):
-        """运行Django"""
+        """子进程运行Django"""
         import subprocess
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         port = env.getDjangoRunPort()
+        env_python3 = env.getPython3Env()
         server = subprocess.Popen(f'python {path} runserver {port}', shell=True)
         self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}", level=1))
+        self.SetStatusText("网站正在运行中", 2)
         # server.wait()
 
     def onModelsGenerate(self, e):

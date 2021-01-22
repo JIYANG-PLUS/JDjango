@@ -131,6 +131,12 @@ def getDjangoRunPort():
     node = obj.get_xpath_node('env/port')
     return int(node.text)
 
+def getPython3Env():
+    """获取项目运行虚拟环境"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('env/python3')
+    return node.text
+
 
 # 参考
 # 从字符串读取
