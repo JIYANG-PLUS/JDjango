@@ -755,10 +755,10 @@ class SettingsDialog(wx.Dialog):
 
 class ModelsCreateDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '新增视图', size=(666, 888))
+        wx.Dialog.__init__(self, parent, id, '新增视图', size=(888, 666))
         self.panel = wx.Panel(self)
-        panelSizer = wx.BoxSizer(wx.VERTICAL) # 垂直
-        self.panel.SetSizer(panelSizer)
+        self.panelSizer = wx.BoxSizer(wx.VERTICAL) # 垂直
+        self.panel.SetSizer(self.panelSizer)
 
         self.selectFilePanel = wx.Panel(self.panel)
         selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL) # 水平
@@ -768,10 +768,65 @@ class ModelsCreateDialog(wx.Dialog):
         selectFilePanelSizer.Add(self.btnSelectFile, 0, wx.EXPAND | wx.ALL, 2)
         selectFilePanelSizer.Add(self.inputSelectFile, 1, wx.EXPAND | wx.ALL, 2)
 
-        panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 初始化表格控件
+        self._init_table()
 
         # 事件
         self.Bind(wx.EVT_BUTTON, self.onBtnWritePath, self.btnSelectFile)
+
+    def _init_table(self):
+        """初始化表格控件"""
+        self.infoGrid = wx.grid.Grid( self.panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+
+        self.COLS = (
+            '列名',
+            '主键',
+            '允许为空',
+            'null值',
+            '默认值',
+            '字段值唯一',
+            '创建索引',
+            '可选列表',
+            '日期组合唯一',
+            '月份日期组合唯一',
+            '年份日期组合唯一',
+            '表单错误输入提醒',
+            '表单可编辑',
+            '表单帮助文本信息',
+        )
+		# Grid
+        self.infoGrid.CreateGrid( 1, len(self.COLS) ) # row  col
+        self.infoGrid.EnableEditing( True )
+        self.infoGrid.EnableGridLines( True )
+        self.infoGrid.EnableDragGridSize( True )
+        self.infoGrid.SetMargins( 0, 0 )
+
+        # Columns
+        self.infoGrid.EnableDragColMove( True )
+        self.infoGrid.EnableDragColSize( True )
+        self.infoGrid.SetColLabelSize( 30 )
+        self.infoGrid.SetColLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
+
+        # Rows
+        self.infoGrid.EnableDragRowSize( True )
+        self.infoGrid.SetRowLabelSize( 70 )
+        self.infoGrid.SetRowLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
+
+		# Label Appearance
+
+		# Cell Defaults
+        self.infoGrid.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
+        self.panelSizer.Add( self.infoGrid, 1, wx.EXPAND | wx.ALL, 2 )
+
+        self._init_header()
+        # self._init_data()
+
+    def _init_header(self):
+        """初始化列名"""
+        for i,v in enumerate(self.COLS):
+            self.infoGrid.SetColLabelValue(i, v)
 
     def onBtnWritePath(self, e):
         """选择文件写入路径"""

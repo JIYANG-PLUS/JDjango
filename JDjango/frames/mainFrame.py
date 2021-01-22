@@ -24,6 +24,8 @@ class Main(wx.Frame):
 
         wx.Frame.__init__(self, parent, id, title, pos, size)
 
+        self._init_platform() # 初始化平台类型
+
         # 所有的运行时按钮
         classifies = ['global', 'apps', 'views', 'urls', 'templates', 'forms', 'models', 'database', 'admin']
         self.allInitBtns = {}
@@ -42,7 +44,6 @@ class Main(wx.Frame):
 
         self._close_all() # 统一设置按钮不可用状态
         self._set_fonts(None) # 统一设置字体大小
-        self._init_platform() # 初始化平台类型
 
         # 独立于初始化之外的其它变量
         self.unapps = set()  # 未注册的应用程序
@@ -53,11 +54,11 @@ class Main(wx.Frame):
     def _init_platform(self):
         """初始化并检查"""
         import platform
-        platform_name = platform.system()
-        env.setPlatfrom(platform_name)
-        if platform_name.lower() not in ('windows',):
+        self.platform_name = platform.system()
+        if self.platform_name.lower() not in ('windows', 'darwin',):
             wx.MessageBox(f'暂不支持当前平台，已支持：Windows。', '提示', wx.OK | wx.ICON_INFORMATION)
             self.onExit()
+        env.setPlatfrom(self.platform_name)
 
     def InitUI(self):
         """面板布局"""
@@ -852,7 +853,9 @@ class Main(wx.Frame):
                 _.Enable(True) # 开启所有的创建按钮
         self.btn_config_project.Enable(True) # 选项
         self.menusSettings.Enable(True) # Settings
-        self.portProgressRun.Enable(True) # Settings
+
+        if self.platform_name.lower() in ('windows',): # 平台限制
+            self.portProgressRun.Enable(True) # 运行
 
     def __del__(self):
         """释放资源"""
