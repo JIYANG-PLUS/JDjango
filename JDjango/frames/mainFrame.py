@@ -350,6 +350,11 @@ class Main(wx.Frame):
         MacOS：
         查看PID：sudo lsof -i:8080
         终止进程：sudo kill PID
+        Windows：
+        查看所有端口占用情况：netstat -ano
+        查看指定端口：netstat -ano |findstr "端口号"
+        查看占用端口的进程：tasklist |findstr "进程id号"
+        杀进程：taskkill /f /t /im "进程id或者进程名称"
         """, "相关命令", wx.OK)
         dlg.ShowModal()
         dlg.Destroy()
@@ -358,7 +363,9 @@ class Main(wx.Frame):
         """运行Django"""
         import subprocess
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
-        server = subprocess.Popen(f'python3.7 {path} runserver 8868', shell=True)
+        port = env.getDjangoRunPort()
+        server = subprocess.Popen(f'python {path} runserver {port}', shell=True)
+        self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}", level=1))
         # server.wait()
 
     def onModelsGenerate(self, e):
@@ -458,6 +465,7 @@ class Main(wx.Frame):
         sb = self.CreateStatusBar(3)  # 2代表将状态栏分为两个
         self.SetStatusWidths([-1, -2, -1])  # 比例为1：2
         self.SetStatusText("Ready", 0)  # 0代表第一个栏，Ready为内容
+        # self.SetStatusText("网站正在运行中", 2)
 
         # 循环定时器
         self.timer = wx.PyTimer(self.Notify)

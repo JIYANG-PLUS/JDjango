@@ -125,6 +125,12 @@ def getUrlsAlias():
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('alias/file[name=urls]')
 
+def getDjangoRunPort():
+    """获取Django的运行端口"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('env/port')
+    return int(node.text)
+
 
 # 参考
 # 从字符串读取
