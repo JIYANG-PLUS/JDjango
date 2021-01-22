@@ -1,10 +1,11 @@
 import subprocess
 
-order = r'python3.7 /Users/jiyang/Desktop/jiyang/manage.py runserver 8868'
 
-server = subprocess.Popen(order, shell=True)
+order = r'C:\Users\PC\Desktop\venv\Scripts\python C:\Users\PC\Desktop\djangoProject\HELLOWORD\manage.py runserver 8868'
+
+server = subprocess.Popen(order, shell = True)
 print(server.poll())
-# server.wait()
+server.wait()
 # server.kill()
 print(server.poll())
 

@@ -92,3 +92,4 @@ def cut_content_by_doublecode(text, leftCode='[', rightCode=']'):
             if 0 == len(stack):
                 return cut_text[:-1]
     return ''
+

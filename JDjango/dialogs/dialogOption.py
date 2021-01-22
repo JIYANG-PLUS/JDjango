@@ -774,8 +774,8 @@ class ModelsCreateDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.onBtnWritePath, self.btnSelectFile)
 
     def onBtnWritePath(self, e):
-        dirname = get_configs(CONFIG_PATH)['dirname']
-        dlg = wx.FileDialog(self, "选择写入文件", dirname, "", "*.py", wx.FD_OPEN)
+        """选择文件写入路径"""
+        dlg = wx.FileDialog(self, "选择写入文件", get_configs(CONFIG_PATH)['dirname'], "", "*.py", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             filename = dlg.GetFilename()
             dirname = dlg.GetDirectory()

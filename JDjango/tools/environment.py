@@ -84,7 +84,7 @@ class EnvParser:
         node = self.get_xpath_node(path)
         return [_.text for _ in node]
 
-    def write_xml(self):
+    def save(self):
         self.TREE.write(ENV_PATH, encoding="utf-8", xml_declaration=True)
 
 
@@ -108,7 +108,14 @@ def setFontSize(step = 1, method = 'add'):
     else:
         if font_size > 2:
             node.text = str(font_size - step)
-    obj.write_xml()
+    obj.save()
+
+def setPython3Env(path):
+    """选择设置虚拟环境"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('env/python3')
+    node.text = str(path)
+    obj.save()
 
 def getModelsAlias():
     """获取所有models.py的别名"""
@@ -135,8 +142,44 @@ def getPython3Env():
     """获取项目运行虚拟环境"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('env/python3')
-    return node.text
+    return node.text if node.text else ''
 
+def getPlatform():
+    """获取当前运行的平台"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('env/platform')
+    return node.text if node.text else ''
+
+def setPlatfrom(name):
+    """设置当前运行平台"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('env/platform')
+    node.text = str(name)
+    obj.save()
+
+def killProgress():
+    """终止进程"""
+    import subprocess, platform
+    p = platform.system()
+    port = getDjangoRunPort()
+    if p.lower() == 'linux': # 企鹅系统
+        pass
+    elif p.lower() == 'windows': # 微软系统
+        p = subprocess.Popen(f'netstat -ano |findstr {port}', shell=True, stdout=subprocess.PIPE)
+        out, err = p.communicate()
+        temp = []
+        for line in out.splitlines():
+            try:
+                jc = [_ for _ in line.decode(encoding='utf-8').split(' ') if _][-1]
+                temp.append(jc)
+            except: ...
+        for _ in set(temp):
+            t = subprocess.Popen(f'taskkill /f /t /im {_}', shell=True)
+            t.wait()
+    elif p.lower() == 'darwin':
+        pass
+    else: # 其他系统
+        raise Exception('UnKnown system.')
 
 # 参考
 # 从字符串读取

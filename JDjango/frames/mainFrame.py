@@ -41,12 +41,23 @@ class Main(wx.Frame):
         self.setupStatusBar()  # 底部状态栏
 
         self._close_all() # 统一设置按钮不可用状态
-        self._set_fonts(None)# 统一设置字体大小
+        self._set_fonts(None) # 统一设置字体大小
+        self._init_platform() # 初始化平台类型
 
         # 独立于初始化之外的其它变量
         self.unapps = set()  # 未注册的应用程序
         self.unurls = set() # 未注册的路由
         self.needfix = set() # 需要修复的模块
+
+        
+    def _init_platform(self):
+        """初始化并检查"""
+        import platform
+        platform_name = platform.system()
+        env.setPlatfrom(platform_name)
+        if platform_name.lower() not in ('windows',):
+            wx.MessageBox(f'暂不支持当前平台，已支持：Windows。', '提示', wx.OK | wx.ICON_INFORMATION)
+            self.onExit()
 
     def InitUI(self):
         """面板布局"""
@@ -191,14 +202,27 @@ class Main(wx.Frame):
         helps = wx.Menu()
         helpsDocumentation = helps.Append(wx.ID_ANY, "&参考文档", "参考文档")
         helps.AppendSeparator()
+        self.helpsSeeOrKill = helps.Append(wx.ID_ANY, "&查看/终止进程", "查看/终止进程")
+        helps.AppendSeparator()
         menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
 
         # 运行端口与进程
         portProgress = wx.Menu()
+        virtualenv = wx.Menu()
+        self.portProgressVirtualInstall = virtualenv.Append(wx.ID_ANY, "&安装", "安装")
+        virtualenv.AppendSeparator()
+        self.portProgressVirtualChoice = virtualenv.Append(wx.ID_ANY, "&绑定", "绑定")
+        virtualenv.AppendSeparator()
+        self.portProgressVirtual = virtualenv.Append(wx.ID_ANY, "&创建", "创建")
+        portProgress.Append(wx.ID_ANY, "&虚拟环境", virtualenv)
+        portProgress.AppendSeparator()
         self.portProgressRun = portProgress.Append(wx.ID_ANY, "&运行", "运行")
         portProgress.AppendSeparator()
-        self.portProgressSeeOrKill = portProgress.Append(wx.ID_ANY, "&查看/终止进程", "查看/终止进程")
+        self.portProgressStop = portProgress.Append(wx.ID_ANY, "&停止", "停止")
         self.portProgressRun.Enable(False)
+        self.portProgressStop.Enable(False)
+        self.portProgressVirtualInstall.Enable(False)
+        self.portProgressVirtual.Enable(False)
         
         # 单项检测
         perCheck = wx.Menu()
@@ -339,17 +363,41 @@ class Main(wx.Frame):
 
         # 运行 事件绑定
         self.Bind(wx.EVT_MENU, self.onPortProgressRun, self.portProgressRun) # 运行
-        self.Bind(wx.EVT_MENU, self.onPortProgressSeeOrKill, self.portProgressSeeOrKill) # 运行
+        self.Bind(wx.EVT_MENU, self.onPortProgressStop, self.portProgressStop)
+        self.Bind(wx.EVT_MENU, self.onPortProgressVirtualChoice, self.portProgressVirtualChoice) 
+        self.Bind(wx.EVT_MENU, self.onHelpSeeOrKill, self.helpsSeeOrKill) 
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onPortProgressStop(self, e):
+        """关闭网站运行状态"""
+        self.portProgressRun.Enable(True)
+        self.portProgressStop.Enable(False)
+        try:
+            self.server.terminate()
+            env.killProgress()
+        except:
+            self.infos.AppendText(out_infos(f"网站未正常启动或启动异常，导致关闭失败。", level=3))
+        else:
+            self.infos.AppendText(out_infos(f"网站已关闭。", level=1))
+
+    def onPortProgressVirtualChoice(self, e):
+        """选择虚拟环境"""
+        dlg = wx.FileDialog(self, "选择虚拟环境下的python.exe文件", "", "", "*.*", wx.FD_OPEN)
+        if dlg.ShowModal() == wx.ID_OK:
+            env.setPython3Env(os.path.join(dlg.GetDirectory(), dlg.GetFilename()))
+            wx.MessageBox(f'虚拟环境绑定成功！', '提示', wx.OK | wx.ICON_INFORMATION)
+        dlg.Destroy()
     
-    def onPortProgressSeeOrKill(self, e):
+    def onHelpSeeOrKill(self, e):
         """查看或终止进程"""
         dlg = wx.MessageDialog(self, """
         MacOS：
         查看PID：sudo lsof -i:8080
         终止进程：sudo kill PID
+
+
         Windows：
         查看所有端口占用情况：netstat -ano
         查看指定端口：netstat -ano |findstr "端口号"
@@ -361,14 +409,37 @@ class Main(wx.Frame):
 
     def onPortProgressRun(self, e):
         """子进程运行Django"""
+        # 运行前必要检查
+        # 检查一：虚拟环境是否正确配置
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', '错误', wx.OK | wx.ICON_INFORMATION)
+            return
+
+        # 检查二：项目路径是否正确（此处可省略，此步骤前已经多处检查）
+
         import subprocess
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         port = env.getDjangoRunPort()
-        env_python3 = env.getPython3Env()
-        server = subprocess.Popen(f'python {path} runserver {port}', shell=True)
-        self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}", level=1))
-        self.SetStatusText("网站正在运行中", 2)
-        # server.wait()
+        env_python3 = os.path.splitext(env.getPython3Env())[0]
+        # env_python3 = repr(os.path.splitext(env.getPython3Env())[0])
+        try:
+            self.server = subprocess.Popen(f'{env_python3} {path} runserver {port}', shell=True) # , stderr=subprocess.PIPE, stdout=subprocess.PIPE
+            # self.PID = self.server.pid
+            # if self.server.stderr:
+            #     # errinfos = copy.deepcopy(self.server.stderr)
+            #     # error_info = ''.join([_.decode(encoding='gbk') for _ in errinfos])
+            #     pass
+            # else:
+            #     error_info = "\n"
+        except:
+            self.infos.AppendText(out_infos(f"虚拟环境错误，或项目路径错误，或端口被占用。", level=3))
+        else:
+            self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。（以实际为准）", level=1))
+            self.portProgressRun.Enable(False)
+            self.portProgressStop.Enable(True)
+            # s = ''.join([_.decode(encoding='gbk') for _ in self.server.stdout])
+            # print(list(self.server.stdout))
 
     def onModelsGenerate(self, e):
         """创建模型"""
@@ -467,8 +538,7 @@ class Main(wx.Frame):
         sb = self.CreateStatusBar(3)  # 2代表将状态栏分为两个
         self.SetStatusWidths([-1, -2, -1])  # 比例为1：2
         self.SetStatusText("Ready", 0)  # 0代表第一个栏，Ready为内容
-        # self.SetStatusText("网站正在运行中", 2)
-
+        
         # 循环定时器
         self.timer = wx.PyTimer(self.Notify)
         self.timer.Start(1000, wx.TIMER_CONTINUOUS)
@@ -479,6 +549,13 @@ class Main(wx.Frame):
         t = time.localtime(time.time())
         st = time.strftime('%Y-%m-%d %H:%M:%S', t)
         self.SetStatusText(f'系统时间：{st}', 1)  # 这里的1代表将时间放入状态栏的第二部分上
+        try:
+            if (None == self.server.poll()):
+                self.SetStatusText("网站正在运行中", 2)
+            else:
+                self.SetStatusText("网站已关闭", 2)
+        except:
+            self.SetStatusText("网站已关闭", 2)
 
     def onAbout(self, e):
         """关于"""
@@ -742,6 +819,8 @@ class Main(wx.Frame):
             for b in self.allInitBtns[a]:
                 for _ in self.allInitBtns[a][b]:
                     _.Enable(False)
+        # 如果当前环境安装了virtualenv包，则关闭虚拟环境的安装按钮
+        # 待完成
 
     def _open_all_check(self):
         """ 开启所有检测按钮权限 """
@@ -774,3 +853,9 @@ class Main(wx.Frame):
         self.btn_config_project.Enable(True) # 选项
         self.menusSettings.Enable(True) # Settings
         self.portProgressRun.Enable(True) # Settings
+
+    def __del__(self):
+        """释放资源"""
+        try:
+            env.killProgress()
+        except: ...
