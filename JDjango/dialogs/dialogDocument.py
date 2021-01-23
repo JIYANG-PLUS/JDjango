@@ -8,8 +8,11 @@ from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 
 class DocumentationDialog(wx.Dialog):
-    def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '帮助文档', size=(1200, 800))
+
+    def __init__(self, parent):
+
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '帮助文档', size=(1200, 800))
+        
         labels = wx.Notebook(self)
         self.officialdocs = wx.Panel(labels) # 官方文档
         self.modelsPanel = wx.Panel(labels) # 模型

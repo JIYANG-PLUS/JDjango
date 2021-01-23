@@ -3,84 +3,74 @@ import wx.lib.buttons as buttons
 from wx.lib import scrolledpanel
 from ..tools._tools import *
 from ..tools._re import *
-from .. settings import BASE_DIR, CONFIG_PATH, SETTINGSS
+from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS
 from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
+from ..constant import CON_MODELSCREATEDIALOG_COLS, CON_VIEW_CHOICES
 
 class AdminCreateSimpleDialog(wx.Dialog):
-    def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '站点注册(简单配置)', size=(600, 400))
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '站点注册(简单配置)', size=(600, 400))
 
         self.font = wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False)
+        self._init_UI()
 
-        # 面板
-        self.panel = wx.Panel(self) # 最外层容器
-        self.pathPanel = wx.Panel(self.panel) # 选择应用程序app
-        self.panel.SetBackgroundColour('#ededed')  # 最外层容器颜色
+    def _init_UI(self):
+        """初始化界面布局"""
+        self.panel = wx.Panel(self)
+        panelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.panel.SetSizer(panelSizer)
+        self.panel.SetBackgroundColour('#ededed')
+
+        self.btn_register = buttons.GenButton(self.panel, -1, label='确认注册')
+        self.btn_register.Enable(False)
+
+        # 选择要操作的App
+        self.pathPanel = wx.Panel(self.panel)
+        pathPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.pathPanel.SetSizer(pathPanelSizer)
         self.pathPanel.SetBackgroundColour('#ededed')
-        self.modelPanel = wx.Panel(self.panel) # 选择模型列表
+        panelSizer.Add(self.pathPanel, 0, wx.EXPAND | wx.ALL, 3)
 
-        # 向 self.pathPanel 填充控件
-        apps = get_configs(CONFIG_PATH)['app_names']
+        apps = get_configs(CONFIG_PATH)['app_names'] # 列举所有的应用程序
         self.infoChoiceApp = wx.StaticText(self.pathPanel, -1, "选择要注册的应用程序：")
         self.infoChoiceApp.SetFont(self.font)
         self.choiceApp = wx.Choice(self.pathPanel, -1, choices = [' ']+apps, style = wx.CB_SORT) # 复选框
+        pathPanelSizer.Add(self.infoChoiceApp, 0, wx.EXPAND | wx.ALL, 6)
+        pathPanelSizer.Add(self.choiceApp, 1, wx.EXPAND | wx.ALL, 6)
 
-        # 静态框里的复选框
-        self.modelChoices = [
-            # 置空 动态生成
-        ]
-
-        # 区域静态框
-        staticBox = wx.StaticBox(self.modelPanel, -1, '选择需要在后台操作的模型对象：') # 带边框的盒子
-
-        # 确认注册按钮
-        self.btn_register = buttons.GenButton(self.panel, -1, label='确认注册')
-        self.btn_register.Enable(False)
+        # 选择要在后台注册的模型
+        self.modelPanel = wx.Panel(self.panel)
+        staticBox = wx.StaticBox(self.modelPanel, -1, '选择需要在后台操作的模型对象：')
+        self.selectModelsSizer = wx.StaticBoxSizer(staticBox, wx.VERTICAL) # 中间实线括起部分布局
+        self.modelPanel.SetSizer(self.selectModelsSizer)
+        panelSizer.Add(self.modelPanel, 0, wx.EXPAND | wx.ALL, 3)
         
-        # 垂直布局 和 水平布局
-        panelBox = wx.BoxSizer(wx.VERTICAL)
-        pathPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 选择app布局
-        self.staticAreaBox = wx.StaticBoxSizer(staticBox, wx.VERTICAL) # 中间实线括起部分布局
-        self.staticAreaBox_1 = wx.ListBox(self.modelPanel, -1, size=(600, 250), choices = self.modelChoices, style = wx.LB_MULTIPLE | wx.LB_HSCROLL | wx.LB_ALWAYS_SB) # 存放 Models
+        self.listBoxModels = wx.ListBox(self.modelPanel, -1, size=(600, 250), choices = [], style = wx.LB_MULTIPLE | wx.LB_HSCROLL | wx.LB_ALWAYS_SB) # 存放 Models
+        self.selectModelsSizer.Add(self.listBoxModels, 0, wx.LEFT, 10)
 
-        # 复选框 【后期从真正的models文件中读取】
-        self.staticAreaBox.Add(self.staticAreaBox_1, 0, wx.LEFT, 10)
+        # 末尾确认按钮
+        panelSizer.Add(self.btn_register, 0, wx.EXPAND | wx.ALL, 3)
 
-        # 路径选择填充
-        pathPanelBox.Add(self.infoChoiceApp, 0, wx.EXPAND | wx.ALL, 6)
-        pathPanelBox.Add(self.choiceApp, 1, wx.EXPAND | wx.ALL, 6)
+        # 事件监听
+        self.Bind(wx.EVT_CHOICE, self.onChoiceClick, self.choiceApp) # 下拉列表值更新
+        self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_register) # 注册按钮
+        self.Bind(wx.EVT_LISTBOX, self.onListBox1Listbox, self.listBoxModels) # 多选模型列表
 
-        # 最外层容器填充（从上往下）
-        panelBox.Add(self.pathPanel, 0, wx.EXPAND | wx.ALL, 3)
-        panelBox.Add(self.modelPanel, 0, wx.EXPAND | wx.ALL, 3)
-        panelBox.Add(self.btn_register, 0, wx.EXPAND | wx.ALL, 3)
 
-        # 面板绑定布局
-        self.pathPanel.SetSizer(pathPanelBox)
-        self.modelPanel.SetSizer(self.staticAreaBox)
-        self.panel.SetSizer(panelBox)
-
-        # 注册事件
-        self.Bind(wx.EVT_CHOICE, self.ChoiceClick, self.choiceApp) # 下拉列表值更新
-        self.Bind(wx.EVT_BUTTON, self.ButtonClick, self.btn_register) # 注册按钮
-        self.Bind(wx.EVT_LISTBOX, self.OnListBox1Listbox, self.staticAreaBox_1) # 多选模型列表
-
-        # 初始化控件状态
-
-    def OnListBox1Listbox(self, e):
+    def onListBox1Listbox(self, e):
         """多选列表事件"""
         bId = e.GetId()
-        if bId == self.staticAreaBox_1.GetId(): # 选择项目根路径
-            selects = self.staticAreaBox_1.GetSelections()
+        if bId == self.listBoxModels.GetId(): # 选择项目根路径
+            selects = self.listBoxModels.GetSelections()
             if len(selects) > 0: self.btn_register.Enable(True)
             else: self.btn_register.Enable(False)
 
-    def ChoiceClick(self, e):
+    def onChoiceClick(self, e):
         """下拉框选择App值更新事件"""
         key = e.GetString() # key即是app名
-        self.staticAreaBox_1.Clear() # 清空
+        self.listBoxModels.Clear() # 清空
         if key.strip():
             # 指定赋值
             # 路径筛选
@@ -94,9 +84,9 @@ class AdminCreateSimpleDialog(wx.Dialog):
                 pathModels = [_ for _ in pys if os.path.basename(_) in alias]
                 # 赋值的同时标注模块的来源
                 for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in toolModel.get_models_from_modelspy(_)]:
-                    self.staticAreaBox_1.Append(' -- '.join(obj))
+                    self.listBoxModels.Append(' -- '.join(obj))
 
-    def ButtonClick(self, e):
+    def onButtonClick(self, e):
         """界面按钮点击事件"""
         bId = e.GetId()
         if bId == self.btn_register.GetId():
@@ -106,8 +96,8 @@ class AdminCreateSimpleDialog(wx.Dialog):
         """注册管理后台模型"""
         dlg = wx.MessageDialog(None, u"确认后，选中的模型将被注册到管理后台。", u"确认注册", wx.YES_NO | wx.ICON_QUESTION)
         if dlg.ShowModal() == wx.ID_YES:
-            selectNames = self.staticAreaBox_1.GetStrings()
-            selectIndexs = self.staticAreaBox_1.GetSelections()
+            selectNames = self.listBoxModels.GetStrings()
+            selectIndexs = self.listBoxModels.GetSelections()
             modelModels = [selectNames[_] for _ in selectIndexs]
             appName = self.choiceApp.GetStrings()[self.choiceApp.GetSelection()] # 当前选中应用程序名
             # 分类导入admin.py文件
@@ -132,59 +122,60 @@ class AdminCreateSimpleDialog(wx.Dialog):
         dlg.Destroy()
 
 class AdminRenameDialog(wx.Dialog):
-    def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '网站后台重命名', size=(300, 200))
-        # 面板
-        self.panel = wx.Panel(self) # 最外层容器
-        self.headerPanel = wx.Panel(self.panel) # 登录界面重命名
-        self.titlePanel = wx.Panel(self.panel) # 后台标题重命名
-        self.locPanel = wx.Panel(self.panel) # 标题所在位置信息
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '网站后台重命名', size=(300, 200))
+        
+        self._init_UI()
+        self._init_data()
 
-        # 控件
-        self.headerFlag = wx.StaticText(self.headerPanel, -1, "登录界面名称：")
-        self.inputHeader = wx.TextCtrl(self.headerPanel, -1)
-        self.titleFlag = wx.StaticText(self.titlePanel, -1, "后台标题名称：")
-        self.inputTitle = wx.TextCtrl(self.titlePanel, -1)
-        self.locFlag = wx.StaticText(self.locPanel, -1, "位置：")
-        self.locTitle = wx.TextCtrl(self.locPanel, -1)
+    def _init_UI(self):
+        """初始化界面布局"""
+        # 最外层布局
+        self.panel = wx.Panel(self)
+        self.panelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.panel.SetSizer(self.panelSizer)
+
         self.btnModify = buttons.GenButton(self.panel, -1, '修改')
         self.msgName = wx.TextCtrl(self.panel, -1)
-        self.locTitle.SetEditable(False)
         self.msgName.SetEditable(False)
 
-        # 布局
-        self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
-        self.headerPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        self.titlePanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        self.locPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        # 登录界面重命名
+        self.headerPanel = wx.Panel(self.panel) 
+        self.headerPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.headerPanel.SetSizer(self.headerPanelSizer)
+        self.panelSizer.Add(self.headerPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 登录界面名称： 填充
-        self.headerPanelBox.Add(self.headerFlag, 0, wx.EXPAND | wx.ALL, 2)
-        self.headerPanelBox.Add(self.inputHeader, 1, wx.EXPAND | wx.ALL, 2)
+        self.headerFlag = wx.StaticText(self.headerPanel, -1, "登录界面名称：")
+        self.inputHeader = wx.TextCtrl(self.headerPanel, -1)
+        self.headerPanelSizer.Add(self.headerFlag, 0, wx.EXPAND | wx.ALL, 2)
+        self.headerPanelSizer.Add(self.inputHeader, 1, wx.EXPAND | wx.ALL, 2)
 
-        # 后台标题名称： 填充
-        self.titlePanelBox.Add(self.titleFlag, 0, wx.EXPAND | wx.ALL, 2)
-        self.titlePanelBox.Add(self.inputTitle, 1, wx.EXPAND | wx.ALL, 2)
+        # 后台标题重命名
+        self.titlePanel = wx.Panel(self.panel)
+        self.titlePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.titlePanel.SetSizer(self.titlePanelSizer)
+        self.panelSizer.Add(self.titlePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 位置：填充
-        self.locPanelBox.Add(self.locFlag, 0, wx.EXPAND | wx.ALL, 2)
-        self.locPanelBox.Add(self.locTitle, 1, wx.EXPAND | wx.ALL, 2)
+        self.titleFlag = wx.StaticText(self.titlePanel, -1, "后台标题名称：")
+        self.inputTitle = wx.TextCtrl(self.titlePanel, -1)
+        self.titlePanelSizer.Add(self.titleFlag, 0, wx.EXPAND | wx.ALL, 2)
+        self.titlePanelSizer.Add(self.inputTitle, 1, wx.EXPAND | wx.ALL, 2)
 
-        # 整体 填充
-        self.panelBox.Add(self.headerPanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.titlePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.locPanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.btnModify, 1, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.msgName, 0, wx.EXPAND | wx.ALL, 2)
+        # 标题所在位置信息
+        self.locPanel = wx.Panel(self.panel)
+        self.locPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.locPanel.SetSizer(self.locPanelSizer)
+        self.panelSizer.Add(self.locPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 面板绑定布局
-        self.headerPanel.SetSizer(self.headerPanelBox)
-        self.titlePanel.SetSizer(self.titlePanelBox)
-        self.locPanel.SetSizer(self.locPanelBox)
-        self.panel.SetSizer(self.panelBox)
+        self.locFlag = wx.StaticText(self.locPanel, -1, "位置：")
+        self.locTitle = wx.TextCtrl(self.locPanel, -1)
+        self.locPanelSizer.Add(self.locFlag, 0, wx.EXPAND | wx.ALL, 2)
+        self.locPanelSizer.Add(self.locTitle, 1, wx.EXPAND | wx.ALL, 2)
+        self.locTitle.SetEditable(False)
 
-        # 初始化数据
-        self._init_data()
+        # 末尾按钮 和 提示信息   
+        self.panelSizer.Add(self.btnModify, 1, wx.EXPAND | wx.ALL, 2)
+        self.panelSizer.Add(self.msgName, 0, wx.EXPAND | wx.ALL, 2)
 
         # 事件监听
         self.Bind(wx.EVT_BUTTON, self.onBtnModify, self.btnModify)
@@ -262,87 +253,94 @@ class AdminRenameDialog(wx.Dialog):
             self.inputTitle.SetValue(f'None')
             self.msgName.SetValue(f'读取正常')
 
-        self.locTitle.SetValue('本功能规划中，暂不使用')
+        self.locTitle.SetValue('')
 
 class ViewGenerateDialog(wx.Dialog):
-    def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '新增视图', size=(700, 600))
-        # 总面板
-        self.panel = wx.Panel(self) # 最外层容器
-        self.selectFilePanel = wx.Panel(self.panel)
-        CHOICES = [
-            '简单函数视图'
-            , '简单类视图'
-            , '简单列表视图'
-            , '快速模板视图'
-            , '简单详细视图'
-        ]
-        self.radiosPanel = wx.RadioBox(self.panel, -1, "选择创建视图类型", choices=CHOICES) # 单选框组
-        self.codeReviewPanel = wx.Panel(self.panel) # 代码预览面板
-        tempWayNamePanel = wx.StaticBox(self.panel, -1, '函数/类命名') # 命名方法
-        self.wayNamePanel = wx.StaticBoxSizer(tempWayNamePanel, wx.HORIZONTAL) # 水平
-        self.openUrlAliasPanel = wx.RadioBox(self.panel, -1, "自动生成路由", choices=['开启', '关闭']) # 是否自动生成路由
-        self.openUrlAliasPanel.SetSelection(1) # 默认不开启
-        tempUrlNamePanel = wx.StaticBox(self.panel, -1, '路由别名（不填写默认取函数名/类名）') # 路由别名
-        self.urlNamePanel = wx.StaticBoxSizer(tempUrlNamePanel, wx.HORIZONTAL) # 水平
-        tempUrlViewPanel = wx.StaticBox(self.panel, -1, '路由预览') # 路由预览
-        self.urlViewPanel = wx.StaticBoxSizer(tempUrlViewPanel, wx.HORIZONTAL) # 水平
 
-        # 控件
-        ### 选择创建视图类型
+    def __init__(self, parent):
+
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增视图', size=(700, 600))
+
+        self._init_UI()
+
+    def _init_UI(self):
+        """初始化界面布局"""
+        # 总面板
+        self.panel = wx.Panel(self)
+        self.panelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.panel.SetSizer(self.panelSizer)
+
+        # 选择视图写入文件路径
+        self.selectFilePanel = wx.Panel(self.panel)
+        self.selectFileBox = wx.BoxSizer(wx.HORIZONTAL)
+        self.selectFilePanel.SetSizer(self.selectFileBox)
+        self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+
         self.btnWritePath = buttons.GenButton(self.selectFilePanel, -1, '选择视图写入路径')
         self.filePath = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
-        self.filePath.Enable(False)
-        ### 预览代码
-        self.inputCodeReview = wx.TextCtrl(self.codeReviewPanel, -1, style=wx.TE_MULTILINE)
-        ### 方法命名
-        self.inputWayName = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
-        ### 取路由别名
-        self.inputUrlName = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
-        ### 路由预览
-        self.inputUrlView = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
-        self.inputUrlView.Enable(False)
-        ### 全局
-        self.btnSubmit = buttons.GenButton(self.panel, -1, '创建')
-
-        # 布局
-        self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
-        self.selectFileBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        self.codeReviewPanelSizer = wx.BoxSizer(wx.HORIZONTAL) # 水平
-
-        # 填充
         self.selectFileBox.Add(self.btnWritePath, 0, wx.EXPAND | wx.ALL, 2)
         self.selectFileBox.Add(self.filePath, 1, wx.EXPAND | wx.ALL, 2)
+        self.filePath.Enable(False)
 
+        # 选择试图创建类型
+        self.radiosPanel = wx.RadioBox(self.panel, -1, "选择创建视图类型", choices=CON_VIEW_CHOICES) # 单选框组
+        self.panelSizer.Add(self.radiosPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 代码预览面板
+        self.codeReviewPanel = wx.Panel(self.panel)
+        self.codeReviewPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.codeReviewPanel.SetSizer(self.codeReviewPanelSizer)
+        self.panelSizer.Add(self.codeReviewPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.inputCodeReview = wx.TextCtrl(self.codeReviewPanel, -1, style=wx.TE_MULTILINE)
         self.codeReviewPanelSizer.Add(self.inputCodeReview, 1, wx.EXPAND | wx.ALL, 2)
 
+        # 函数命名
+        tempWayNamePanel = wx.StaticBox(self.panel, -1, '函数/类命名')
+        self.wayNamePanel = wx.StaticBoxSizer(tempWayNamePanel, wx.HORIZONTAL)
+        self.panelSizer.Add(self.wayNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.inputWayName = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
         self.wayNamePanel.Add(self.inputWayName, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 是否自动生成路由
+        self.openUrlAliasPanel = wx.RadioBox(self.panel, -1, "自动生成路由", choices=['开启', '关闭'])
+        self.openUrlAliasPanel.SetSelection(1) # 默认不开启
+        self.panelSizer.Add(self.openUrlAliasPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 路由别名
+        tempUrlNamePanel = wx.StaticBox(self.panel, -1, '路由别名（不填写默认取函数名/类名）')
+        self.urlNamePanel = wx.StaticBoxSizer(tempUrlNamePanel, wx.HORIZONTAL)
+        self.panelSizer.Add(self.urlNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.inputUrlName = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
         self.urlNamePanel.Add(self.inputUrlName, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 路由预览
+        tempUrlViewPanel = wx.StaticBox(self.panel, -1, '路由预览')
+        self.urlViewPanel = wx.StaticBoxSizer(tempUrlViewPanel, wx.HORIZONTAL)
+        self.panelSizer.Add(self.urlViewPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.inputUrlView = wx.TextCtrl(self.panel, -1, style = wx.ALIGN_LEFT)
         self.urlViewPanel.Add(self.inputUrlView, 1, wx.EXPAND | wx.ALL, 2)
+        self.inputUrlView.Enable(False)
 
-        self.panelBox.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.radiosPanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.codeReviewPanel, 1, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.wayNamePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.openUrlAliasPanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.urlNamePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.urlViewPanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.btnSubmit, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 绑定
-        self.panel.SetSizer(self.panelBox)
-        self.selectFilePanel.SetSizer(self.selectFileBox)
-        self.codeReviewPanel.SetSizer(self.codeReviewPanelSizer)
+        # 末尾控件
+        self.btnSubmit = buttons.GenButton(self.panel, -1, '创建')
+        self.panelSizer.Add(self.btnSubmit, 0, wx.EXPAND | wx.ALL, 2)
 
         # 事件
-        self.Bind(wx.EVT_BUTTON, self.onBtnWritePath, self.btnWritePath)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadiosPanel, self.radiosPanel)
+        self.Bind(wx.EVT_BUTTON, self.onBtnSelectPath, self.btnWritePath)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadiosClick, self.radiosPanel)
 
-    def onRadiosPanel(self, e):
+
+    def onRadiosClick(self, e):
+        """"""
         # print(self.radiosPanel.GetSelection()) # 获取当前选中元素的下标
         pass
 
-    def onBtnWritePath(self, e):
+    def onBtnSelectPath(self, e):
+        """选择写入文件位置"""
         dirname = get_configs(CONFIG_PATH)['dirname']
         dlg = wx.FileDialog(self, "选择写入文件", dirname, "", "*.py", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
@@ -352,45 +350,50 @@ class ViewGenerateDialog(wx.Dialog):
         dlg.Destroy()
 
 class ProjectCreateDialog(wx.Dialog):
-    def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '新建项目', size=(360, 150))
+
+    def __init__(self, parent):
+
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新建项目', size=(360, 150))
+
+        self._init_UI()
+
+    def _init_UI(self):
+        """初始化界面布局"""
         # 总面板
-        self.panel = wx.Panel(self) # 最外层容器
-        self.pathPanel = wx.Panel(self.panel) # 选择路径容器
-        self.namePanel = wx.Panel(self.panel)
+        self.panel = wx.Panel(self)
+        self.panelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.panel.SetSizer(self.panelSizer)
 
-        # 控件
+        # 选择路径容器
+        self.pathPanel = wx.Panel(self.panel)
+        self.pathPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.pathPanel.SetSizer(self.pathPanelSizer)
+        self.panelSizer.Add(self.pathPanel, 0, wx.EXPAND | wx.ALL, 2)
+
         self.path = wx.TextCtrl(self.pathPanel, -1, style=wx.ALIGN_LEFT)
-        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择/输入项目写入目录') # 选择目录
-        self.flagName = wx.StaticText(self.namePanel, -1, "项目命名：") # 项目名称
+        self.btnChoice = buttons.GenButton(self.pathPanel, -1, '选择/输入项目写入目录')
+        self.pathPanelSizer.Add(self.btnChoice, 0, wx.EXPAND | wx.ALL, 2)
+        self.pathPanelSizer.Add(self.path, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 项目命名
+        self.namePanel = wx.Panel(self.panel)
+        self.namePanelBox = wx.BoxSizer(wx.HORIZONTAL)
+        self.namePanel.SetSizer(self.namePanelBox)
+        self.panelSizer.Add(self.namePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.flagName = wx.StaticText(self.namePanel, -1, "项目命名：")
         self.imputName = wx.TextCtrl(self.namePanel, -1, style=wx.ALIGN_LEFT)
-        self.btnCreate = buttons.GenButton(self.panel, -1, '新建')
-        # self.path.Enable(False)
-
-        # 布局
-        self.panelBox = wx.BoxSizer(wx.VERTICAL) # 垂直
-        self.pathPanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        self.namePanelBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
-
-        # 填充
         self.namePanelBox.Add(self.flagName, 0, wx.EXPAND | wx.ALL, 2)
         self.namePanelBox.Add(self.imputName, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.pathPanelBox.Add(self.btnChoice, 0, wx.EXPAND | wx.ALL, 2)
-        self.pathPanelBox.Add(self.path, 1, wx.EXPAND | wx.ALL, 2)
-        
-        self.panelBox.Add(self.pathPanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.namePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.panelBox.Add(self.btnCreate, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 面板绑定布局
-        self.panel.SetSizer(self.panelBox)
-        self.pathPanel.SetSizer(self.pathPanelBox)
-        self.namePanel.SetSizer(self.namePanelBox)
+        # 末尾控件
+        self.btnCreate = buttons.GenButton(self.panel, -1, '新建')
+        self.panelSizer.Add(self.btnCreate, 1, wx.EXPAND | wx.ALL, 2)
 
         # 注册事件监听
         self.Bind(wx.EVT_BUTTON, self.onBtnChoice, self.btnChoice)
         self.Bind(wx.EVT_BUTTON, self.onBtnCreate, self.btnCreate)
+
 
     def onBtnChoice(self, e):
         """选择项目写入路径"""
@@ -416,14 +419,11 @@ class ProjectCreateDialog(wx.Dialog):
         else:
             wx.MessageBox(f'项目已存在', '错误', wx.OK | wx.ICON_INFORMATION)
 
-    def select_project_path(self, e):
-        """选择项目所建路径"""
-
 class SettingsDialog(wx.Dialog):
     
-    def __init__(self, parent, id, **kwargs):
+    def __init__(self, parent):
 
-        wx.Dialog.__init__(self, parent, id, '项目配置', size=(550, 600))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '项目配置', size=(550, 600))
 
         configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
         self.DIRNAME = configs["dirname"]
@@ -715,81 +715,70 @@ class SettingsDialog(wx.Dialog):
         self.inputRefreshSecretKey.SetValue(new_key)
 
 class ModelsCreateDialog(wx.Dialog):
-    def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, '新增视图', size=(888, 666))
+    def __init__(self, parent):
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增视图', size=(888, 666))
+
+        self._init_UI()
+        self._init_table() # 表格布局默认加最后
+
+    def _init_UI(self):
+        """初始化界面布局"""
+        # 主界面
         self.panel = wx.Panel(self)
-        self.panelSizer = wx.BoxSizer(wx.VERTICAL) # 垂直
+        self.panelSizer = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.panelSizer)
 
+        # 选择文件写入路径
         self.selectFilePanel = wx.Panel(self.panel)
-        selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.selectFilePanel.SetSizer(selectFilePanelSizer)
+        self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+
         self.btnSelectFile = buttons.GenButton(self.selectFilePanel, -1, '选择模型写入路径')
         self.inputSelectFile = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
         selectFilePanelSizer.Add(self.btnSelectFile, 0, wx.EXPAND | wx.ALL, 2)
         selectFilePanelSizer.Add(self.inputSelectFile, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+        # 选择字段类型
+        self.selectFieldTypePanel = wx.Panel(self.panel)
+        selectFieldTypePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.selectFieldTypePanel.SetSizer(selectFieldTypePanelSizer)
+        self.panelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 初始化表格控件
-        self._init_table()
 
         # 事件
-        self.Bind(wx.EVT_BUTTON, self.onBtnWritePath, self.btnSelectFile)
+        self.Bind(wx.EVT_BUTTON, self.onBtnSelectPath, self.btnSelectFile)
 
     def _init_table(self):
         """初始化表格控件"""
         self.infoGrid = wx.grid.Grid( self.panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 
-        self.COLS = (
-            '列名',
-            '主键',
-            '允许为空',
-            'null值',
-            '默认值',
-            '字段值唯一',
-            '创建索引',
-            '可选列表',
-            '日期组合唯一',
-            '月份日期组合唯一',
-            '年份日期组合唯一',
-            '表单错误输入提醒',
-            '表单可编辑',
-            '表单帮助文本信息',
-        )
-		# Grid
-        self.infoGrid.CreateGrid( 1, len(self.COLS) ) # row  col
+        self.infoGrid.CreateGrid( 1, len(CON_MODELSCREATEDIALOG_COLS) ) # row  col
         self.infoGrid.EnableEditing( True )
         self.infoGrid.EnableGridLines( True )
         self.infoGrid.EnableDragGridSize( True )
         self.infoGrid.SetMargins( 0, 0 )
 
-        # Columns
         self.infoGrid.EnableDragColMove( True )
         self.infoGrid.EnableDragColSize( True )
         self.infoGrid.SetColLabelSize( 30 )
         self.infoGrid.SetColLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
 
-        # Rows
         self.infoGrid.EnableDragRowSize( True )
         self.infoGrid.SetRowLabelSize( 70 )
         self.infoGrid.SetRowLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
 
-		# Label Appearance
-
-		# Cell Defaults
         self.infoGrid.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
-        self.panelSizer.Add( self.infoGrid, 1, wx.EXPAND | wx.ALL, 2 )
+        self.panelSizer.Add( self.infoGrid, 1, wx.EXPAND | wx.ALL, 2 ) # 表格默认加最后
 
         self._init_header()
-        # self._init_data()
 
     def _init_header(self):
         """初始化列名"""
-        for i,v in enumerate(self.COLS):
+        for i,v in enumerate(CON_MODELSCREATEDIALOG_COLS):
             self.infoGrid.SetColLabelValue(i, v)
 
-    def onBtnWritePath(self, e):
+    def onBtnSelectPath(self, e):
         """选择文件写入路径"""
         dlg = wx.FileDialog(self, "选择写入文件", get_configs(CONFIG_PATH)['dirname'], "", "*.py", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:

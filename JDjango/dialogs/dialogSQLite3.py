@@ -3,12 +3,10 @@ import wx.grid
 
 class TableAttrbutesDialog(wx.Dialog):
     
-    def __init__(self, parent, id, **kwargs):
-        wx.Dialog.__init__(self, parent, id, f"{kwargs['node_name']}的字段属性", size=(660, 350))
+    def __init__(self, parent, **kwargs):
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = f"{kwargs['node_name']}的字段属性", size=(660, 350))
 
-        self.wholePanel = wx.Panel(self)
-        self.wholeBox = wx.BoxSizer(wx.VERTICAL) # 垂直
-        self.wholePanel.SetSizer(self.wholeBox)
+        self._init_UI()
 
         if 'datas' in kwargs:
             self.datas = kwargs['datas']
@@ -18,6 +16,12 @@ class TableAttrbutesDialog(wx.Dialog):
 
         # 初始化同步数据
         self._init_data()
+
+    def _init_UI(self):
+        """初始化界面布局"""
+        self.wholePanel = wx.Panel(self)
+        self.wholeBox = wx.BoxSizer(wx.VERTICAL)
+        self.wholePanel.SetSizer(self.wholeBox)
 
     def _init_table(self):
         """初始化表格"""

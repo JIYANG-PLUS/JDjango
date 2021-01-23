@@ -50,7 +50,7 @@ class Main(wx.Frame):
         import platform
         self.platform_name = platform.system()
         if self.platform_name.lower() not in env.getAllSupportPlatform():
-            wx.MessageBox(f'暂不支持当前平台，已支持：Windows。', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            wx.MessageBox(f'暂不支持当前平台，已支持：Windows、MacOS。', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             self.onExit()
         env.setPlatfrom(self.platform_name)
 
@@ -400,7 +400,7 @@ class Main(wx.Frame):
 
     def onModelsGenerate(self, e):
         """创建模型"""
-        dlg = ModelsCreateDialog(self, -1)
+        dlg = ModelsCreateDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -412,19 +412,19 @@ class Main(wx.Frame):
 
     def onMenusSettings(self, e):
         """Settings"""
-        dlg = SettingsDialog(self, -1)
+        dlg = SettingsDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
     def onHelpsDocumentation(self, e):
         """帮助文档"""
-        dlg = DocumentationDialog(self, -1)
+        dlg = DocumentationDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
     def onCreateProject(self, e):
         """新建项目"""
-        dlg = ProjectCreateDialog(self, -1)
+        dlg = ProjectCreateDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -457,13 +457,13 @@ class Main(wx.Frame):
         
     def onAdminRename(self, e):
         """重命名后台名称"""
-        dlg = AdminRenameDialog(self, -1)
+        dlg = AdminRenameDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
     def onViewsGenerateFunc(self, e):
         """多样式新增视图"""
-        dlg = ViewGenerateDialog(self, -1)
+        dlg = ViewGenerateDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -572,7 +572,7 @@ class Main(wx.Frame):
         elif bId == self.btn_fixed_project.GetId(): # 修复项目
             self.onFixGlobalProject(e)
         elif bId == self.btn_config_project.GetId(): # 项目配置和修改
-            dlg = SettingsDialog(self, -1)
+            dlg = SettingsDialog(self)
             dlg.ShowModal()
             dlg.Destroy()
         elif bId == self.btn_exec.GetId(): # 执行命令
@@ -584,7 +584,7 @@ class Main(wx.Frame):
 
     def onBtnOpenDocs(self, e):
         """查看帮助文档"""
-        dlg = DocumentationDialog(self, -1)
+        dlg = DocumentationDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 
@@ -761,7 +761,7 @@ class Main(wx.Frame):
 
     def onAdminGenerateBase(self, e):
         """管理中心 简单配置"""
-        dlg = AdminCreateSimpleDialog(self, -1)
+        dlg = AdminCreateSimpleDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
 

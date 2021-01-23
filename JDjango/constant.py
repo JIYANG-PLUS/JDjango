@@ -25,3 +25,28 @@ CON_MSG_PROGRESS_USE = """
 
 # sqliteFrame.py
 CON_SQLITE3_TITLE = 'SQLite3管理工具-V1.0.0'
+
+# dialogOption.py
+CON_MODELSCREATEDIALOG_COLS = (
+    '列名',
+    '主键',
+    '允许为空',
+    'null值',
+    '默认值',
+    '字段值唯一',
+    '创建索引',
+    '可选列表',
+    '日期组合唯一',
+    '月份日期组合唯一',
+    '年份日期组合唯一',
+    '表单错误输入提醒',
+    '表单可编辑',
+    '表单帮助文本信息',
+)
+CON_VIEW_CHOICES = [
+    '简单函数视图'
+    , '简单类视图'
+    , '简单列表视图'
+    , '快速模板视图'
+    , '简单详细视图'
+]

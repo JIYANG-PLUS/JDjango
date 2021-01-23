@@ -187,7 +187,7 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""树子项右击直接查看属性"""
 		nodeName = self.tree.GetItemText(e.GetItem())
 		if nodeName != self.nodeRootName:
-			dlg = TableAttrbutesDialog(self, -1, node_name = nodeName, datas = self.get_columns_name(nodeName))
+			dlg = TableAttrbutesDialog(self, node_name = nodeName, datas = self.get_columns_name(nodeName))
 			dlg.ShowModal()
 			dlg.Destroy()
 
