@@ -2,55 +2,22 @@ import wx, os
 from ..dialogs.dialogSQLite3 import TableAttrbutesDialog
 from ..tools._tools import *
 from ..settings import CONFIG_PATH
+from ..constant import *
 import wx.lib.buttons as buttons
 import sqlite3
 
 class SQLiteManageFrame ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"SQLite3管理工具", pos = wx.DefaultPosition, size = wx.Size( 1000,600 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
-		mainSizer = wx.BoxSizer( wx.VERTICAL )
-		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
-		self.mainPanel = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-		self.mainPanelSizer = wx.BoxSizer( wx.VERTICAL ) # 垂直
-		self.mainPanel.SetSizer( self.mainPanelSizer )
-		self.mainPanel.Layout()
-		self.mainPanelSizer.Fit( self.mainPanel )
-		mainSizer.Add( self.mainPanel, 1, wx.EXPAND |wx.ALL, 5 )
-		self.SetSizer( mainSizer ) # frame窗口布局
-
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = CON_SQLITE3_TITLE, pos = wx.DefaultPosition, size = wx.Size( 1000,600 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		
 		self._init_UI()
 		self._init_menus()
 		self._init_toolbar()
 		self._init_statusbar()
 
-		self.Layout()
-		self.Centre( wx.BOTH )
-
 		self.connectSQLiteObj = None # 连接对象
 		self._init_data()
-
-	def _connect_sqlite3_default(self):
-		"""初始化连接"""
-		if os.path.exists(CONFIG_PATH):
-			# 读config.json配置文件
-			CONFIGS = get_configs(CONFIG_PATH)
-			if ('DATABASES' in CONFIGS) and ('default' in CONFIGS['DATABASES']) and ('NAME' in CONFIGS['DATABASES']['default']):
-				sqlite_path = CONFIGS['DATABASES']['default']['NAME']
-				if os.path.isfile(sqlite_path):
-					try:
-						self.connectSQLiteObj = sqlite3.connect(sqlite_path)
-					except:
-						self.connectSQLiteObj = None
-					else:
-						self.cursorObj = self.connectSQLiteObj.cursor()
-						# 初始化树
-						self._init_tree()
-						# 先提示，后显示
-						self.path.SetValue(f"SQLite数据库路径：{sqlite_path}")
-						dlg = wx.MessageDialog(self, f"已自动连接SQLite数据库，读取数据库路径{sqlite_path}", "提示信息", wx.OK)
-						dlg.ShowModal()
-						dlg.Destroy()
 
 	def _init_data(self):
 		"""初始化界面数据"""
@@ -58,6 +25,16 @@ class SQLiteManageFrame ( wx.Frame ):
 
 	def _init_UI(self):
 		"""初始化页面控件"""
+		self.mainSizer = wx.BoxSizer( wx.VERTICAL )
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		self.mainPanel = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		self.mainPanelSizer = wx.BoxSizer( wx.VERTICAL )
+		self.mainPanel.SetSizer( self.mainPanelSizer )
+		self.mainPanel.Layout()
+		self.mainPanelSizer.Fit( self.mainPanel )
+		self.mainSizer.Add( self.mainPanel, 1, wx.EXPAND |wx.ALL, 5 )
+		self.SetSizer( self.mainSizer )
+
 		self.path = wx.TextCtrl(self.mainPanel, -1)  # sqlite路径
 		self.path.SetEditable(False)
 
@@ -122,6 +99,28 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.Bind(wx.EVT_BUTTON, self.onNewSQLite3, self.btnOpenSQLite3)
 		self.Bind(wx.EVT_BUTTON, self.onBtnExecute, self.btnExecute)
 
+	def _connect_sqlite3_default(self):
+		"""初始化连接"""
+		if os.path.exists(CONFIG_PATH):
+			# 读config.json配置文件
+			CONFIGS = get_configs(CONFIG_PATH)
+			if ('DATABASES' in CONFIGS) and ('default' in CONFIGS['DATABASES']) and ('NAME' in CONFIGS['DATABASES']['default']):
+				sqlite_path = CONFIGS['DATABASES']['default']['NAME']
+				if os.path.isfile(sqlite_path):
+					try:
+						self.connectSQLiteObj = sqlite3.connect(sqlite_path)
+					except:
+						self.connectSQLiteObj = None
+					else:
+						self.cursorObj = self.connectSQLiteObj.cursor()
+						# 初始化树
+						self._init_tree()
+						# 先提示，后显示
+						self.path.SetValue(f"SQLite数据库路径：{sqlite_path}")
+						dlg = wx.MessageDialog(self, f"已自动连接SQLite数据库，读取数据库路径{sqlite_path}", "提示信息", wx.OK)
+						dlg.ShowModal()
+						dlg.Destroy()
+
 	def onBtnExecute(self, e):
 		"""点击SQL执行按钮"""
 		sql = self.inputSQL.GetValue()
@@ -135,7 +134,7 @@ class SQLiteManageFrame ( wx.Frame ):
 			if affect_rows < 0:
 				self.sql_msg.SetValue("查询成功！")
 				# 显示查询结果
-				self.set_table_data(None, self.cursorObj.fetchall())
+				self.setTableData(None, self.cursorObj.fetchall())
 			else:
 				self.sql_msg.SetValue(f"执行成功，受影响行数：{affect_rows}。")
 
@@ -171,16 +170,14 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""清空表格"""
 		self.attrbutesGrid.ClearGrid()
 
-	def set_table_data(self, headers, datas):
+	def setTableData(self, headers, datas):
 		"""初始化表格数据"""
-		# 先清空
 		self._clear_table()
-
 		if headers:
+			# 此处有个不想改的BUG
 			for i, header in enumerate(headers):
 				self.attrbutesGrid.SetCellValue(0, i, f'{header}')
 				self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
-
 		for row, _ in enumerate(datas):
 			for col, data in enumerate(_):
 				self.attrbutesGrid.SetCellValue(row+1, col, f'{data}')
@@ -231,7 +228,7 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""双击树节点事件"""
 		nodeName = self.tree.GetItemText(e.GetItem())
 		if nodeName != self.nodeRootName:
-			self.set_table_data([_[1] for _ in self.get_columns_name(nodeName)], self.get_table_datas(nodeName))
+			self.setTableData([_[1] for _ in self.get_columns_name(nodeName)], self.get_table_datas(nodeName))
 			
 
 	def _init_statusbar(self):

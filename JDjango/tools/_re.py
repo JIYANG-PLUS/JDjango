@@ -45,14 +45,14 @@ PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']')
 PATT_URLPATTERNS = re.compile(r'(?ms:urlpatterns\s*=\s*\[.*)')
 PATT_MODEL = re.compile(r'class\s+(.+?)\(\s*[a-zA-Z0-9]*?[.]*?Model\s*\):') # 定位模型类
 
-def patt_sub_only_capture_obj(patt: re.Pattern, replace_str: str, old_str: str) -> str:
+def patt_sub_only_capture_obj(patt: object, replace_str: str, old_str: str) -> str:
     """正则表达式sub替换仅限于捕捉内容，而不是整体替换"""
     if patt.search(old_str):
         return patt.sub(lambda x:x.group(0).replace(x.group(1), replace_str), old_str)
     else:
         return old_str
 
-def patt_sub_only_capture_obj_obtain_double(patt: re.Pattern, replace_str: str, old_str: str, double_str: str='[]') -> str:
+def patt_sub_only_capture_obj_obtain_double(patt: object, replace_str: str, old_str: str, double_str: str='[]') -> str:
     """多个两侧括号属性，保留括号替换"""
     replace_str = f'{double_str[0]}{replace_str}{double_str[-1]}'
     if patt.search(old_str):

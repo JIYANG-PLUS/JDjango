@@ -157,6 +157,16 @@ def setPlatfrom(name):
     node.text = str(name)
     obj.save()
 
+def getAllSupportPlatform():
+    """获取软件已支持的平台类型"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('env/support[name=all]')
+
+def getSupportEnvPlatform():
+    """获取软件已支持虚拟环境运行的平台类型"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('env/support[name=virtualenv]')
+
 def killProgress():
     """终止进程"""
     import subprocess, platform
@@ -181,18 +191,11 @@ def killProgress():
     else: # 其他系统
         raise Exception('UnKnown system.')
 
-# 参考
-# 从字符串读取
-# root = ET.fromstring(country_data_as_string)
-
-
 # print(root.tag) # 查看标签
 # print(root.attrib) # 查看属性
 # print(root.text) # 查看文本内容（不读取子标签）
 # print(root[0][1].text) # 索引取值
 
-
-# 迭代子节点
 # for child in root:
 #     print(child.tag, child.attrib)
 
@@ -204,7 +207,6 @@ def killProgress():
 
 # 查找当前元素的直接子元素中带有特定标签的元素
 # Element.findall("property")
-
 
 # Element.find("property") 找带有特定标签的第一个子级
 # Element.text 访问文本内容
