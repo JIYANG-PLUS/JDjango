@@ -1,9 +1,9 @@
-import os, re, json, glob
+import os, json, glob
 from ..tools._tools import *
+from ..tools._re import *
 from ..tools import environment as env
-from ..settings import BASE_DIR as PROJECT_BASE_NAME, CONFIG_PATH
+from ..settings import CONFIG_PATH, TEMPLATE_DIR
 
-TEMPLATE_DIR = os.path.join(PROJECT_BASE_NAME, 'djangoTemplates')
 
 __all__ = [
     'startproject', # 新建项目
@@ -19,20 +19,15 @@ __all__ = [
     'refresh_config', # 更新配置文件config.json
 ]
 
-PATT_CHARS = re.compile(r'^[a-zA-Z0-9]*$') # 只允许数字和字母组合
-PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 定位模板替换位置
-PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']') # 定位后台登录名称位置
-PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']') # 定位后台网站名称位置
-PATT_URLPATTERNS = re.compile(r'(?ms:urlpatterns\s*=\s*\[.*)') # 定位 urlpatterns 类html和xml文本不推荐使用正则
-PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
 
-# 补全模板路径
 def django_file_path(file_name, concat=[]):
+    """补全模板路径"""
     if None == concat:
         concat = []
     return os.path.join(TEMPLATE_DIR, *concat, file_name) # 模板路径
 
 def read_file_lists(r_path, *args, **kwargs):
+    """列表式读取文件"""
     with open(r_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
     if 'replace' in kwargs and kwargs['replace']: # 替换开启
@@ -40,16 +35,18 @@ def read_file_lists(r_path, *args, **kwargs):
     return lines
 
 def get_content(file_name, *args, **kwargs):
+    """获取规则替换后的文件列表"""
     return read_file_lists(django_file_path(file_name, concat=kwargs.get('concat')), *args, **kwargs)
 
 def append_content(path, name, *args, **kwargs):
+    """向一个已存在的文本末尾添加另一个文本的规则替换内容"""
     # 调用：append_content(alias_paths[0], 'renameHeader.django', concat=['admin'], replace=True, model_name=k, site_name=site_name)
     content = get_content(name, *args, **kwargs)
     append_file(path, content)
 
 def startproject(path, project_name):
     """新建项目"""
-    if PATT_CHARS.match(project_name) and not os.path.exists(os.path.join(path, project_name)):
+    if PATT_CHARSNUMBER.match(project_name) and not os.path.exists(os.path.join(path, project_name)):
         """project_name"""
         os.mkdir(os.path.join(path, project_name))
 
@@ -83,13 +80,13 @@ def startproject(path, project_name):
 
 def startapp(app_name):
     """新建应用程序"""
-    configs = get_configs(os.path.join(PROJECT_BASE_NAME, 'config.json'))
-    BASE_DIR = configs['dirname']
-    if PATT_CHARS.match(app_name) and not os.path.exists(os.path.join(BASE_DIR, app_name)):
+    configs = get_configs(CONFIG_PATH)
+    PROJECT_BASE_DIR = configs['dirname']
+    if PATT_CHARSNUMBER.match(app_name) and not os.path.exists(os.path.join(PROJECT_BASE_DIR, app_name)):
         """""""""main"""
         """"""
-        os.mkdir(os.path.join(BASE_DIR, app_name))
-        APP_DIR = os.path.join(BASE_DIR, app_name)
+        os.mkdir(os.path.join(PROJECT_BASE_DIR, app_name))
+        APP_DIR = os.path.join(PROJECT_BASE_DIR, app_name)
         new_file(os.path.join(APP_DIR, '__init__.py'))
         new_file(os.path.join(APP_DIR, 'admin.py'), content=get_content('admin.django'))
         new_file(os.path.join(APP_DIR, 'apps.py'), content=get_content('apps.django', replace=True, app_name=app_name))
@@ -230,6 +227,7 @@ def judge_in_main_urls():
     return [_ for _ in app_urls if _ not in urlpatterns_content]
 
 def fix_urls(app_url):
+    """修复路由"""
     # path('main/', include('main.urls')),
     config = get_configs(CONFIG_PATH)
     root_path = config['dirname'] # Django项目根路径
@@ -246,19 +244,19 @@ def fix_urls(app_url):
 def refresh_config():
     """初始化配置文件"""
     PROJECT_CONFIG = get_configs(CONFIG_PATH)
-    DIRNAME = PROJECT_CONFIG['dirname']
-    DIRSETTINGS = os.path.join(DIRNAME, PROJECT_CONFIG['project_name'], 'settings.py')
+    PROJECT_BASE_DIR = PROJECT_CONFIG['dirname']
+    DIRSETTINGS = os.path.join(PROJECT_BASE_DIR, PROJECT_CONFIG['project_name'], 'settings.py')
     # 更新配置文件
     temp_configs = {} # 全局配置文件待写入
     # 必要前缀赋值
-    temp_configs['dirname'] = DIRNAME # 项目路径
-    temp_configs['project_name'] = os.path.basename(DIRNAME) # 项目名称
-    apps = os.listdir(DIRNAME) # 所有的应用程序（包含主程序）
-    temp_configs['app_names'] = [_ for _ in apps if os.path.exists(os.path.join(DIRNAME, _, 'migrations'))] # 以迁移目录为依据进行筛选
+    temp_configs['dirname'] = PROJECT_BASE_DIR # 项目路径
+    temp_configs['project_name'] = os.path.basename(PROJECT_BASE_DIR) # 项目名称
+    apps = os.listdir(PROJECT_BASE_DIR) # 所有的应用程序（包含主程序）
+    temp_configs['app_names'] = [_ for _ in apps if os.path.exists(os.path.join(PROJECT_BASE_DIR, _, 'migrations'))] # 以迁移目录为依据进行筛选
     settings = {}
     with open(DIRSETTINGS, 'r', encoding='utf-8') as f:
         text = PATT_BASE_DIR.sub('', f.read())
-        exec(f"BASE_DIR = r'{DIRNAME}'", {}, settings)
+        exec(f"BASE_DIR = r'{PROJECT_BASE_DIR}'", {}, settings)
         exec(text, {}, settings)
     temp_configs['DATABASES'] = settings.get('DATABASES') # 数据库
     temp_configs['DEBUG'] = settings.get("DEBUG") # 调试状态

@@ -60,18 +60,11 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""初始化页面控件"""
 		self.path = wx.TextCtrl(self.mainPanel, -1)  # sqlite路径
 		self.path.SetEditable(False)
-		# self.path.Enable(False)
 
 		self.toolPanel = wx.Panel(self.mainPanel) # 工具按钮集
 		toolSizer = wx.BoxSizer( wx.HORIZONTAL ) # 水平
-		# self.btnSelect = buttons.GenButton(self.toolPanel, -1, 'SELECT') # SELECT查询
 		self.btnOpenSQLite3 = wx.Button( self.toolPanel, wx.ID_ANY, u"打开/切换数据源", wx.DefaultPosition, wx.DefaultSize, 0 )
-		# self.btnSelect = wx.Button( self.toolPanel, wx.ID_ANY, u"SELECT查询", wx.DefaultPosition, wx.DefaultSize, 0 )
-		# self.btnDefault = buttons.GenButton(self.toolPanel, -1, '恢复默认布局')
-		# self.btnDefault = wx.Button( self.toolPanel, wx.ID_ANY, u"恢复默认布局", wx.DefaultPosition, wx.DefaultSize, 0 )
 		toolSizer.Add(self.btnOpenSQLite3, 0, wx.EXPAND | wx.ALL, 2)
-		# toolSizer.Add(self.btnSelect, 0, wx.EXPAND | wx.ALL, 2)
-		# toolSizer.Add(self.btnDefault, 0, wx.EXPAND | wx.ALL, 2)
 		self.toolPanel.SetSizer(toolSizer)
 
 		# 分割面板（上下分割）
@@ -80,8 +73,6 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.rightPanel = wx.Panel(self.splitWindow, style=wx.SUNKEN_BORDER) # 右子面板
 		self.splitWindow.Initialize(self.leftPanel)
 		self.splitWindow.Initialize(self.rightPanel)
-		# self.leftPanel.SetBackgroundColour("yellow")
-		# self.rightPanel.SetBackgroundColour("blue")
 		self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 681)
 
 
@@ -212,6 +203,8 @@ class SQLiteManageFrame ( wx.Frame ):
 		for _ in sorted(tables, key=lambda x:x[0], reverse=False):
 			self.tree.AppendItem(self.root, _[0])
 		self._setStatusRight(f"数据库{database_name}连接成功！")
+
+		self.tree.ExpandAll() # 展开所有节点
 
 	def _clear_tree(self):
 		"""清空树"""

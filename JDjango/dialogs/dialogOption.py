@@ -1,27 +1,12 @@
-import wx, json, glob, os, re
+import wx, json, glob, os
 import wx.lib.buttons as buttons
 from wx.lib import scrolledpanel
 from ..tools._tools import *
 from ..tools._re import *
-from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
+from .. settings import BASE_DIR, CONFIG_PATH, SETTINGSS
 from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
-
-env_obj = env.getEnvXmlObj()
-
-PATT_CHARS = re.compile(r'^[a-zA-Z_].*$')
-
-SETTINGSS = {
-    'LANGUAGE_CODE' : {
-        0 : ('zh-Hans', 'zh_Hans'), # 中文
-        1 : ('en-us', 'en_us', ), # 英文
-    },
-    'TIME_ZONE' : {
-        0 : ('UTC',), # 伦敦时区
-        1 : ('Asia/Shanghai',), # 北京时区 
-    },
-}
 
 class AdminCreateSimpleDialog(wx.Dialog):
     def __init__(self, parent, id, **kwargs):
@@ -34,15 +19,9 @@ class AdminCreateSimpleDialog(wx.Dialog):
         self.pathPanel = wx.Panel(self.panel) # 选择应用程序app
         self.panel.SetBackgroundColour('#ededed')  # 最外层容器颜色
         self.pathPanel.SetBackgroundColour('#ededed')
-        # self.scroller = wx.ScrolledWindow(self.panel, -1)
-        # self.scroller.SetScrollbars(1, 1, 600, -1)
         self.modelPanel = wx.Panel(self.panel) # 选择模型列表
 
         # 向 self.pathPanel 填充控件
-        # self.btn_select_file_path = buttons.GenButton(self.pathPanel, -1, label='选择admin.py文件')
-        # self.text_path = wx.TextCtrl(self.pathPanel, -1)
-        # self.text_path.SetFont(self.font)
-        # self.text_path.SetEditable(False)
         apps = get_configs(CONFIG_PATH)['app_names']
         self.infoChoiceApp = wx.StaticText(self.pathPanel, -1, "选择要注册的应用程序：")
         self.infoChoiceApp.SetFont(self.font)
@@ -120,8 +99,6 @@ class AdminCreateSimpleDialog(wx.Dialog):
     def ButtonClick(self, e):
         """界面按钮点击事件"""
         bId = e.GetId()
-        # if bId == self.btn_select_file_path.GetId(): # 选择admin.py所在路径
-        #     self.select_adminpy(e)
         if bId == self.btn_register.GetId():
             self.onRegister(e)
 
@@ -452,21 +429,6 @@ class SettingsDialog(wx.Dialog):
         self.DIRNAME = configs["dirname"]
         self.DIRSETTINGS = os.path.join(self.DIRNAME, configs['project_name'], 'settings.py')
 
-        # 相关替换正则
-        self.PATT_SECRET_KEY = re.compile(r"SECRET_KEY\s*=\s*[\'\"](.*?)[\'\"]")
-        self.PATT_DEBUG = re.compile(r"DEBUG\s*=\s*(False|True)")
-        self.PATT_ALLOWED_HOSTS = re.compile(r"ALLOWED_HOSTS\s*=\s*\[([\'\"]*.*?[\'\"]*)\]")
-        self.PATT_X_FRAME_OPTIONS = re.compile(r"X_FRAME_OPTIONS\s*=\s*'ALLOWALL'")
-        self.PATT_LANGUAGE_CODE = re.compile(r"LANGUAGE_CODE\s*=\s*'(.*?)'")
-        self.PATT_TIME_ZONE = re.compile(r"TIME_ZONE\s*=\s*'(.*?)'")
-        self.PATT_USE_I18N = re.compile(r"USE_I18N\s*=\s*(False|True)")
-        self.PATT_USE_L10N = re.compile(r"USE_L10N\s*=\s*(False|True)")
-        self.PATT_USE_TZ = re.compile(r"USE_TZ\s*=\s*(False|True)")
-
-        self.PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
-
-        """正则结束"""
-
         wholePanel = wx.Panel(self)
         wholeBox = wx.BoxSizer(wx.VERTICAL) # 垂直
         wholePanel.SetSizer(wholeBox)
@@ -480,7 +442,7 @@ class SettingsDialog(wx.Dialog):
         labels = wx.Notebook(wholePanel)
 
         """数据库"""
-        self.databasesPanel = wx.Panel(labels) # 数据库
+        self.databasesPanel = wx.Panel(labels) # 数据库面板
 
         """Settings"""
         self.otherPanel = scrolledpanel.ScrolledPanel(labels, -1) # 其它（可滚动面板）
@@ -635,13 +597,13 @@ class SettingsDialog(wx.Dialog):
             content_settings = read_file(self.DIRSETTINGS)
             temp = content_settings
             if None != self.DATA_SETTINGS.get('DEBUG'):
-                temp = patt_sub_only_capture_obj(self.PATT_DEBUG, self.DATA_SETTINGS['DEBUG'], temp)
+                temp = patt_sub_only_capture_obj(PATT_DEBUG, self.DATA_SETTINGS['DEBUG'], temp)
             if None != self.DATA_SETTINGS.get('USE_I18N'):
-                temp = patt_sub_only_capture_obj(self.PATT_USE_I18N, self.DATA_SETTINGS['USE_I18N'], temp)
+                temp = patt_sub_only_capture_obj(PATT_USE_I18N, self.DATA_SETTINGS['USE_I18N'], temp)
             if None != self.DATA_SETTINGS.get('USE_L10N'):
-                temp = patt_sub_only_capture_obj(self.PATT_USE_L10N, self.DATA_SETTINGS['USE_L10N'], temp)
+                temp = patt_sub_only_capture_obj(PATT_USE_L10N, self.DATA_SETTINGS['USE_L10N'], temp)
             if None != self.DATA_SETTINGS.get('USE_TZ'):
-                temp = patt_sub_only_capture_obj(self.PATT_USE_TZ, self.DATA_SETTINGS['USE_TZ'], temp)
+                temp = patt_sub_only_capture_obj(PATT_USE_TZ, self.DATA_SETTINGS['USE_TZ'], temp)
             if None != self.DATA_SETTINGS.get('X_FRAME_OPTIONS'):
                 if self.DATA_SETTINGS['X_FRAME_OPTIONS']: # 开启
                     if not CONFIGS['X_FRAME_OPTIONS']: # 且原文件不存在
@@ -651,18 +613,17 @@ class SettingsDialog(wx.Dialog):
                         append_file(self.DIRSETTINGS, read_file_list(TEMPLATE_DIR))
                         temp = read_file(self.DIRSETTINGS) # 刷新
                 else: # 关闭（删除）
-                    temp = self.PATT_X_FRAME_OPTIONS.sub('', temp)
+                    temp = PATT_X_FRAME_OPTIONS.sub('', temp)
             if None != self.DATA_SETTINGS.get('LANGUAGE_CODE'):
                 re_str = SETTINGSS['LANGUAGE_CODE'][self.DATA_SETTINGS['LANGUAGE_CODE']][0]
-                temp = patt_sub_only_capture_obj(self.PATT_LANGUAGE_CODE, re_str, temp)
+                temp = patt_sub_only_capture_obj(PATT_LANGUAGE_CODE, re_str, temp)
             if None != self.DATA_SETTINGS.get('TIME_ZONE'):
                 re_str = SETTINGSS['TIME_ZONE'][self.DATA_SETTINGS['TIME_ZONE']][0]
-                temp = patt_sub_only_capture_obj(self.PATT_TIME_ZONE, re_str, temp)
+                temp = patt_sub_only_capture_obj(PATT_TIME_ZONE, re_str, temp)
             # 写入SECRET_KEY和HOST
-            temp = patt_sub_only_capture_obj(self.PATT_SECRET_KEY, self.inputRefreshSecretKey.GetValue(), temp)
+            temp = patt_sub_only_capture_obj(PATT_SECRET_KEY, self.inputRefreshSecretKey.GetValue(), temp)
             host_contents = [f"'{_}'" for _ in self.inputAllowedHosts.GetValue().strip().split(',') if _]
-            temp = patt_sub_only_capture_obj_obtain_double(self.PATT_ALLOWED_HOSTS, ','.join(host_contents), temp)
-
+            temp = patt_sub_only_capture_obj_obtain_double(PATT_ALLOWED_HOSTS, ','.join(host_contents), temp)
             write_file(self.DIRSETTINGS, temp) # 更新settings.py文件
             refresh_config() # 更新配置文件【重要！！！】
             self.DATA_SETTINGS = {} # 防止重复确定

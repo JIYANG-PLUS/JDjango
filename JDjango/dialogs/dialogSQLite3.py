@@ -1,13 +1,5 @@
-import wx, json, glob, os, re
-import wx.lib.buttons as buttons
+import wx
 import wx.grid
-from wx.lib import scrolledpanel
-from ..tools._tools import *
-from ..tools._re import *
-from ..settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH
-from ..tools import environment as env
-from ..tools import models as toolModel
-from ..miniCmd.djangoCmd import *
 
 class TableAttrbutesDialog(wx.Dialog):
     
@@ -73,4 +65,3 @@ class TableAttrbutesDialog(wx.Dialog):
         for row, _ in enumerate(self.datas):
             for col, data in enumerate(_):
                 self.attrbutesGrid.SetCellValue(row+1, col, f'{data}')
-

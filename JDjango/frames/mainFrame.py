@@ -1,28 +1,21 @@
-import wx, time, os, json, datetime, re
+import wx, time, os
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
 from ..dialogs.dialogDocument import *
 from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
+from ..tools._re import *
 from ..tools import environment as env
 from ..settings import BASE_DIR, CONFIG_PATH
 
 cmd = CmdTools()
 
-ID_EXIT = 200
-ID_ABOUT = 201
-ID_FILE = 202
-ID_FLODER = 202
-
-PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
-
 class Main(wx.Frame):
 
-    def __init__(self, parent=None, id=-1, pos=wx.DefaultPosition, title='《Django辅助工具》-V1.1.0'):
-        size = (960, 540)
+    def __init__(self, parent = None):
 
-        wx.Frame.__init__(self, parent, id, title, pos, size)
+        wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = "JDjango-V1.1.1", pos = wx.DefaultPosition, size = wx.Size(960, 540), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 
         self._init_platform() # 初始化平台类型
 
@@ -156,11 +149,6 @@ class Main(wx.Frame):
         # 创建文件菜单项
         menus = wx.Menu()
         menuOpen = menus.Append(wx.ID_OPEN, "&查看文件", "查看文件")
-        # menuFloder = menus.Append(wx.ID_ANY, "&选择Django项目根目录", "选择Django项目根目录")
-        # menus.AppendSeparator()
-        # menuAccent = menus.Append(wx.ID_ANY, "&最近打开", "最近打开")
-        # menus.AppendSeparator()
-        # menuSave = menus.Append(wx.ID_ANY, "&另存为", "另存为")
         menus.AppendSeparator() # --
         menusCreate = wx.Menu()
         self.create_project = menusCreate.Append(wx.ID_ANY, "&项目", "项目")
@@ -190,15 +178,6 @@ class Main(wx.Frame):
         self.sqliteManageTool = settings.Append(wx.ID_ANY, "&SQLite3", "SQLite3")
         menus.Append(wx.ID_ANY, "&工具", settings)
         
-        # # 创建编辑菜单项
-        # edits = wx.Menu()
-        # menuCopy = edits.Append(wx.ID_ANY, "&复制", "复制")
-        # menuCut = edits.Append(wx.ID_ANY, "&剪切", "剪切")
-        # menuPaste = edits.Append(wx.ID_ANY, "&粘贴", "粘贴")
-        # edits.AppendSeparator()
-        # menuback = edits.Append(wx.ID_ANY, "&撤回", "撤回")
-        # menuAfter = edits.Append(wx.ID_ANY, "&逆向撤回", "逆向撤回")
-
         # 帮助 菜单项
         helps = wx.Menu()
         helpsDocumentation = helps.Append(wx.ID_ANY, "&参考文档", "参考文档")
@@ -423,24 +402,14 @@ class Main(wx.Frame):
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         port = env.getDjangoRunPort()
         env_python3 = os.path.splitext(env.getPython3Env())[0]
-        # env_python3 = repr(os.path.splitext(env.getPython3Env())[0])
         try:
             self.server = subprocess.Popen(f'{env_python3} {path} runserver {port}', shell=True) # , stderr=subprocess.PIPE, stdout=subprocess.PIPE
-            # self.PID = self.server.pid
-            # if self.server.stderr:
-            #     # errinfos = copy.deepcopy(self.server.stderr)
-            #     # error_info = ''.join([_.decode(encoding='gbk') for _ in errinfos])
-            #     pass
-            # else:
-            #     error_info = "\n"
         except:
             self.infos.AppendText(out_infos(f"虚拟环境错误，或项目路径错误，或端口被占用。", level=3))
         else:
             self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。（以实际为准）", level=1))
             self.portProgressRun.Enable(False)
             self.portProgressStop.Enable(True)
-            # s = ''.join([_.decode(encoding='gbk') for _ in self.server.stdout])
-            # print(list(self.server.stdout))
 
     def onModelsGenerate(self, e):
         """创建模型"""
@@ -563,8 +532,6 @@ class Main(wx.Frame):
         dlg = wx.MessageDialog(self, "关于软件：目前为个人使用版。【部分功能正在实现】", "提示信息", wx.OK)
         dlg.ShowModal()
         dlg.Destroy()
-        # 截止事件的发生
-        # event.Skip()
 
     def onExit(self, e):
         """退出"""
@@ -781,9 +748,8 @@ class Main(wx.Frame):
     def onAppsFix(self, e):
         """修复未注册应用"""
         try:
-            import re
             content = read_file(self.path_settings)
-            temp = re.search(r"(?ms:INSTALLED_APPS\s.*?=\s.*?\[.*?\])", content).group(0)
+            temp = PATT_INSTALLED_APPS.search(content).group(0)
             INSTALLED_APPS = temp.split('\n')
             for _ in self.unapps:
                 INSTALLED_APPS.insert(-1, f"    '{_}',")
@@ -821,7 +787,7 @@ class Main(wx.Frame):
                 for _ in self.allInitBtns[a][b]:
                     _.Enable(False)
         # 如果当前环境安装了virtualenv包，则关闭虚拟环境的安装按钮
-        # 待完成
+        # 待考虑功能
 
     def _open_all_check(self):
         """ 开启所有检测按钮权限 """
@@ -837,8 +803,6 @@ class Main(wx.Frame):
         for _ in self.allInitBtns[model]['fix']:
             _.Enable(switch)
         # # 开启/关闭全局的修复按钮
-        # for _ in self.allInitBtns['global']['fix']:
-        #     _.Enable(switch)
         if len(self.needfix) > 0:
             for _ in self.allInitBtns['global']['fix']:
                 _.Enable(True)

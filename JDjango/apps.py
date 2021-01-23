@@ -19,10 +19,6 @@ class App(wx.App):
     def OnExit(self):
         return super().OnExit()
 
-def main():
-    app = App(redirect=False) # 【指定filename将输出到文件】
-    app.MainLoop()
-
 class SQLiteApp(wx.App):
 
     def __init__(self, redirect=False, filename=None, useBestVisual=False, clearSigInt=True):
@@ -38,6 +34,12 @@ class SQLiteApp(wx.App):
     def OnExit(self):
         return super().OnExit()
 
+def main():
+    """主界面"""
+    app = App(redirect=False) # 【指定filename将输出到文件】
+    app.MainLoop()
+
 def startSQLiteApp():
+    """SQLite3辅助工具界面"""
     app = SQLiteApp(redirect=False)
     app.MainLoop()

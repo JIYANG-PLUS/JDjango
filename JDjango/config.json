@@ -2,6 +2,7 @@
     "dirname": "C:\\Users\\PC\\Desktop\\djangoProject\\HELLOWORD",
     "project_name": "HELLOWORD",
     "app_names": [
+        "EYW",
         "main"
     ],
     "DATABASES": {
@@ -12,16 +13,16 @@
     },
     "DEBUG": true,
     "LANGUAGE_CODE": "en-us",
-    "TIME_ZONE": "UTC",
+    "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
     "USE_TZ": true,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
-        "*"
+        "0.0.0.0"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
+    "SECRET_KEY": "@Ld^fei<#pygR[~<|-!<*QyLY:^G9!=DFXx];jQYv]SxI2Ujsp",
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
         "C:\\Users\\PC\\Desktop\\djangoProject\\HELLOWORD\\templates"

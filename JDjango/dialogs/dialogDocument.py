@@ -1,10 +1,8 @@
-import wx, json, glob, os, re
+import wx, os
 import wx.lib.buttons as buttons
-from wx.lib import scrolledpanel
 import wx.html2
 from ..tools._tools import *
-from ..tools._re import *
-from .. settings import BASE_DIR, CONFIG_PATH, CONFIG_PATH, DJANGO_DOCS_URL, LOCAL_DOCS_PATH
+from .. settings import DJANGO_DOCS_URL, LOCAL_DOCS_PATH
 from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
