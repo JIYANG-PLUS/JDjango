@@ -2,6 +2,7 @@ import wx, time, os
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
 from ..dialogs.dialogDocument import *
+from ..dialogs.dialogTips import *
 from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -11,7 +12,7 @@ from ..settings import BASE_DIR, CONFIG_PATH
 from ..constant import *
 
 cmd = CmdTools() # 命令行对象
-# 例举所有的功能按钮
+# 所有的功能按钮
 classifies = ['global', 'apps', 'views', 'urls', 'templates', 'forms', 'models', 'database', 'admin']
 
 class Main(wx.Frame):
@@ -57,86 +58,71 @@ class Main(wx.Frame):
     def _init_UI(self):
         """面板布局"""
         self.needFonts = [] # 待设置字体的控件
-
+        # 主容器
         panel = wx.Panel(self)  # 最外层容器
-        midPan = wx.Panel(panel)  # 向panel容器添加子容器midpan
-        toolPanel = wx.Panel(midPan)
-        toolLeftPanel = wx.Panel(toolPanel)
-        toolRightPanel = wx.Panel(toolPanel)
-        panel.SetBackgroundColour(CON_COLOR_GREY)  # 最外层容器颜色
-        midPan.SetBackgroundColour(CON_COLOR_WHITE)  # 设置子容器颜色
+        panelSizer = wx.BoxSizer(wx.VERTICAL)
+        panel.SetSizer(panelSizer)
+        panel.SetBackgroundColour(CON_COLOR_GREY)
 
-        """按钮控件"""
+        # 子容器
+        midPanel = wx.Panel(panel)
+        midPanelSizer = wx.BoxSizer(wx.VERTICAL)
+        midPanel.SetSizer(midPanelSizer)
+        panelSizer.Add(midPanel, 1, wx.EXPAND | wx.ALL, 3)
+        midPanel.SetBackgroundColour(CON_COLOR_WHITE)
+
+        # 自定义工具条
+        toolPanel = wx.Panel(midPanel)
+        toolPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        toolPanel.SetSizer(toolPanelSizer)
+        midPanelSizer.Add(toolPanel, 0, wx.EXPAND | wx.ALL, 5)
+
+        # 自定义工具条 - 左侧
+        toolLeftPanel = wx.Panel(toolPanel)
+        toolLeftPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        toolLeftPanel.SetSizer(toolLeftPanelSizer)
+        toolPanelSizer.Add(toolLeftPanel, 1, wx.EXPAND | wx.ALL, 2)
+
         self.btn_select_project = buttons.GenButton(toolLeftPanel, -1, label='选择Django项目')
         self.btn_clear_text = buttons.GenButton(toolLeftPanel, -1, label='清空')
         self.btn_check_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]校验')
         self.btn_fixed_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]修复')
         self.btn_config_project = buttons.GenButton(toolLeftPanel, -1, label='选项/修改')
         self.btn_docs = buttons.GenButton(toolLeftPanel, -1, label='文档')
-        
-        self.allInitBtns['global'][CON_CONTROL_CHECK].append(self.btn_check_project)
-        self.allInitBtns['global'][CON_CONTROL_FIX].append(self.btn_fixed_project)
-        self.allInitBtns['global'][CON_CONTROL_OTHER].append(self.btn_config_project)
+        toolLeftPanelSizer.Add(self.btn_select_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_check_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_fixed_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_config_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_docs, 0, wx.EXPAND | wx.ALL, 2)
 
-        """文本框控件"""
-        self.infos = wx.TextCtrl(midPan, -1, style=wx.TE_MULTILINE)  # 消息框
-        self.path = wx.TextCtrl(midPan, -1)  # 项目选择成功提示框
-        self.infos.SetEditable(False)
-        self.path.SetEditable(False)
-        self.needFonts.extend([
-            self.infos
-        ])
+        # 自定义工具条 - 右侧
+        toolRightPanel = wx.Panel(toolPanel)
+        toolRightPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        toolRightPanel.SetSizer(toolRightPanelSizer)
+        toolPanelSizer.Add(toolRightPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        """命令控件"""
         cmdTip = wx.StaticText(toolRightPanel, -1, "命令：")
         self.cmdInput = wx.TextCtrl(toolRightPanel, -1, size=(200, -1))  # 输入命令
         self.btn_exec = buttons.GenButton(toolRightPanel, -1, '执行/Enter')
-        self.needFonts.extend([
-            self.cmdInput
-        ])
         cmdTip.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False))
+        toolRightPanelSizer.Add(cmdTip, 0, wx.EXPAND | wx.ALL, 2)
+        toolRightPanelSizer.Add(self.cmdInput, 0, wx.EXPAND | wx.ALL, 2)
+        toolRightPanelSizer.Add(self.btn_exec, 0, wx.EXPAND | wx.ALL, 2)
 
-        """水平、垂直布局"""
-        vbox = wx.BoxSizer(wx.VERTICAL)
-        midbox = wx.BoxSizer(wx.VERTICAL)  # midpan的垂直布局
-        toolsBox = wx.BoxSizer(wx.HORIZONTAL)
-        toolLeftBox = wx.BoxSizer(wx.HORIZONTAL)
-        toolRightBox = wx.BoxSizer(wx.HORIZONTAL)
+        # 其它控件（非线性控件）
+        self.infos = wx.TextCtrl(midPanel, -1, style=wx.TE_MULTILINE)  # 消息框
+        self.path = wx.TextCtrl(midPanel, -1)  # 项目选择成功提示框
+        self.infos.SetEditable(False)
+        self.path.SetEditable(False)
+        midPanelSizer.Add(self.path, 0, wx.EXPAND | wx.ALL, 5)
+        midPanelSizer.Add(self.infos, 1, wx.EXPAND | wx.ALL, 5)
 
-        # 监听键盘按下事件
-        self.cmdInput.Bind(wx.EVT_KEY_UP, self.OnKeyDown)
-
-        # 左侧工具填充
-        toolLeftBox.Add(self.btn_select_project, 0, wx.EXPAND | wx.ALL, 2)
-        toolLeftBox.Add(self.btn_check_project, 0, wx.EXPAND | wx.ALL, 2)
-        toolLeftBox.Add(self.btn_fixed_project, 0, wx.EXPAND | wx.ALL, 2)
-        toolLeftBox.Add(self.btn_config_project, 0, wx.EXPAND | wx.ALL, 2)
-        toolLeftBox.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 2)
-        toolLeftBox.Add(self.btn_docs, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 右侧工具栏填充
-        toolRightBox.Add(cmdTip, 0, wx.EXPAND | wx.ALL, 2)
-        toolRightBox.Add(self.cmdInput, 0, wx.EXPAND | wx.ALL, 2)
-        toolRightBox.Add(self.btn_exec, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 工具栏填充
-        toolsBox.Add(toolLeftPanel, 1, wx.EXPAND | wx.ALL, 2)
-        toolsBox.Add(toolRightPanel, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 次容器填充
-        midbox.Add(toolPanel, 0, wx.EXPAND | wx.ALL, 5)
-        midbox.Add(self.path, 0, wx.EXPAND | wx.ALL, 5)
-        midbox.Add(self.infos, 1, wx.EXPAND | wx.ALL, 5)  # 1 控制比例
-
-        # 大容器填充
-        vbox.Add(midPan, 1, wx.EXPAND | wx.ALL, 3)
-
-        # 面板绑定布局
-        toolLeftPanel.SetSizer(toolLeftBox)
-        toolRightPanel.SetSizer(toolRightBox)
-        toolPanel.SetSizer(toolsBox)
-        midPan.SetSizer(midbox)
-        panel.SetSizer(vbox)
+        # 控制器初始化
+        self.needFonts.extend([self.infos, self.cmdInput,])
+        self.allInitBtns['global'][CON_CONTROL_CHECK].append(self.btn_check_project)
+        self.allInitBtns['global'][CON_CONTROL_FIX].append(self.btn_fixed_project)
+        self.allInitBtns['global'][CON_CONTROL_OTHER].append(self.btn_config_project)
 
         # 事件绑定
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_select_project)
@@ -146,6 +132,7 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_exec)
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_clear_text)
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_docs)
+        self.cmdInput.Bind(wx.EVT_KEY_UP, self.OnKeyDown)
 
     def _init_menu(self):
         """设置工具栏"""
@@ -370,9 +357,7 @@ class Main(wx.Frame):
     
     def onHelpSeeOrKill(self, e):
         """查看或终止进程"""
-        dlg = wx.MessageDialog(self, CON_MSG_PROGRESS_USE, CON_TIPS_COMMON, wx.OK)
-        dlg.ShowModal()
-        dlg.Destroy()
+        TipsMessageOKBox(self, CON_MSG_PROGRESS_USE, CON_TIPS_COMMON)
 
     def onPortProgressRun(self, e):
         """子进程运行Django"""
@@ -516,9 +501,7 @@ class Main(wx.Frame):
 
     def onAbout(self, e):
         """关于"""
-        dlg = wx.MessageDialog(self, "关于软件：目前为个人使用版。【部分功能正在实现】", CON_TIPS_COMMON, wx.OK)
-        dlg.ShowModal()
-        dlg.Destroy()
+        TipsMessageOKBox(self, "关于软件：目前为个人使用版。【部分功能正在实现】", CON_TIPS_COMMON)
 
     def onExit(self, e):
         """退出"""
@@ -757,15 +740,12 @@ class Main(wx.Frame):
         """修复项目 【全局】"""
         self.onAppsFix(e) # 修复 应用程序
         self.onUrlsFix(e) # 修复 路由
-    """"""
 
     def onAdminGenerateBase(self, e):
         """管理中心 简单配置"""
         dlg = AdminCreateSimpleDialog(self)
         dlg.ShowModal()
         dlg.Destroy()
-
-    """"""
 
     def _disable_all_btn(self):
         """关闭所有按钮权限"""

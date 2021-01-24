@@ -7,7 +7,7 @@ from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS
 from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
-from ..constant import CON_MODELSCREATEDIALOG_COLS, CON_VIEW_CHOICES
+from ..constant import *
 
 class AdminCreateSimpleDialog(wx.Dialog):
     def __init__(self, parent):
@@ -429,11 +429,13 @@ class SettingsDialog(wx.Dialog):
         self.DIRNAME = configs["dirname"]
         self.DIRSETTINGS = os.path.join(self.DIRNAME, configs['project_name'], 'settings.py')
 
+        # 主布局
         wholePanel = wx.Panel(self)
         wholeBox = wx.BoxSizer(wx.VERTICAL) # 垂直
         wholePanel.SetSizer(wholeBox)
 
-        wholeToolsPanel = wx.Panel(wholePanel) # 顶部工具栏
+        # 底部工具栏
+        wholeToolsPanel = wx.Panel(wholePanel)
         wholeToolsBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
         wholeToolsPanel.SetSizer(wholeToolsBox)
         self.saveConfig = buttons.GenButton(wholeToolsPanel, -1, '保存')
@@ -442,14 +444,14 @@ class SettingsDialog(wx.Dialog):
         labels = wx.Notebook(wholePanel)
 
         """数据库"""
-        self.databasesPanel = wx.Panel(labels) # 数据库面板
+        self.databasesPanel = wx.Panel(labels)
 
         """Settings"""
         self.otherPanel = scrolledpanel.ScrolledPanel(labels, -1) # 其它（可滚动面板）
         self.otherPanel.SetupScrolling() # 开启滚动条
         otherRefreshKeyPanel = wx.Panel(self.otherPanel) # SECRET_KEY
         nm = wx.StaticBox(self.otherPanel, -1, 'ALLOWED_HOSTS') # 带边框的盒子
-        otherAllowedHostsPanel = wx.StaticBoxSizer(nm, wx.HORIZONTAL) # 水平
+        otherAllowedHostsPanel = wx.StaticBoxSizer(nm, wx.HORIZONTAL)
         otherDebugPanel = wx.Panel(self.otherPanel) # DEBUG
         otherIframePanel = wx.Panel(self.otherPanel) # iframe
         otherLanguageCodePanel = wx.Panel(self.otherPanel) # LANGUAGE_CODE
@@ -470,18 +472,18 @@ class SettingsDialog(wx.Dialog):
         self.radiosUseL10NPanel = wx.RadioBox(otherUseL10NPanel, -1, "区域设置优先", choices=['开启', '关闭'])
         self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区", choices=['开启', '关闭'])
 
-        self.inputAllowedHosts = wx.TextCtrl(self.otherPanel, -1, style = wx.ALIGN_LEFT)
+        self.inputAllowedHosts = wx.TextCtrl(self.otherPanel, -1, style = wx.ALIGN_LEFT) # ip设置
 
         # 其它 布局
-        otherBox = wx.BoxSizer(wx.VERTICAL) # 垂直
-        otherRefreshKeyBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        otherDebugBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        otherIframeBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        otherLanguageCodeBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        otherTimeZoneBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        otherUseI18NBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        otherUseL10NBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
-        otherUseTzBOX = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        otherBox = wx.BoxSizer(wx.VERTICAL)
+        otherRefreshKeyBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherDebugBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherIframeBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherLanguageCodeBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherTimeZoneBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherUseI18NBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherUseL10NBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherUseTzBOX = wx.BoxSizer(wx.HORIZONTAL)
 
         # 填充
         otherRefreshKeyBOX.Add(self.inputRefreshSecretKey, 1, wx.EXPAND | wx.ALL, 2)
@@ -727,12 +729,42 @@ class ModelsCreateDialog(wx.Dialog):
         self.panel = wx.Panel(self)
         self.panelSizer = wx.BoxSizer(wx.VERTICAL)
         self.panel.SetSizer(self.panelSizer)
+        self.panel.SetBackgroundColour(CON_COLOR_MAIN)
+
+        # 自定义工具栏
+        self.toolPanel = wx.Panel(self.panel)
+        toolPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.toolPanel.SetSizer(toolPanelSizer)
+        self.panelSizer.Add(self.toolPanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.toolPanel.SetBackgroundColour(CON_COLOR_BLACK)
+
+        self.btnAddNew = buttons.GenButton(self.toolPanel, -1, '新增字段')
+        self.btnResetInput = buttons.GenButton(self.toolPanel, -1, '重置')
+        self.btnAddFieldToArea = buttons.GenButton(self.toolPanel, -1, '添加至待新增区')
+        self.btnExecSave = buttons.GenButton(self.toolPanel, -1, '执行')
+        self.btnWhite = buttons.GenButton(self.toolPanel, -1, ' ') # 空白区域补全按钮
+        toolPanelSizer.Add(self.btnAddNew, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(self.btnResetInput, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(self.btnAddFieldToArea, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(self.btnExecSave, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(self.btnWhite, 1, wx.EXPAND | wx.ALL, 2)
+        self.btnWhite.Enable(False)
+
+        # 可滚动
+        self.scollPanel = scrolledpanel.ScrolledPanel(self.panel, -1)
+        # self.scollPanel.SetScrollRate( 1, 1 )
+        # self.scollPanel.SetVirtualSize( ( 888, 345 ) )
+        self.scollPanel.SetupScrolling()
+        scollPanelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.scollPanel.SetSizer(scollPanelSizer)
+        self.panelSizer.Add(self.scollPanel, 2, wx.EXPAND | wx.ALL, 2)
 
         # 选择文件写入路径
-        self.selectFilePanel = wx.Panel(self.panel)
+        self.selectFilePanel = wx.Panel(self.scollPanel)
         selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.selectFilePanel.SetSizer(selectFilePanelSizer)
-        self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+        self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLACK)
 
         self.btnSelectFile = buttons.GenButton(self.selectFilePanel, -1, '选择模型写入路径')
         self.inputSelectFile = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
@@ -740,11 +772,80 @@ class ModelsCreateDialog(wx.Dialog):
         selectFilePanelSizer.Add(self.inputSelectFile, 1, wx.EXPAND | wx.ALL, 2)
 
         # 选择字段类型
-        self.selectFieldTypePanel = wx.Panel(self.panel)
-        selectFieldTypePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.selectFieldTypePanel.SetSizer(selectFieldTypePanelSizer)
-        self.panelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
+        selectFieldTypeStaticBox = wx.StaticBox(self.scollPanel, -1, '字段类型选择：')
+        # selectFieldTypeStaticBox.SetBackgroundColour(CON_COLOR_BLACK)
+        self.selectFieldTypePanel = wx.StaticBoxSizer(selectFieldTypeStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
 
+        self.choiceFieldType = wx.Choice(self.scollPanel, -1, choices = [' ']+CON_FIELD_TYPES, style = wx.CB_SORT)
+        self.selectFieldTypePanel.Add(self.choiceFieldType, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 字段命名
+        modelsNameStaticBox = wx.StaticBox(self.scollPanel, -1, '字段名：')
+        self.modelsNamePanel = wx.StaticBoxSizer(modelsNameStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.modelsNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 字段命名 - 左
+        self.modelsNameLeftPanel = wx.Panel(self.scollPanel)
+        modelsNameLeftPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.modelsNameLeftPanel.SetSizer(modelsNameLeftPanelSizer)
+        self.modelsNamePanel.Add(self.modelsNameLeftPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.labelFieldModelName = wx.StaticText(self.modelsNameLeftPanel, -1, "模型字段名：")
+        self.inputFieldModelName = wx.TextCtrl(self.modelsNameLeftPanel, -1)
+        modelsNameLeftPanelSizer.Add(self.labelFieldModelName, 0, wx.EXPAND | wx.ALL, 2)
+        modelsNameLeftPanelSizer.Add(self.inputFieldModelName, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 字段命名 - 右
+        self.modelsNameRightPanel = wx.Panel(self.scollPanel)
+        modelsNameRightPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.modelsNameRightPanel.SetSizer(modelsNameRightPanelSizer)
+        self.modelsNamePanel.Add(self.modelsNameRightPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.labelFieldDatabaseName = wx.StaticText(self.modelsNameRightPanel, -1, "数据库字段名：（可选）")
+        self.inputFieldDatabaseName = wx.TextCtrl(self.modelsNameRightPanel, -1)
+        modelsNameRightPanelSizer.Add(self.labelFieldDatabaseName, 0, wx.EXPAND | wx.ALL, 2)
+        modelsNameRightPanelSizer.Add(self.inputFieldDatabaseName, 1, wx.EXPAND | wx.ALL, 2)
+
+        """三个一行，布局"""
+        # 混乱布局第1行
+        self.complex1Panel = wx.Panel(self.scollPanel)
+        complex1PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.complex1Panel.SetSizer(complex1PanelSizer)
+        scollPanelSizer.Add(self.complex1Panel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.radiosFiledBlank = wx.RadioBox(self.complex1Panel, -1, "允许为空 -- blank", choices=['允许', '不允许'])
+        self.radiosFiledNull = wx.RadioBox(self.complex1Panel, -1, "为空时赋NULL -- null", choices=['赋', '不赋'])
+        self.radiosFiledPrimary = wx.RadioBox(self.complex1Panel, -1, "主键 -- primary_key", choices=['是', '否'])
+        complex1PanelSizer.Add(self.radiosFiledBlank, 1, wx.EXPAND | wx.ALL, 2)
+        complex1PanelSizer.Add(self.radiosFiledNull, 1, wx.EXPAND | wx.ALL, 2)
+        complex1PanelSizer.Add(self.radiosFiledPrimary, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 混乱布局第2行
+        self.complex2Panel = wx.Panel(self.scollPanel)
+        complex2PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.complex2Panel.SetSizer(complex2PanelSizer)
+        scollPanelSizer.Add(self.complex2Panel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.radiosFiledUnique = wx.RadioBox(self.complex2Panel, -1, "值唯一 -- unique", choices=['唯一', '不唯一'])
+        self.radiosFiledDbIndex = wx.RadioBox(self.complex2Panel, -1, "创建索引 -- db_index", choices=['创建', '不创建'])
+        self.radiosFiledEditable = wx.RadioBox(self.complex2Panel, -1, "表单可编辑显示 -- editable", choices=['显示', '不显示'])
+        complex2PanelSizer.Add(self.radiosFiledUnique, 1, wx.EXPAND | wx.ALL, 2)
+        complex2PanelSizer.Add(self.radiosFiledDbIndex, 1, wx.EXPAND | wx.ALL, 2)
+        complex2PanelSizer.Add(self.radiosFiledEditable, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 混乱布局第3行
+        # self.complex3Panel = wx.Panel(self.scollPanel)
+        # complex3PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # self.complex3Panel.SetSizer(complex3PanelSizer)
+        # scollPanelSizer.Add(self.complex3Panel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # self.radiosFiledUniqueForDate = wx.RadioBox(self.complex3Panel, -1, "日期组合唯一 -- unique_for_date", choices=['唯一', '不唯一'])
+        # self.radiosFiledUniqueForMonth = wx.RadioBox(self.complex3Panel, -1, "月份日期组合唯一 -- unique_for_month", choices=['唯一', '不唯一'])
+        # self.radiosFiledUniqueForYear = wx.RadioBox(self.complex3Panel, -1, "年份日期组合唯一 -- unique_for_year", choices=['唯一', '不唯一'])
+        # complex3PanelSizer.Add(self.radiosFiledUniqueForDate, 1, wx.EXPAND | wx.ALL, 2)
+        # complex3PanelSizer.Add(self.radiosFiledUniqueForMonth, 1, wx.EXPAND | wx.ALL, 2)
+        # complex3PanelSizer.Add(self.radiosFiledUniqueForYear, 1, wx.EXPAND | wx.ALL, 2)
 
         # 事件
         self.Bind(wx.EVT_BUTTON, self.onBtnSelectPath, self.btnSelectFile)
