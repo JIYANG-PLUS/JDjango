@@ -179,7 +179,9 @@ class Main(wx.Frame):
         menusCreate.AppendSeparator()
         self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
         menusCreate.AppendSeparator()
+        self.modelsBaseGenerate = menusCreate.Append(wx.ID_ANY, "&基模型", "基模型")
         self.modelsGenerate = menusCreate.Append(wx.ID_ANY, "&模型", "模型")
+        self.modelsProxyGenerate = menusCreate.Append(wx.ID_ANY, "&代理模型", "代理模型")
         menusCreate.AppendSeparator()
         self.viewsGenerateFunc = menusCreate.Append(wx.ID_ANY, "&视图", "视图")
         self.create_project.Enable(True)
@@ -352,6 +354,8 @@ class Main(wx.Frame):
 
         # 模型
         self.Bind(wx.EVT_MENU, self.onModelsGenerate, self.modelsGenerate)
+        self.Bind(wx.EVT_MENU, self.onModelsBaseGenerate, self.modelsBaseGenerate)
+        self.Bind(wx.EVT_MENU, self.onModelsProxyGenerate, self.modelsProxyGenerate)
 
         # 路由 事件绑定
         self.Bind(wx.EVT_MENU, self.onUrlsCheck, self.urls_check) # 检查路由
@@ -368,6 +372,12 @@ class Main(wx.Frame):
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onModelsBaseGenerate(self, e):
+        """创建基模型"""
+
+    def onModelsProxyGenerate(self, e):
+        """创建代理模型"""
 
     def onPortProgressStop(self, e):
         """关闭网站运行状态"""
@@ -387,7 +397,7 @@ class Main(wx.Frame):
         if dlg.ShowModal() == wx.ID_OK:
             env.setPython3Env(os.path.join(dlg.GetDirectory(), dlg.GetFilename()))
             wx.MessageBox(f'虚拟环境绑定成功！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-        dlg.Destroy()
+        dlg.Close(True)
     
     def onHelpSeeOrKill(self, e):
         """查看或终止进程"""
@@ -421,31 +431,31 @@ class Main(wx.Frame):
         """创建模型"""
         dlg = ModelsCreateDialog(self)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onSqliteManageTool(self, e):
         """跨平台的Sqlite工具"""
         dlg = wx.MessageDialog(self, "请双击同级目录下的sqlite3Manager.pyw启动文件。", CON_TIPS_COMMON, wx.OK)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onMenusSettings(self, e):
         """Settings"""
         dlg = SettingsDialog(self)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onHelpsDocumentation(self, e):
         """帮助文档"""
         dlg = DocumentationDialog(self)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onCreateProject(self, e):
         """新建项目"""
         dlg = ProjectCreateDialog(self)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onUrlsFix(self, e):
         """修复路由"""
@@ -478,13 +488,13 @@ class Main(wx.Frame):
         """重命名后台名称"""
         dlg = AdminRenameDialog(self)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onViewsGenerateFunc(self, e):
         """多样式新增视图"""
         dlg = ViewGenerateDialog(self)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onFontsMinus(self, e):
         """显示框字体减小"""
@@ -550,7 +560,7 @@ class Main(wx.Frame):
             self.dirname = dlg.GetDirectory()
             with open(os.path.join(self.dirname, self.filename), 'r', encoding="utf-8") as f:
                 self.infos.SetValue(f.read())
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onClear(self, e):
         """清空提示台"""
@@ -569,15 +579,15 @@ class Main(wx.Frame):
                 self.infos.AppendText(out_infos(f"{message}应用程序创建成功！", level=1))
                 dlg_tip = wx.MessageDialog(None, f"{message}创建成功！", CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
                 if dlg_tip.ShowModal() == wx.ID_OK: pass
-                dlg_tip.Destroy()
+                dlg_tip.Close(True)
                 self.onAppsFix(e) # 自动完成注册
                 self.onUrlsFix(e) # 自动完成路由注册
                 self._init_config() # 重新初始化 配置文件【此操作为敏感操作】
             else:
                 dlg_tip = wx.MessageDialog(None, f"{message}应用程序名已存在，或不符合纯字母+数字命名的约定！", CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
                 if dlg_tip.ShowModal() == wx.ID_OK: pass
-                dlg_tip.Destroy()
-        dlg.Destroy()
+                dlg_tip.Close(True)
+        dlg.Close(True)
 
     def onButtonClick(self, e):
         """界面按钮点击事件"""
@@ -591,7 +601,7 @@ class Main(wx.Frame):
         elif bId == self.btn_config_project.GetId(): # 项目配置和修改
             dlg = SettingsDialog(self)
             dlg.ShowModal()
-            dlg.Destroy()
+            dlg.Close(True)
         elif bId == self.btn_exec.GetId(): # 执行命令
             self.onExecCommand()
         elif bId == self.btn_clear_text.GetId():
@@ -603,7 +613,7 @@ class Main(wx.Frame):
         """查看帮助文档"""
         dlg = DocumentationDialog(self)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onExecCommand(self):
         """仿Linux命令"""
@@ -723,7 +733,7 @@ class Main(wx.Frame):
         else:
             # self.infos.AppendText(out_infos('您已取消选择。', level=2))
             pass
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onAppsCheck(self, e):
         """应用程序 检测"""
@@ -779,7 +789,7 @@ class Main(wx.Frame):
         """管理中心 简单配置"""
         dlg = AdminCreateSimpleDialog(self)
         dlg.ShowModal()
-        dlg.Destroy()
+        dlg.Close(True)
 
     def _disable_all_btn(self):
         """关闭所有按钮权限"""

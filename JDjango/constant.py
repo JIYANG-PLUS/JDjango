@@ -115,4 +115,7 @@ CON_FIELD_TYPES = [
     'FileField--【文件上传字段】',
     'ImageField--【图片上传字段】',
     'FilePathField--【文件路径上传字段】',
+    'ForeignKey--【一对多字段】',
+    'ManyToManyField--【多对多字段】',
+    'OneToOneField--【一对一字段】',
 ]

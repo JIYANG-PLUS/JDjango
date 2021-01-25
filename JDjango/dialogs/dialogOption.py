@@ -119,7 +119,7 @@ class AdminCreateSimpleDialog(wx.Dialog):
                 # 下面将在所有的模块别名路径中写入注册数据【可能有点不合理】
                 write_admin_base(os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _), importData) # 写入注册代码
             wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
-        dlg.Destroy()
+        dlg.Close(True)
 
 class AdminRenameDialog(wx.Dialog):
     def __init__(self, parent):
@@ -347,7 +347,7 @@ class ViewGenerateDialog(wx.Dialog):
             filename = dlg.GetFilename()
             dirname = dlg.GetDirectory()
             self.filePath.SetValue(os.path.join(dirname, filename))
-        dlg.Destroy()
+        dlg.Close(True)
 
 class ProjectCreateDialog(wx.Dialog):
 
@@ -400,7 +400,7 @@ class ProjectCreateDialog(wx.Dialog):
         dlg = wx.DirDialog(self, "选择写入项目的路径", style = wx.DD_DEFAULT_STYLE)
         if dlg.ShowModal() == wx.ID_OK:
             self.path.SetValue(dlg.GetPath())
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onBtnCreate(self, e):
         """创建项目"""
@@ -647,13 +647,13 @@ class SettingsDialog(wx.Dialog):
             if old_name == new_name:
                 dlg = wx.MessageDialog( self, "未做任何修改", "警告", wx.OK)
                 dlg.ShowModal()
-                dlg.Destroy()
+                dlg.Close(True)
                 return
 
             if not PATT_CHARS.match(new_name):
                 dlg = wx.MessageDialog( self, "请使用字母+下划线的方式命名", "错误", wx.OK)
                 dlg.ShowModal()
-                dlg.Destroy()
+                dlg.Close(True)
                 return
             try:
                 # 重命名项目（先文件，后目录）
@@ -685,11 +685,11 @@ class SettingsDialog(wx.Dialog):
                 if dlg.ShowModal() == wx.ID_OK:
                     self.Close(True)
                 dlg.ShowModal()
-                dlg.Destroy()
+                dlg.Close(True)
             except:
                 """操作回退，将之前所有的改动还原"""
                 pass # 待完成
-        dlgA.Destroy()
+        dlgA.Close(True)
 
     def onRadioBox(self, e):
         """单选框组事件"""
@@ -764,14 +764,14 @@ class ModelsCreateDialog(wx.Dialog):
         self.btnAddNew = buttons.GenButton(self.toolPanel, -1, '新增字段')
         self.btnResetInput = buttons.GenButton(self.toolPanel, -1, '恢复字段默认值')
         self.btnAddFieldToArea = buttons.GenButton(self.toolPanel, -1, '添加至待新增区')
-        self.btnModifyFieldArgs = buttons.GenButton(self.toolPanel, -1, '修改')
+        # self.btnModifyFieldArgs = buttons.GenButton(self.toolPanel, -1, '修改')
         self.btnExecSave = buttons.GenButton(self.toolPanel, -1, '保存')
         self.btnExit = buttons.GenButton(self.toolPanel, -1, '退出')
         self.btnWhite = buttons.GenButton(self.toolPanel, -1, ' ') # 空白区域补全按钮
         toolPanelSizer.Add(self.btnAddNew, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnResetInput, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnAddFieldToArea, 0, wx.EXPAND | wx.ALL, 2)
-        toolPanelSizer.Add(self.btnModifyFieldArgs, 0, wx.EXPAND | wx.ALL, 2)
+        # toolPanelSizer.Add(self.btnModifyFieldArgs, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnExecSave, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnExit, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnWhite, 1, wx.EXPAND | wx.ALL, 2)
@@ -963,6 +963,10 @@ class ModelsCreateDialog(wx.Dialog):
         self.choicesFiledUniqueForYear = wx.Choice(self.complex3Panel, -1, choices=[' ']+['列举当前字段3', ], style = wx.CB_SORT)
         self.choicesFiledUniqueForYearPanel.Add(self.choicesFiledUniqueForYear, 1, wx.EXPAND | wx.ALL, 2)
         
+        # 关联关系字段
+
+        # 表设置
+
         self.afterBtns.extend([
             self.btnResetInput, self.btnAddFieldToArea,
             # self.btnExecSave,
@@ -996,6 +1000,12 @@ class ModelsCreateDialog(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.onBtnExecSave, self.btnExecSave)
 
         self.Bind(wx.EVT_CHOICE, self.onChoiceFieldType, self.choiceFieldType)
+
+        self.Bind(wx.EVT_TEXT, self.onInputFieldModelName, self.inputFieldModelName)
+
+    def onInputFieldModelName(self, e):
+        """模型字段名设置时自动触发"""
+        self.inputFieldDatabaseName.SetValue(self.inputFieldModelName.GetValue())
 
     def _disable_all_args(self):
         """关闭所有的参数填写入口"""
@@ -1039,12 +1049,12 @@ class ModelsCreateDialog(wx.Dialog):
         self.infoGrid = wx.grid.Grid( self.panel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 
         self.infoGrid.CreateGrid( 0, len(CON_MODELSCREATEDIALOG_COLS) ) # row  col
-        self.infoGrid.EnableEditing( True )
+        self.infoGrid.EnableEditing( False )
         self.infoGrid.EnableGridLines( True )
         self.infoGrid.EnableDragGridSize( True )
         self.infoGrid.SetMargins( 0, 0 )
 
-        self.infoGrid.EnableDragColMove( True )
+        self.infoGrid.EnableDragColMove( False )
         self.infoGrid.EnableDragColSize( True )
         self.infoGrid.SetColLabelSize( 30 )
         self.infoGrid.SetColLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
@@ -1136,7 +1146,7 @@ class ModelsCreateDialog(wx.Dialog):
             filename = dlg.GetFilename()
             dirname = dlg.GetDirectory()
             self.inputSelectFile.SetValue(os.path.join(dirname, filename))
-        dlg.Destroy()
+        dlg.Close(True)
 
     def onBtnAddNew(self, e):
         """新增字段"""
@@ -1144,6 +1154,8 @@ class ModelsCreateDialog(wx.Dialog):
         # 开放 后触发 按钮
         for _ in self.afterBtns:
             _.Enable(True)
+        # 锁定新增按钮
+        self.btnAddNew.Enable(False)
 
     def onBtnResetInput(self, e):
         """恢复字段默认值"""
@@ -1182,7 +1194,7 @@ class ModelsCreateDialog(wx.Dialog):
             insertRow = {}
             insertRow['field_name'] = vinputFieldModelName
             insertRow['db_column'] = vinputFieldDatabaseName
-            insertRow['field_type'] = vchoiceFieldType
+            insertRow['field_type'] = vchoiceFieldType.split('--')[0]
             insertRow['primary_key'] = vradiosFiledPrimary
             insertRow['blank'] = vradiosFiledBlank
             insertRow['null'] = vradiosFiledNull
@@ -1215,14 +1227,18 @@ class ModelsCreateDialog(wx.Dialog):
             self._init_all_args_value()
             self._init_input_args()
             self.choiceFieldType.SetSelection(0) # 单独拎出来初始化【不影响大体功能】
-        dlg_tip.Destroy()
+
+            # 重新开放新增按钮
+            self.btnAddNew.Enable(True)
+
+        dlg_tip.Close(True)
 
     def onBtnExecSave(self, e):
         """保存"""
         dlg = wx.TextEntryDialog(self, u"模型命名：", u"保存模型", u"")
         if dlg.ShowModal() == wx.ID_OK:
             message = dlg.GetValue()  # 获取文本框中输入的值
-        dlg.Destroy()
+        dlg.Close(True)
 
     def _must_required_args(self):
         """所有字段必须同步开启的参数"""
@@ -1286,6 +1302,6 @@ class ModelsCreateDialog(wx.Dialog):
         """退出窗口"""
         dlg_tip = wx.MessageDialog(self, f"确认退出？退出后界面数据将丢失。", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
         if dlg_tip.ShowModal() == wx.ID_OK:
-            self.Destroy()
-        dlg_tip.Destroy()
+            self.Close(True)
+        dlg_tip.Close(True)
         
