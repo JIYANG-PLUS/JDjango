@@ -49,6 +49,9 @@ class Main(wx.Frame):
                 self.infos.AppendText(out_infos('历史数据失效！', level=3))
                 return
             else:
+                if not os.path.exists(self.dirname):
+                    self.infos.AppendText(out_infos('历史数据失效！', level=3))
+                    return
                 if 'manage.py' in os.listdir(self.dirname):
                     self.path.SetValue(f'当前项目路径：{self.dirname}')
                     try:
