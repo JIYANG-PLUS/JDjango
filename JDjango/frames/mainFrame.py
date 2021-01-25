@@ -35,6 +35,37 @@ class Main(wx.Frame):
         self.unurls = set() # 未注册的路由
         self.needfix = set() # 需要修复的模块
 
+        # 历史数据
+        self._auto_loading_history() # 自动加载历史数据
+
+    def _auto_loading_history(self):
+        """自动加载最新的一个历史数据"""
+        if os.path.exists(CONFIG_PATH):
+            # 自动加载
+            self._disable_all_btn() # 初始化按钮状态
+            try:
+                self.dirname = get_configs(CONFIG_PATH)['dirname']
+            except:
+                self.infos.AppendText(out_infos('历史数据失效！', level=3))
+                return
+            else:
+                if 'manage.py' in os.listdir(self.dirname):
+                    self.path.SetValue(f'当前项目路径：{self.dirname}')
+                    try:
+                        self._init_config() # 初始化配置文件
+                    except Exception as e:
+                        self.infos.AppendText(out_infos('配置文件config.json初始化失败！', level=3))
+                    else:
+                        # 开放所有的检测按钮
+                        self._open_all_check_btn()
+                        # 开放部分必要按钮
+                        self._open_part_necessary_btns()
+                        self.infos.Clear()
+                        # self.path.Clear()
+                        self.infos.AppendText(out_infos(f'项目{os.path.basename(self.dirname)}导入成功！', level=1))
+                else:
+                    self.infos.AppendText(out_infos('历史数据失效！', level=3))
+
     def _init_control_btn(self):
         """初始化功能按钮控制器"""
         self.allInitBtns = {}

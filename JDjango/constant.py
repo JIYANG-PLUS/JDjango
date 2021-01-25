@@ -10,7 +10,7 @@ CON_TIPS_COMMON = '提示信息'
 CON_COLOR_GREY = '#4f5049' # 灰色
 CON_COLOR_WHITE = '#ededed' # 白色
 CON_COLOR_BLACK = '#000000' # 纯黑
-CON_COLOR_MAIN = '#93c2f5' # 程序主色调
+CON_COLOR_MAIN = '#f1eec1' # 程序主色调
 CON_COLOR_RADIO = '#d2dce7'
 
 CON_MSG_PROGRESS_USE = """
@@ -31,13 +31,16 @@ CON_SQLITE3_TITLE = 'SQLite3管理工具-V1.0.0'
 
 # dialogOption.py
 CON_MODELSCREATEDIALOG_COLS = (
-    '列名',
+    '模型属性名',
+    '数据库列名',
+    '字段类型',
     '主键',
     '允许为空',
-    'null值',
+    '为空时赋NULL',
     '默认值',
     '字段值唯一',
     '创建索引',
+    '表空间',
     '可选列表',
     '日期组合唯一',
     '月份日期组合唯一',
@@ -45,13 +48,40 @@ CON_MODELSCREATEDIALOG_COLS = (
     '表单错误输入提醒',
     '表单可编辑',
     '表单帮助文本信息',
-    'max_length',
-    'max_digits',
-    'decimal_places',
-    'auto_now',
-    'auto_now_add',
-    'upload_to',
+    '字段校验器',
+    '长度上限',
+    '实数总位数',
+    '小数位数',
+    '每次保存时更新时间',
+    '仅新增时赋值时间',
+    '文件上传路径',
 )
+CON_ARGS_NAME_DICT = {
+    '模型属性名' : 'field_name',
+    '数据库列名' : 'db_column',
+    '字段类型' : 'field_type',
+    '允许为空' : 'blank',
+    '为空时赋NULL' : 'null',
+    '默认值' : 'default',
+    '主键' : 'primary_key',
+    '字段值唯一' : 'unique',
+    '日期组合唯一' : 'unique_for_date',
+    '月份日期组合唯一' : 'unique_for_month',
+    '年份日期组合唯一' : 'unique_for_year',
+    '创建索引' : 'db_index',
+    '表空间' : 'db_tablespace',
+    '表单错误输入提醒' : 'error_messages',
+    '表单可编辑' : 'editable',
+    '表单帮助文本信息' : 'help_text',
+    '字段校验器' : 'validators',
+    '可选列表' : 'choices',
+    '长度上限' : 'max_length',
+    '实数总位数' : 'max_digits',
+    '小数位数' : 'decimal_places',
+    '文件上传路径' : 'upload_to',
+    '每次保存时更新时间' : 'auto_now',
+    '仅新增时赋值时间' : 'auto_now_add',
+}
 CON_VIEW_CHOICES = [
     '简单函数视图'
     , '简单类视图'
