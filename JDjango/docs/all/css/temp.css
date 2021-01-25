@@ -1,5 +1,5 @@
-*{margin: 0;padding: 0;box-sizing: border-box;color: #d2dce7;}
-.red{color: red;}.green{color: green;}.yellow{color: yellow;}.blue{color: blue;}.black{color: black;}
+*{margin: 0;padding: 0;box-sizing: border-box;color: #93c2f5;}
+.red{color: red;}.green{color: green;}.yellow{color: yellow;}.blue{color: rgb(218, 229, 233);}.black{color: black;}
 .blod400{font-weight: 400;}.blod700{font-weight: 700;}.italic{font-style: italic;}
 .fontsize18{font-size: 12px;}.fontsize18{font-size: 18px;}.fontsize24{font-size: 24px;}.fontsize32{font-size: 32px;}
 .underline{text-decoration: underline;}.linethrough{text-decoration: line-through;}.linedouble{border-bottom: 6px double black;}

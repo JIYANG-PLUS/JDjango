@@ -30,27 +30,21 @@ class TableAttrbutesDialog(wx.Dialog):
 
         self.attrbutesGrid = wx.grid.Grid( self.wholePanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 
-		# Grid
-        self.attrbutesGrid.CreateGrid( self.row_len+1, self.col_len ) # row  col
+        self.attrbutesGrid.CreateGrid( self.row_len, self.col_len )
         self.attrbutesGrid.EnableEditing( False )
         self.attrbutesGrid.EnableGridLines( True )
         self.attrbutesGrid.EnableDragGridSize( False )
         self.attrbutesGrid.SetMargins( 0, 0 )
 
-        # Columns
         self.attrbutesGrid.EnableDragColMove( False )
         self.attrbutesGrid.EnableDragColSize( True )
         self.attrbutesGrid.SetColLabelSize( 30 )
         self.attrbutesGrid.SetColLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
 
-        # Rows
         self.attrbutesGrid.EnableDragRowSize( True )
         self.attrbutesGrid.SetRowLabelSize( 70 )
         self.attrbutesGrid.SetRowLabelAlignment( wx.ALIGN_CENTER, wx.ALIGN_CENTER )
 
-		# Label Appearance
-
-		# Cell Defaults
         self.attrbutesGrid.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
         self.wholeBox.Add( self.attrbutesGrid, 1, wx.EXPAND | wx.ALL, 2 )
 
@@ -61,11 +55,10 @@ class TableAttrbutesDialog(wx.Dialog):
         """设置表头"""
         headers = ('序号', '列名', '类型', '允许为NULL', '默认值', '主键')[:self.col_len]
         for i, _ in enumerate(headers):
-            self.attrbutesGrid.SetCellValue(0, i, _)
-            self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
+            self.attrbutesGrid.SetColLabelValue(i, _)
 
     def _init_data(self):
         """初始化数据"""
         for row, _ in enumerate(self.datas):
             for col, data in enumerate(_):
-                self.attrbutesGrid.SetCellValue(row+1, col, f'{data}')
+                self.attrbutesGrid.SetCellValue(row, col, f'{data}')

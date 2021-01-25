@@ -718,7 +718,7 @@ class SettingsDialog(wx.Dialog):
 
 class ModelsCreateDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增视图', size=(888, 666))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(888, 666))
 
         self._init_UI()
         self._init_table() # 表格布局默认加最后
@@ -742,11 +742,13 @@ class ModelsCreateDialog(wx.Dialog):
         self.btnResetInput = buttons.GenButton(self.toolPanel, -1, '重置')
         self.btnAddFieldToArea = buttons.GenButton(self.toolPanel, -1, '添加至待新增区')
         self.btnExecSave = buttons.GenButton(self.toolPanel, -1, '执行')
+        self.btnExit = buttons.GenButton(self.toolPanel, -1, '退出')
         self.btnWhite = buttons.GenButton(self.toolPanel, -1, ' ') # 空白区域补全按钮
         toolPanelSizer.Add(self.btnAddNew, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnResetInput, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnAddFieldToArea, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnExecSave, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(self.btnExit, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnWhite, 1, wx.EXPAND | wx.ALL, 2)
         self.btnWhite.Enable(False)
 
@@ -781,7 +783,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.selectFieldTypePanel.Add(self.choiceFieldType, 1, wx.EXPAND | wx.ALL, 2)
 
         # 字段命名
-        modelsNameStaticBox = wx.StaticBox(self.scollPanel, -1, '字段名：')
+        modelsNameStaticBox = wx.StaticBox(self.scollPanel, -1, '字段名【db_column】')
         self.modelsNamePanel = wx.StaticBoxSizer(modelsNameStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.modelsNamePanel, 0, wx.EXPAND | wx.ALL, 2)
 
@@ -814,12 +816,13 @@ class ModelsCreateDialog(wx.Dialog):
         self.complex1Panel.SetSizer(complex1PanelSizer)
         scollPanelSizer.Add(self.complex1Panel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.radiosFiledBlank = wx.RadioBox(self.complex1Panel, -1, "允许为空 -- blank", choices=['允许', '不允许'])
-        self.radiosFiledNull = wx.RadioBox(self.complex1Panel, -1, "为空时赋NULL -- null", choices=['赋', '不赋'])
-        self.radiosFiledPrimary = wx.RadioBox(self.complex1Panel, -1, "主键 -- primary_key", choices=['是', '否'])
+        self.radiosFiledBlank = wx.RadioBox(self.complex1Panel, -1, "允许为空【blank】", choices=['允许', '不允许'])
+        self.radiosFiledNull = wx.RadioBox(self.complex1Panel, -1, "为空时赋NULL【null】", choices=['赋', '不赋'])
+        self.radiosFiledPrimary = wx.RadioBox(self.complex1Panel, -1, "主键【primary_key】", choices=['是', '否'])
         complex1PanelSizer.Add(self.radiosFiledBlank, 1, wx.EXPAND | wx.ALL, 2)
         complex1PanelSizer.Add(self.radiosFiledNull, 1, wx.EXPAND | wx.ALL, 2)
         complex1PanelSizer.Add(self.radiosFiledPrimary, 1, wx.EXPAND | wx.ALL, 2)
+        # self.radiosFiledBlank.SetBackgroundColour(CON_COLOR_RADIO)
 
         # 混乱布局第2行
         self.complex2Panel = wx.Panel(self.scollPanel)
@@ -827,28 +830,131 @@ class ModelsCreateDialog(wx.Dialog):
         self.complex2Panel.SetSizer(complex2PanelSizer)
         scollPanelSizer.Add(self.complex2Panel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.radiosFiledUnique = wx.RadioBox(self.complex2Panel, -1, "值唯一 -- unique", choices=['唯一', '不唯一'])
-        self.radiosFiledDbIndex = wx.RadioBox(self.complex2Panel, -1, "创建索引 -- db_index", choices=['创建', '不创建'])
-        self.radiosFiledEditable = wx.RadioBox(self.complex2Panel, -1, "表单可编辑显示 -- editable", choices=['显示', '不显示'])
+        self.radiosFiledUnique = wx.RadioBox(self.complex2Panel, -1, "值唯一【unique】", choices=['唯一', '不唯一'])
+        self.radiosFiledDbIndex = wx.RadioBox(self.complex2Panel, -1, "创建索引【db_index】", choices=['创建', '不创建'])
+        self.radiosFiledEditable = wx.RadioBox(self.complex2Panel, -1, "表单可编辑显示【editable】", choices=['显示', '不显示'])
         complex2PanelSizer.Add(self.radiosFiledUnique, 1, wx.EXPAND | wx.ALL, 2)
         complex2PanelSizer.Add(self.radiosFiledDbIndex, 1, wx.EXPAND | wx.ALL, 2)
         complex2PanelSizer.Add(self.radiosFiledEditable, 1, wx.EXPAND | wx.ALL, 2)
 
         # 混乱布局第3行
-        # self.complex3Panel = wx.Panel(self.scollPanel)
-        # complex3PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # self.complex3Panel.SetSizer(complex3PanelSizer)
-        # scollPanelSizer.Add(self.complex3Panel, 0, wx.EXPAND | wx.ALL, 2)
+        self.complex3Panel = wx.Panel(self.scollPanel)
+        complex3PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.complex3Panel.SetSizer(complex3PanelSizer)
+        scollPanelSizer.Add(self.complex3Panel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # self.radiosFiledUniqueForDate = wx.RadioBox(self.complex3Panel, -1, "日期组合唯一 -- unique_for_date", choices=['唯一', '不唯一'])
-        # self.radiosFiledUniqueForMonth = wx.RadioBox(self.complex3Panel, -1, "月份日期组合唯一 -- unique_for_month", choices=['唯一', '不唯一'])
-        # self.radiosFiledUniqueForYear = wx.RadioBox(self.complex3Panel, -1, "年份日期组合唯一 -- unique_for_year", choices=['唯一', '不唯一'])
-        # complex3PanelSizer.Add(self.radiosFiledUniqueForDate, 1, wx.EXPAND | wx.ALL, 2)
-        # complex3PanelSizer.Add(self.radiosFiledUniqueForMonth, 1, wx.EXPAND | wx.ALL, 2)
-        # complex3PanelSizer.Add(self.radiosFiledUniqueForYear, 1, wx.EXPAND | wx.ALL, 2)
+        # 混乱布局第3行 - 与日期组合唯一【unique_for_date】
+        choicesFiledUniqueForDateStaticBox = wx.StaticBox(self.complex3Panel, -1, '与日期组合唯一【unique_for_date】')
+        self.choicesFiledUniqueForDatePanel = wx.StaticBoxSizer(choicesFiledUniqueForDateStaticBox, wx.HORIZONTAL)
+        complex3PanelSizer.Add(self.choicesFiledUniqueForDatePanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.choicesFiledUniqueForDate = wx.Choice(self.complex3Panel, -1, choices=[' ']+['列举当前字段1', ], style = wx.CB_SORT)
+        self.choicesFiledUniqueForDatePanel.Add(self.choicesFiledUniqueForDate, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 混乱布局第3行 - 与月份组合唯一【unique_for_month】
+        choicesFiledUniqueForMonthStaticBox = wx.StaticBox(self.complex3Panel, -1, '与月份组合唯一【unique_for_month】')
+        self.choicesFiledUniqueForMonthPanel = wx.StaticBoxSizer(choicesFiledUniqueForMonthStaticBox, wx.HORIZONTAL)
+        complex3PanelSizer.Add(self.choicesFiledUniqueForMonthPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.choicesFiledUniqueForMonth = wx.Choice(self.complex3Panel, -1, choices=[' ']+['列举当前字段2', ], style = wx.CB_SORT)
+        self.choicesFiledUniqueForMonthPanel.Add(self.choicesFiledUniqueForMonth, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 混乱布局第3行 - 与年份组合唯一【unique_for_year】
+        choicesFiledUniqueForYearStaticBox = wx.StaticBox(self.complex3Panel, -1, '与年份组合唯一【unique_for_year】')
+        self.choicesFiledUniqueForYearPanel = wx.StaticBoxSizer(choicesFiledUniqueForYearStaticBox, wx.HORIZONTAL)
+        complex3PanelSizer.Add(self.choicesFiledUniqueForYearPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.choicesFiledUniqueForYear = wx.Choice(self.complex3Panel, -1, choices=[' ']+['列举当前字段3', ], style = wx.CB_SORT)
+        self.choicesFiledUniqueForYearPanel.Add(self.choicesFiledUniqueForYear, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 混乱布局第4行
+        self.complex4Panel = wx.Panel(self.scollPanel)
+        complex4PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.complex4Panel.SetSizer(complex4PanelSizer)
+        scollPanelSizer.Add(self.complex4Panel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 混乱布局第4行 - 默认值【default】
+        defaultValueStaticBox = wx.StaticBox(self.complex4Panel, -1, '默认值【default】')
+        self.defaultValuePanel = wx.StaticBoxSizer(defaultValueStaticBox, wx.HORIZONTAL)
+        complex4PanelSizer.Add(self.defaultValuePanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.inputDefaultValue = wx.TextCtrl(self.complex4Panel, -1)
+        self.defaultValuePanel.Add(self.inputDefaultValue, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 混乱布局第4行 - 表单帮助文本信息【help_text】
+        formHelpTextStaticBox = wx.StaticBox(self.complex4Panel, -1, '表单帮助文本信息【help_text】')
+        self.formHelpTextPanel = wx.StaticBoxSizer(formHelpTextStaticBox, wx.HORIZONTAL)
+        complex4PanelSizer.Add(self.formHelpTextPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.inputFormHelpText = wx.TextCtrl(self.complex4Panel, -1)
+        self.formHelpTextPanel.Add(self.inputFormHelpText, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 混乱布局第4行 - 表单错误输入提醒【error_messages】
+        formErrorMessageStaticBox = wx.StaticBox(self.complex4Panel, -1, '表单错误输入提醒【error_messages】')
+        self.formErrorMessagePanel = wx.StaticBoxSizer(formErrorMessageStaticBox, wx.HORIZONTAL)
+        complex4PanelSizer.Add(self.formErrorMessagePanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.inputFormErrorMessage = wx.TextCtrl(self.complex4Panel, -1)
+        self.formErrorMessagePanel.Add(self.inputFormErrorMessage, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 其它特有字段布局第1行
+        self.specialArgs1Panel = wx.Panel(self.scollPanel)
+        specialArgs1PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.specialArgs1Panel.SetSizer(specialArgs1PanelSizer)
+        scollPanelSizer.Add(self.specialArgs1Panel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 其它特有字段布局第1行 - 长度上限【max_length】
+        maxLengthStaticBox = wx.StaticBox(self.specialArgs1Panel, -1, '长度上限【max_length】')
+        self.maxLengthPanel = wx.StaticBoxSizer(maxLengthStaticBox, wx.HORIZONTAL)
+        specialArgs1PanelSizer.Add(self.maxLengthPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.inputMaxLength = wx.TextCtrl(self.specialArgs1Panel, -1)
+        self.maxLengthPanel.Add(self.inputMaxLength, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 其它特有字段布局第1行 - 实数总位数【max_digits】
+        maxDigitsStaticBox = wx.StaticBox(self.specialArgs1Panel, -1, '实数总位数【max_digits】')
+        self.maxDigitsPanel = wx.StaticBoxSizer(maxDigitsStaticBox, wx.HORIZONTAL)
+        specialArgs1PanelSizer.Add(self.maxDigitsPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.inputMaxDigits = wx.TextCtrl(self.specialArgs1Panel, -1)
+        self.maxDigitsPanel.Add(self.inputMaxDigits, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 其它特有字段布局第1行 - 小数总位数【decimal_places】
+        decimalPlacesStaticBox = wx.StaticBox(self.specialArgs1Panel, -1, '小数总位数【decimal_places】')
+        self.decimalPlacesPanel = wx.StaticBoxSizer(decimalPlacesStaticBox, wx.HORIZONTAL)
+        specialArgs1PanelSizer.Add(self.decimalPlacesPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.inputDecimalPlaces = wx.TextCtrl(self.specialArgs1Panel, -1)
+        self.decimalPlacesPanel.Add(self.inputDecimalPlaces, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 其它特有字段布局第2行
+        self.specialArgs2Panel = wx.Panel(self.scollPanel)
+        specialArgs2PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.specialArgs2Panel.SetSizer(specialArgs2PanelSizer)
+        scollPanelSizer.Add(self.specialArgs2Panel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 其它特有字段布局第2行 - save调用更新日期【auto_now】
+        self.radiosAutoNow = wx.RadioBox(self.specialArgs2Panel, -1, "save调用更新日期【auto_now】", choices=['启用', '不启用'])
+        specialArgs2PanelSizer.Add(self.radiosAutoNow, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 其它特有字段布局第2行 - 仅创建时一次赋值日期【auto_now_add】
+        self.radiosAutoNowAdd = wx.RadioBox(self.specialArgs2Panel, -1, "仅创建时一次赋值日期【auto_now_add】", choices=['启用', '不启用'])
+        specialArgs2PanelSizer.Add(self.radiosAutoNowAdd, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 其它特有字段布局第2行 - 文件上传路径【upload_to】
+        uploadToStaticBox = wx.StaticBox(self.specialArgs2Panel, -1, '文件上传路径【upload_to】')
+        self.uploadToPanel = wx.StaticBoxSizer(uploadToStaticBox, wx.HORIZONTAL)
+        specialArgs2PanelSizer.Add(self.uploadToPanel, 1, wx.EXPAND | wx.ALL, 2)
+
+        self.inputUploadTo = wx.TextCtrl(self.specialArgs2Panel, -1)
+        self.uploadToPanel.Add(self.inputUploadTo, 1, wx.EXPAND | wx.ALL, 2)
 
         # 事件
         self.Bind(wx.EVT_BUTTON, self.onBtnSelectPath, self.btnSelectFile)
+        self.Bind(wx.EVT_BUTTON, self.onExit, self.btnExit)
+
+    def _init_args_default_status(self):
+        """初始化参数的默认值"""
 
     def _init_table(self):
         """初始化表格控件"""
@@ -887,3 +993,11 @@ class ModelsCreateDialog(wx.Dialog):
             dirname = dlg.GetDirectory()
             self.inputSelectFile.SetValue(os.path.join(dirname, filename))
         dlg.Destroy()
+
+    def onExit(self, e):
+        """退出窗口"""
+        dlg_tip = wx.MessageDialog(self, f"确认退出？退出后界面数据将丢失。", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
+        if dlg_tip.ShowModal() == wx.ID_OK:
+            self.Destroy()
+        dlg_tip.Destroy()
+        

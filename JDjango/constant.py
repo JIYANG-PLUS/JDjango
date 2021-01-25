@@ -10,7 +10,8 @@ CON_TIPS_COMMON = '提示信息'
 CON_COLOR_GREY = '#4f5049' # 灰色
 CON_COLOR_WHITE = '#ededed' # 白色
 CON_COLOR_BLACK = '#000000' # 纯黑
-CON_COLOR_MAIN = '#d2dce7' # 程序主色调
+CON_COLOR_MAIN = '#93c2f5' # 程序主色调
+CON_COLOR_RADIO = '#d2dce7'
 
 CON_MSG_PROGRESS_USE = """
     MacOS：
