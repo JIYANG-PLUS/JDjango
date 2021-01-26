@@ -3,7 +3,7 @@ import wx
 
 from .frames.mainFrame import Main
 from .frames.sqliteFrame import SQLiteManageFrame
-from .frames.digitsRecognitionFrame import SQLiteManageFrame
+from .frames.digitsRecognitionFrame import DigitRecognitionFrame
 
 class App(wx.App):
 
@@ -41,7 +41,7 @@ class RecognitionApp(wx.App):
         wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
 
     def OnInit(self):
-        self.frame = SQLiteManageFrame(None)
+        self.frame = DigitRecognitionFrame(None)
         self.frame.SetWindowStyle(wx.DEFAULT_FRAME_STYLE)
         self.frame.Show(True)
         self.SetTopWindow(self.frame)

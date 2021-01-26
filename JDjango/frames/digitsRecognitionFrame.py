@@ -1,7 +1,7 @@
 import wx
 from ..constant import *
 
-class SQLiteManageFrame ( wx.Frame ):
+class DigitRecognitionFrame ( wx.Frame ):
 
     def __init__( self, parent ):
         wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = CON_RECOGNITION_TITLE, pos = wx.DefaultPosition, size = wx.Size( 1000,600 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
