@@ -17,6 +17,7 @@ class ModelsCreateDialog(wx.Dialog):
         # 必要的控制容器
         self.allArgs = [] # 所有的参数选项
         self.commonArgs = [] # 共有的参数选项
+        self.specialArgs = [] # 特有的参数选项
         self.afterBtns = [] # 所有的后触发按钮
         self.allRows = [] # 所有的待新增按钮
 
@@ -82,7 +83,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.panelSizer.Add(self.scollPanel, 3, wx.EXPAND | wx.ALL, 2)
 
         # 选择字段类型
-        selectFieldTypeStaticBox = wx.StaticBox(self.scollPanel, -1, '字段类型选择：')
+        selectFieldTypeStaticBox = wx.StaticBox(self.scollPanel, -1, '【选择】字段类型：（选择后开放参数定制）')
         # selectFieldTypeStaticBox.SetBackgroundColour(CON_COLOR_BLACK)
         self.selectFieldTypePanel = wx.StaticBoxSizer(selectFieldTypeStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
@@ -171,8 +172,8 @@ class ModelsCreateDialog(wx.Dialog):
         specialArgs2PanelSizer.Add(self.radiosAutoNowAdd, 1, wx.EXPAND | wx.ALL, 2)
 
         # 其它特有字段布局第2行 - 长度上限【max_length】
-        maxLengthStaticBox = wx.StaticBox(self.specialArgs2Panel, -1, '长度上限【max_length】')
-        self.maxLengthPanel = wx.StaticBoxSizer(maxLengthStaticBox, wx.HORIZONTAL)
+        self.maxLengthStaticBox = wx.StaticBox(self.specialArgs2Panel, -1, '长度上限【max_length】')
+        self.maxLengthPanel = wx.StaticBoxSizer(self.maxLengthStaticBox, wx.HORIZONTAL)
         specialArgs2PanelSizer.Add(self.maxLengthPanel, 1, wx.EXPAND | wx.ALL, 2)
 
         self.inputMaxLength = wx.TextCtrl(self.specialArgs2Panel, -1)
@@ -314,13 +315,13 @@ class ModelsCreateDialog(wx.Dialog):
         self.allArgs.extend([
             self.choiceFieldType, # 字段类型选择放这里不合理【暂时不调整】
             self.inputFieldModelName, self.inputFieldDatabaseName, self.inputFieldRemarkName,
-            self.radiosFiledBlank, self.radiosFiledNull, self.radiosFiledPrimary,
+            self.radiosFiledBlank, self.radiosFiledNull, self.radiosFiledPrimary, # 英文拼错了，不改了
             self.radiosFiledUnique, self.radiosFiledDbIndex, self.radiosFiledEditable,
             self.choicesFiledUniqueForDate, self.choicesFiledUniqueForMonth, self.choicesFiledUniqueForYear,
             self.inputDefaultValue, self.inputFormHelpText, self.inputFormErrorMessage,
             self.inputMaxLength, self.inputMaxDigits, self.inputDecimalPlaces,
             self.radiosAutoNow, self.radiosAutoNowAdd, self.inputUploadTo,
-            self.choiceSelectModel, self.choiceSelectDelRule, self.inputRelationRemark
+            self.choiceSelectModel, self.choiceSelectDelRule, self.inputRelationRemark,
         ])
 
         # 共用参数
@@ -330,6 +331,16 @@ class ModelsCreateDialog(wx.Dialog):
             self.radiosFiledUnique, self.radiosFiledDbIndex, self.radiosFiledEditable,
             self.choicesFiledUniqueForDate, self.choicesFiledUniqueForMonth, self.choicesFiledUniqueForYear,
             self.inputDefaultValue, self.inputFormHelpText, self.inputFormErrorMessage,
+        ])
+
+        # 私有参数
+        self.specialArgs.extend([
+            self.maxLengthStaticBox, self.inputMaxLength,
+
+
+            # self.inputMaxLength, self.inputMaxDigits, self.inputDecimalPlaces,
+            # self.radiosAutoNow, self.radiosAutoNowAdd, self.inputUploadTo,
+            # self.choiceSelectModel, self.choiceSelectDelRule, self.inputRelationRemark,
         ])
 
         # 按钮点击事件
@@ -350,6 +361,16 @@ class ModelsCreateDialog(wx.Dialog):
         self.Bind(wx.EVT_RADIOBOX, self.onRadioChanged, self.radiosFiledUnique)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioChanged, self.radiosFiledDbIndex)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioChanged, self.radiosFiledEditable)
+
+    def _show_special_args(self):
+        """显示特殊参数"""
+        for _ in self.specialArgs:
+            _.Show(True)
+
+    def _unshow_special_args(self):
+        """隐藏特殊参数"""
+        for _ in self.specialArgs:
+            _.Show(False)
 
     def onRadioChanged(self, e):
         """单选框值更新事件"""
@@ -373,12 +394,14 @@ class ModelsCreateDialog(wx.Dialog):
             if field_type in CON_CHAR_FIELDS and 0 == status_unique and 0 == status_blank:
                 self.radiosFiledNull.SetSelection(0)
                 self.radiosFiledNull.Enable(False) # 同时锁定无法修改
+                TipsMessageOKBox(self, '字符类型的字段同时设置unique=True和blank=True时，必须设置null=True。', '警告')
             if 0 != status_blank:
                 self.radiosFiledNull.Enable(True) # 解放
         elif fid == self.radiosFiledUnique.GetId():
             if field_type in CON_CHAR_FIELDS and 0 == status_unique and 0 == status_blank:
                 self.radiosFiledNull.SetSelection(0)
                 self.radiosFiledNull.Enable(False) # 同时锁定无法修改
+                TipsMessageOKBox(self, '字符类型的字段同时设置unique=True和blank=True时，必须设置null=True。', '警告')
             if 0 != status_unique:
                 self.radiosFiledNull.Enable(True) # 解放
 
@@ -417,6 +440,7 @@ class ModelsCreateDialog(wx.Dialog):
         """初始化输入框"""
         self.choiceFieldType.SetSelection(0)
         self.inputFieldModelName.SetValue('')
+        self.inputFieldRemarkName.SetValue('')
         self.inputFieldDatabaseName.SetValue('')
         self.inputDefaultValue.SetValue('')
         self.inputFormHelpText.SetValue('')
@@ -464,17 +488,21 @@ class ModelsCreateDialog(wx.Dialog):
 
     def onChoiceFieldType(self, e):
         """选择新建的字段类型"""
-        field_type = e.GetString()
-        try:
-            if self.record != field_type: # 值未更新
-                # 每次更新时均初始化状态
-                self._init_all_args_value()
-                self._init_input_args()
-        except: ...
-        
-        self.record = field_type # 记录上一次的状态
+        field_type = e.GetString().strip()
+
+        if not field_type:
+            return
+
+        # try:
+        #     if self.record != field_type: # 值未更新
+        #         # 每次更新时均初始化状态
+        #         self._init_all_args_value()
+        #         self._init_input_args()
+        # except: ...
+        # self.record = field_type # 记录上一次的状态
 
         self._open_required_args() # 共用参数开启
+        self._unshow_special_args() # 先隐藏所有的特殊参数
 
         if 'BinaryField--【字节型字段】' == field_type:
             self.selectBinaryField()
@@ -547,6 +575,7 @@ class ModelsCreateDialog(wx.Dialog):
     def onBtnAddNew(self, e):
         """新增字段"""
         self.choiceFieldType.Enable(True) # 开放字段下拉选择框
+        self._show_special_args() # 显示所有的可选参数
         # 开放 后触发 按钮
         for _ in self.afterBtns:
             _.Enable(True)
@@ -561,12 +590,12 @@ class ModelsCreateDialog(wx.Dialog):
             self._init_input_args()
             # 参数重新选定，开放类型选择按钮
             self._disable_all_args()
+            self._show_special_args() # 显示所有的可选参数
             self.choiceFieldType.Enable(True)
         dlg_tip.Close(True)
 
     def onBtnAddFieldToArea(self, e):
         """添加至待生成区"""
-        """"根据字段属性名+数据库列名+字段备注判定是否冲突"""
         dlg_tip = wx.MessageDialog(self, f"确认添加？", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
         if dlg_tip.ShowModal() == wx.ID_OK:
             # 添加操作
@@ -593,6 +622,17 @@ class ModelsCreateDialog(wx.Dialog):
             vchoicesFiledUniqueForDate = self.choicesFiledUniqueForDate.GetString(self.choicesFiledUniqueForDate.GetSelection()).strip()
             vchoicesFiledUniqueForMonth = self.choicesFiledUniqueForMonth.GetString(self.choicesFiledUniqueForMonth.GetSelection()).strip()
             vchoicesFiledUniqueForYear = self.choicesFiledUniqueForYear.GetString(self.choicesFiledUniqueForYear.GetSelection()).strip()
+
+            # 字段属性名+数据库列名+字段备注，三者只要有一个重复，便不允许新增该字段
+            tfield_name, tfield_dbname, tfieldremark = [], [], []
+            for _ in self.allRows:
+                tfield_name.append(_['field_name'])
+                tfield_dbname.append(_['field_name'])
+                tfieldremark.append(_['remarker'])
+
+            if vinputFieldModelName in tfield_name or vinputFieldDatabaseName in tfield_dbname or ('' != vinputFieldRemarkName and vinputFieldRemarkName in tfieldremark):
+                TipsMessageOKBox(self, '字段属性名、数据库列名、字段备注均不能重复。', '警告')
+                return
 
             # 待插入的行
             insertRow = {}
@@ -622,9 +662,6 @@ class ModelsCreateDialog(wx.Dialog):
 
             self.allRows.append(insertRow) # 删除时根据字段名删除
 
-            # 三者只要有一个重复，便不允许新增该字段
-            # 待完善
-
             # 插入待新增数据区域
             self.infoGrid.AppendRows(1)
             row = self.infoGrid.GetNumberRows() - 1
@@ -643,9 +680,10 @@ class ModelsCreateDialog(wx.Dialog):
 
         dlg_tip.Close(True)
 
-    def removeRowsBy3Args(self):
+    def removeRowsBy3Args(self, field_name):
         """"根据字段属性名删除"""
 
+        
 
     def onBtnExecSave(self, e):
         """保存"""
