@@ -3,12 +3,13 @@ import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
 from ..dialogs.dialogDocument import *
 from ..dialogs.dialogTips import *
+from ..dialogs.dialogModels import *
 from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
 from ..tools._re import *
 from ..tools import environment as env
-from ..settings import BASE_DIR, CONFIG_PATH
+from ..settings import BASE_DIR, CONFIG_PATH, TEMPLATE_DIR
 from ..constant import *
 
 cmd = CmdTools() # 命令行对象
@@ -21,6 +22,7 @@ class Main(wx.Frame):
 
         wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = CON_JDJANGO_TITLE, pos = wx.DefaultPosition, size = wx.Size(960, 540), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
         # 以下初始化流程必须按顺序进行（自上而下）
+        
         self._init_platform() # 初始化平台类型（加限制）
         self._init_control_btn() # 初始化运行时控制按钮
         self._init_UI()  # 初始化界面布局
@@ -179,7 +181,6 @@ class Main(wx.Frame):
         menusCreate.AppendSeparator()
         self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
         menusCreate.AppendSeparator()
-        self.modelsBaseGenerate = menusCreate.Append(wx.ID_ANY, "&基模型", "基模型")
         self.modelsGenerate = menusCreate.Append(wx.ID_ANY, "&模型", "模型")
         self.modelsProxyGenerate = menusCreate.Append(wx.ID_ANY, "&代理模型", "代理模型")
         menusCreate.AppendSeparator()
@@ -223,8 +224,15 @@ class Main(wx.Frame):
         portProgress.Append(wx.ID_ANY, "&虚拟环境", virtualenv)
         portProgress.AppendSeparator()
         self.portProgressRun = portProgress.Append(wx.ID_ANY, "&运行", "运行")
-        portProgress.AppendSeparator()
         self.portProgressStop = portProgress.Append(wx.ID_ANY, "&停止", "停止")
+        portProgress.AppendSeparator()
+        speeder = wx.Menu()
+        self.portProgressFaster = speeder.Append(wx.ID_ANY, "&一键配置", "一键配置")
+        portProgress.Append(wx.ID_ANY, "&Python镜像", speeder)
+        portProgress.AppendSeparator()
+        progresser = wx.Menu()
+        self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
+        portProgress.Append(wx.ID_ANY, "&进程", progresser)
         self.portProgressRun.Enable(False)
         self.portProgressStop.Enable(False)
         self.portProgressVirtualInstall.Enable(False)
@@ -282,7 +290,7 @@ class Main(wx.Frame):
         self.allInitBtns['forms'][CON_CONTROL_FIX].append(self.forms_fix)
 
         # 模型
-        self.allInitBtns['models'][CON_CONTROL_CREATE].append(self.modelsGenerate)
+        self.allInitBtns['models'][CON_CONTROL_CREATE].extend([self.modelsGenerate,self.modelsProxyGenerate,])
         self.allInitBtns['models'][CON_CONTROL_CHECK].append(self.models_check)
         self.allInitBtns['models'][CON_CONTROL_FIX].append(self.models_fix)
 
@@ -354,7 +362,6 @@ class Main(wx.Frame):
 
         # 模型
         self.Bind(wx.EVT_MENU, self.onModelsGenerate, self.modelsGenerate)
-        self.Bind(wx.EVT_MENU, self.onModelsBaseGenerate, self.modelsBaseGenerate)
         self.Bind(wx.EVT_MENU, self.onModelsProxyGenerate, self.modelsProxyGenerate)
 
         # 路由 事件绑定
@@ -369,12 +376,37 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onPortProgressStop, self.portProgressStop)
         self.Bind(wx.EVT_MENU, self.onPortProgressVirtualChoice, self.portProgressVirtualChoice) 
         self.Bind(wx.EVT_MENU, self.onHelpSeeOrKill, self.helpsSeeOrKill) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressFaster, self.portProgressFaster) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressKillProgress, self.portProgressKillProgress) 
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
 
-    def onModelsBaseGenerate(self, e):
-        """创建基模型"""
+    def onPortProgressKillProgress(self, e):
+        """终止进程"""
+        dlg = wx.TextEntryDialog(self, u"占用端口号：", u"终止进程", u"")
+        if dlg.ShowModal() == wx.ID_OK:
+            port = dlg.GetValue()
+            env.killProgress(port = port)
+            TipsMessageOKBox(self, '已终止', '提示信息')
+        dlg.Close(True)
+
+    def onPortProgressFaster(self, e):
+        """一键配置镜像环境"""
+        rpath = os.path.expanduser('~')
+        if 'pip' in os.listdir(rpath):
+            pip_path = os.path.join(rpath, 'pip')
+            if 'pip.ini' in os.listdir(pip_path):
+                TipsMessageOKBox(self, '当前环境已配置镜像。', '重复提醒')
+            else:
+                # TEMPLATE_DIR
+                write_file(os.path.join(pip_path, 'pip.ini'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
+                TipsMessageOKBox(self, '配置成功！', '提示')
+        else:
+            pip_path = os.path.join(rpath, 'pip')
+            os.mkdir(pip_path)
+            write_file(os.path.join(pip_path, 'pip.ini'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
+            TipsMessageOKBox(self, '配置成功！', '提示')
 
     def onModelsProxyGenerate(self, e):
         """创建代理模型"""

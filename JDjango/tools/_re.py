@@ -21,6 +21,7 @@ __all__ = [
     'PATT_HEADER_NAME',
     'PATT_URLPATTERNS',
     'PATT_MODEL',
+    'PATT_CHARS_REVERSED',
     # 方法
     'patt_sub_only_capture_obj',
     'patt_sub_only_capture_obj_obtain_double',
@@ -37,7 +38,8 @@ PATT_TIME_ZONE = re.compile(r"TIME_ZONE\s*=\s*'(.*?)'")
 PATT_USE_I18N = re.compile(r"USE_I18N\s*=\s*(False|True)")
 PATT_USE_L10N = re.compile(r"USE_L10N\s*=\s*(False|True)")
 PATT_USE_TZ = re.compile(r"USE_TZ\s*=\s*(False|True)")
-PATT_CHARS = re.compile(r'^[a-zA-Z_].*$')
+PATT_CHARS = re.compile(r'^[a-zA-Z_]*$')
+PATT_CHARS_REVERSED = re.compile(r'[^a-zA-Z_]+')
 PATT_CHARSNUMBER = re.compile(r'^[a-zA-Z0-9]*$')
 PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 模板定位替换语法
 PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']')

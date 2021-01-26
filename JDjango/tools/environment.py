@@ -167,11 +167,12 @@ def getSupportEnvPlatform():
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('env/support[name=virtualenv]')
 
-def killProgress():
+def killProgress(port = None):
     """终止进程"""
     import subprocess, platform
     p = platform.system()
-    port = getDjangoRunPort()
+    if not port:
+        port = getDjangoRunPort()
     if p.lower() == 'linux': # 企鹅系统
         pass
     elif p.lower() == 'windows': # 微软系统

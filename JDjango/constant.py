@@ -10,7 +10,7 @@ CON_TIPS_COMMON = '提示信息'
 CON_COLOR_GREY = '#4f5049' # 灰色
 CON_COLOR_WHITE = '#ededed' # 白色
 CON_COLOR_BLACK = '#000000' # 纯黑
-CON_COLOR_MAIN = '#f1eec1' # 程序主色调
+CON_COLOR_MAIN = '#f0efe0' # 程序主色调
 CON_COLOR_RADIO = '#d2dce7'
 
 CON_MSG_PROGRESS_USE = """
@@ -28,18 +28,23 @@ CON_MSG_PROGRESS_USE = """
 
 # sqliteFrame.py
 CON_SQLITE3_TITLE = 'SQLite3管理工具-V1.0.0'
+CON_RECOGNITION_TITLE = '数字图片识别工具-V1.0.0'
 
 # dialogOption.py
 CON_MODELSCREATEDIALOG_COLS = (
-    '模型属性名',
+    '字段属性名',
     '数据库列名',
+    '字段备注',
     '字段类型',
-    '主键',
-    '允许为空',
     '为空时赋NULL',
+    '允许为空',
     '默认值',
     '字段值唯一',
+    '长度上限',
+    '实数总位数',
+    '小数位数',
     '创建索引',
+    '主键',
     '表空间',
     '可选列表',
     '日期组合唯一',
@@ -49,16 +54,14 @@ CON_MODELSCREATEDIALOG_COLS = (
     '表单可编辑',
     '表单帮助文本信息',
     '字段校验器',
-    '长度上限',
-    '实数总位数',
-    '小数位数',
     '每次保存时更新时间',
     '仅新增时赋值时间',
     '文件上传路径',
 )
 CON_ARGS_NAME_DICT = {
-    '模型属性名' : 'field_name',
+    '字段属性名' : 'field_name',
     '数据库列名' : 'db_column',
+    '字段备注' : 'remarker',
     '字段类型' : 'field_type',
     '允许为空' : 'blank',
     '为空时赋NULL' : 'null',
@@ -115,7 +118,18 @@ CON_FIELD_TYPES = [
     'FileField--【文件上传字段】',
     'ImageField--【图片上传字段】',
     'FilePathField--【文件路径上传字段】',
-    'ForeignKey--【一对多字段】',
+    'ForeignKey--【多对一字段】',
     'ManyToManyField--【多对多字段】',
     'OneToOneField--【一对一字段】',
 ]
+
+# 所有的文本类字段类型
+CON_CHAR_FIELDS = (
+    'CharField',
+    'TextField',
+    'EmailField',
+    'GenericIPAddressField',
+    'SlugField',
+    'URLField',
+    'UUIDField',
+)

@@ -92,6 +92,7 @@ def startapp(app_name):
         new_file(os.path.join(APP_DIR, 'apps.py'), content=get_content('apps.django', replace=True, app_name=app_name))
         new_file(os.path.join(APP_DIR, 'forms.py'), content=get_content('forms.django'))
         new_file(os.path.join(APP_DIR, 'models.py'), content=get_content('models.django'))
+        new_file(os.path.join(APP_DIR, 'controller.py'), content=get_content('controller.django'))
         new_file(os.path.join(APP_DIR, 'tests.py'), content=get_content('tests.django'))
         new_file(os.path.join(APP_DIR, 'urls.py'), content=get_content('urls.django', replace=True, app_name=app_name))
         new_file(os.path.join(APP_DIR, 'views.py'), content=get_content('views.django'))
