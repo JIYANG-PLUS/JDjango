@@ -18,6 +18,7 @@ DJANGO_DOCS_URL = {
 
 """settings.py文件所需常量"""
 SETTINGSS = {
+    # 这里的0和1表示单选框组的第一个和第二个
     'LANGUAGE_CODE' : {
         0 : ('zh-Hans', 'zh_Hans'), # 中文
         1 : ('en-us', 'en_us', ), # 英文

@@ -1,0 +1,25 @@
+# insertRow = {}
+# insertRow['field_name'] = vinputFieldModelName
+# insertRow['db_column'] = vinputFieldDatabaseName
+# insertRow['remarker'] = vinputFieldRemarkName
+# insertRow['field_type'] = con_getFieldTypeName(vchoiceFieldType)
+# insertRow['primary_key'] = self._replace01_to_bool(vradiosFiledPrimary)
+# insertRow['blank'] = self._replace01_to_bool(vradiosFiledBlank)
+# insertRow['null'] = self._replace01_to_bool(vradiosFiledNull)
+# insertRow['default'] = vinputDefaultValue
+# insertRow['unique'] = self._replace01_to_bool(vradiosFiledUnique)
+# insertRow['db_index'] = self._replace01_to_bool(vradiosFiledDbIndex)
+# insertRow['choices'] = '' # 前端暂未放出
+# insertRow['unique_for_date'] = vchoicesFiledUniqueForDate
+# insertRow['unique_for_month'] = vchoicesFiledUniqueForMonth
+# insertRow['unique_for_year'] = vchoicesFiledUniqueForYear
+# insertRow['error_messages'] = vinputFormErrorMessage
+# insertRow['editable'] = self._replace01_to_bool(vradiosFiledEditable)
+# insertRow['help_text'] = vinputFormHelpText
+# insertRow['max_length'] = vinputMaxLength
+# insertRow['max_digits'] = vinputMaxDigits
+# insertRow['decimal_places'] = vinputDecimalPlaces if vinputDecimalPlaces else '0'
+# insertRow['auto_now'] = self._replace01_to_bool(vradiosAutoNow)
+# insertRow['auto_now_add'] = self._replace01_to_bool(vradiosAutoNowAdd)
+# insertRow['upload_to'] = vinputUploadTo
+

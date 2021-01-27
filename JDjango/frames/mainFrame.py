@@ -302,7 +302,7 @@ class Main(wx.Frame):
 
         # 管理中心 菜单项
         admin = wx.Menu()
-        self.adminGenerateBase = admin.Append(wx.ID_ANY, "&创建", "创建")
+        self.adminGenerateBase = admin.Append(wx.ID_ANY, "&后台绑定模型", "后台绑定模型")
         # self.adminGenerateComplex = admin.Append(wx.ID_ANY, "&创建复杂管理中心", "创建复杂管理中心")
         # admin.AppendSeparator()
         # self.admin_check = admin.Append(wx.ID_ANY, "&校验", "校验")

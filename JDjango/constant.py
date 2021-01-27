@@ -10,7 +10,7 @@ CON_TIPS_COMMON = '提示信息'
 CON_COLOR_GREY = '#4f5049' # 灰色
 CON_COLOR_WHITE = '#ededed' # 白色
 CON_COLOR_BLACK = '#000000' # 纯黑
-CON_COLOR_MAIN = '#f0efe0' # 程序主色调
+CON_COLOR_MAIN = '#fbe4d5' # 程序主色调
 CON_COLOR_RADIO = '#d2dce7'
 
 CON_MSG_PROGRESS_USE = """
@@ -31,6 +31,7 @@ CON_SQLITE3_TITLE = 'SQLite3管理工具-V1.0.0'
 CON_RECOGNITION_TITLE = '数字图片识别工具-V1.0.0'
 
 # dialogOption.py
+# 下面两个常量主要用于表格的临时展示
 CON_MODELSCREATEDIALOG_COLS = (
     '字段属性名',
     '数据库列名',
@@ -85,6 +86,7 @@ CON_ARGS_NAME_DICT = {
     '每次保存时更新时间' : 'auto_now',
     '仅新增时赋值时间' : 'auto_now_add',
 }
+
 CON_VIEW_CHOICES = [
     '简单函数视图'
     , '简单类视图'
@@ -92,36 +94,70 @@ CON_VIEW_CHOICES = [
     , '快速模板视图'
     , '简单详细视图'
 ]
+
+# 字段下拉选择
+CON_BINARYFIELD = 'A字节--BinaryField--【字节型字段】'
+CON_SMALLINTEGERFIELD = 'B整型--SmallIntegerField--【16位整型字段】'
+CON_POSITIVESMALLINTEGERFIELD = 'B整型--PositiveSmallIntegerField--【16位正整型字段】'
+CON_INTEGERFIELD = 'B整型--IntegerField--【32位整型字段】'
+CON_POSITIVEINTEGERFIELD = 'B整型--PositiveIntegerField--【32位正整型字段】'
+CON_BIGINTEGERFIELD = 'B整型--BigIntegerField--【64位整型字段】'
+CON_AUTOFIELD = 'B整型--AutoField--【32位自增型字段】'
+CON_BIGAUTOFIELD = 'B整型--BigAutoField--【64位自增型字段】'
+CON_FLOATFIELD = 'C浮点型--FloatField--【浮点型字段】'
+CON_DECIMALFIELD = 'C浮点型--DecimalField--【高精度浮点型字段】'
+CON_BOOLEANFIELD = 'D布尔型--BooleanField--【布尔类型字段】'
+CON_CHARFIELD = 'E字符型--CharField--【字符型字段】'
+CON_TEXTFIELD = 'E字符型--TextField--【大文本字段】'
+CON_EMAILFIELD = 'E字符型--EmailField--【邮箱字段】'
+CON_IPADRESSFIELD = 'E字符型--GenericIPAddressField--【IPv4IPv6字段】'
+CON_SLUGFIELD = 'E字符型--SlugField--【只包含字母、数字、下划线或连字符】'
+CON_URLFIELD = 'E字符型--URLField--【路由字段】'
+CON_UUIDFIELD = 'E字符型--UUIDField--【uuid字段】'
+CON_DATEFIELD = 'F日期型--DateField--【日期型字段】'
+CON_DATETIMEFIELD = 'F日期型--DateTimeField--【长日期字段】'
+CON_DURATIONFIELD = 'F日期型--DurationField--【时间戳字段】'
+CON_TIMEFIELD = 'F日期型--TimeField--【时间字段】'
+CON_FILEFIELD = 'G文件型--FileField--【文件上传字段】'
+CON_IMAGEFIELD = 'G文件型--ImageField--【图片上传字段】'
+CON_FILEPATHFIELD = 'G文件型--FilePathField--【文件路径上传字段】'
+CON_FOREIGNFIELD = 'H关联型--ForeignKey--【多对一字段】'
+CON_MANYTOMANYFIELD = 'H关联型--ManyToManyField--【多对多字段】'
+CON_ONETOONEFIELD = 'H关联型--OneToOneField--【一对一字段】'
 CON_FIELD_TYPES = [
-    'BinaryField--【字节型字段】',
-    'SmallIntegerField--【16位整型字段】',
-    'PositiveSmallIntegerField--【16位正整型字段】',
-    'IntegerField--【32位整型字段】',
-    'PositiveIntegerField--【32位正整型字段】',
-    'BigIntegerField--【64位整型字段】',
-    'AutoField--【32位自增型字段】',
-    'BigAutoField--【64位自增型字段】',
-    'FloatField--【浮点型字段】',
-    'DecimalField--【高精度浮点型字段】',
-    'BooleanField--【布尔类型字段】',
-    'CharField--【字符型字段】',
-    'TextField--【大文本字段】',
-    'EmailField--【邮箱字段】',
-    'GenericIPAddressField--【IPv4IPv6字段】',
-    'SlugField--【只包含字母、数字、下划线或连字符】',
-    'URLField--【路由字段】',
-    'UUIDField--【uuid字段】',
-    'DateField--【日期型字段】',
-    'DateTimeField--【长日期字段】',
-    'DurationField--【时间戳字段】',
-    'TimeField--【时间字段】',
-    'FileField--【文件上传字段】',
-    'ImageField--【图片上传字段】',
-    'FilePathField--【文件路径上传字段】',
-    'ForeignKey--【多对一字段】',
-    'ManyToManyField--【多对多字段】',
-    'OneToOneField--【一对一字段】',
+    CON_BINARYFIELD,
+    CON_SMALLINTEGERFIELD,
+    CON_POSITIVESMALLINTEGERFIELD,
+    CON_INTEGERFIELD,
+    CON_POSITIVEINTEGERFIELD,
+    CON_BIGINTEGERFIELD,
+    CON_AUTOFIELD,
+    CON_BIGAUTOFIELD,
+    CON_FLOATFIELD,
+    CON_DECIMALFIELD,
+    CON_BOOLEANFIELD,
+    CON_CHARFIELD,
+    CON_TEXTFIELD,
+    CON_EMAILFIELD,
+    CON_IPADRESSFIELD,
+    CON_SLUGFIELD,
+    CON_URLFIELD,
+    CON_UUIDFIELD,
+    CON_DATEFIELD,
+    CON_DATETIMEFIELD,
+    CON_DURATIONFIELD,
+    CON_TIMEFIELD,
+    CON_FILEFIELD,
+    CON_IMAGEFIELD,
+    CON_FILEPATHFIELD,
+    CON_FOREIGNFIELD,
+    CON_MANYTOMANYFIELD,
+    CON_ONETOONEFIELD,
 ]
+
+def con_getFieldTypeName(name: str):
+    """获取字段类型名称"""
+    return [_ for _ in name.split('--') if _][1]
 
 # 所有的文本类字段类型
 CON_CHAR_FIELDS = (
@@ -133,3 +169,16 @@ CON_CHAR_FIELDS = (
     'URLField',
     'UUIDField',
 )
+
+# 所有拥有max_length属性的字段类型
+CON_OWN_MAX_LENGTH_FILEDS = (
+    'BinaryField',
+    'CharField',
+    'EmailField',
+    'SlugField',
+    'URLField',
+    'FileField',
+)
+
+CON_YES = '是'
+CON_NO = '否'
