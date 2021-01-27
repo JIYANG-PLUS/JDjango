@@ -384,9 +384,8 @@ class ModelsCreateDialog(wx.Dialog):
         for _ in self.allRows:
 
             # 若和默认值一致，则不显式显示参数
-            field = ''
             args = []
-            field += _['field_name']
+            field_name = _['field_name']
             field_type = _['field_type']
             # 位置参数
             if _['remarker'] != _['field_name'].replace('_', ' '): # 默认下划线默认换成空格）
@@ -396,14 +395,85 @@ class ModelsCreateDialog(wx.Dialog):
             # 关键字参数
             if _['field_name'] != _['db_column']: # 默认一致，不一致则新增
                 t = _['db_column']
-                args.append(", db_column='{t}'")
-            
+                args.append(f"db_column='{t}'")
+                
             if CON_YES == _['primary_key']:
-                args.append(f", primary_key=True")
+                args.append(f"primary_key=True")
+            
+            if CON_YES == _['blank']:
+                args.append(f"blank=True")
+                
+            if CON_YES == _['null']:
+                args.append(f"null=True")
 
-            pre_fields.append(f"{field} = models.{field_type}({args})")
+            if CON_YES == _['unique']:
+                args.append(f"unique=True")
 
-        TipsMessageOKBox(self, f'{pre_fields}', '预览')
+            if CON_YES == _['db_index']:
+                args.append(f"db_index=True")
+
+            if CON_YES == _['auto_now']:
+                args.append(f"auto_now=True")
+
+            if CON_YES == _['auto_now_add']:
+                args.append(f"auto_now_add=True")
+
+            if CON_NO == _['editable']:
+                args.append(f"editable=False")
+
+            if '' != _['default']:
+                t = _['default']
+                args.append(f"default={t}")
+
+            if '' != _['unique_for_date']:
+                t = _['unique_for_date']
+                args.append(f"unique_for_date='{t}'")
+
+            if '' != _['unique_for_month']:
+                t = _['unique_for_month']
+                args.append(f"unique_for_month='{t}'")
+            
+            if '' != _['unique_for_year']:
+                t = _['unique_for_year']
+                args.append(f"unique_for_year='{t}'")
+            
+            if '' != _['error_messages']:
+                t = _['error_messages']
+                args.append(f"error_messages='{t}'") 
+
+            if '' != _['help_text']:
+                t = _['help_text']
+                args.append(f"help_text='{t}'") 
+
+            if '' != _['max_length']:
+                t = _['max_length']
+                args.append(f"max_length={t}")
+
+            if 'DecimalField' == field_type:
+                if '' != _['max_digits']:
+                    t = _['max_digits']
+                    args.append(f"max_digits={t}")
+
+                if '' != _['decimal_places']:
+                    t = _['decimal_places']
+                    args.append(f"decimal_places={t}")
+
+            if '' != _['upload_to']:
+                t = _['upload_to']
+                args.append(f"upload_to={t}")
+
+            pre_fields.append(f"{field_name} = models.{field_type}({', '.join(args)})")
+
+        # 组织代码
+        if len(pre_fields) > 0:
+            fields_code = '\n'.join([f'    {_}' for _ in pre_fields])
+        else:
+            fields_code = '    pass'
+        model_code = f"""
+class DemoModel(models.Model):
+{fields_code}
+"""
+        CodePreviewBox(self, model_code)
 
     def _show_special_args(self):
         """显示特殊参数"""
@@ -665,11 +735,16 @@ class ModelsCreateDialog(wx.Dialog):
         if len(row_indexs) > 0:
             dlg_tip = wx.MessageDialog(self, f"确认删除第{t}行？一旦删除不可恢复。", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
             if dlg_tip.ShowModal() == wx.ID_OK:
+                print(self.allRows)
                 result = self.removeRows(row_indexs)
-                if result:
+                print(self.allRows)
+                if not result:
                     TipsMessageOKBox(self, '删除成功！', '提示')
                 else:
-                    TipsMessageOKBox(self, f"{'、'.join(result)}删除失败！", '提示')
+                    if isinstance(result, list):
+                        TipsMessageOKBox(self, f"{'、'.join(result)}删除失败！", '提示')
+                    else:
+                        TipsMessageOKBox(self, '未知错误，删除失败。', '提示')
             dlg_tip.Close(True)
         else:
             TipsMessageOKBox(self, '无选择行可删除。', '警告')
@@ -695,7 +770,7 @@ class ModelsCreateDialog(wx.Dialog):
         # self.record = field_type # 记录上一次的状态
 
         self._open_required_args() # 共用参数开启
-        self._unshow_special_args() # 先隐藏所有的特殊参数
+        self._unshow_special_args() # 先隐藏所有的特殊参数，后按需开启
 
         if CON_BINARYFIELD == field_type:
             self.selectBinaryField()
@@ -898,16 +973,22 @@ class ModelsCreateDialog(wx.Dialog):
 
         dlg_tip.Close(True)
 
-
     def _replace01_to_bool(self, v):
         if 0 == v: return CON_YES
         else: return CON_NO
 
     def removeRows(self, row_indexs):
         """同步删除界面和数据包里的数据"""
-        # all([self.infoGrid.DeleteRows(_) for _ in reversed(row_indexs)])
-        for i in row_indexs:
-            print(self.infoGrid[i])
+        errors = []
+        for i in sorted(row_indexs, reverse=True): # 倒序
+            try:
+                temp = self.infoGrid.GetCellValue(i, 0) # 字段属性名
+                self.infoGrid.DeleteRows(i)
+            except:
+                errors.append(str(i+1))
+            else:
+                self._removeRowsByFieldName(temp)
+        return errors
 
     def _removeRowsByFieldName(self, field_name):
         """"根据字段属性名删除"""

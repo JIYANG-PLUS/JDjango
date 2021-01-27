@@ -96,34 +96,34 @@ CON_VIEW_CHOICES = [
 ]
 
 # 字段下拉选择
-CON_BINARYFIELD = 'A字节--BinaryField--【字节型字段】'
-CON_SMALLINTEGERFIELD = 'B整型--SmallIntegerField--【16位整型字段】'
-CON_POSITIVESMALLINTEGERFIELD = 'B整型--PositiveSmallIntegerField--【16位正整型字段】'
-CON_INTEGERFIELD = 'B整型--IntegerField--【32位整型字段】'
-CON_POSITIVEINTEGERFIELD = 'B整型--PositiveIntegerField--【32位正整型字段】'
-CON_BIGINTEGERFIELD = 'B整型--BigIntegerField--【64位整型字段】'
-CON_AUTOFIELD = 'B整型--AutoField--【32位自增型字段】'
-CON_BIGAUTOFIELD = 'B整型--BigAutoField--【64位自增型字段】'
-CON_FLOATFIELD = 'C浮点型--FloatField--【浮点型字段】'
-CON_DECIMALFIELD = 'C浮点型--DecimalField--【高精度浮点型字段】'
-CON_BOOLEANFIELD = 'D布尔型--BooleanField--【布尔类型字段】'
-CON_CHARFIELD = 'E字符型--CharField--【字符型字段】'
-CON_TEXTFIELD = 'E字符型--TextField--【大文本字段】'
-CON_EMAILFIELD = 'E字符型--EmailField--【邮箱字段】'
-CON_IPADRESSFIELD = 'E字符型--GenericIPAddressField--【IPv4IPv6字段】'
-CON_SLUGFIELD = 'E字符型--SlugField--【只包含字母、数字、下划线或连字符】'
-CON_URLFIELD = 'E字符型--URLField--【路由字段】'
-CON_UUIDFIELD = 'E字符型--UUIDField--【uuid字段】'
-CON_DATEFIELD = 'F日期型--DateField--【日期型字段】'
-CON_DATETIMEFIELD = 'F日期型--DateTimeField--【长日期字段】'
-CON_DURATIONFIELD = 'F日期型--DurationField--【时间戳字段】'
-CON_TIMEFIELD = 'F日期型--TimeField--【时间字段】'
-CON_FILEFIELD = 'G文件型--FileField--【文件上传字段】'
-CON_IMAGEFIELD = 'G文件型--ImageField--【图片上传字段】'
-CON_FILEPATHFIELD = 'G文件型--FilePathField--【文件路径上传字段】'
-CON_FOREIGNFIELD = 'H关联型--ForeignKey--【多对一字段】'
-CON_MANYTOMANYFIELD = 'H关联型--ManyToManyField--【多对多字段】'
-CON_ONETOONEFIELD = 'H关联型--OneToOneField--【一对一字段】'
+CON_BINARYFIELD = 'A--字节--BinaryField--【字节型字段】'
+CON_SMALLINTEGERFIELD = 'B--整型--SmallIntegerField--【16位整型字段】'
+CON_POSITIVESMALLINTEGERFIELD = 'B--整型--PositiveSmallIntegerField--【16位正整型字段】'
+CON_INTEGERFIELD = 'B--整型--IntegerField--【32位整型字段】'
+CON_POSITIVEINTEGERFIELD = 'B--整型--PositiveIntegerField--【32位正整型字段】'
+CON_BIGINTEGERFIELD = 'B--整型--BigIntegerField--【64位整型字段】'
+CON_AUTOFIELD = 'B--整型--AutoField--【32位自增型字段】'
+CON_BIGAUTOFIELD = 'B--整型--BigAutoField--【64位自增型字段】'
+CON_FLOATFIELD = 'C--浮点型--FloatField--【浮点型字段】'
+CON_DECIMALFIELD = 'C--浮点型--DecimalField--【高精度浮点型字段】'
+CON_BOOLEANFIELD = 'D--布尔型--BooleanField--【布尔类型字段】'
+CON_CHARFIELD = 'E--字符型--CharField--【字符型字段】'
+CON_TEXTFIELD = 'E--字符型--TextField--【大文本字段】'
+CON_EMAILFIELD = 'E--字符型--EmailField--【邮箱字段】'
+CON_IPADRESSFIELD = 'E--字符型--GenericIPAddressField--【IPv4IPv6字段】'
+CON_SLUGFIELD = 'E--字符型--SlugField--【只包含字母、数字、下划线或连字符】'
+CON_URLFIELD = 'E--字符型--URLField--【路由字段】'
+CON_UUIDFIELD = 'E--字符型--UUIDField--【uuid字段】'
+CON_DATEFIELD = 'F--日期型--DateField--【日期型字段】'
+CON_DATETIMEFIELD = 'F--日期型--DateTimeField--【长日期字段】'
+CON_DURATIONFIELD = 'F--日期型--DurationField--【时间戳字段】'
+CON_TIMEFIELD = 'F--日期型--TimeField--【时间字段】'
+CON_FILEFIELD = 'G--文件型--FileField--【文件上传字段】'
+CON_IMAGEFIELD = 'G--文件型--ImageField--【图片上传字段】'
+CON_FILEPATHFIELD = 'G--文件型--FilePathField--【文件路径上传字段】'
+CON_FOREIGNFIELD = 'H--关联型--ForeignKey--【多对一字段】'
+CON_MANYTOMANYFIELD = 'H--关联型--ManyToManyField--【多对多字段】'
+CON_ONETOONEFIELD = 'H--关联型--OneToOneField--【一对一字段】'
 CON_FIELD_TYPES = [
     CON_BINARYFIELD,
     CON_SMALLINTEGERFIELD,
@@ -157,7 +157,7 @@ CON_FIELD_TYPES = [
 
 def con_getFieldTypeName(name: str):
     """获取字段类型名称"""
-    return [_ for _ in name.split('--') if _][1]
+    return [_ for _ in name.split('--') if _][2]
 
 # 所有的文本类字段类型
 CON_CHAR_FIELDS = (
