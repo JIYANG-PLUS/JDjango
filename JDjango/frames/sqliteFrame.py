@@ -134,7 +134,8 @@ class SQLiteManageFrame ( wx.Frame ):
 			if affect_rows < 0:
 				self.sql_msg.SetValue("查询成功！")
 				# 显示查询结果
-				self.setTableData(None, self.cursorObj.fetchall())
+				self.setTableHeader(None)
+				self.setTableData(self.cursorObj.fetchall())
 			else:
 				self.sql_msg.SetValue(f"执行成功，受影响行数：{affect_rows}。")
 
@@ -170,17 +171,23 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""清空表格"""
 		self.attrbutesGrid.ClearGrid()
 
-	def setTableData(self, headers, datas):
+	def setTableHeader(self, headers=None):
+		"""初始化表头"""
+		if headers:
+			for i, _ in enumerate(headers):
+				self.attrbutesGrid.SetColLabelValue(i, _)
+
+	def setTableData(self, datas):
 		"""初始化表格数据"""
 		self._clear_table()
-		if headers:
-			# 此处有个不想改的BUG
-			for i, header in enumerate(headers):
-				self.attrbutesGrid.SetCellValue(0, i, f'{header}')
-				self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
+		# if headers:
+		# 	# 此处有个不想改的BUG
+		# 	for i, header in enumerate(headers):
+		# 		self.attrbutesGrid.SetCellValue(0, i, f'{header}')
+		# 		self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
 		for row, _ in enumerate(datas):
 			for col, data in enumerate(_):
-				self.attrbutesGrid.SetCellValue(row+1, col, f'{data}')
+				self.attrbutesGrid.SetCellValue(row, col, f'{data}')
 		
 
 	def onRightTreeClick(self, e):
@@ -228,7 +235,8 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""双击树节点事件"""
 		nodeName = self.tree.GetItemText(e.GetItem())
 		if nodeName != self.nodeRootName:
-			self.setTableData([_[1] for _ in self.get_columns_name(nodeName)], self.get_table_datas(nodeName))
+			self.setTableHeader([_[1] for _ in self.get_columns_name(nodeName)])
+			self.setTableData(self.get_table_datas(nodeName))
 			
 
 	def _init_statusbar(self):
