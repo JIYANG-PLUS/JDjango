@@ -1,9 +1,10 @@
-import wx, time, os
+import wx, time, os, venv
 import wx.lib.buttons as buttons
 from ..dialogs.dialogOption import *
 from ..dialogs.dialogDocument import *
 from ..dialogs.dialogTips import *
 from ..dialogs.dialogModels import *
+from ..dialogs.dialogViews import *
 from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -216,11 +217,9 @@ class Main(wx.Frame):
         # 运行端口与进程
         portProgress = wx.Menu()
         virtualenv = wx.Menu()
-        self.portProgressVirtualInstall = virtualenv.Append(wx.ID_ANY, "&安装", "安装")
+        self.portProgressVirtual = virtualenv.Append(wx.ID_ANY, "&创建", "创建")
         virtualenv.AppendSeparator()
         self.portProgressVirtualChoice = virtualenv.Append(wx.ID_ANY, "&绑定", "绑定")
-        virtualenv.AppendSeparator()
-        self.portProgressVirtual = virtualenv.Append(wx.ID_ANY, "&创建", "创建")
         portProgress.Append(wx.ID_ANY, "&虚拟环境", virtualenv)
         portProgress.AppendSeparator()
         self.portProgressRun = portProgress.Append(wx.ID_ANY, "&运行", "运行")
@@ -235,8 +234,7 @@ class Main(wx.Frame):
         portProgress.Append(wx.ID_ANY, "&进程", progresser)
         self.portProgressRun.Enable(False)
         self.portProgressStop.Enable(False)
-        self.portProgressVirtualInstall.Enable(False)
-        self.portProgressVirtual.Enable(False)
+        # self.portProgressVirtual.Enable(False)
         
         # 单项检测
         perCheck = wx.Menu()
@@ -378,9 +376,24 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onHelpSeeOrKill, self.helpsSeeOrKill) 
         self.Bind(wx.EVT_MENU, self.onPortProgressFaster, self.portProgressFaster) 
         self.Bind(wx.EVT_MENU, self.onPortProgressKillProgress, self.portProgressKillProgress) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressVirtual, self.portProgressVirtual) 
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onPortProgressVirtual(self, e):
+        """创建虚拟环境"""
+        # venv.create(env_dir, system_site_packages=False, clear=False, symlinks=False, with_pip=False, prompt=None)
+        dlg = wx.DirDialog(self, u"选择即将写入的虚拟环境文件夹", style=wx.DD_DEFAULT_STYLE)
+        if dlg.ShowModal() == wx.ID_OK:
+            env_dir = dlg.GetPath()
+            t = len(os.listdir(env_dir))
+            if t > 0:
+                TipsMessageOKBox(self, f'检测到选择的文件夹下存在其它文件，禁止操作。', '提示')
+            else:
+                venv.create(env_dir, system_site_packages=False, clear=True, symlinks=False, with_pip=True, prompt=None)
+                TipsMessageOKBox(self, f'创建成功，虚拟目录：{env_dir}', '提示')
+        dlg.Destroy()
 
     def onPortProgressKillProgress(self, e):
         """终止进程"""

@@ -29,6 +29,7 @@ CON_MSG_PROGRESS_USE = """
 # sqliteFrame.py
 CON_SQLITE3_TITLE = 'SQLite3管理工具-V1.0.0'
 CON_RECOGNITION_TITLE = '数字图片识别工具-V1.0.0'
+CON_ENCRYPTION_TITLE = '加解密工具-V0.0.1'
 
 # dialogOption.py
 # 下面两个常量主要用于表格的临时展示
