@@ -6,10 +6,12 @@ from ..constant import *
 import wx.lib.buttons as buttons
 import sqlite3
 
+LEN_COL = 26 # 列数
+
 class SQLiteManageFrame ( wx.Frame ):
 
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = CON_SQLITE3_TITLE, pos = wx.DefaultPosition, size = wx.Size( 1000,600 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = CON_SQLITE3_TITLE, pos = wx.DefaultPosition, size = wx.Size( 1200,720 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self._init_UI()
 		self._init_menus()
@@ -44,13 +46,13 @@ class SQLiteManageFrame ( wx.Frame ):
 		toolSizer.Add(self.btnOpenSQLite3, 0, wx.EXPAND | wx.ALL, 2)
 		self.toolPanel.SetSizer(toolSizer)
 
-		# 分割面板（上下分割）
+		# 分割面板（左右分割）
 		self.splitWindow = wx.SplitterWindow(self.mainPanel, -1)
 		self.leftPanel = wx.Panel(self.splitWindow, style=wx.SUNKEN_BORDER) # 左子面板
 		self.rightPanel = wx.Panel(self.splitWindow, style=wx.SUNKEN_BORDER) # 右子面板
 		self.splitWindow.Initialize(self.leftPanel)
 		self.splitWindow.Initialize(self.rightPanel)
-		self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 681)
+		self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 888)
 
 
 		# 左子面板继续分割
@@ -134,8 +136,8 @@ class SQLiteManageFrame ( wx.Frame ):
 			if affect_rows < 0:
 				self.sql_msg.SetValue("查询成功！")
 				# 显示查询结果
-				self.setTableHeader(None)
 				self.setTableData(self.cursorObj.fetchall())
+				self.setTableHeader(None)
 			else:
 				self.sql_msg.SetValue(f"执行成功，受影响行数：{affect_rows}。")
 
@@ -144,7 +146,7 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.attrbutesGrid = wx.grid.Grid( self.leftRightPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
 
 		# Grid
-		self.attrbutesGrid.CreateGrid(1000, 26)
+		self.attrbutesGrid.CreateGrid(1000, LEN_COL)
 		self.attrbutesGrid.EnableEditing(False)
 		self.attrbutesGrid.EnableGridLines(True)
 		self.attrbutesGrid.EnableDragGridSize(False)
@@ -167,6 +169,9 @@ class SQLiteManageFrame ( wx.Frame ):
 		self.attrbutesGrid.SetDefaultCellAlignment( wx.ALIGN_LEFT, wx.ALIGN_TOP )
 		self.leftRightPanelSizer.Add( self.attrbutesGrid, 1, wx.EXPAND | wx.ALL, 2 )
 
+		for i in range(LEN_COL):
+			self.attrbutesGrid.SetColLabelValue(i, ' ')
+
 	def _clear_table(self):
 		"""清空表格"""
 		self.attrbutesGrid.ClearGrid()
@@ -185,6 +190,10 @@ class SQLiteManageFrame ( wx.Frame ):
 		# 	for i, header in enumerate(headers):
 		# 		self.attrbutesGrid.SetCellValue(0, i, f'{header}')
 		# 		self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
+
+		for i in range(LEN_COL):
+				self.attrbutesGrid.SetColLabelValue(i, ' ')
+
 		for row, _ in enumerate(datas):
 			for col, data in enumerate(_):
 				self.attrbutesGrid.SetCellValue(row, col, f'{data}')
@@ -235,10 +244,9 @@ class SQLiteManageFrame ( wx.Frame ):
 		"""双击树节点事件"""
 		nodeName = self.tree.GetItemText(e.GetItem())
 		if nodeName != self.nodeRootName:
-			self.setTableHeader([_[1] for _ in self.get_columns_name(nodeName)])
 			self.setTableData(self.get_table_datas(nodeName))
+			self.setTableHeader([_[1] for _ in self.get_columns_name(nodeName)])
 			
-
 	def _init_statusbar(self):
 		"""初始化底部状态条"""
 		self.statusBar = self.CreateStatusBar( 2, wx.STB_SIZEGRIP, wx.ID_ANY )

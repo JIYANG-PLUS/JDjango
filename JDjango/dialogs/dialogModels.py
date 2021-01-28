@@ -253,7 +253,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.choicesFiledUniqueForDatePanel = wx.StaticBoxSizer(choicesFiledUniqueForDateStaticBox, wx.HORIZONTAL)
         complex3PanelSizer.Add(self.choicesFiledUniqueForDatePanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.choicesFiledUniqueForDate = wx.Choice(self.complex3Panel, -1, choices=[])
+        self.choicesFiledUniqueForDate = wx.Choice(self.complex3Panel, -1, choices=[' ',])
         self.choicesFiledUniqueForDatePanel.Add(self.choicesFiledUniqueForDate, 1, wx.EXPAND | wx.ALL, 2)
 
         # 混乱布局第3行 - 与月份组合唯一【unique_for_month】
@@ -261,7 +261,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.choicesFiledUniqueForMonthPanel = wx.StaticBoxSizer(choicesFiledUniqueForMonthStaticBox, wx.HORIZONTAL)
         complex3PanelSizer.Add(self.choicesFiledUniqueForMonthPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.choicesFiledUniqueForMonth = wx.Choice(self.complex3Panel, -1, choices=[])
+        self.choicesFiledUniqueForMonth = wx.Choice(self.complex3Panel, -1, choices=[' ',])
         self.choicesFiledUniqueForMonthPanel.Add(self.choicesFiledUniqueForMonth, 1, wx.EXPAND | wx.ALL, 2)
 
         # 混乱布局第3行 - 与年份组合唯一【unique_for_year】
@@ -269,7 +269,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.choicesFiledUniqueForYearPanel = wx.StaticBoxSizer(choicesFiledUniqueForYearStaticBox, wx.HORIZONTAL)
         complex3PanelSizer.Add(self.choicesFiledUniqueForYearPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.choicesFiledUniqueForYear = wx.Choice(self.complex3Panel, -1, choices=[])
+        self.choicesFiledUniqueForYear = wx.Choice(self.complex3Panel, -1, choices=[' ',])
         self.choicesFiledUniqueForYearPanel.Add(self.choicesFiledUniqueForYear, 1, wx.EXPAND | wx.ALL, 2)
         
         # 关联关系字段布局1
