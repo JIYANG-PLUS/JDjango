@@ -1,31 +1,31 @@
 {
-    "dirname": "/Users/jiyang/Documents/GitHub/SharePlugIn/family",
-    "project_name": "family",
+    "dirname": "C:\\Users\\PC\\Desktop\\djangoProject\\HELLOWORD",
+    "project_name": "HELLOWORD",
     "app_names": [
-        "docs",
-        "blog",
-        "account"
+        "EYW",
+        "JYY",
+        "main"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Documents/GitHub/SharePlugIn/family/db.sqlite3"
+            "NAME": "C:\\Users\\PC\\Desktop\\djangoProject\\HELLOWORD\\db.sqlite3"
         }
     },
     "DEBUG": true,
-    "LANGUAGE_CODE": "zh-Hans",
+    "LANGUAGE_CODE": "en-us",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
-    "USE_TZ": false,
+    "USE_TZ": true,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
         "*"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "g&gmc75e^(=_9!1vmj$(391tk-ld@18$@f!d(q)f0e2hhx*xu#",
+    "SECRET_KEY": "@Ld^fei<#pygR[~<|-!<*QyLY:^G9!=DFXx];jQYv]SxI2Ujsp",
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "/Users/jiyang/Documents/GitHub/SharePlugIn/family/templates"
+        "C:\\Users\\PC\\Desktop\\djangoProject\\HELLOWORD\\templates"
     ]
 }

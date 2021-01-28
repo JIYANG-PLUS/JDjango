@@ -1,4 +1,4 @@
-import wx, json, glob, os
+import wx, json, glob, os, string
 import wx.lib.buttons as buttons
 from wx.lib import scrolledpanel
 from .dialogTips import *
@@ -90,7 +90,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.selectFieldTypePanel = wx.StaticBoxSizer(selectFieldTypeStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.choiceFieldType = wx.Choice(self.scollPanel, -1, choices = [' ']+CON_FIELD_TYPES, style = wx.CB_SORT)
+        self.choiceFieldType = wx.Choice(self.scollPanel, -1, choices = [' ']+CON_FIELD_TYPES) # , style = wx.CB_SORT
         self.selectFieldTypePanel.Add(self.choiceFieldType, 1, wx.EXPAND | wx.ALL, 2)
 
         # 字段命名
@@ -253,7 +253,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.choicesFiledUniqueForDatePanel = wx.StaticBoxSizer(choicesFiledUniqueForDateStaticBox, wx.HORIZONTAL)
         complex3PanelSizer.Add(self.choicesFiledUniqueForDatePanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.choicesFiledUniqueForDate = wx.Choice(self.complex3Panel, -1, choices=[' ']+['列举当前字段1', ], style = wx.CB_SORT)
+        self.choicesFiledUniqueForDate = wx.Choice(self.complex3Panel, -1, choices=[])
         self.choicesFiledUniqueForDatePanel.Add(self.choicesFiledUniqueForDate, 1, wx.EXPAND | wx.ALL, 2)
 
         # 混乱布局第3行 - 与月份组合唯一【unique_for_month】
@@ -261,7 +261,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.choicesFiledUniqueForMonthPanel = wx.StaticBoxSizer(choicesFiledUniqueForMonthStaticBox, wx.HORIZONTAL)
         complex3PanelSizer.Add(self.choicesFiledUniqueForMonthPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.choicesFiledUniqueForMonth = wx.Choice(self.complex3Panel, -1, choices=[' ']+['列举当前字段2', ], style = wx.CB_SORT)
+        self.choicesFiledUniqueForMonth = wx.Choice(self.complex3Panel, -1, choices=[])
         self.choicesFiledUniqueForMonthPanel.Add(self.choicesFiledUniqueForMonth, 1, wx.EXPAND | wx.ALL, 2)
 
         # 混乱布局第3行 - 与年份组合唯一【unique_for_year】
@@ -269,7 +269,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.choicesFiledUniqueForYearPanel = wx.StaticBoxSizer(choicesFiledUniqueForYearStaticBox, wx.HORIZONTAL)
         complex3PanelSizer.Add(self.choicesFiledUniqueForYearPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.choicesFiledUniqueForYear = wx.Choice(self.complex3Panel, -1, choices=[' ']+['列举当前字段3', ], style = wx.CB_SORT)
+        self.choicesFiledUniqueForYear = wx.Choice(self.complex3Panel, -1, choices=[])
         self.choicesFiledUniqueForYearPanel.Add(self.choicesFiledUniqueForYear, 1, wx.EXPAND | wx.ALL, 2)
         
         # 关联关系字段布局1
@@ -282,7 +282,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.relationFiledChoiceModelPanel = wx.StaticBoxSizer(self.relationFiledChoiceModelStaticBox, wx.HORIZONTAL)
         self.relationFiledPanel.Add(self.relationFiledChoiceModelPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.choiceSelectModel = wx.Choice(self.scollPanel, -1, choices = [' ']+['self'], style = wx.CB_SORT)
+        self.choiceSelectModel = wx.Choice(self.scollPanel, -1, choices = [' ']+['self'])
         self.relationFiledChoiceModelPanel.Add(self.choiceSelectModel, 1, wx.EXPAND | wx.ALL, 2)
 
         # 关联关系字段布局1 - 记录删除规则【on_delete】
@@ -290,7 +290,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.relationFiledDelRulePanel = wx.StaticBoxSizer(self.relationFiledDelRuleStaticBox, wx.HORIZONTAL)
         self.relationFiledPanel.Add(self.relationFiledDelRulePanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.choiceSelectDelRule = wx.Choice(self.scollPanel, -1, choices = [' ']+['models.CASCADE'], style = wx.CB_SORT)
+        self.choiceSelectDelRule = wx.Choice(self.scollPanel, -1, choices = [' ']+['models.CASCADE'])
         self.relationFiledDelRulePanel.Add(self.choiceSelectDelRule, 1, wx.EXPAND | wx.ALL, 2)
 
         # 关联关系字段布局1 - 备注名【verbose_name】
@@ -519,7 +519,7 @@ class DemoModel(models.Model):
                 self.radiosFiledNull.SetSelection(1) # 字段为空不赋值NULL
                 self.radiosFiledUnique.SetSelection(1) # 值不唯一
                 self.radiosFiledDbIndex.SetSelection(1) # 不创建索引
-            else:
+            else: # 反向操作，状态复原
                 self.inputDefaultValue.SetValue('')
                 self.inputDefaultValue.Enable(True)
                 self.radiosFiledNull.Enable(True)
@@ -735,9 +735,7 @@ class DemoModel(models.Model):
         if len(row_indexs) > 0:
             dlg_tip = wx.MessageDialog(self, f"确认删除第{t}行？一旦删除不可恢复。", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
             if dlg_tip.ShowModal() == wx.ID_OK:
-                print(self.allRows)
                 result = self.removeRows(row_indexs)
-                print(self.allRows)
                 if not result:
                     TipsMessageOKBox(self, '删除成功！', '提示')
                 else:
@@ -756,7 +754,7 @@ class DemoModel(models.Model):
 
     def onChoiceFieldType(self, e):
         """选择要新建的字段类型"""
-        field_type = e.GetString().strip()
+        field_type = e.GetString().strip(string.whitespace+'-')
 
         if not field_type:
             return
@@ -961,7 +959,7 @@ class DemoModel(models.Model):
             for col, _ in enumerate(CON_MODELSCREATEDIALOG_COLS):
                 self.infoGrid.SetCellValue(row, col, str(insertRow.get(CON_ARGS_NAME_DICT[_])))
 
-            # 界面数据全部初始化
+            # 界面数据全部初始化【全部参数暂时不放，只显示上一个字段相关的参数锁定界面】
             self._disable_all_args()
             self._init_all_args_value()
             self._init_input_args()
@@ -970,6 +968,18 @@ class DemoModel(models.Model):
             # 重新开放新增按钮 锁定后触发按钮
             self.btnAddNew.Enable(True)
             self._disable_all_afterBtns()
+
+            # 更新日期组合唯一的三个相关下拉框【只给日期字段相关的字段属性名】
+            self.choicesFiledUniqueForDate.Clear()
+            self.choicesFiledUniqueForMonth.Clear()
+            self.choicesFiledUniqueForYear.Clear()
+
+            # 目前只实现Date的日期唯一关联，其余两个暂不实现
+            self.choicesFiledUniqueForDate.Append(' ')
+            for _ in self.allRows:
+                if _['field_type'] in CON_DATE_FIELDS:
+                    self.choicesFiledUniqueForDate.Append(_['field_name'])
+
 
         dlg_tip.Close(True)
 
