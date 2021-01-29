@@ -14,7 +14,7 @@ STATIC_TEXT_WIDTH = -1 # StaticText宽度
 
 class ModelsCreateDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(888, 888))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(666, 888))
 
         # 必要的控制容器
         self.allArgs = [] # 所有的参数选项
@@ -36,18 +36,18 @@ class ModelsCreateDialog(wx.Dialog):
 
         # 字体默认设置
         self._init_readme_font()
-        self._init_label__font()
+        self._init_label_font()
 
     def _init_readme_font(self):
         """脚注提示信息字体初始化"""
         for _ in self.readmeStaticTexts:
-            _.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
+            _.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
             _.SetForegroundColour(CON_COLOR_BLUE)
 
-    def _init_label__font(self):
+    def _init_label_font(self):
         """标签提示信息字体初始化"""
         for _ in self.labelStaticTexts:
-            _.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+            _.SetFont(wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 
     def _init_UI(self):
         """初始化界面布局"""
@@ -106,9 +106,9 @@ class ModelsCreateDialog(wx.Dialog):
         self.selectFieldTypePanel = wx.StaticBoxSizer(self.selectFieldTypeStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.choiceFieldTypeLabel = wx.StaticText(self.scollPanel, -1, "字段类型：")
+        self.choiceFieldTypeLabel = wx.StaticText(self.scollPanel, -1, "1、字段类型：")
         self.choiceFieldType = wx.Choice(self.scollPanel, -1, choices = [' ']+CON_FIELD_TYPES) # , style = wx.CB_SORT
-        self.readmeChoiceFieldType = wx.StaticText(self.scollPanel, -1, "*新增字段前，必须先选择字段类型，选择后即可填写详细的参数数据。") # 选项说明
+        self.readmeChoiceFieldType = wx.StaticText(self.scollPanel, -1, "【字段类型】** 新增字段前，必须先选择字段类型，选择后即可填写详细的参数数据。") # 选项说明
         self.selectFieldTypePanel.Add(self.choiceFieldTypeLabel, 0, wx.EXPAND | wx.ALL, 2)
         self.selectFieldTypePanel.Add(self.choiceFieldType, 1, wx.EXPAND | wx.ALL, 2)
         scollPanelSizer.Add(self.readmeChoiceFieldType, 0, wx.EXPAND | wx.ALL, 2)
@@ -118,9 +118,9 @@ class ModelsCreateDialog(wx.Dialog):
         self.modelsNamePanel = wx.StaticBoxSizer(self.modelsNameStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.modelsNamePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelFieldModelName = wx.StaticText(self.scollPanel, -1, "字段属性名：")
+        self.labelFieldModelName = wx.StaticText(self.scollPanel, -1, "2、字段属性名：")
         self.inputFieldModelName = wx.TextCtrl(self.scollPanel, -1)
-        self.readmeInputFieldModelName = wx.StaticText(self.scollPanel, -1, "*字段属性名，是代码中的字段名称，并非数据库中实际存储的列名。")
+        self.readmeInputFieldModelName = wx.StaticText(self.scollPanel, -1, "【字段属性名】** 字段属性名，是代码中的字段名称，并非数据库中实际存储的列名。")
         self.modelsNamePanel.Add(self.labelFieldModelName, 0, wx.EXPAND | wx.ALL, 2)
         self.modelsNamePanel.Add(self.inputFieldModelName, 1, wx.EXPAND | wx.ALL, 2)
         scollPanelSizer.Add(self.readmeInputFieldModelName, 0, wx.EXPAND | wx.ALL, 2)
@@ -130,9 +130,9 @@ class ModelsCreateDialog(wx.Dialog):
         self.dbColumnNamePanel = wx.StaticBoxSizer(self.dbColumnNameStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.dbColumnNamePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelFieldDatabaseName = wx.StaticText(self.scollPanel, -1, "数据库列名（db_column）：")
+        self.labelFieldDatabaseName = wx.StaticText(self.scollPanel, -1, "3、数据库列名（db_column）：")
         self.inputFieldDatabaseName = wx.TextCtrl(self.scollPanel, -1)
-        self.readmeInputFieldDatabaseName = wx.StaticText(self.scollPanel, -1, "*实际存储在数据库中的列名，若不指定默认取【字段属性名】。")
+        self.readmeInputFieldDatabaseName = wx.StaticText(self.scollPanel, -1, "【数据库列名（db_column）】** 实际存储在数据库中的列名，若不指定默认取【字段属性名】。")
         self.dbColumnNamePanel.Add(self.labelFieldDatabaseName, 0, wx.EXPAND | wx.ALL, 2)
         self.dbColumnNamePanel.Add(self.inputFieldDatabaseName, 1, wx.EXPAND | wx.ALL, 2)
         scollPanelSizer.Add(self.readmeInputFieldDatabaseName, 0, wx.EXPAND | wx.ALL, 2)
@@ -143,161 +143,228 @@ class ModelsCreateDialog(wx.Dialog):
         self.fieldRemarkPanel = wx.StaticBoxSizer(self.fieldRemarkStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.fieldRemarkPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelFieldRemarkName = wx.StaticText(self.scollPanel, -1, "字段备注：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.labelFieldRemarkName = wx.StaticText(self.scollPanel, -1, "4、字段备注：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.inputFieldRemarkName = wx.TextCtrl(self.scollPanel, -1)
-        self.readmeInputFieldRemarkName = wx.StaticText(self.scollPanel, -1, "*字段备注默认取【字段属性名】，下划线将自动转换成空格。")
+        self.readmeInputFieldRemarkName = wx.StaticText(self.scollPanel, -1, "【字段备注】** 字段备注默认取【字段属性名】，下划线将自动转换成空格。")
         self.fieldRemarkPanel.Add(self.labelFieldRemarkName, 0, wx.EXPAND | wx.ALL, 2)
         self.fieldRemarkPanel.Add(self.inputFieldRemarkName, 1, wx.EXPAND | wx.ALL, 2)
         scollPanelSizer.Add(self.readmeInputFieldRemarkName, 0, wx.EXPAND | wx.ALL, 2)
 
+        # 主键（primary_key）
+        self.radiosFiledPrimaryStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.radiosFiledPrimaryPanel = wx.StaticBoxSizer(self.radiosFiledPrimaryStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.radiosFiledPrimaryPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelRadiosFiledPrimary = wx.StaticText(self.scollPanel, -1, "5、主键（primary_key）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.radiosFiledPrimary = wx.RadioBox(self.scollPanel, -1, "", choices=['是', '否'])
+        self.readmeRadiosFiledPrimary = wx.StaticText(self.scollPanel, -1, "【主键（primary_key）】** 数据库主键唯一字段。")
+        self.radiosFiledPrimaryPanel.Add(self.labelRadiosFiledPrimary, 0, wx.EXPAND | wx.ALL, 2)
+        self.radiosFiledPrimaryPanel.Add(self.radiosFiledPrimary, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeRadiosFiledPrimary, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 值唯一（unique）
+        self.radiosFiledUniqueStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.radiosFiledUniquePanel = wx.StaticBoxSizer(self.radiosFiledUniqueStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.radiosFiledUniquePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelRadiosFiledUnique = wx.StaticText(self.scollPanel, -1, "6、值唯一（unique）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.radiosFiledUnique = wx.RadioBox(self.scollPanel, -1, "", choices=['唯一', '不唯一'])
+        self.readmeRadiosFiledUnique = wx.StaticText(self.scollPanel, -1, "【值唯一（unique）】** 数据库字段值唯一。")
+        self.radiosFiledUniquePanel.Add(self.labelRadiosFiledUnique, 0, wx.EXPAND | wx.ALL, 2)
+        self.radiosFiledUniquePanel.Add(self.radiosFiledUnique, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeRadiosFiledUnique, 0, wx.EXPAND | wx.ALL, 2)
 
         # 允许为空、blank
-        self.radiosFiledBlank = wx.RadioBox(self.scollPanel, -1, "允许为空【blank】", choices=['允许', '不允许'])
-        scollPanelSizer.Add(self.radiosFiledBlank, 1, wx.EXPAND | wx.ALL, 2)
+        self.radiosFiledBlankStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.radiosFiledBlankPanel = wx.StaticBoxSizer(self.radiosFiledBlankStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.radiosFiledBlankPanel, 0, wx.EXPAND | wx.ALL, 2)
 
+        self.labelRadiosFiledBlank = wx.StaticText(self.scollPanel, -1, "7、允许为空（blank）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.radiosFiledBlank = wx.RadioBox(self.scollPanel, -1, "", choices=['允许', '不允许'])
+        self.readmeRadiosFiledBlank = wx.StaticText(self.scollPanel, -1, "【允许为空（blank）】** 数据库表字段允许为空，表单验证允许为空。")
+        self.radiosFiledBlankPanel.Add(self.labelRadiosFiledBlank, 0, wx.EXPAND | wx.ALL, 2)
+        self.radiosFiledBlankPanel.Add(self.radiosFiledBlank, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeRadiosFiledBlank, 0, wx.EXPAND | wx.ALL, 2)
 
-        """三个一行，布局"""
-        # 混乱布局第1行
-        self.complex1Panel = wx.Panel(self.scollPanel)
-        complex1PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.complex1Panel.SetSizer(complex1PanelSizer)
-        scollPanelSizer.Add(self.complex1Panel, 0, wx.EXPAND | wx.ALL, 2)
+        # 默认值（default）
+        self.inputDefaultValueStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputDefaultValuePanel = wx.StaticBoxSizer(self.inputDefaultValueStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputDefaultValuePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        
+        self.labelInputDefaultValue = wx.StaticText(self.scollPanel, -1, "8、默认值（default）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputDefaultValue = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputDefaultValue = wx.StaticText(self.scollPanel, -1, "【默认值（default）】** 字段默认值，可以是常量，也可以是一个函数。")
+        self.inputDefaultValuePanel.Add(self.labelInputDefaultValue, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputDefaultValuePanel.Add(self.inputDefaultValue, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputDefaultValue, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.radiosFiledNull = wx.RadioBox(self.complex1Panel, -1, "为空时赋NULL【null】", choices=['赋', '不赋'])
+        # 为空时赋NULL（null）
+        self.radiosFiledNullStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.radiosFiledNullPanel = wx.StaticBoxSizer(self.radiosFiledNullStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.radiosFiledNullPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.radiosFiledPrimary = wx.RadioBox(self.complex1Panel, -1, "主键【primary_key】", choices=['是', '否'])
+        self.labelRadiosFiledNull = wx.StaticText(self.scollPanel, -1, "9、为空时赋NULL（null）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.radiosFiledNull = wx.RadioBox(self.scollPanel, -1, "", choices=['赋', '不赋'])
+        self.readmeRadiosFiledNull = wx.StaticText(self.scollPanel, -1, "【为空时赋NULL（null）】** 数据库表字段为空时，用NULL作默认值。")
+        self.radiosFiledNullPanel.Add(self.labelRadiosFiledNull, 0, wx.EXPAND | wx.ALL, 2)
+        self.radiosFiledNullPanel.Add(self.radiosFiledNull, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeRadiosFiledNull, 0, wx.EXPAND | wx.ALL, 2)
 
-        
-        complex1PanelSizer.Add(self.radiosFiledNull, 1, wx.EXPAND | wx.ALL, 2)
-        complex1PanelSizer.Add(self.radiosFiledPrimary, 1, wx.EXPAND | wx.ALL, 2)
+        # 创建索引（db_index）
+        self.radiosFiledDbIndexStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.radiosFiledDbIndexPanel = wx.StaticBoxSizer(self.radiosFiledDbIndexStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.radiosFiledDbIndexPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 混乱布局第2行
-        self.complex2Panel = wx.Panel(self.scollPanel)
-        complex2PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.complex2Panel.SetSizer(complex2PanelSizer)
-        scollPanelSizer.Add(self.complex2Panel, 0, wx.EXPAND | wx.ALL, 2)
+        self.labelRadiosFiledDbIndex = wx.StaticText(self.scollPanel, -1, "10、创建索引（db_index）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.radiosFiledDbIndex = wx.RadioBox(self.scollPanel, -1, "", choices=['创建', '不创建'])
+        self.readmeRadiosFiledDbIndex = wx.StaticText(self.scollPanel, -1, "【创建索引（db_index）】** 创建数据库的字段索引。")
+        self.radiosFiledDbIndexPanel.Add(self.labelRadiosFiledDbIndex, 0, wx.EXPAND | wx.ALL, 2)
+        self.radiosFiledDbIndexPanel.Add(self.radiosFiledDbIndex, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeRadiosFiledDbIndex, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.radiosFiledUnique = wx.RadioBox(self.complex2Panel, -1, "值唯一【unique】", choices=['唯一', '不唯一'])
-        self.radiosFiledDbIndex = wx.RadioBox(self.complex2Panel, -1, "创建索引【db_index】", choices=['创建', '不创建'])
-        self.radiosFiledEditable = wx.RadioBox(self.complex2Panel, -1, "表单显示【editable】", choices=['显示', '不显示'])
-        complex2PanelSizer.Add(self.radiosFiledUnique, 1, wx.EXPAND | wx.ALL, 2)
-        complex2PanelSizer.Add(self.radiosFiledDbIndex, 1, wx.EXPAND | wx.ALL, 2)
-        complex2PanelSizer.Add(self.radiosFiledEditable, 1, wx.EXPAND | wx.ALL, 2)
+        # 与日期组合唯一（unique_for_date）
+        self.choicesFiledUniqueForDateStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.choicesFiledUniqueForDatePanel = wx.StaticBoxSizer(self.choicesFiledUniqueForDateStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.choicesFiledUniqueForDatePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 其它特有字段布局第2行【位置调整至此处，提高使用感】
-        self.specialArgs2Panel = wx.Panel(self.scollPanel)
-        specialArgs2PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.specialArgs2Panel.SetSizer(specialArgs2PanelSizer)
-        scollPanelSizer.Add(self.specialArgs2Panel, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 其它特有字段布局第2行 - 长度上限【max_length】
-        self.maxLengthStaticBox = wx.StaticBox(self.specialArgs2Panel, -1, '长度上限【max_length】')
-        self.maxLengthPanel = wx.StaticBoxSizer(self.maxLengthStaticBox, wx.HORIZONTAL)
-        specialArgs2PanelSizer.Add(self.maxLengthPanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.inputMaxLength = wx.TextCtrl(self.specialArgs2Panel, -1)
-        self.maxLengthPanel.Add(self.inputMaxLength, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 其它特有字段布局第2行 - save调用更新日期【auto_now】
-        self.radiosAutoNow = wx.RadioBox(self.specialArgs2Panel, -1, "save调用更新日期【auto_now】", choices=['启用', '不启用'])
-        specialArgs2PanelSizer.Add(self.radiosAutoNow, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 其它特有字段布局第2行 - 仅创建时一次赋值日期【auto_now_add】
-        self.radiosAutoNowAdd = wx.RadioBox(self.specialArgs2Panel, -1, "仅创建时一次赋值日期【auto_now_add】", choices=['启用', '不启用'])
-        specialArgs2PanelSizer.Add(self.radiosAutoNowAdd, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 混乱布局第4行
-        self.complex4Panel = wx.Panel(self.scollPanel)
-        complex4PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.complex4Panel.SetSizer(complex4PanelSizer)
-        scollPanelSizer.Add(self.complex4Panel, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 混乱布局第4行 - 默认值【default】
-        defaultValueStaticBox = wx.StaticBox(self.complex4Panel, -1, '默认值【default】（选填）')
-        self.defaultValuePanel = wx.StaticBoxSizer(defaultValueStaticBox, wx.HORIZONTAL)
-        complex4PanelSizer.Add(self.defaultValuePanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.inputDefaultValue = wx.TextCtrl(self.complex4Panel, -1)
-        self.defaultValuePanel.Add(self.inputDefaultValue, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 混乱布局第4行 - 表单帮助文本信息【help_text】
-        formHelpTextStaticBox = wx.StaticBox(self.complex4Panel, -1, '表单帮助信息【help_text】（选填）')
-        self.formHelpTextPanel = wx.StaticBoxSizer(formHelpTextStaticBox, wx.HORIZONTAL)
-        complex4PanelSizer.Add(self.formHelpTextPanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.inputFormHelpText = wx.TextCtrl(self.complex4Panel, -1)
-        self.formHelpTextPanel.Add(self.inputFormHelpText, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 混乱布局第4行 - 表单错误输入提醒【error_messages】
-        formErrorMessageStaticBox = wx.StaticBox(self.complex4Panel, -1, '表单错误提醒【error_messages】（选填）')
-        self.formErrorMessagePanel = wx.StaticBoxSizer(formErrorMessageStaticBox, wx.HORIZONTAL)
-        complex4PanelSizer.Add(self.formErrorMessagePanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.inputFormErrorMessage = wx.TextCtrl(self.complex4Panel, -1)
-        self.formErrorMessagePanel.Add(self.inputFormErrorMessage, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 其它特有字段布局第1行
-        self.specialArgs1Panel = wx.Panel(self.scollPanel)
-        specialArgs1PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.specialArgs1Panel.SetSizer(specialArgs1PanelSizer)
-        scollPanelSizer.Add(self.specialArgs1Panel, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 其它特有字段布局第1行 - 文件上传路径【upload_to】
-        self.uploadToStaticBox = wx.StaticBox(self.specialArgs1Panel, -1, '文件上传路径【upload_to】')
-        self.uploadToPanel = wx.StaticBoxSizer(self.uploadToStaticBox, wx.HORIZONTAL)
-        specialArgs1PanelSizer.Add(self.uploadToPanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.inputUploadTo = wx.TextCtrl(self.specialArgs1Panel, -1)
-        self.uploadToPanel.Add(self.inputUploadTo, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 其它特有字段布局第1行 - 实数总位数【max_digits】
-        self.maxDigitsStaticBox = wx.StaticBox(self.specialArgs1Panel, -1, '实数总位数【max_digits】')
-        self.maxDigitsPanel = wx.StaticBoxSizer(self.maxDigitsStaticBox, wx.HORIZONTAL)
-        specialArgs1PanelSizer.Add(self.maxDigitsPanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.inputMaxDigits = wx.TextCtrl(self.specialArgs1Panel, -1)
-        self.maxDigitsPanel.Add(self.inputMaxDigits, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 其它特有字段布局第1行 - 小数总位数【decimal_places】
-        self.decimalPlacesStaticBox = wx.StaticBox(self.specialArgs1Panel, -1, '小数总位数【decimal_places】（默认为0）')
-        self.decimalPlacesPanel = wx.StaticBoxSizer(self.decimalPlacesStaticBox, wx.HORIZONTAL)
-        specialArgs1PanelSizer.Add(self.decimalPlacesPanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.inputDecimalPlaces = wx.TextCtrl(self.specialArgs1Panel, -1)
-        self.decimalPlacesPanel.Add(self.inputDecimalPlaces, 1, wx.EXPAND | wx.ALL, 2)
-
-
-        # 混乱布局第3行【放在末尾，提升使用感】
-        self.complex3Panel = wx.Panel(self.scollPanel)
-        complex3PanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.complex3Panel.SetSizer(complex3PanelSizer)
-        scollPanelSizer.Add(self.complex3Panel, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 混乱布局第3行 - 与日期组合唯一【unique_for_date】
-        choicesFiledUniqueForDateStaticBox = wx.StaticBox(self.complex3Panel, -1, '与日期组合唯一【unique_for_date】（可选）')
-        self.choicesFiledUniqueForDatePanel = wx.StaticBoxSizer(choicesFiledUniqueForDateStaticBox, wx.HORIZONTAL)
-        complex3PanelSizer.Add(self.choicesFiledUniqueForDatePanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.choicesFiledUniqueForDate = wx.Choice(self.complex3Panel, -1, choices=[' ',])
+        self.labelChoicesFiledUniqueForDate = wx.StaticText(self.scollPanel, -1, "11、与日期组合唯一（unique_for_date）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.choicesFiledUniqueForDate = wx.Choice(self.scollPanel, -1, choices=[' ',])
+        self.readmeChoicesFiledUniqueForDate = wx.StaticText(self.scollPanel, -1, "【与日期组合唯一（unique_for_date）】** 当前字段与当前选择日期字段的值组合唯一。")
+        self.choicesFiledUniqueForDatePanel.Add(self.labelChoicesFiledUniqueForDate, 0, wx.EXPAND | wx.ALL, 2)
         self.choicesFiledUniqueForDatePanel.Add(self.choicesFiledUniqueForDate, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeChoicesFiledUniqueForDate, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 混乱布局第3行 - 与月份组合唯一【unique_for_month】
-        choicesFiledUniqueForMonthStaticBox = wx.StaticBox(self.complex3Panel, -1, '与月份组合唯一【unique_for_month】（可选）')
-        self.choicesFiledUniqueForMonthPanel = wx.StaticBoxSizer(choicesFiledUniqueForMonthStaticBox, wx.HORIZONTAL)
-        complex3PanelSizer.Add(self.choicesFiledUniqueForMonthPanel, 1, wx.EXPAND | wx.ALL, 2)
+        # 与月份组合唯一（unique_for_month）
+        self.choicesFiledUniqueForMonthStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.choicesFiledUniqueForMonthPanel = wx.StaticBoxSizer(self.choicesFiledUniqueForMonthStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.choicesFiledUniqueForMonthPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.choicesFiledUniqueForMonth = wx.Choice(self.complex3Panel, -1, choices=[' ',])
+        self.labelChoicesFiledUniqueForMonth = wx.StaticText(self.scollPanel, -1, "12、与月份组合唯一（unique_for_month）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.choicesFiledUniqueForMonth = wx.Choice(self.scollPanel, -1, choices=[' ',])
+        self.readmeChoicesFiledUniqueForMonth = wx.StaticText(self.scollPanel, -1, "【与月份组合唯一（unique_for_month）】** 当前字段与当前选择月份字段的值组合唯一。")
+        self.choicesFiledUniqueForMonthPanel.Add(self.labelChoicesFiledUniqueForMonth, 0, wx.EXPAND | wx.ALL, 2)
         self.choicesFiledUniqueForMonthPanel.Add(self.choicesFiledUniqueForMonth, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeChoicesFiledUniqueForMonth, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 混乱布局第3行 - 与年份组合唯一【unique_for_year】
-        choicesFiledUniqueForYearStaticBox = wx.StaticBox(self.complex3Panel, -1, '与年份组合唯一【unique_for_year】（可选）')
-        self.choicesFiledUniqueForYearPanel = wx.StaticBoxSizer(choicesFiledUniqueForYearStaticBox, wx.HORIZONTAL)
-        complex3PanelSizer.Add(self.choicesFiledUniqueForYearPanel, 1, wx.EXPAND | wx.ALL, 2)
+        # 与年份组合唯一（unique_for_year）
+        self.choicesFiledUniqueForYearStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.choicesFiledUniqueForYearPanel = wx.StaticBoxSizer(self.choicesFiledUniqueForYearStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.choicesFiledUniqueForYearPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.choicesFiledUniqueForYear = wx.Choice(self.complex3Panel, -1, choices=[' ',])
+        self.labelChoicesFiledUniqueForYear = wx.StaticText(self.scollPanel, -1, "13、与年份组合唯一（unique_for_year）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.choicesFiledUniqueForYear = wx.Choice(self.scollPanel, -1, choices=[' ',])
+        self.readmeChoicesFiledUniqueForYear = wx.StaticText(self.scollPanel, -1, "【与年份组合唯一（unique_for_year）】** 当前字段与当前选择年份字段的值组合唯一。")
+        self.choicesFiledUniqueForYearPanel.Add(self.labelChoicesFiledUniqueForYear, 0, wx.EXPAND | wx.ALL, 2)
         self.choicesFiledUniqueForYearPanel.Add(self.choicesFiledUniqueForYear, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeChoicesFiledUniqueForYear, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 表单显示（editable）
+        self.radiosFiledEditableStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.radiosFiledEditablePanel = wx.StaticBoxSizer(self.radiosFiledEditableStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.radiosFiledEditablePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelRadiosFiledEditable = wx.StaticText(self.scollPanel, -1, "14、表单显示（editable）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.radiosFiledEditable = wx.RadioBox(self.scollPanel, -1, "", choices=['显示', '不显示'])
+        self.readmeRadiosFiledEditable = wx.StaticText(self.scollPanel, -1, "【表单显示（editable）】** 表单页面提供交互式控件。")
+        self.radiosFiledEditablePanel.Add(self.labelRadiosFiledEditable, 0, wx.EXPAND | wx.ALL, 2)
+        self.radiosFiledEditablePanel.Add(self.radiosFiledEditable, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeRadiosFiledEditable, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 表单帮助文本信息（help_text）
+        self.inputFormHelpTextStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputFormHelpTextPanel = wx.StaticBoxSizer(self.inputFormHelpTextStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputFormHelpTextPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputFormHelpText = wx.StaticText(self.scollPanel, -1, "15、表单帮助信息（help_text）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputFormHelpText = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputFormHelpText = wx.StaticText(self.scollPanel, -1, "【表单帮助信息（help_text）】** 表单填写时的提示信息。")
+        self.inputFormHelpTextPanel.Add(self.labelInputFormHelpText, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputFormHelpTextPanel.Add(self.inputFormHelpText, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputFormHelpText, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 表单错误提醒（error_messages）
+        self.inputFormErrorMessageStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputFormErrorMessagePanel = wx.StaticBoxSizer(self.inputFormErrorMessageStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputFormErrorMessagePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputFormErrorMessage = wx.StaticText(self.scollPanel, -1, "16、表单错误提醒（error_messages）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputFormErrorMessage = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputFormErrorMessage = wx.StaticText(self.scollPanel, -1, "【表单错误提醒（error_messages）】** 表单填写错误时的提示信息。")
+        self.inputFormErrorMessagePanel.Add(self.labelInputFormErrorMessage, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputFormErrorMessagePanel.Add(self.inputFormErrorMessage, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputFormErrorMessage, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 长度上限（max_length）
+        self.inputMaxLengthStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputMaxLengthPanel = wx.StaticBoxSizer(self.inputMaxLengthStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputMaxLengthPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputMaxLength = wx.StaticText(self.scollPanel, -1, "17、长度上限（max_length）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputMaxLength = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputMaxLength = wx.StaticText(self.scollPanel, -1, "【长度上限（max_length）】** 数据库允许存储的最大长度。")
+        self.inputMaxLengthPanel.Add(self.labelInputMaxLength, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputMaxLengthPanel.Add(self.inputMaxLength, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputMaxLength, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 实数总位数（max_digits）
+        self.inputMaxDigitsStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputMaxDigitsPanel = wx.StaticBoxSizer(self.inputMaxDigitsStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputMaxDigitsPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputMaxDigits = wx.StaticText(self.scollPanel, -1, "18、实数总位数（max_digits）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputMaxDigits = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputMaxDigits = wx.StaticText(self.scollPanel, -1, "【实数总位数（max_digits）】** 整数位数和小数位数的总和，不包括小数点。")
+        self.inputMaxDigitsPanel.Add(self.labelInputMaxDigits, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputMaxDigitsPanel.Add(self.inputMaxDigits, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputMaxDigits, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 小数总位数（decimal_places）（默认为0）
+        self.inputDecimalPlacesStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputDecimalPlacesPanel = wx.StaticBoxSizer(self.inputDecimalPlacesStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputDecimalPlacesPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputDecimalPlaces = wx.StaticText(self.scollPanel, -1, "19、小数总位数（decimal_places）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputDecimalPlaces = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputDecimalPlaces = wx.StaticText(self.scollPanel, -1, "【小数总位数（decimal_places）】** 小数位数的总和，不包括小数点。")
+        self.inputDecimalPlacesPanel.Add(self.labelInputDecimalPlaces, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputDecimalPlacesPanel.Add(self.inputDecimalPlaces, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputDecimalPlaces, 0, wx.EXPAND | wx.ALL, 2)
+
+        # save调用更新日期（auto_now）
+        self.radiosAutoNowStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.radiosAutoNowPanel = wx.StaticBoxSizer(self.radiosAutoNowStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.radiosAutoNowPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelRadiosAutoNow = wx.StaticText(self.scollPanel, -1, "20、保存更新日期（auto_now）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.radiosAutoNow = wx.RadioBox(self.scollPanel, -1, "", choices=['启用', '不启用'])
+        self.readmeRadiosAutoNow = wx.StaticText(self.scollPanel, -1, "【保存更新日期（auto_now）】** 仅在调用模型控制器的save()方法时自动更新该日期字段。")
+        self.radiosAutoNowPanel.Add(self.labelRadiosAutoNow, 0, wx.EXPAND | wx.ALL, 2)
+        self.radiosAutoNowPanel.Add(self.radiosAutoNow, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeRadiosAutoNow, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 仅创建时一次赋值日期（auto_now_add）
+        self.radiosAutoNowAddStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.radiosAutoNowAddPanel = wx.StaticBoxSizer(self.radiosAutoNowAddStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.radiosAutoNowAddPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelRadiosAutoNowAdd = wx.StaticText(self.scollPanel, -1, "21、创建赋值日期（auto_now_add）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.radiosAutoNowAdd = wx.RadioBox(self.scollPanel, -1, "", choices=['启用', '不启用'])
+        self.readmeRadiosAutoNowAdd = wx.StaticText(self.scollPanel, -1, "【创建赋值日期（auto_now_add）】** 仅在创建记录时一次赋值该日期，赋值后不允许修改。")
+        self.radiosAutoNowAddPanel.Add(self.labelRadiosAutoNowAdd, 0, wx.EXPAND | wx.ALL, 2)
+        self.radiosAutoNowAddPanel.Add(self.radiosAutoNowAdd, 0, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeRadiosAutoNowAdd, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 文件上传路径（upload_to）
+        self.inputUploadToStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputUploadToPanel = wx.StaticBoxSizer(self.inputUploadToStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputUploadToPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputUploadTo = wx.StaticText(self.scollPanel, -1, "22、文件上传路径（upload_to）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputUploadTo = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputUploadTo = wx.StaticText(self.scollPanel, -1, "【文件上传路径（upload_to）】** 指定文件上传路径。")
+        self.inputUploadToPanel.Add(self.labelInputUploadTo, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputUploadToPanel.Add(self.inputUploadTo, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputUploadTo, 0, wx.EXPAND | wx.ALL, 2)
         
         # 关联关系字段布局1
         self.relationFiledStaticBox = wx.StaticBox(self.scollPanel, -1, '关联关系字段专属参数')
@@ -364,26 +431,47 @@ class ModelsCreateDialog(wx.Dialog):
 
         # 私有参数
         self.specialArgs.extend([
-            # self.maxLengthStaticBox, self.inputMaxLength,
-            # self.maxDigitsStaticBox, self.inputMaxDigits,
-            # self.decimalPlacesStaticBox, self.inputDecimalPlaces,
-            # self.radiosAutoNow, self.radiosAutoNowAdd, 
-            # self.uploadToStaticBox, self.inputUploadTo,
+            self.inputMaxLengthStaticBox, self.inputMaxLength, self.labelInputMaxLength, self.readmeInputMaxLength,
+            self.inputMaxDigitsStaticBox, self.inputMaxDigits, self.labelInputMaxDigits, self.readmeInputMaxDigits,
+            self.inputDecimalPlacesStaticBox, self.inputDecimalPlaces, self.labelInputDecimalPlaces, self.readmeInputDecimalPlaces,
+            self.radiosAutoNowStaticBox, self.radiosAutoNow, self.labelRadiosAutoNow, self.readmeRadiosAutoNow,
+            self.radiosAutoNowAddStaticBox, self.radiosAutoNowAdd, self.labelRadiosAutoNowAdd, self.readmeRadiosAutoNowAdd,
+            self.inputUploadToStaticBox, self.inputUploadTo, self.labelInputUploadTo, self.readmeInputUploadTo,
 
-            # # 关联字段专属
-            # self.relationFiledStaticBox,
-            # self.relationFiledChoiceModelStaticBox, self.choiceSelectModel,
-            # self.relationFiledDelRuleStaticBox, self.choiceSelectDelRule,
-            # self.relationFiledRemarkStaticBox, self.inputRelationRemark,
+            # 关联字段专属
+            self.relationFiledStaticBox,
+            self.relationFiledChoiceModelStaticBox, self.choiceSelectModel,
+            self.relationFiledDelRuleStaticBox, self.choiceSelectDelRule,
+            self.relationFiledRemarkStaticBox, self.inputRelationRemark,
 
         ])
 
         # 字体初始化控件录入
         self.readmeStaticTexts.extend([
-
+            self.readmeChoiceFieldType,self.readmeInputFieldModelName,
+            self.readmeInputFieldDatabaseName,self.readmeInputFieldRemarkName,
+            self.readmeRadiosFiledBlank,self.readmeRadiosFiledNull,
+            self.readmeRadiosFiledPrimary,self.readmeRadiosFiledUnique,
+            self.readmeRadiosFiledDbIndex,self.readmeRadiosFiledEditable,
+            self.readmeInputMaxLength,self.readmeRadiosAutoNow,
+            self.readmeRadiosAutoNowAdd,self.readmeInputDefaultValue,
+            self.readmeInputFormHelpText,self.readmeInputFormErrorMessage,
+            self.readmeInputUploadTo,self.readmeInputMaxDigits,
+            self.readmeInputDecimalPlaces,self.readmeChoicesFiledUniqueForDate,
+            self.readmeChoicesFiledUniqueForMonth,self.readmeChoicesFiledUniqueForYear,
         ])
         self.labelStaticTexts.extend([
-
+            self.choiceFieldTypeLabel,self.labelFieldModelName,
+            self.labelFieldDatabaseName,self.labelFieldRemarkName,
+            self.labelRadiosFiledBlank,self.labelRadiosFiledNull,
+            self.labelRadiosFiledPrimary,self.labelRadiosFiledUnique,
+            self.labelRadiosFiledDbIndex,self.labelRadiosFiledEditable,
+            self.labelInputMaxLength,self.labelRadiosAutoNow,
+            self.labelRadiosAutoNowAdd,self.labelInputDefaultValue,
+            self.labelInputFormHelpText,self.labelInputFormErrorMessage,
+            self.labelInputUploadTo,self.labelInputMaxDigits,
+            self.labelInputDecimalPlaces,self.labelChoicesFiledUniqueForDate,
+            self.labelChoicesFiledUniqueForMonth,self.labelChoicesFiledUniqueForYear,
         ])
 
         # 按钮点击事件
@@ -1026,8 +1114,8 @@ class DemoModel(models.Model):
 
             # 更新日期组合唯一的三个相关下拉框【只给日期字段相关的字段属性名】
             self.choicesFiledUniqueForDate.Clear()
-            self.choicesFiledUniqueForMonth.Clear()
-            self.choicesFiledUniqueForYear.Clear()
+            # self.choicesFiledUniqueForMonth.Clear()
+            # self.choicesFiledUniqueForYear.Clear()
 
             # 目前只实现Date的日期唯一关联，其余两个暂不实现
             self.choicesFiledUniqueForDate.Append(' ')
@@ -1082,17 +1170,19 @@ class DemoModel(models.Model):
         """所有字段必须同步开启的参数"""
         for _ in self.commonArgs:
             _.Enable(True)
-        # for _ in set(self.allArgs)-set(self.commonArgs)-set([self.choiceFieldType,]):
-        #     _.Show(False)
 
-        # 其余特殊参数按需开启
+    def _open_max_length_field(self):
+        """开启max_length字段"""
+        self.inputMaxLengthStaticBox.Show(True)
+        self.inputMaxLength.Show(True)
+        self.labelInputMaxLength.Show(True)
+        self.readmeInputMaxLength.Show(True)
+        self.inputMaxLength.Enable(True)
 
     def selectBinaryField(self):
         """字节型字段"""
         self.radiosFiledEditable.SetSelection(1)
-        self.maxLengthStaticBox.Show(True)
-        self.inputMaxLength.Show(True)
-        self.inputMaxLength.Enable(True)
+        self._open_max_length_field()
 
     def selectSmallIntegerField(self):
         ...
@@ -1112,13 +1202,15 @@ class DemoModel(models.Model):
         ...
     def selectDecimalField(self):
         """高精度浮点型字段"""
-        self.maxDigitsStaticBox.Show(True)
+        self.inputMaxDigitsStaticBox.Show(True)
         self.inputMaxDigits.Show(True)
-        self.decimalPlacesStaticBox.Show(True)
+        self.labelInputMaxDigits.Show(True)
+        self.readmeInputMaxDigits.Show(True)
+        self.inputDecimalPlacesStaticBox.Show(True)
         self.inputDecimalPlaces.Show(True)
-        self.maxDigitsStaticBox.Enable(True)
+        self.labelInputDecimalPlaces.Show(True)
+        self.readmeInputDecimalPlaces.Show(True)
         self.inputMaxDigits.Enable(True)
-        self.decimalPlacesStaticBox.Enable(True)
         self.inputDecimalPlaces.Enable(True)
 
     def selectBooleanField(self):
@@ -1127,52 +1219,52 @@ class DemoModel(models.Model):
 
     def selectCharField(self):
         """字符型字段"""
-        self.maxLengthStaticBox.Show(True)
-        self.inputMaxLength.Show(True)
-        self.inputMaxLength.Enable(True)
+        self._open_max_length_field()
 
     def selectTextField(self):
         ...
     def selectEmailField(self):
         """电子邮件字段"""
-        self.maxLengthStaticBox.Show(True)
-        self.inputMaxLength.Show(True)
-        self.inputMaxLength.Enable(True)
+        self._open_max_length_field()
         self.inputMaxLength.SetValue('254')
 
     def selectGenericIPAddressField(self):
         ...
     def selectSlugField(self):
         """字母、数字、连字符字段"""
-        self.maxLengthStaticBox.Show(True)
-        self.inputMaxLength.Show(True)
-        self.inputMaxLength.Enable(True)
+        self._open_max_length_field()
         self.inputMaxLength.SetValue('50')
 
     def selectURLField(self):
         """url字段"""
-        self.maxLengthStaticBox.Show(True)
-        self.inputMaxLength.Show(True)
-        self.inputMaxLength.Enable(True)
+        self._open_max_length_field()
         self.inputMaxLength.SetValue('200')
 
         
     def selectUUIDField(self):
         ...
-    def selectDateField(self):
-        """日期型字段"""
+
+    def _open_autonow_add(self):
+        """开启日期相关的特殊参数"""
+        self.radiosAutoNowStaticBox.Show(True)
         self.radiosAutoNow.Show(True)
+        self.labelRadiosAutoNow.Show(True)
+        self.readmeRadiosAutoNow.Show(True)
+        self.radiosAutoNowAddStaticBox.Show(True)
         self.radiosAutoNowAdd.Show(True)
+        self.labelRadiosAutoNowAdd.Show(True)
+        self.readmeRadiosAutoNowAdd.Show(True)
         self.radiosAutoNow.Enable(True)
         self.radiosAutoNowAdd.Enable(True)
+
+    def selectDateField(self):
+        """日期型字段"""
+        self._open_autonow_add()
         self.inputDefaultValue.SetValue('date.today')
 
     def selectDateTimeField(self):
         """长日期字段"""
-        self.radiosAutoNow.Show(True)
-        self.radiosAutoNowAdd.Show(True)
-        self.radiosAutoNow.Enable(True)
-        self.radiosAutoNowAdd.Enable(True)
+        self._open_autonow_add()
         self.inputDefaultValue.SetValue('timezone.now')
 
     def selectDurationField(self):
@@ -1180,20 +1272,17 @@ class DemoModel(models.Model):
 
     def selectTimeField(self):
         """时间字段"""
-        self.radiosAutoNow.Show(True)
-        self.radiosAutoNowAdd.Show(True)
-        self.radiosAutoNow.Enable(True)
-        self.radiosAutoNowAdd.Enable(True)
+        self._open_autonow_add()
 
     def selectFileField(self):
         """文件字段"""
-        self.maxLengthStaticBox.Show(True)
-        self.inputMaxLength.Show(True)
-        self.inputMaxLength.Enable(True)
+        self._open_max_length_field()
         self.inputMaxLength.SetValue('100')
 
-        self.uploadToStaticBox.Show(True)
+        self.inputUploadToStaticBox.Show(True)
         self.inputUploadTo.Show(True)
+        self.labelInputUploadTo.Show(True)
+        self.readmeInputUploadTo.Show(True)
         self.inputUploadTo.Enable(True)
         self.inputUploadTo.SetValue(r'uploads/%Y/%m/%d/')
 
