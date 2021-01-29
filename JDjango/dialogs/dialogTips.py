@@ -19,7 +19,7 @@ def CodePreviewBox(parent, code):
 
 class CodePreviewDialog(wx.Dialog):
     def __init__(self, parent, code):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '代码预览', size=(600, 500))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '代码预览', size=(800, 500))
         
         self._init_UI(code)
 

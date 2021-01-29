@@ -6,7 +6,7 @@
     </page>
 
     <env>
-        <platform>Darwin</platform>
+        <platform>Windows</platform>
         <python3>C:\Users\PC\Desktop\djangoProject\TEST\Scripts\python.exe</python3>
         <port>8868</port>
         <encoding>

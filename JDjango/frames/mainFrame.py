@@ -178,7 +178,10 @@ class Main(wx.Frame):
         menuOpen = menus.Append(wx.ID_OPEN, "&查看文件", "查看文件")
         menus.AppendSeparator() # --
         menusCreate = wx.Menu()
-        self.create_project = menusCreate.Append(wx.ID_ANY, "&项目", "项目")
+        menusCreateVersionProject =  wx.Menu()
+        self.create_project_1_10_0 = menusCreateVersionProject.Append(wx.ID_ANY, "&Django1.10.0", "Django1.10.0")
+        self.create_project = menusCreateVersionProject.Append(wx.ID_ANY, "&Django3.0.8", "Django3.0.8")
+        menusCreate.Append(wx.ID_ANY, "&项目", menusCreateVersionProject)
         menusCreate.AppendSeparator()
         self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
         menusCreate.AppendSeparator()
@@ -368,6 +371,7 @@ class Main(wx.Frame):
 
         # 新项目 事件绑定
         self.Bind(wx.EVT_MENU, self.onCreateProject, self.create_project) # 新建项目
+        self.Bind(wx.EVT_MENU, self.onCreateProject1100, self.create_project_1_10_0) # 新建项目
 
         # 运行 事件绑定
         self.Bind(wx.EVT_MENU, self.onPortProgressRun, self.portProgressRun) # 运行
@@ -380,6 +384,10 @@ class Main(wx.Frame):
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onCreateProject1100(self, e):
+        """创建Django1.10.0项目"""
+        TipsMessageOKBox(self, '待考虑的功能。', '提示')
 
     def onPortProgressVirtual(self, e):
         """创建虚拟环境"""

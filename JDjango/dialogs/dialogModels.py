@@ -10,6 +10,8 @@ from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 from ..constant import *
 
+STATIC_TEXT_WIDTH = -1 # StaticText宽度
+
 class ModelsCreateDialog(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(888, 888))
@@ -20,6 +22,8 @@ class ModelsCreateDialog(wx.Dialog):
         self.specialArgs = [] # 特有的参数选项
         self.afterBtns = [] # 所有的后触发按钮
         self.allRows = [] # 所有的待新增按钮
+        self.readmeStaticTexts = [] # 所有的脚注提示信息控件
+        self.labelStaticTexts = [] # 所有的标签控件
 
         self._init_UI()
         self._disable_all_args()
@@ -29,6 +33,21 @@ class ModelsCreateDialog(wx.Dialog):
         self._disable_all_afterBtns()
 
         self._init_table() # 表格布局默认加最后
+
+        # 字体默认设置
+        self._init_readme_font()
+        self._init_label__font()
+
+    def _init_readme_font(self):
+        """脚注提示信息字体初始化"""
+        for _ in self.readmeStaticTexts:
+            _.SetFont(wx.Font(8, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
+            _.SetForegroundColour(CON_COLOR_BLUE)
+
+    def _init_label__font(self):
+        """标签提示信息字体初始化"""
+        for _ in self.labelStaticTexts:
+            _.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 
     def _init_UI(self):
         """初始化界面布局"""
@@ -75,61 +94,67 @@ class ModelsCreateDialog(wx.Dialog):
         toolPanelSizer.Add(self.btnWhite, 1, wx.EXPAND | wx.ALL, 2)
         self.btnWhite.Enable(False)
 
-        # 可滚动
+        # 可滚动面板（包裹所有的参数）
         self.scollPanel = scrolledpanel.ScrolledPanel(self.panel, -1)
-        # self.scollPanel.SetScrollRate( 1, 1 )
-        # self.scollPanel.SetVirtualSize( ( 888, 345 ) )
         self.scollPanel.SetupScrolling()
         scollPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.scollPanel.SetSizer(scollPanelSizer)
         self.panelSizer.Add(self.scollPanel, 3, wx.EXPAND | wx.ALL, 2)
 
         # 选择字段类型
-        selectFieldTypeStaticBox = wx.StaticBox(self.scollPanel, -1, '【选择】字段类型：')
-        # selectFieldTypeStaticBox.SetBackgroundColour(CON_COLOR_BLACK)
-        self.selectFieldTypePanel = wx.StaticBoxSizer(selectFieldTypeStaticBox, wx.HORIZONTAL)
+        self.selectFieldTypeStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.selectFieldTypePanel = wx.StaticBoxSizer(self.selectFieldTypeStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
 
+        self.choiceFieldTypeLabel = wx.StaticText(self.scollPanel, -1, "字段类型：")
         self.choiceFieldType = wx.Choice(self.scollPanel, -1, choices = [' ']+CON_FIELD_TYPES) # , style = wx.CB_SORT
+        self.readmeChoiceFieldType = wx.StaticText(self.scollPanel, -1, "*新增字段前，必须先选择字段类型，选择后即可填写详细的参数数据。") # 选项说明
+        self.selectFieldTypePanel.Add(self.choiceFieldTypeLabel, 0, wx.EXPAND | wx.ALL, 2)
         self.selectFieldTypePanel.Add(self.choiceFieldType, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeChoiceFieldType, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 字段命名
-        modelsNameStaticBox = wx.StaticBox(self.scollPanel, -1, '字段名【db_column】')
-        self.modelsNamePanel = wx.StaticBoxSizer(modelsNameStaticBox, wx.HORIZONTAL)
+        # 字段属性命名
+        self.modelsNameStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.modelsNamePanel = wx.StaticBoxSizer(self.modelsNameStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.modelsNamePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 字段命名 - 左
-        self.modelsNameLeftPanel = wx.Panel(self.scollPanel)
-        modelsNameLeftPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.modelsNameLeftPanel.SetSizer(modelsNameLeftPanelSizer)
-        self.modelsNamePanel.Add(self.modelsNameLeftPanel, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelFieldModelName = wx.StaticText(self.scollPanel, -1, "字段属性名：")
+        self.inputFieldModelName = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputFieldModelName = wx.StaticText(self.scollPanel, -1, "*字段属性名，是代码中的字段名称，并非数据库中实际存储的列名。")
+        self.modelsNamePanel.Add(self.labelFieldModelName, 0, wx.EXPAND | wx.ALL, 2)
+        self.modelsNamePanel.Add(self.inputFieldModelName, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputFieldModelName, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelFieldModelName = wx.StaticText(self.modelsNameLeftPanel, -1, "字段属性名：")
-        self.inputFieldModelName = wx.TextCtrl(self.modelsNameLeftPanel, -1)
-        modelsNameLeftPanelSizer.Add(self.labelFieldModelName, 0, wx.EXPAND | wx.ALL, 2)
-        modelsNameLeftPanelSizer.Add(self.inputFieldModelName, 1, wx.EXPAND | wx.ALL, 2)
+        # 数据库列名（db_column）
+        self.dbColumnNameStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.dbColumnNamePanel = wx.StaticBoxSizer(self.dbColumnNameStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.dbColumnNamePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 字段命名 - 中
-        self.modelsNameMiddlePanel = wx.Panel(self.scollPanel)
-        modelsNameMiddlePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.modelsNameMiddlePanel.SetSizer(modelsNameMiddlePanelSizer)
-        self.modelsNamePanel.Add(self.modelsNameMiddlePanel, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelFieldDatabaseName = wx.StaticText(self.scollPanel, -1, "数据库列名（db_column）：")
+        self.inputFieldDatabaseName = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputFieldDatabaseName = wx.StaticText(self.scollPanel, -1, "*实际存储在数据库中的列名，若不指定默认取【字段属性名】。")
+        self.dbColumnNamePanel.Add(self.labelFieldDatabaseName, 0, wx.EXPAND | wx.ALL, 2)
+        self.dbColumnNamePanel.Add(self.inputFieldDatabaseName, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputFieldDatabaseName, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelFieldDatabaseName = wx.StaticText(self.modelsNameMiddlePanel, -1, "数据库列名：（选填）")
-        self.inputFieldDatabaseName = wx.TextCtrl(self.modelsNameMiddlePanel, -1)
-        modelsNameMiddlePanelSizer.Add(self.labelFieldDatabaseName, 0, wx.EXPAND | wx.ALL, 2)
-        modelsNameMiddlePanelSizer.Add(self.inputFieldDatabaseName, 1, wx.EXPAND | wx.ALL, 2)
 
-        # 字段命名 - 右
-        self.modelsNameRightPanel = wx.Panel(self.scollPanel)
-        modelsNameRightPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.modelsNameRightPanel.SetSizer(modelsNameRightPanelSizer)
-        self.modelsNamePanel.Add(self.modelsNameRightPanel, 1, wx.EXPAND | wx.ALL, 2)
+        # 字段备注
+        self.fieldRemarkStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.fieldRemarkPanel = wx.StaticBoxSizer(self.fieldRemarkStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.fieldRemarkPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelFieldRemarkName = wx.StaticText(self.modelsNameRightPanel, -1, "字段备注：（选填）")
-        self.inputFieldRemarkName = wx.TextCtrl(self.modelsNameRightPanel, -1)
-        modelsNameRightPanelSizer.Add(self.labelFieldRemarkName, 0, wx.EXPAND | wx.ALL, 2)
-        modelsNameRightPanelSizer.Add(self.inputFieldRemarkName, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelFieldRemarkName = wx.StaticText(self.scollPanel, -1, "字段备注：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputFieldRemarkName = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputFieldRemarkName = wx.StaticText(self.scollPanel, -1, "*字段备注默认取【字段属性名】，下划线将自动转换成空格。")
+        self.fieldRemarkPanel.Add(self.labelFieldRemarkName, 0, wx.EXPAND | wx.ALL, 2)
+        self.fieldRemarkPanel.Add(self.inputFieldRemarkName, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputFieldRemarkName, 0, wx.EXPAND | wx.ALL, 2)
+
+
+        # 允许为空、blank
+        self.radiosFiledBlank = wx.RadioBox(self.scollPanel, -1, "允许为空【blank】", choices=['允许', '不允许'])
+        scollPanelSizer.Add(self.radiosFiledBlank, 1, wx.EXPAND | wx.ALL, 2)
+
 
         """三个一行，布局"""
         # 混乱布局第1行
@@ -138,13 +163,15 @@ class ModelsCreateDialog(wx.Dialog):
         self.complex1Panel.SetSizer(complex1PanelSizer)
         scollPanelSizer.Add(self.complex1Panel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.radiosFiledBlank = wx.RadioBox(self.complex1Panel, -1, "允许为空【blank】", choices=['允许', '不允许'])
+        
+
         self.radiosFiledNull = wx.RadioBox(self.complex1Panel, -1, "为空时赋NULL【null】", choices=['赋', '不赋'])
+
         self.radiosFiledPrimary = wx.RadioBox(self.complex1Panel, -1, "主键【primary_key】", choices=['是', '否'])
-        complex1PanelSizer.Add(self.radiosFiledBlank, 1, wx.EXPAND | wx.ALL, 2)
+
+        
         complex1PanelSizer.Add(self.radiosFiledNull, 1, wx.EXPAND | wx.ALL, 2)
         complex1PanelSizer.Add(self.radiosFiledPrimary, 1, wx.EXPAND | wx.ALL, 2)
-        # self.radiosFiledBlank.SetBackgroundColour(CON_COLOR_RADIO)
 
         # 混乱布局第2行
         self.complex2Panel = wx.Panel(self.scollPanel)
@@ -337,17 +364,25 @@ class ModelsCreateDialog(wx.Dialog):
 
         # 私有参数
         self.specialArgs.extend([
-            self.maxLengthStaticBox, self.inputMaxLength,
-            self.maxDigitsStaticBox, self.inputMaxDigits,
-            self.decimalPlacesStaticBox, self.inputDecimalPlaces,
-            self.radiosAutoNow, self.radiosAutoNowAdd, 
-            self.uploadToStaticBox, self.inputUploadTo,
+            # self.maxLengthStaticBox, self.inputMaxLength,
+            # self.maxDigitsStaticBox, self.inputMaxDigits,
+            # self.decimalPlacesStaticBox, self.inputDecimalPlaces,
+            # self.radiosAutoNow, self.radiosAutoNowAdd, 
+            # self.uploadToStaticBox, self.inputUploadTo,
 
-            # 关联字段专属
-            self.relationFiledStaticBox,
-            self.relationFiledChoiceModelStaticBox, self.choiceSelectModel,
-            self.relationFiledDelRuleStaticBox, self.choiceSelectDelRule,
-            self.relationFiledRemarkStaticBox, self.inputRelationRemark,
+            # # 关联字段专属
+            # self.relationFiledStaticBox,
+            # self.relationFiledChoiceModelStaticBox, self.choiceSelectModel,
+            # self.relationFiledDelRuleStaticBox, self.choiceSelectDelRule,
+            # self.relationFiledRemarkStaticBox, self.inputRelationRemark,
+
+        ])
+
+        # 字体初始化控件录入
+        self.readmeStaticTexts.extend([
+
+        ])
+        self.labelStaticTexts.extend([
 
         ])
 
@@ -464,14 +499,34 @@ class ModelsCreateDialog(wx.Dialog):
 
             pre_fields.append(f"{field_name} = models.{field_type}({', '.join(args)})")
 
-        # 组织代码
+        # 字段详细定义
         if len(pre_fields) > 0:
             fields_code = '\n'.join([f'    {_}' for _ in pre_fields])
         else:
             fields_code = '    pass'
+
+        # Meta元数据定义
+        meta_code = '    pass'
+
+        # __str__()返回值
+        str_msg = "    return ''"
+
+        # 如果没有设置主键，则自动增加主键【预览界面有效，实际代码无此行】
+        if len([_ for _ in self.allRows if CON_YES==_['primary_key']]) <= 0: # 用户无主动设置主键
+            auto_primary = 'id = models.AutoField(primary_key=True)'
+        else:
+            auto_primary = ''
+        
         model_code = f"""
 class DemoModel(models.Model):
+    {auto_primary}
 {fields_code}
+
+    class meta:
+    {meta_code}
+
+    def __str__(self):
+    {str_msg}
 """
         CodePreviewBox(self, model_code)
 
