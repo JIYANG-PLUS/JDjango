@@ -14,7 +14,7 @@ STATIC_TEXT_WIDTH = -1 # StaticText宽度
 
 class ModelsCreateDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(666, 888))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(730, 888))
 
         # 必要的控制容器
         self.allArgs = [] # 所有的参数选项
@@ -971,6 +971,8 @@ class DemoModel(models.Model):
             self.selectOneToOneField()
 
         self.choiceFieldType.Enable(False) # 一旦选择将锁定字段的重新选择，可点击【重置字段】解锁
+
+        self.panelSizer.Layout() # 重要！！！ 重新计算布局
 
     def onBtnSelectPath(self, e):
         """选择文件写入路径"""
