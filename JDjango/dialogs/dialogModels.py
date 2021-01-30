@@ -32,7 +32,9 @@ class ModelsCreateDialog(wx.Dialog):
 
         self._disable_all_afterBtns()
 
+        # 按顺序布局面板
         self._init_table() # 表格布局默认加最后
+        self._init_Meta_panel() # 初始化Meta选项面板
 
         # 字体默认设置
         self._init_readme_font()
@@ -94,24 +96,24 @@ class ModelsCreateDialog(wx.Dialog):
         toolPanelSizer.Add(self.btnWhite, 1, wx.EXPAND | wx.ALL, 2)
         self.btnWhite.Enable(False)
 
+        # 选择字段类型【行冻结】
+        self.selectFieldTypeStaticBox = wx.StaticBox(self.panel, -1, '')
+        self.selectFieldTypePanel = wx.StaticBoxSizer(self.selectFieldTypeStaticBox, wx.HORIZONTAL)
+        self.panelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.choiceFieldTypeLabel = wx.StaticText(self.panel, -1, "1、字段类型：")
+        self.choiceFieldType = wx.Choice(self.panel, -1, choices = [' ']+CON_FIELD_TYPES) # , style = wx.CB_SORT
+        self.readmeChoiceFieldType = wx.StaticText(self.panel, -1, "【字段类型】** 新增字段前，必须先选择字段类型，选择后即可填写详细的参数数据。") # 选项说明
+        self.selectFieldTypePanel.Add(self.choiceFieldTypeLabel, 0, wx.EXPAND | wx.ALL, 2)
+        self.selectFieldTypePanel.Add(self.choiceFieldType, 1, wx.EXPAND | wx.ALL, 2)
+        self.panelSizer.Add(self.readmeChoiceFieldType, 0, wx.EXPAND | wx.ALL, 2)
+
         # 可滚动面板（包裹所有的参数）
         self.scollPanel = scrolledpanel.ScrolledPanel(self.panel, -1)
         self.scollPanel.SetupScrolling()
         scollPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.scollPanel.SetSizer(scollPanelSizer)
         self.panelSizer.Add(self.scollPanel, 3, wx.EXPAND | wx.ALL, 2)
-
-        # 选择字段类型
-        self.selectFieldTypeStaticBox = wx.StaticBox(self.scollPanel, -1, '')
-        self.selectFieldTypePanel = wx.StaticBoxSizer(self.selectFieldTypeStaticBox, wx.HORIZONTAL)
-        scollPanelSizer.Add(self.selectFieldTypePanel, 0, wx.EXPAND | wx.ALL, 2)
-
-        self.choiceFieldTypeLabel = wx.StaticText(self.scollPanel, -1, "1、字段类型：")
-        self.choiceFieldType = wx.Choice(self.scollPanel, -1, choices = [' ']+CON_FIELD_TYPES) # , style = wx.CB_SORT
-        self.readmeChoiceFieldType = wx.StaticText(self.scollPanel, -1, "【字段类型】** 新增字段前，必须先选择字段类型，选择后即可填写详细的参数数据。") # 选项说明
-        self.selectFieldTypePanel.Add(self.choiceFieldTypeLabel, 0, wx.EXPAND | wx.ALL, 2)
-        self.selectFieldTypePanel.Add(self.choiceFieldType, 1, wx.EXPAND | wx.ALL, 2)
-        scollPanelSizer.Add(self.readmeChoiceFieldType, 0, wx.EXPAND | wx.ALL, 2)
 
         # 字段属性命名
         self.modelsNameStaticBox = wx.StaticBox(self.scollPanel, -1, '')
@@ -395,13 +397,6 @@ class ModelsCreateDialog(wx.Dialog):
         self.inputRelationRemark = wx.TextCtrl(self.scollPanel, -1)
         self.relationFiledRemarkPanel.Add(self.inputRelationRemark, 1, wx.EXPAND | wx.ALL, 2)
 
-        # Meta选项
-        modelMetaStaticBox = wx.StaticBox(self.scollPanel, -1, 'Meta选项（数据表选项）')
-        self.modelMetaPanel = wx.StaticBoxSizer(modelMetaStaticBox, wx.HORIZONTAL)
-        scollPanelSizer.Add(self.modelMetaPanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        self.modelMetaPanel.Add(wx.StaticText(self.scollPanel, -1, "此处暂时搁置，后期完善。"), 1, wx.EXPAND | wx.ALL, 2)
-
         self.afterBtns.extend([
             self.btnResetInput, self.btnAddFieldToArea,
             # self.btnExecSave,
@@ -498,6 +493,77 @@ class ModelsCreateDialog(wx.Dialog):
         self.Bind(wx.EVT_RADIOBOX, self.onRadioChanged, self.radiosFiledEditable)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioChanged, self.radiosAutoNow)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioChanged, self.radiosAutoNowAdd)
+
+    def _init_Meta_panel(self):
+        """初始化Meta选项面板"""
+        # 显示和隐藏Meta按钮，用于空间的合理布局
+        self.btnShowUnshowMeta = buttons.GenButton(self.panel, -1, '【显示】Meta元数据')
+        self.panelSizer.Add(self.btnShowUnshowMeta, 0, wx.EXPAND | wx.ALL, 2)
+        self.btnShowUnshowMeta.SetBackgroundColour(CON_COLOR_BLUE)
+        self.btnShowUnshowMeta.SetForegroundColour(CON_COLOR_WHITE)
+
+        self.metaScollPanel = scrolledpanel.ScrolledPanel(self.panel, -1, size=(730,444))
+        self.metaScollPanel.SetupScrolling()
+        metaScollPanelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.metaScollPanel.SetSizer(metaScollPanelSizer)
+        self.panelSizer.Add(self.metaScollPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        # Meta的各种选项
+        # 抽象类（abstract）
+        self.metaAbstractOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaAbstractOptionPanel = wx.StaticBoxSizer(self.metaAbstractOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaAbstractOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaAbstractOption = wx.StaticText(self.metaScollPanel, -1, "1、抽象类（abstract）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaAbstractOption = wx.RadioBox(self.metaScollPanel, -1, "", choices=['是', '否'])
+        self.readmeMetaAbstractOption = wx.StaticText(self.metaScollPanel, -1, "【抽象类（abstract）】** 模型声明为抽象模型后，不会在数据库中建表。")
+        self.metaAbstractOptionPanel.Add(self.labelMetaAbstractOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaAbstractOptionPanel.Add(self.metaAbstractOption, 0, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaAbstractOption, 0, wx.EXPAND | wx.ALL, 2)
+
+
+
+
+        # 标签显示优化
+        self.readmeStaticTexts.extend([
+            self.readmeMetaAbstractOption,
+        ])
+        self.labelStaticTexts.extend([
+            self.labelMetaAbstractOption,
+        ])
+
+        # 按钮事件
+        self.Bind(wx.EVT_BUTTON, self.onBtnShowUnshowMeta, self.btnShowUnshowMeta)
+        # 单选框事件
+        self.Bind(wx.EVT_RADIOBOX, self.onMetaRadioChanged, self.metaAbstractOption)
+
+        self.metaScollPanel.Show(False) # 默认不显示
+        self._init_meta_data()
+    
+    def _init_meta_data(self):
+        """初始化Meta选项数据"""
+        self.metaAbstractOption.SetSelection(1)
+
+    def onMetaRadioChanged(self, e):
+        """单选框值更新事件"""
+        fid = e.GetId() # 控件id
+
+        status_abstract = self.metaAbstractOption.GetSelection()
+
+        if fid == self.metaAbstractOption.GetId():
+            if 0 == status_abstract:
+                TipsMessageOKBox(self, '抽象模型不会在数据库中建表。', '警告')
+
+    def onBtnShowUnshowMeta(self, e):
+        """显示和隐藏Meta按钮，用于空间的合理布局"""
+        if '【显示】Meta元数据' == self.btnShowUnshowMeta.Label:
+            self.metaScollPanel.Show(True)
+            self.btnShowUnshowMeta.SetLabel('【隐藏】Meta元数据')
+            self.panel.Layout() # 重新计算布局
+        else:
+            self.metaScollPanel.Show(False)
+            self.btnShowUnshowMeta.SetLabel('【显示】Meta元数据')
+            self.panel.Layout()
 
     def onBtnPreview(self, e):
         """预览待插入代码"""
@@ -647,6 +713,7 @@ class DemoModel(models.Model):
             if len([_ for _ in self.allRows if CON_YES==_['primary_key']]) > 0:
                 self.radiosFiledPrimary.SetSelection(1)
                 TipsMessageOKBox(self, '一个模型只能拥有一个显式主键，若想对此字段设置主键，请使用隐式方式：null=False且unique=True。', '警告')
+                return
 
             # 自动赋值默认值None
             if 0 == status_primary_key: # 主键
@@ -827,10 +894,18 @@ class DemoModel(models.Model):
 
     def _init_table(self):
         """初始化表格控件"""
-        self.tableObjPanel = wx.Panel(self.panel)
+
+        # 显示和隐藏按钮，用于空间的合理布局
+        self.btnShowUnshowTable = buttons.GenButton(self.panel, -1, '【显示】待新增字段表格数据')
+        self.panelSizer.Add(self.btnShowUnshowTable, 0, wx.EXPAND | wx.ALL, 2)
+        self.btnShowUnshowTable.SetBackgroundColour(CON_COLOR_BLUE)
+        self.btnShowUnshowTable.SetForegroundColour(CON_COLOR_WHITE)
+
+        # 表格
+        self.tableObjPanel = wx.Panel(self.panel, size=(730, 222))
         tableObjPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.tableObjPanel.SetSizer(tableObjPanelSizer)
-        self.panelSizer.Add(self.tableObjPanel, 1, wx.EXPAND | wx.ALL, 2)
+        self.panelSizer.Add(self.tableObjPanel, 0, wx.EXPAND | wx.ALL, 2)
         self.tableObjPanel.SetBackgroundColour('#000000')
 
         # 表头
@@ -870,6 +945,20 @@ class DemoModel(models.Model):
 
         # 事件
         self.Bind(wx.EVT_BUTTON, self.onGridBtnDelete, self.gridBtnDelete)
+        self.Bind(wx.EVT_BUTTON, self.onBtnShowUnshowTable, self.btnShowUnshowTable)
+
+        self.tableObjPanel.Show(False) # 默认隐藏
+
+    def onBtnShowUnshowTable(self, e):
+        """显示和隐藏按钮，用于空间的合理布局"""
+        if '【显示】待新增字段表格数据' == self.btnShowUnshowTable.Label:
+            self.tableObjPanel.Show(True)
+            self.btnShowUnshowTable.SetLabel('【隐藏】待新增字段表格数据')
+            self.panel.Layout() # 重新计算布局
+        else:
+            self.tableObjPanel.Show(False)
+            self.btnShowUnshowTable.SetLabel('【显示】待新增字段表格数据')
+            self.panel.Layout()
 
     def onGridBtnDelete(self, e):
         """删除行"""
@@ -1125,7 +1214,6 @@ class DemoModel(models.Model):
                 if _['field_type'] in CON_DATE_FIELDS:
                     self.choicesFiledUniqueForDate.Append(_['field_name'])
 
-
         dlg_tip.Close(True)
 
     def _replace01_to_bool(self, v):
@@ -1222,6 +1310,7 @@ class DemoModel(models.Model):
     def selectCharField(self):
         """字符型字段"""
         self._open_max_length_field()
+        self.inputMaxLength.SetValue('255') # 默认长度255
 
     def selectTextField(self):
         ...
@@ -1242,7 +1331,6 @@ class DemoModel(models.Model):
         self._open_max_length_field()
         self.inputMaxLength.SetValue('200')
 
-        
     def selectUUIDField(self):
         ...
 

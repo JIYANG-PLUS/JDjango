@@ -185,8 +185,10 @@ class Main(wx.Frame):
         menusCreate.AppendSeparator()
         self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
         menusCreate.AppendSeparator()
-        self.modelsGenerate = menusCreate.Append(wx.ID_ANY, "&模型", "模型")
-        self.modelsProxyGenerate = menusCreate.Append(wx.ID_ANY, "&代理模型", "代理模型")
+        modelsSubMenu = wx.Menu()
+        self.modelsGenerate = modelsSubMenu.Append(wx.ID_ANY, "&普通模型", "普通模型")
+        self.modelsProxyGenerate = modelsSubMenu.Append(wx.ID_ANY, "&代理模型", "代理模型")
+        menusCreate.Append(wx.ID_ANY, "&模型", modelsSubMenu)
         menusCreate.AppendSeparator()
         self.viewsGenerateFunc = menusCreate.Append(wx.ID_ANY, "&视图", "视图")
         self.create_project.Enable(True)
@@ -850,8 +852,6 @@ class Main(wx.Frame):
             for b in self.allInitBtns[a]:
                 for _ in self.allInitBtns[a][b]:
                     _.Enable(False)
-        # 如果当前环境安装了virtualenv包，则关闭虚拟环境的安装按钮
-        # 待考虑功能
 
     def _open_all_check_btn(self):
         """ 开启所有检测按钮权限 """
@@ -866,10 +866,10 @@ class Main(wx.Frame):
         switch = True if 'open' == f_type else False
         for _ in self.allInitBtns[model][CON_CONTROL_FIX]:
             _.Enable(switch)
-        # # 开启/关闭全局的修复按钮
+        # 开启/关闭全局的修复按钮【一键修复】
         if len(self.needfix) > 0:
             for _ in self.allInitBtns['global'][CON_CONTROL_FIX]:
-                _.Enable(True)
+                _.Enable(True) # 需要修复时开启，否则关闭
         else:
             for _ in self.allInitBtns['global'][CON_CONTROL_FIX]:
                 _.Enable(False)
@@ -879,6 +879,7 @@ class Main(wx.Frame):
         for a in self.allInitBtns:
             for _ in self.allInitBtns[a][CON_CONTROL_CREATE]:
                 _.Enable(True) # 开启所有的创建按钮
+        self.modelsProxyGenerate.Enable(False) # 代理模型 功能暂未实现，待实现后去掉此行代码
         self.btn_config_project.Enable(True) # 选项
         self.menusSettings.Enable(True) # Settings
 

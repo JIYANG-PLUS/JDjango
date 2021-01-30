@@ -12,7 +12,7 @@ CON_COLOR_WHITE = '#ededed' # 白色
 CON_COLOR_BLACK = '#000000' # 纯黑
 CON_COLOR_BLUE = '#285f5c' # 暗绿色
 CON_COLOR_RED = '#ff0000' # 红色
-CON_COLOR_MAIN = '#fbe4d5' # 程序主色调
+CON_COLOR_MAIN = '#fbe4d5' # 程序主色调（屎黄色）
 CON_COLOR_RADIO = '#d2dce7'
 
 CON_MSG_PROGRESS_USE = """
