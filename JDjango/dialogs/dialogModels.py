@@ -10,6 +10,10 @@ from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 from ..constant import *
 
+"""
+Mac上布局有BUG，推测是RadioBox的问题。
+"""
+
 STATIC_TEXT_WIDTH = -1 # StaticText宽度
 
 class ModelsCreateDialog(wx.Dialog):
@@ -183,6 +187,10 @@ class ModelsCreateDialog(wx.Dialog):
 
         self.labelRadiosFiledBlank = wx.StaticText(self.scollPanel, -1, "7、允许为空（blank）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.radiosFiledBlank = wx.RadioBox(self.scollPanel, -1, "", choices=['允许', '不允许'])
+        # self.radiosFiledBlankY = wx.RadioButton(panel, -1, '允许', style=wx.RB_GROUP)
+        # self.radiosFiledBlankN = wx.RadioButton(panel, -1, '不允许', style=wx.RB_GROUP)
+        # rb2 = event.GetEventObject()
+        # print('二选择{0}'.format(rb2.GetLabel()))
         self.readmeRadiosFiledBlank = wx.StaticText(self.scollPanel, -1, "【允许为空（blank）】** 数据库表字段允许为空，表单验证允许为空。")
         self.radiosFiledBlankPanel.Add(self.labelRadiosFiledBlank, 0, wx.EXPAND | wx.ALL, 2)
         self.radiosFiledBlankPanel.Add(self.radiosFiledBlank, 0, wx.EXPAND | wx.ALL, 2)
