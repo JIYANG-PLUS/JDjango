@@ -12,6 +12,7 @@ from ..constant import *
 
 """
 Mac上布局有BUG，推测是RadioBox和scrolledpanel组合使用的问题，Mac上勉强还能用，暂时不改。
+一旦选择一个字段类型（无论以何种形式），在下一次选择字段类型时，参数不会全部显示，只针对某字段类型需要使用的参数全部显示。
 """
 
 STATIC_TEXT_WIDTH = -1 # StaticText宽度
@@ -375,36 +376,46 @@ class ModelsCreateDialog(wx.Dialog):
         self.inputUploadToPanel.Add(self.labelInputUploadTo, 0, wx.EXPAND | wx.ALL, 2)
         self.inputUploadToPanel.Add(self.inputUploadTo, 1, wx.EXPAND | wx.ALL, 2)
         scollPanelSizer.Add(self.readmeInputUploadTo, 0, wx.EXPAND | wx.ALL, 2)
-        
-        # 关联关系字段布局1
-        self.relationFiledStaticBox = wx.StaticBox(self.scollPanel, -1, '关联关系字段专属参数')
-        self.relationFiledPanel = wx.StaticBoxSizer(self.relationFiledStaticBox, wx.HORIZONTAL)
-        scollPanelSizer.Add(self.relationFiledPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        # 关联关系字段布局1 - 模型下拉列表选择
-        self.relationFiledChoiceModelStaticBox = wx.StaticBox(self.scollPanel, -1, '关联模型')
-        self.relationFiledChoiceModelPanel = wx.StaticBoxSizer(self.relationFiledChoiceModelStaticBox, wx.HORIZONTAL)
-        self.relationFiledPanel.Add(self.relationFiledChoiceModelPanel, 1, wx.EXPAND | wx.ALL, 2)
+        # 关联关系--模型下拉列表选择（多对一的一）
+        self.choiceSelectModelStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.choiceSelectModelPanel = wx.StaticBoxSizer(self.choiceSelectModelStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.choiceSelectModelPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.choiceSelectModel = wx.Choice(self.scollPanel, -1, choices = [' ']+['self'])
-        self.relationFiledChoiceModelPanel.Add(self.choiceSelectModel, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelChoiceSelectModel = wx.StaticText(self.scollPanel, -1, "A、关联关系模型", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        # self.choiceSelectModel = wx.Choice(self.scollPanel, -1, choices = [' ']+['self'])
+        self.choiceSelectModel = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeChoiceSelectModel = wx.StaticText(self.scollPanel, -1, " ** 多对一的一、一对一的一、多对多的多。如：Person、'Person'、'other_app.Person'。")
+        self.choiceSelectModelPanel.Add(self.labelChoiceSelectModel, 0, wx.EXPAND | wx.ALL, 2)
+        self.choiceSelectModelPanel.Add(self.choiceSelectModel, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeChoiceSelectModel, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 关联关系字段布局1 - 记录删除规则【on_delete】
-        self.relationFiledDelRuleStaticBox = wx.StaticBox(self.scollPanel, -1, '记录删除规则【on_delete】')
-        self.relationFiledDelRulePanel = wx.StaticBoxSizer(self.relationFiledDelRuleStaticBox, wx.HORIZONTAL)
-        self.relationFiledPanel.Add(self.relationFiledDelRulePanel, 1, wx.EXPAND | wx.ALL, 2)
+        # 删除规则【on_delete】
+        self.choiceSelectDelRuleStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.choiceSelectDelRulePanel = wx.StaticBoxSizer(self.choiceSelectDelRuleStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.choiceSelectDelRulePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.choiceSelectDelRule = wx.Choice(self.scollPanel, -1, choices = [' ']+['models.CASCADE'])
-        self.relationFiledDelRulePanel.Add(self.choiceSelectDelRule, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelChoiceSelectDelRule = wx.StaticText(self.scollPanel, -1, "B、删除规则（on_delete）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.choiceSelectDelRule = wx.Choice(self.scollPanel, -1, choices = [' ']+['models.CASCADE','models.SET_NULL',])
+        self.readmeChoiceSelectDelRule = wx.StaticText(self.scollPanel, -1, " ** 默认级联删除。")
+        self.choiceSelectDelRulePanel.Add(self.labelChoiceSelectDelRule, 0, wx.EXPAND | wx.ALL, 2)
+        self.choiceSelectDelRulePanel.Add(self.choiceSelectDelRule, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeChoiceSelectDelRule, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 关联关系字段布局1 - 备注名【verbose_name】
-        self.relationFiledRemarkStaticBox = wx.StaticBox(self.scollPanel, -1, '关联字段备注名【verbose_name】')
-        self.relationFiledRemarkPanel = wx.StaticBoxSizer(self.relationFiledRemarkStaticBox, wx.HORIZONTAL)
-        self.relationFiledPanel.Add(self.relationFiledRemarkPanel, 1, wx.EXPAND | wx.ALL, 2)
+        # 备注名【verbose_name】
+        self.inputRelationRemarkStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputRelationRemarkPanel = wx.StaticBoxSizer(self.inputRelationRemarkStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputRelationRemarkPanel, 0, wx.EXPAND | wx.ALL, 2)
 
+        self.labelInputRelationRemark = wx.StaticText(self.scollPanel, -1, "C、关联字段备注名（verbose_name）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.inputRelationRemark = wx.TextCtrl(self.scollPanel, -1)
-        self.relationFiledRemarkPanel.Add(self.inputRelationRemark, 1, wx.EXPAND | wx.ALL, 2)
+        self.readmeInputRelationRemark = wx.StaticText(self.scollPanel, -1, " ** 后台显示的关联字段的可读名称。")
+        self.inputRelationRemarkPanel.Add(self.labelInputRelationRemark, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputRelationRemarkPanel.Add(self.inputRelationRemark, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputRelationRemark, 0, wx.EXPAND | wx.ALL, 2)
 
+
+        # 后触发按钮
         self.afterBtns.extend([
             self.btnResetInput, self.btnAddFieldToArea,
             # self.btnExecSave,
@@ -434,6 +445,7 @@ class ModelsCreateDialog(wx.Dialog):
 
         # 私有参数
         self.specialArgs.extend([
+            # 一行表示一组私有参数
             self.inputMaxLengthStaticBox, self.inputMaxLength, self.labelInputMaxLength, self.readmeInputMaxLength,
             self.inputMaxDigitsStaticBox, self.inputMaxDigits, self.labelInputMaxDigits, self.readmeInputMaxDigits,
             self.inputDecimalPlacesStaticBox, self.inputDecimalPlaces, self.labelInputDecimalPlaces, self.readmeInputDecimalPlaces,
@@ -441,11 +453,10 @@ class ModelsCreateDialog(wx.Dialog):
             self.radiosAutoNowAddStaticBox, self.radiosAutoNowAdd, self.labelRadiosAutoNowAdd, self.readmeRadiosAutoNowAdd,
             self.inputUploadToStaticBox, self.inputUploadTo, self.labelInputUploadTo, self.readmeInputUploadTo,
 
-            # 关联字段专属
-            self.relationFiledStaticBox,
-            self.relationFiledChoiceModelStaticBox, self.choiceSelectModel,
-            self.relationFiledDelRuleStaticBox, self.choiceSelectDelRule,
-            self.relationFiledRemarkStaticBox, self.inputRelationRemark,
+            # 关联字段
+            self.choiceSelectModelStaticBox, self.choiceSelectModel, self.labelChoiceSelectModel, self.readmeChoiceSelectModel,
+            self.choiceSelectDelRuleStaticBox, self.choiceSelectDelRule, self.labelChoiceSelectDelRule, self.readmeChoiceSelectDelRule,
+            self.inputRelationRemarkStaticBox, self.inputRelationRemark, self.labelInputRelationRemark, self.readmeInputRelationRemark,
 
         ])
 
@@ -462,6 +473,8 @@ class ModelsCreateDialog(wx.Dialog):
             self.readmeInputUploadTo,self.readmeInputMaxDigits,
             self.readmeInputDecimalPlaces,self.readmeChoicesFiledUniqueForDate,
             self.readmeChoicesFiledUniqueForMonth,self.readmeChoicesFiledUniqueForYear,
+            self.readmeChoiceSelectModel,self.readmeChoiceSelectDelRule,
+            self.readmeInputRelationRemark,
         ])
         self.labelStaticTexts.extend([
             self.choiceFieldTypeLabel,self.labelFieldModelName,
@@ -475,6 +488,8 @@ class ModelsCreateDialog(wx.Dialog):
             self.labelInputUploadTo,self.labelInputMaxDigits,
             self.labelInputDecimalPlaces,self.labelChoicesFiledUniqueForDate,
             self.labelChoicesFiledUniqueForMonth,self.labelChoicesFiledUniqueForYear,
+            self.labelChoiceSelectModel,self.labelChoiceSelectDelRule,
+            self.labelInputRelationRemark,
         ])
 
         # 按钮点击事件
@@ -505,7 +520,7 @@ class ModelsCreateDialog(wx.Dialog):
     def _init_Meta_panel(self):
         """初始化Meta选项面板"""
         # 显示和隐藏Meta按钮，用于空间的合理布局
-        self.btnShowUnshowMeta = buttons.GenButton(self.panel, -1, '【显示】Meta元数据')
+        self.btnShowUnshowMeta = buttons.GenButton(self.panel, -1, '【显示】Meta元数据（表级参数设置）')
         self.panelSizer.Add(self.btnShowUnshowMeta, 0, wx.EXPAND | wx.ALL, 2)
         self.btnShowUnshowMeta.SetBackgroundColour(CON_COLOR_BLUE)
         self.btnShowUnshowMeta.SetForegroundColour(CON_COLOR_WHITE)
@@ -553,7 +568,6 @@ class ModelsCreateDialog(wx.Dialog):
         self.metaObjectsOptionPanel.Add(self.labelMetaObjectsOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaObjectsOptionPanel.Add(self.metaObjectsOption, 1, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaObjectsOption, 0, wx.EXPAND | wx.ALL, 2)
-        self.metaObjectsOption.SetValue('objects')
 
         # 数据表名（db_table）
         # 在mysql中均小写，Oracle中数据库表名要用双引号括起来
@@ -587,7 +601,7 @@ class ModelsCreateDialog(wx.Dialog):
 
         self.labelMetaDefaultManagerNameOption = wx.StaticText(self.metaScollPanel, -1, "6、指定默认解析管理器（default_manager_name）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.metaDefaultManagerNameOption = wx.TextCtrl(self.metaScollPanel, -1)
-        self.readmeMetaDefaultManagerNameOption = wx.StaticText(self.metaScollPanel, -1, " ** 用于Django的默认行为，防止数据集缺失导致的错误。")
+        self.readmeMetaDefaultManagerNameOption = wx.StaticText(self.metaScollPanel, -1, " ** 用于Django的默认行为，防止数据集缺失导致的错误。常用于一个模型多个解析器的情况。")
         self.metaDefaultManagerNameOptionPanel.Add(self.labelMetaDefaultManagerNameOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaDefaultManagerNameOptionPanel.Add(self.metaDefaultManagerNameOption, 1, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaDefaultManagerNameOption, 0, wx.EXPAND | wx.ALL, 2)
@@ -612,7 +626,7 @@ class ModelsCreateDialog(wx.Dialog):
 
         self.labelMetaGetLatestByOption = wx.StaticText(self.metaScollPanel, -1, "8、取最新的一条记录（get_latest_by）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.metaGetLatestByOption = wx.TextCtrl(self.metaScollPanel, -1)
-        self.readmeMetaGetLatestByOption = wx.StaticText(self.metaScollPanel, -1, " ** 默认指定日期字段，加前缀'-'表示倒序，可组合。配合latest()函数使用。")
+        self.readmeMetaGetLatestByOption = wx.StaticText(self.metaScollPanel, -1, " ** 推荐指定日期字段，加前缀'-'表示倒序，可组合，用英文逗号隔开。配合latest()使用。")
         self.metaGetLatestByOptionPanel.Add(self.labelMetaGetLatestByOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaGetLatestByOptionPanel.Add(self.metaGetLatestByOption, 1, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaGetLatestByOption, 0, wx.EXPAND | wx.ALL, 2)
@@ -628,8 +642,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.metaManagedOptionPanel.Add(self.labelMetaManagedOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaManagedOptionPanel.Add(self.metaManagedOption, 0, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaManagedOption, 0, wx.EXPAND | wx.ALL, 2)
-        self.metaManagedOption.SetSelection(0)
-
+        
         # 指定排序字段（ordering）
         # ordering = [F('author').asc(nulls_last=True)]
         self.metaOrderingOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
@@ -654,7 +667,6 @@ class ModelsCreateDialog(wx.Dialog):
         self.metaDefaultPermissionsOptionPanel.Add(self.labelMetaDefaultPermissionsOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaDefaultPermissionsOptionPanel.Add(self.metaDefaultPermissionsOption, 1, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaDefaultPermissionsOption, 0, wx.EXPAND | wx.ALL, 2)
-        self.metaDefaultPermissionsOption.SetValue("('add', 'change', 'delete', 'view')")
 
         # 额外权限（permissions）
         # (permission_code, human_readable_permission_name)
@@ -680,8 +692,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.metaProxyOptionPanel.Add(self.labelMetaProxyOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaProxyOptionPanel.Add(self.metaProxyOption, 0, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaProxyOption, 0, wx.EXPAND | wx.ALL, 2)
-        self.metaProxyOption.SetSelection(1)
-
+        
         # 保存旧算法（select_on_save）
         self.metaSelectOnSaveOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
         self.metaSelectOnSaveOptionPanel = wx.StaticBoxSizer(self.metaSelectOnSaveOptionStaticBox, wx.HORIZONTAL)
@@ -693,7 +704,6 @@ class ModelsCreateDialog(wx.Dialog):
         self.metaSelectOnSaveOptionPanel.Add(self.labelMetaSelectOnSaveOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaSelectOnSaveOptionPanel.Add(self.metaSelectOnSaveOption, 0, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaSelectOnSaveOption, 0, wx.EXPAND | wx.ALL, 2)
-        self.metaSelectOnSaveOption.SetSelection(1)
 
         # 指定后端数据库类型（required_db_vendor）
         self.metaRequiredDBVendorOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
@@ -750,7 +760,7 @@ class ModelsCreateDialog(wx.Dialog):
 
         self.labelMetaConstraintsOption = wx.StaticText(self.metaScollPanel, -1, "19、约束条件（constraints）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.metaConstraintsOption = wx.TextCtrl(self.metaScollPanel, -1)
-        self.readmeMetaConstraintsOption = wx.StaticText(self.metaScollPanel, -1, " ** 示例：[models.CheckConstraint(check=models.Q(age__gte=18), name='age_gte_18'),。")
+        self.readmeMetaConstraintsOption = wx.StaticText(self.metaScollPanel, -1, " ** 示例：[models.CheckConstraint(check=models.Q(age__gte=18), name='age_gte_18'),]。")
         self.metaConstraintsOptionPanel.Add(self.labelMetaConstraintsOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaConstraintsOptionPanel.Add(self.metaConstraintsOption, 1, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaConstraintsOption, 0, wx.EXPAND | wx.ALL, 2)
@@ -840,7 +850,27 @@ class ModelsCreateDialog(wx.Dialog):
     def _init_meta_data(self):
         """初始化Meta选项数据"""
         self.metaAbstractOption.SetSelection(1)
-
+        self.metaAppLabelOption.SetSelection(0)
+        self.metaObjectsOption.SetValue('objects')
+        self.metaDBTableOption.SetValue('')
+        self.metaDBTableSpaceOption.SetValue('')
+        self.metaDefaultManagerNameOption.SetValue('')
+        self.metaDefaultRelatedNameOption.SetValue('')
+        self.metaGetLatestByOption.SetValue('')
+        self.metaManagedOption.SetSelection(0)
+        self.metaOrderingOption.SetValue('')
+        self.metaDefaultPermissionsOption.SetValue("('add', 'change', 'delete', 'view')")
+        self.metaPermissionsOption.SetValue('')
+        self.metaProxyOption.SetSelection(1)
+        self.metaSelectOnSaveOption.SetSelection(1)
+        self.metaRequiredDBVendorOption.SetSelection(0)
+        self.metaIndexesOption.SetValue('')
+        self.metaUniqueTogetherOption.SetValue('')
+        self.metaIndexTogetherOption.SetValue('')
+        self.metaConstraintsOption.SetValue('')
+        self.metaVerboseNameOption.SetValue('')
+        self.metaVerboseNamePluralOption.SetValue('')
+        
     def onMetaRadioChanged(self, e):
         """单选框值更新事件"""
         fid = e.GetId() # 控件id
@@ -849,22 +879,67 @@ class ModelsCreateDialog(wx.Dialog):
 
         if fid == self.metaAbstractOption.GetId():
             if 0 == status_abstract:
-                TipsMessageOKBox(self, '抽象模型不会在数据库中建表。', '警告')
+                TipsMessageOKBox(self, '抽象模型不会在数据库中建表，并且表级的一些参数设置将对子类无效。', '警告')
 
     def onBtnShowUnshowMeta(self, e):
         """显示和隐藏Meta按钮，用于空间的合理布局"""
-        if '【显示】Meta元数据' == self.btnShowUnshowMeta.Label:
+        if '【显示】Meta元数据（表级参数设置）' == self.btnShowUnshowMeta.Label:
             self.metaScollPanel.Show(True)
-            self.btnShowUnshowMeta.SetLabel('【隐藏】Meta元数据')
+            self.btnShowUnshowMeta.SetLabel('【隐藏】Meta元数据（表级参数设置）')
             self.panel.Layout() # 重新计算布局
         else:
             self.metaScollPanel.Show(False)
-            self.btnShowUnshowMeta.SetLabel('【显示】Meta元数据')
+            self.btnShowUnshowMeta.SetLabel('【显示】Meta元数据（表级参数设置）')
             self.panel.Layout()
 
     def onBtnPreview(self, e):
         """预览待插入代码"""
+        pre_fields = self._get_fields_attrs() # 字段详细定义列表
+        meta_attrs = self._get_meta_attrs() # Meta参数
+       
+        if len(pre_fields) > 0:
+            fields_code = '\n'.join([f'    {_}' for _ in pre_fields])
+        else:
+            fields_code = '    pass'
 
+        # Meta元数据定义
+        if len(meta_attrs) > 0:
+            meta_code = '\n'.join([f'        {_}' for _ in meta_attrs])
+        else:
+            meta_code = '        pass'
+
+        # __str__()返回值
+        str_msg = "        return ''"
+
+        # 如果没有设置主键，则自动增加主键【预览界面有效，实际代码无此行】
+        if len([_ for _ in self.allRows if CON_YES==_['primary_key']]) <= 0: # 用户无主动设置主键
+            auto_primary = '    id = models.AutoField(primary_key=True)'
+        else:
+            auto_primary = ''
+        
+        model_code = f"""
+class DemoModel(models.Model):
+{auto_primary}
+{fields_code}
+
+    class meta:
+{meta_code}
+
+    def __str__(self):
+{str_msg}
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('', args=[])
+
+    def save(self, *args, **kwargs):
+        # 注意：bulk_create()和update()不会触发save()
+        super().save(*args, **kwargs) # 确保对象正确写入数据库
+"""
+        CodePreviewBox(self, model_code)
+
+    def _get_fields_attrs(self):
+        """获取字段参数输出字符串"""
         pre_fields = []
 
         for _ in self.allRows:
@@ -949,37 +1024,94 @@ class ModelsCreateDialog(wx.Dialog):
                 args.append(f"upload_to={t}")
 
             pre_fields.append(f"{field_name} = models.{field_type}({', '.join(args)})")
+        return pre_fields
+    
+    def _get_meta_attrs(self):
+        """获取Meta参数输出字符串"""
+        meta_str = []
+        if 0 == self.metaAbstractOption.GetSelection():
+            meta_str.append("abstract = True")
 
-        # 字段详细定义
-        if len(pre_fields) > 0:
-            fields_code = '\n'.join([f'    {_}' for _ in pre_fields])
-        else:
-            fields_code = '    pass'
+        app_label = self.metaAppLabelOption.GetString(self.metaAppLabelOption.GetSelection()).strip()
+        if app_label:
+            meta_str.append(f"app_label = '{app_label}'")
 
-        # Meta元数据定义
-        meta_code = '    pass'
+        base_manager_name = self.metaObjectsOption.GetValue().strip()
+        if base_manager_name and 'objects' != base_manager_name:
+            meta_str.append(f"base_manager_name = '{base_manager_name}'")
 
-        # __str__()返回值
-        str_msg = "    return ''"
+        db_table = self.metaDBTableOption.GetValue().strip()
+        if db_table:
+            meta_str.append(f"db_table = '{db_table}'")
 
-        # 如果没有设置主键，则自动增加主键【预览界面有效，实际代码无此行】
-        if len([_ for _ in self.allRows if CON_YES==_['primary_key']]) <= 0: # 用户无主动设置主键
-            auto_primary = 'id = models.AutoField(primary_key=True)'
-        else:
-            auto_primary = ''
+        db_tablespace = self.metaDBTableSpaceOption.GetValue().strip()
+        if db_tablespace:
+            meta_str.append(f"db_tablespace = '{db_tablespace}'")
+
+        default_manager_name = self.metaDefaultManagerNameOption.GetValue().strip()
+        if default_manager_name:
+            meta_str.append(f"default_manager_name = '{default_manager_name}'")
+
+        default_related_name = self.metaDefaultRelatedNameOption.GetValue().strip()
+        if default_related_name:
+            meta_str.append(f"default_related_name = '{default_related_name}'")
+
+        get_latest_by = self.metaGetLatestByOption.GetValue().strip()
+        if get_latest_by:
+            temp = ", ".join([f"'{_}'" for _ in get_latest_by.split(',') if _])
+            meta_str.append(f"get_latest_by = [{temp}]")
+
+        if 1 == self.metaManagedOption.GetSelection():
+            meta_str.append("managed = False")
+
+        ordering = self.metaOrderingOption.GetValue().strip()
+        if ordering:
+            temp = ", ".join([f"'{_}'" for _ in ordering.split(',') if _])
+            meta_str.append(f"ordering = [{temp}]")
+
+        default_permissions = self.metaDefaultPermissionsOption.GetValue().strip()
+        if default_permissions and "('add', 'change', 'delete', 'view')" != default_permissions:
+            meta_str.append(f"default_permissions = {default_permissions}")
+
+        permissions = self.metaPermissionsOption.GetValue().strip()
+        if permissions:
+            meta_str.append(f"permissions = {permissions}")
+
+        if 0 == self.metaProxyOption.GetSelection():
+            meta_str.append("proxy = True")
+
+        if 0 == self.metaSelectOnSaveOption.GetSelection():
+            meta_str.append("select_on_save = True")
+
+        required_db_vendor = self.metaRequiredDBVendorOption.GetString(self.metaRequiredDBVendorOption.GetSelection()).strip()
+        if required_db_vendor:
+            meta_str.append(f"required_db_vendor = '{required_db_vendor}'")
+
+        indexes = self.metaIndexesOption.GetValue().strip()
+        if indexes:
+            meta_str.append(f"indexes = {indexes}")
+
+        unique_together = self.metaUniqueTogetherOption.GetValue().strip()
+        if unique_together:
+            meta_str.append(f"unique_together = {unique_together}")
+
+        index_together = self.metaIndexTogetherOption.GetValue().strip()
+        if index_together:
+            meta_str.append(f"index_together = {index_together}")
+
+        constraints = self.metaConstraintsOption.GetValue().strip()
+        if constraints:
+            meta_str.append(f"constraints = {constraints}")
+
+        verbose_name = self.metaVerboseNameOption.GetValue().strip()
+        if verbose_name:
+            meta_str.append(f"verbose_name = '{verbose_name}'")
         
-        model_code = f"""
-class DemoModel(models.Model):
-    {auto_primary}
-{fields_code}
-
-    class meta:
-    {meta_code}
-
-    def __str__(self):
-    {str_msg}
-"""
-        CodePreviewBox(self, model_code)
+        verbose_name_plural = self.metaVerboseNamePluralOption.GetValue().strip()
+        if verbose_name_plural:
+            meta_str.append(f"verbose_name_plural = '{verbose_name_plural}'")
+        
+        return meta_str
 
     def _show_special_args(self):
         """显示特殊参数"""
@@ -1166,7 +1298,7 @@ class DemoModel(models.Model):
         self.choicesFiledUniqueForYear.SetSelection(0) # 无组合唯一
         self.radiosAutoNow.SetSelection(1)
         self.radiosAutoNowAdd.SetSelection(1)
-        self.choiceSelectModel.SetSelection(0)
+        # self.choiceSelectModel.SetSelection(0)
         self.choiceSelectDelRule.SetSelection(1)
 
     def _init_input_args(self):
@@ -1183,6 +1315,7 @@ class DemoModel(models.Model):
         self.inputDecimalPlaces.SetValue('')
         self.inputUploadTo.SetValue('')
         self.inputRelationRemark.SetValue('')
+        self.choiceSelectModel.SetValue('')
 
     def _disable_all_afterBtns(self):
         """关闭所有的后触发按钮"""
@@ -1351,10 +1484,13 @@ class DemoModel(models.Model):
             self.selectFilePathField()
         elif CON_FOREIGNFIELD == field_type:
             self.selectForeignKey()
+            TipsMessageOKBox(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
         elif CON_MANYTOMANYFIELD == field_type:
             self.selectManyToManyField()
+            TipsMessageOKBox(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
         elif CON_ONETOONEFIELD == field_type:
             self.selectOneToOneField()
+            TipsMessageOKBox(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
 
         self.choiceFieldType.Enable(False) # 一旦选择将锁定字段的重新选择，可点击【重置字段】解锁
 
@@ -1482,7 +1618,7 @@ class DemoModel(models.Model):
             insertRow['auto_now_add'] = self._replace01_to_bool(vradiosAutoNowAdd)
             insertRow['upload_to'] = vinputUploadTo
 
-            self.allRows.append(insertRow) # 删除时根据字段名删除
+            self.allRows.append(insertRow)
 
             # 插入待新增数据区域
             self.infoGrid.AppendRows(1)
@@ -1679,10 +1815,16 @@ class DemoModel(models.Model):
         ...
     def selectForeignKey(self):
         """多对一字段"""
+        self.radiosFiledDbIndex.SetSelection(0)
+
     def selectManyToManyField(self):
         """多对多字段"""
+        self.radiosFiledDbIndex.SetSelection(0)
+
     def selectOneToOneField(self):
         """一对一字段"""
+        self.radiosFiledDbIndex.SetSelection(0)
+
         
     def onExit(self, e):
         """退出窗口"""
