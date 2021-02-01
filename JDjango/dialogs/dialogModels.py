@@ -11,7 +11,7 @@ from ..miniCmd.djangoCmd import *
 from ..constant import *
 
 """
-Mac上布局有BUG，推测是RadioBox的问题。
+Mac上布局有BUG，推测是RadioBox和scrolledpanel组合使用的问题，Mac上勉强还能用，暂时不改。
 """
 
 STATIC_TEXT_WIDTH = -1 # StaticText宽度
@@ -524,20 +524,309 @@ class ModelsCreateDialog(wx.Dialog):
 
         self.labelMetaAbstractOption = wx.StaticText(self.metaScollPanel, -1, "1、抽象类（abstract）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.metaAbstractOption = wx.RadioBox(self.metaScollPanel, -1, "", choices=['是', '否'])
-        self.readmeMetaAbstractOption = wx.StaticText(self.metaScollPanel, -1, "【抽象类（abstract）】** 模型声明为抽象模型后，不会在数据库中建表。")
+        self.readmeMetaAbstractOption = wx.StaticText(self.metaScollPanel, -1, " ** 该模型声明为抽象模型后，不会在数据库中建表。")
         self.metaAbstractOptionPanel.Add(self.labelMetaAbstractOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaAbstractOptionPanel.Add(self.metaAbstractOption, 0, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaAbstractOption, 0, wx.EXPAND | wx.ALL, 2)
 
+        # 模型归属应用程序（app_label）
+        # 可以用model._meta.label或model._meta.label_lower获取模型名称
+        self.metaAppLabelOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaAppLabelOptionPanel = wx.StaticBoxSizer(self.metaAppLabelOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaAppLabelOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
 
+        self.labelMetaAppLabelOption = wx.StaticText(self.metaScollPanel, -1, "2、模型归属应用程序（app_label）：", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaAppLabelOption = wx.Choice(self.metaScollPanel, -1, choices=[' ',]+get_configs(CONFIG_PATH)['app_names'])
+        self.readmeMetaAppLabelOption = wx.StaticText(self.metaScollPanel, -1, " ** 不指定，则默认归属于当前模型文件所在的应用程序。")
+        self.metaAppLabelOptionPanel.Add(self.labelMetaAppLabelOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaAppLabelOptionPanel.Add(self.metaAppLabelOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaAppLabelOption, 0, wx.EXPAND | wx.ALL, 2)
 
+        # 模型管理器名称（base_manager_name）
+        self.metaObjectsOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaObjectsOptionPanel = wx.StaticBoxSizer(self.metaObjectsOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaObjectsOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaObjectsOption = wx.StaticText(self.metaScollPanel, -1, "3、模型管理器名称（base_manager_name）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaObjectsOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaObjectsOption = wx.StaticText(self.metaScollPanel, -1, " ** 默认为objects。可用model.objects调出管理器。")
+        self.metaObjectsOptionPanel.Add(self.labelMetaObjectsOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaObjectsOptionPanel.Add(self.metaObjectsOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaObjectsOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaObjectsOption.SetValue('objects')
+
+        # 数据表名（db_table）
+        # 在mysql中均小写，Oracle中数据库表名要用双引号括起来
+        self.metaDBTableOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaDBTableOptionPanel = wx.StaticBoxSizer(self.metaDBTableOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaDBTableOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaDBTableOption = wx.StaticText(self.metaScollPanel, -1, "4、数据表名（db_table）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaDBTableOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaDBTableOption = wx.StaticText(self.metaScollPanel, -1, " ** 默认为应用程序名+模型名，全小写。如：app_model。")
+        self.metaDBTableOptionPanel.Add(self.labelMetaDBTableOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaDBTableOptionPanel.Add(self.metaDBTableOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaDBTableOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 表空间名（db_tablespace）
+        self.metaDBTableSpaceOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaDBTableSpaceOptionPanel = wx.StaticBoxSizer(self.metaDBTableSpaceOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaDBTableSpaceOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaDBTableSpaceOption = wx.StaticText(self.metaScollPanel, -1, "5、表空间名（db_tablespace）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaDBTableSpaceOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaDBTableSpaceOption = wx.StaticText(self.metaScollPanel, -1, " ** 默认使用settings.py中的DEFAULT_TABLESPACE值。")
+        self.metaDBTableSpaceOptionPanel.Add(self.labelMetaDBTableSpaceOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaDBTableSpaceOptionPanel.Add(self.metaDBTableSpaceOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaDBTableSpaceOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 指定默认解析管理器（default_manager_name）
+        self.metaDefaultManagerNameOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaDefaultManagerNameOptionPanel = wx.StaticBoxSizer(self.metaDefaultManagerNameOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaDefaultManagerNameOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaDefaultManagerNameOption = wx.StaticText(self.metaScollPanel, -1, "6、指定默认解析管理器（default_manager_name）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaDefaultManagerNameOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaDefaultManagerNameOption = wx.StaticText(self.metaScollPanel, -1, " ** 用于Django的默认行为，防止数据集缺失导致的错误。")
+        self.metaDefaultManagerNameOptionPanel.Add(self.labelMetaDefaultManagerNameOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaDefaultManagerNameOptionPanel.Add(self.metaDefaultManagerNameOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaDefaultManagerNameOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 默认关联名称（default_related_name）
+        self.metaDefaultRelatedNameOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaDefaultRelatedNameOptionPanel = wx.StaticBoxSizer(self.metaDefaultRelatedNameOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaDefaultRelatedNameOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaDefaultRelatedNameOption = wx.StaticText(self.metaScollPanel, -1, "7、反向名称（default_related_name）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaDefaultRelatedNameOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaDefaultRelatedNameOption = wx.StaticText(self.metaScollPanel, -1, " ** 外键关联反向名称，默认<model_name>_set。")
+        self.metaDefaultRelatedNameOptionPanel.Add(self.labelMetaDefaultRelatedNameOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaDefaultRelatedNameOptionPanel.Add(self.metaDefaultRelatedNameOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaDefaultRelatedNameOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 取最新的一条记录（get_latest_by）
+        # 配合latest()函数使用
+        self.metaGetLatestByOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaGetLatestByOptionPanel = wx.StaticBoxSizer(self.metaGetLatestByOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaGetLatestByOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaGetLatestByOption = wx.StaticText(self.metaScollPanel, -1, "8、取最新的一条记录（get_latest_by）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaGetLatestByOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaGetLatestByOption = wx.StaticText(self.metaScollPanel, -1, " ** 默认指定日期字段，加前缀'-'表示倒序，可组合。配合latest()函数使用。")
+        self.metaGetLatestByOptionPanel.Add(self.labelMetaGetLatestByOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaGetLatestByOptionPanel.Add(self.metaGetLatestByOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaGetLatestByOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 托管模型（managed）
+        self.metaManagedOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaManagedOptionPanel = wx.StaticBoxSizer(self.metaManagedOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaManagedOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaManagedOption = wx.StaticText(self.metaScollPanel, -1, "9、托管模型（managed）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaManagedOption = wx.RadioBox(self.metaScollPanel, -1, "", choices=['是', '否'])
+        self.readmeMetaManagedOption = wx.StaticText(self.metaScollPanel, -1, " ** 托管意味着由Django掌控模型的所有生命周期，这也是Django的默认行为。")
+        self.metaManagedOptionPanel.Add(self.labelMetaManagedOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaManagedOptionPanel.Add(self.metaManagedOption, 0, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaManagedOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaManagedOption.SetSelection(0)
+
+        # 指定排序字段（ordering）
+        # ordering = [F('author').asc(nulls_last=True)]
+        self.metaOrderingOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaOrderingOptionPanel = wx.StaticBoxSizer(self.metaOrderingOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaOrderingOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaOrderingOption = wx.StaticText(self.metaScollPanel, -1, "10、指定排序字段（ordering）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaOrderingOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaOrderingOption = wx.StaticText(self.metaScollPanel, -1, " ** 前缀'-'表示倒叙，可多字段组合，中间用英文逗号隔开。")
+        self.metaOrderingOptionPanel.Add(self.labelMetaOrderingOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaOrderingOptionPanel.Add(self.metaOrderingOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaOrderingOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 默认权限（default_permissions）
+        self.metaDefaultPermissionsOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaDefaultPermissionsOptionPanel = wx.StaticBoxSizer(self.metaDefaultPermissionsOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaDefaultPermissionsOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaDefaultPermissionsOption = wx.StaticText(self.metaScollPanel, -1, "11、默认权限（default_permissions）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaDefaultPermissionsOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaDefaultPermissionsOption = wx.StaticText(self.metaScollPanel, -1, " ** 默认值('add', 'change', 'delete', 'view')，view为Django2.1版本后添加。")
+        self.metaDefaultPermissionsOptionPanel.Add(self.labelMetaDefaultPermissionsOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaDefaultPermissionsOptionPanel.Add(self.metaDefaultPermissionsOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaDefaultPermissionsOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaDefaultPermissionsOption.SetValue("('add', 'change', 'delete', 'view')")
+
+        # 额外权限（permissions）
+        # (permission_code, human_readable_permission_name)
+        self.metaPermissionsOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaPermissionsOptionPanel = wx.StaticBoxSizer(self.metaPermissionsOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaPermissionsOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaPermissionsOption = wx.StaticText(self.metaScollPanel, -1, "12、额外权限（permissions）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaPermissionsOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaPermissionsOption = wx.StaticText(self.metaScollPanel, -1, " ** 默认添加增删改查权限，可新增权限，用二元组列表表示。如[('code', 'name'),]")
+        self.metaPermissionsOptionPanel.Add(self.labelMetaPermissionsOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaPermissionsOptionPanel.Add(self.metaPermissionsOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaPermissionsOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 代理模型（proxy）
+        self.metaProxyOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaProxyOptionPanel = wx.StaticBoxSizer(self.metaProxyOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaProxyOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaProxyOption = wx.StaticText(self.metaScollPanel, -1, "13、代理模型（proxy）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaProxyOption = wx.RadioBox(self.metaScollPanel, -1, "", choices=['是', '否'])
+        self.readmeMetaProxyOption = wx.StaticText(self.metaScollPanel, -1, " ** 为原模型创建一个代理，用于扩展排序或管理器，与原模型共用一个表。")
+        self.metaProxyOptionPanel.Add(self.labelMetaProxyOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaProxyOptionPanel.Add(self.metaProxyOption, 0, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaProxyOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaProxyOption.SetSelection(1)
+
+        # 保存旧算法（select_on_save）
+        self.metaSelectOnSaveOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaSelectOnSaveOptionPanel = wx.StaticBoxSizer(self.metaSelectOnSaveOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaSelectOnSaveOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaSelectOnSaveOption = wx.StaticText(self.metaScollPanel, -1, "14、保存旧算法（select_on_save）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaSelectOnSaveOption = wx.RadioBox(self.metaScollPanel, -1, "", choices=['是', '否'])
+        self.readmeMetaSelectOnSaveOption = wx.StaticText(self.metaScollPanel, -1, " ** 旧算法只对存在的数据更新，新算法直接尝试更新。")
+        self.metaSelectOnSaveOptionPanel.Add(self.labelMetaSelectOnSaveOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaSelectOnSaveOptionPanel.Add(self.metaSelectOnSaveOption, 0, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaSelectOnSaveOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaSelectOnSaveOption.SetSelection(1)
+
+        # 指定后端数据库类型（required_db_vendor）
+        self.metaRequiredDBVendorOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaRequiredDBVendorOptionPanel = wx.StaticBoxSizer(self.metaRequiredDBVendorOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaRequiredDBVendorOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaRequiredDBVendorOption = wx.StaticText(self.metaScollPanel, -1, "15、指定后端数据库类型（required_db_vendor）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaRequiredDBVendorOption = wx.Choice(self.metaScollPanel, -1, choices=[' ',]+env.getDjangoSupportDatabase())
+        self.readmeMetaRequiredDBVendorOption = wx.StaticText(self.metaScollPanel, -1, " ** 不指定则默认支持所有。")
+        self.metaRequiredDBVendorOptionPanel.Add(self.labelMetaRequiredDBVendorOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaRequiredDBVendorOptionPanel.Add(self.metaRequiredDBVendorOption, 0, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaRequiredDBVendorOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 索引集合（indexes）
+        self.metaIndexesOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaIndexesOptionPanel = wx.StaticBoxSizer(self.metaIndexesOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaIndexesOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaIndexesOption = wx.StaticText(self.metaScollPanel, -1, "16、索引集合（indexes）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaIndexesOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaIndexesOption = wx.StaticText(self.metaScollPanel, -1, " ** 示例：[models.Index(fields=['first_name',], name='first_name_idx'),]")
+        self.metaIndexesOptionPanel.Add(self.labelMetaIndexesOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaIndexesOptionPanel.Add(self.metaIndexesOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaIndexesOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 值唯一组合（unique_together）
+        self.metaUniqueTogetherOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaUniqueTogetherOptionPanel = wx.StaticBoxSizer(self.metaUniqueTogetherOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaUniqueTogetherOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaUniqueTogetherOption = wx.StaticText(self.metaScollPanel, -1, "17、值唯一组合（unique_together）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaUniqueTogetherOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaUniqueTogetherOption = wx.StaticText(self.metaScollPanel, -1, " ** 示例：[['driver', 'restaurant',],]。将来可能被弃用。")
+        self.metaUniqueTogetherOptionPanel.Add(self.labelMetaUniqueTogetherOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaUniqueTogetherOptionPanel.Add(self.metaUniqueTogetherOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaUniqueTogetherOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 索引组合（index_together）
+        self.metaIndexTogetherOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaIndexTogetherOptionPanel = wx.StaticBoxSizer(self.metaIndexTogetherOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaIndexTogetherOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaIndexTogetherOption = wx.StaticText(self.metaScollPanel, -1, "18、索引组合（index_together）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaIndexTogetherOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaIndexTogetherOption = wx.StaticText(self.metaScollPanel, -1, " ** 示例：[['pub_date', 'deadline'],]。将来可能被弃用。")
+        self.metaIndexTogetherOptionPanel.Add(self.labelMetaIndexTogetherOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaIndexTogetherOptionPanel.Add(self.metaIndexTogetherOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaIndexTogetherOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 约束条件（constraints）
+        self.metaConstraintsOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaConstraintsOptionPanel = wx.StaticBoxSizer(self.metaConstraintsOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaConstraintsOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaConstraintsOption = wx.StaticText(self.metaScollPanel, -1, "19、约束条件（constraints）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaConstraintsOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaConstraintsOption = wx.StaticText(self.metaScollPanel, -1, " ** 示例：[models.CheckConstraint(check=models.Q(age__gte=18), name='age_gte_18'),。")
+        self.metaConstraintsOptionPanel.Add(self.labelMetaConstraintsOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaConstraintsOptionPanel.Add(self.metaConstraintsOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaConstraintsOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 模型可读单数名称（verbose_name）
+        self.metaVerboseNameOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaVerboseNameOptionPanel = wx.StaticBoxSizer(self.metaVerboseNameOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaVerboseNameOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaVerboseNameOption = wx.StaticText(self.metaScollPanel, -1, "20、模型可读单数名称（verbose_name）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaVerboseNameOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaVerboseNameOption = wx.StaticText(self.metaScollPanel, -1, " ** 用于后台展示模型名称。")
+        self.metaVerboseNameOptionPanel.Add(self.labelMetaVerboseNameOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaVerboseNameOptionPanel.Add(self.metaVerboseNameOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaVerboseNameOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 模型可读复数名称（verbose_name_plural）
+        self.metaVerboseNamePluralOptionStaticBox = wx.StaticBox(self.metaScollPanel, -1, '')
+        self.metaVerboseNamePluralOptionPanel = wx.StaticBoxSizer(self.metaVerboseNamePluralOptionStaticBox, wx.HORIZONTAL)
+        metaScollPanelSizer.Add(self.metaVerboseNamePluralOptionPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelMetaVerboseNamePluralOption = wx.StaticText(self.metaScollPanel, -1, "21、模型可读复数名称（verbose_name_plural）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.metaVerboseNamePluralOption = wx.TextCtrl(self.metaScollPanel, -1)
+        self.readmeMetaVerboseNamePluralOption = wx.StaticText(self.metaScollPanel, -1, " ** 默认是verbose_name+s。")
+        self.metaVerboseNamePluralOptionPanel.Add(self.labelMetaVerboseNamePluralOption, 0, wx.EXPAND | wx.ALL, 2)
+        self.metaVerboseNamePluralOptionPanel.Add(self.metaVerboseNamePluralOption, 1, wx.EXPAND | wx.ALL, 2)
+        metaScollPanelSizer.Add(self.readmeMetaVerboseNamePluralOption, 0, wx.EXPAND | wx.ALL, 2)
+
+        # order_with_respect_to暂不放出
 
         # 标签显示优化
         self.readmeStaticTexts.extend([
             self.readmeMetaAbstractOption,
+            self.readmeMetaAppLabelOption,
+            self.readmeMetaObjectsOption,
+            self.readmeMetaDBTableOption,
+            self.readmeMetaDBTableSpaceOption,
+            self.readmeMetaDefaultManagerNameOption,
+            self.readmeMetaDefaultRelatedNameOption,
+            self.readmeMetaGetLatestByOption,
+            self.readmeMetaManagedOption,
+            self.readmeMetaOrderingOption,
+            self.readmeMetaPermissionsOption,
+            self.readmeMetaDefaultPermissionsOption,
+            self.readmeMetaProxyOption,
+            self.readmeMetaSelectOnSaveOption,
+            self.readmeMetaRequiredDBVendorOption,
+            self.readmeMetaIndexesOption,
+            self.readmeMetaUniqueTogetherOption,
+            self.readmeMetaIndexTogetherOption,
+            self.readmeMetaConstraintsOption,
+            self.readmeMetaVerboseNameOption,
+            self.readmeMetaVerboseNamePluralOption,
         ])
         self.labelStaticTexts.extend([
             self.labelMetaAbstractOption,
+            self.labelMetaAppLabelOption,
+            self.labelMetaObjectsOption,
+            self.labelMetaDBTableOption,
+            self.labelMetaDBTableSpaceOption,
+            self.labelMetaDefaultManagerNameOption,
+            self.labelMetaDefaultRelatedNameOption,
+            self.labelMetaGetLatestByOption,
+            self.labelMetaManagedOption,
+            self.labelMetaOrderingOption,
+            self.labelMetaPermissionsOption,
+            self.labelMetaDefaultPermissionsOption,
+            self.labelMetaProxyOption,
+            self.labelMetaSelectOnSaveOption,
+            self.labelMetaRequiredDBVendorOption,
+            self.labelMetaIndexesOption,
+            self.labelMetaUniqueTogetherOption,
+            self.labelMetaIndexTogetherOption,
+            self.labelMetaConstraintsOption,
+            self.labelMetaVerboseNameOption,
+            self.labelMetaVerboseNamePluralOption,
         ])
 
         # 按钮事件
@@ -1382,7 +1671,7 @@ class DemoModel(models.Model):
         self.labelInputUploadTo.Show(True)
         self.readmeInputUploadTo.Show(True)
         self.inputUploadTo.Enable(True)
-        self.inputUploadTo.SetValue(r'uploads/%Y/%m/%d/')
+        self.inputUploadTo.SetValue(r"'uploads/%Y/%m/%d/'")
 
     def selectImageField(self):
         ...

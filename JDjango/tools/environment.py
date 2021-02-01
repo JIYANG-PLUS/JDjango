@@ -192,6 +192,11 @@ def killProgress(port = None):
     else: # 其他系统
         raise Exception('UnKnown system.')
 
+def getDjangoSupportDatabase():
+    """获取Django支持的所有数据库"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('env/database')
+
 # print(root.tag) # 查看标签
 # print(root.attrib) # 查看属性
 # print(root.text) # 查看文本内容（不读取子标签）
