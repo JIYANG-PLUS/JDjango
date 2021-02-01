@@ -61,6 +61,15 @@ CON_MODELSCREATEDIALOG_COLS = (
     '每次保存时更新时间',
     '仅新增时赋值时间',
     '文件上传路径',
+    # 二次添加
+    '关联关系模型',
+    '删除规则',
+    '关联字段备注名',
+    '筛选关联字段',
+    '反向名称',
+    '反向过滤器名称',
+    '指定关联外键',
+    '外键约束',
 )
 CON_ARGS_NAME_DICT = {
     '字段属性名' : 'field_name',
@@ -88,6 +97,15 @@ CON_ARGS_NAME_DICT = {
     '文件上传路径' : 'upload_to',
     '每次保存时更新时间' : 'auto_now',
     '仅新增时赋值时间' : 'auto_now_add',
+    # 二次添加
+    '关联关系模型' : 'relate_model',
+    '删除规则' : 'on_delete',
+    '关联字段备注名' : 'verbose_name',
+    '筛选关联字段' : 'limit_choices_to',
+    '反向名称' : 'related_name',
+    '反向过滤器名称' : 'related_query_name',
+    '指定关联外键' : 'to_field',
+    '外键约束' : 'db_constraint',
 }
 
 CON_VIEW_CHOICES = [
@@ -197,6 +215,13 @@ CON_DATE_FIELDS = (
     'DateTimeField',
     'DurationField',
     'TimeField',
+)
+
+# 所有的关联字段
+CON_FOREIGN_FIELDS = (
+    'ForeignKey',
+    'ManyToManyField',
+    'OneToOneField',
 )
 
 CON_YES = '是'
