@@ -3,6 +3,7 @@ from ..tools._tools import *
 from ..tools._re import *
 from ..tools import environment as env
 from ..settings import CONFIG_PATH, TEMPLATE_DIR
+from typing import Dict, List
 
 
 __all__ = [
@@ -22,6 +23,7 @@ __all__ = [
 
 def django_file_path(file_name, concat=[]):
     """补全模板路径"""
+    # 这里的concat用于弥补中间的残缺路径（因为文件可能分类在不同的文件夹下，只能保证根目录不变）
     if None == concat:
         concat = []
     return os.path.join(TEMPLATE_DIR, *concat, file_name) # 模板路径
@@ -129,7 +131,7 @@ def startapp(app_name):
     else:
         return 1
 
-def write_admin_base(path, importData):
+def write_admin_base(path: str, importData: Dict[str, List[str]]):
     """管理中心后台简单注册"""
     for k, v in importData.items():
         for site_name in v:

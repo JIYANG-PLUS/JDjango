@@ -31,6 +31,10 @@
         </database>
     </env>
 
+    <real>
+        <python3>python</python3>
+    </real>
+
     <alias>
         <file name="settings"><li>settings.py</li></file>
         <file name="manage"><li>manage.py</li></file>

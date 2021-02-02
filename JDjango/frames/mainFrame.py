@@ -238,16 +238,18 @@ class Main(wx.Frame):
         self.portProgressFaster = speeder.Append(wx.ID_ANY, "&一键配置", "一键配置")
         portProgress.Append(wx.ID_ANY, "&Python镜像", speeder)
         portProgress.AppendSeparator()
-        progresser = wx.Menu()
-        self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
-        portProgress.Append(wx.ID_ANY, "&进程", progresser)
-        portProgress.AppendSeparator()
         djangoOrder = wx.Menu()
+        self.portProgressPipInstall = djangoOrder.Append(wx.ID_ANY, "&pip install", "pip install")
+        djangoOrder.AppendSeparator()
         self.portProgressMakemigrations = djangoOrder.Append(wx.ID_ANY, "&makemigrations（数据迁移）", "makemigrations（数据迁移）")
         self.portProgressMigrate = djangoOrder.Append(wx.ID_ANY, "&migrate（数据写入）", "migrate（数据写入）")
         self.portProgressFlush = djangoOrder.Append(wx.ID_ANY, "&flush（数据清空）", "flush（数据清空）")
         self.portProgressCreatesuperuser = djangoOrder.Append(wx.ID_ANY, "&createsupersuer（创建管理员）", "createsupersuer（创建管理员）")
         portProgress.Append(wx.ID_ANY, "&原生指令", djangoOrder)
+        portProgress.AppendSeparator()
+        progresser = wx.Menu()
+        self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
+        portProgress.Append(wx.ID_ANY, "&进程", progresser)
         self.portProgressRun.Enable(False)
         self.portProgressStop.Enable(False)
         # self.portProgressVirtual.Enable(False)
@@ -399,9 +401,28 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onPortProgressMigrate, self.portProgressMigrate) 
         self.Bind(wx.EVT_MENU, self.onPortProgressFlush, self.portProgressFlush) 
         self.Bind(wx.EVT_MENU, self.onPortProgressCreatesuperuser, self.portProgressCreatesuperuser) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressPipInstall, self.portProgressPipInstall) 
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onPortProgressPipInstall(self, e):
+        """虚拟环境安装包pip install"""
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            return
+        
+        dlg = wx.TextEntryDialog(self, u"包名：", u"虚拟环境安装三方库", u"")
+        if dlg.ShowModal() == wx.ID_OK:
+            module_name = dlg.GetValue()
+
+            import subprocess
+            
+            env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
+
+            subprocess.Popen(f'{env_python3_pip} install {module_name}', shell=True)
+        dlg.Close(True)
 
     def onPortProgressMakemigrations(self, e):
         """python manage.py makemigrations"""
@@ -431,6 +452,16 @@ class Main(wx.Frame):
 
     def onPortProgressFlush(self, e):
         """python manage.py flush"""
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            return
+             
+        import subprocess
+        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
+        env_python3 = os.path.splitext(env.getPython3Env())[0]
+
+        subprocess.Popen(f'{env_python3} {path} flush', shell=True)
 
     def onPortProgressCreatesuperuser(self, e):
         """python manage.py createsuperuser"""
@@ -579,9 +610,12 @@ class Main(wx.Frame):
 
     def onSqliteManageTool(self, e):
         """跨平台的Sqlite工具"""
-        dlg = wx.MessageDialog(self, "请双击同级目录下的sqlite3Manager.pyw启动文件。", CON_TIPS_COMMON, wx.OK)
-        dlg.ShowModal()
-        dlg.Close(True)
+        # dlg = wx.MessageDialog(self, "请双击同级目录下的sqlite3Manager.pyw启动文件。", CON_TIPS_COMMON, wx.OK)
+        # dlg.ShowModal()
+        # dlg.Close(True)
+        import subprocess
+        manager = os.path.join(os.path.dirname(BASE_DIR), 'sqlite3Manager.pyw')
+        subprocess.Popen(f'{env.getRealPythonOrder()} {manager}', shell=True)
 
     def onMenusSettings(self, e):
         """Settings"""

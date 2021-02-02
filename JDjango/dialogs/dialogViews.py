@@ -15,7 +15,13 @@ class ViewGenerateDialog(wx.Dialog):
 
         wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增视图', size=(700, 600))
 
+        # 一些控制容器
+        self.labelStaticTexts = []
+
         self._init_UI()
+
+        # 布局后，美化界面
+        self._init_label_font()
 
     def _init_UI(self):
         """初始化界面布局"""
@@ -36,9 +42,25 @@ class ViewGenerateDialog(wx.Dialog):
         self.selectFileBox.Add(self.filePath, 1, wx.EXPAND | wx.ALL, 2)
         self.filePath.Enable(False)
 
-        # 选择试图创建类型
-        self.radiosPanel = wx.RadioBox(self.panel, -1, "选择创建视图类型", choices=CON_VIEW_CHOICES) # 单选框组
-        self.panelSizer.Add(self.radiosPanel, 0, wx.EXPAND | wx.ALL, 2)
+        # 选择类型视图
+        self.choiceViewTypeStaticBox = wx.StaticBox(self.panel, -1, '')
+        self.viewTypePanel = wx.StaticBoxSizer(self.choiceViewTypeStaticBox, wx.HORIZONTAL)
+        self.panelSizer.Add(self.viewTypePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelChoiceViewType = wx.StaticText(self.panel, -1, "选择要创建的视图类型：", style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.choiceViewType = wx.Choice(self.panel, -1, choices=[' ',]+CON_VIEW_CHOICES)
+        self.viewTypePanel.Add(self.labelChoiceViewType, 0, wx.EXPAND | wx.ALL, 2)
+        self.viewTypePanel.Add(self.choiceViewType, 1, wx.EXPAND | wx.ALL, 2)
+
+
+        # 标签美化
+        self.labelStaticTexts.extend([
+            self.labelChoiceViewType,
+        ])
+
+
+
+
 
         # 代码预览面板
         self.codeReviewPanel = wx.Panel(self.panel)
@@ -85,8 +107,12 @@ class ViewGenerateDialog(wx.Dialog):
 
         # 事件
         self.Bind(wx.EVT_BUTTON, self.onBtnSelectPath, self.btnWritePath)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadiosClick, self.radiosPanel)
-
+        
+    def _init_label_font(self):
+        """标签提示信息字体初始化"""
+        for _ in self.labelStaticTexts:
+            _.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+            _.SetForegroundColour(CON_COLOR_BLUE)
 
     def onRadiosClick(self, e):
         """"""

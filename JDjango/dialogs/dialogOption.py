@@ -104,9 +104,10 @@ class AdminCreateSimpleDialog(wx.Dialog):
             modelFiles, models = [], []
             for _ in modelModels:
                 t1, t2 = _.split(' -- ')
-                modelFiles.append(t2.split('.')[0])
+                modelFiles.append(t2.split('.')[0]) # 不取后缀名
                 models.append(t1)
-            classify = set(modelFiles) # 分类，组成键值对组合
+            classify = set(modelFiles) # 将所有的模型文件名称去重
+            # 分类，组成键值对组合
             importData = {}
             for _ in classify:
                 importData[_] = [] # 初始化键【模块名】

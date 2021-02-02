@@ -197,6 +197,12 @@ def getDjangoSupportDatabase():
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('env/database')
 
+def getRealPythonOrder():
+    """获取非虚拟环境的Python命令"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('real/python3')
+    return node.text
+
 # print(root.tag) # 查看标签
 # print(root.attrib) # 查看属性
 # print(root.text) # 查看文本内容（不读取子标签）

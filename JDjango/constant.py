@@ -110,12 +110,10 @@ CON_ARGS_NAME_DICT = {
     '多对多关联表名' : 'db_table',
 }
 
+# 视图类型选择
+CON_VIEW_TYPE_FUNC = '函数视图'
 CON_VIEW_CHOICES = [
-    '简单函数视图'
-    , '简单类视图'
-    , '简单列表视图'
-    , '快速模板视图'
-    , '简单详细视图'
+    CON_VIEW_TYPE_FUNC,
 ]
 
 # 字段下拉选择
