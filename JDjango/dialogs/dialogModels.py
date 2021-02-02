@@ -12,7 +12,26 @@ from ..constant import *
 
 """
 Mac上布局有BUG，推测是RadioBox和scrolledpanel组合使用的问题，Mac上勉强还能用，暂时不改。（已修复，控件顺序影响布局）
-一旦选择一个字段类型（无论以何种形式），在下一次选择字段类型时，参数不会全部显示，只针对某字段类型需要使用的参数全部显示。（略有混乱，但不影响功能）
+
+###1 新增参数步骤：
+1、在 constant.py 文件中注册参数，注册的有关变量：CON_MODELSCREATEDIALOG_COLS、CON_ARGS_NAME_DICT；
+2、将参数匹配对应的控件，添加到指定的页面位置（即布局）；
+3、在 self.allArgs 变量中注册参数控件（仅需要最核心的一个输入控件）；
+4、按 共用参数/特殊参数 区分，分别添加到 self.commonArgs / self.specialArgs 中（所有与核心控件相关的，包括布局都必须添加进去）；
+5、在 self.readmeStaticTexts 和 self.labelStaticTexts 中分别添加 字段说明 和 字段标签；
+6、在 onBtnAddFieldToArea() 方法中加入行数据（根据实际情况做个校验）；
+7、如果是特殊参数，则在选中对应字段类型时予以显示；
+8、最终，在 onBtnPreview() 函数中，进行预览展示。
+
+###2 新增字段类型步骤：
+1、在 constant.py 文件中新增一个变量，按照 '<类型>--<字段类型名>--<字段详细>' 的格式赋值，并添加到列表 CON_FIELD_TYPES 中最合适的位置；
+2、在 onChoiceFieldType() 方法中，编写选中事件。
+"""
+
+"""
+关联字段的一些注意点：
+1、OneToOneField 字段类型和其它关联字段类型不同，默认的反向名称是 '<model_name>'，而 ManyToManyField 和 ForeignField 默认是 '<model_name>_set'；
+（当然，反向名称可以自己指定.）
 """
 
 STATIC_TEXT_WIDTH = -1 # StaticText宽度
@@ -164,7 +183,7 @@ class ModelsCreateDialog(wx.Dialog):
 
         self.labelInputDefaultValue = wx.StaticText(self.scollPanel, -1, "5、默认值（default）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.inputDefaultValue = wx.TextCtrl(self.scollPanel, -1)
-        self.readmeInputDefaultValue = wx.StaticText(self.scollPanel, -1, "【默认值（default）】** 字段默认值，可以是常量，也可以是一个函数。")
+        self.readmeInputDefaultValue = wx.StaticText(self.scollPanel, -1, "【默认值（default）】** 字段默认值，可以是常量，也可以是一个函数。字符串用''括起来。")
         self.inputDefaultValuePanel.Add(self.labelInputDefaultValue, 0, wx.EXPAND | wx.ALL, 2)
         self.inputDefaultValuePanel.Add(self.inputDefaultValue, 1, wx.EXPAND | wx.ALL, 2)
         scollPanelSizer.Add(self.readmeInputDefaultValue, 0, wx.EXPAND | wx.ALL, 2)
@@ -378,7 +397,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.choiceSelectModelPanel = wx.StaticBoxSizer(self.choiceSelectModelStaticBox, wx.HORIZONTAL)
         scollPanelSizer.Add(self.choiceSelectModelPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelChoiceSelectModel = wx.StaticText(self.scollPanel, -1, "A、关联关系模型", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.labelChoiceSelectModel = wx.StaticText(self.scollPanel, -1, "A、关联关系模型【外键关联模型】", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         # self.choiceSelectModel = wx.Choice(self.scollPanel, -1, choices = [' ']+['self'])
         self.choiceSelectModel = wx.TextCtrl(self.scollPanel, -1)
         self.readmeChoiceSelectModel = wx.StaticText(self.scollPanel, -1, " ** 多对一的一、一对一的一、多对多的多。如：Person、'Person'、'other_app.Person'。")
@@ -470,8 +489,23 @@ class ModelsCreateDialog(wx.Dialog):
         self.radiosDBConstraintPanel.Add(self.radiosDBConstraint, 0, wx.EXPAND | wx.ALL, 2)
         scollPanelSizer.Add(self.readmeRadiosDBConstraint, 0, wx.EXPAND | wx.ALL, 2)
 
-        # 交换类型（swappable）
-        # 暂时不开放此参数
+        # 多对多中间表名（db_table）
+        self.inputDBTableStaticBox = wx.StaticBox(self.scollPanel, -1, '')
+        self.inputDBTablePanel = wx.StaticBoxSizer(self.inputDBTableStaticBox, wx.HORIZONTAL)
+        scollPanelSizer.Add(self.inputDBTablePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputDBTable = wx.StaticText(self.scollPanel, -1, "I、多对多中间表名（db_table）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.inputDBTable = wx.TextCtrl(self.scollPanel, -1)
+        self.readmeInputDBTable = wx.StaticText(self.scollPanel, -1, " ** Django默认生成关联表的哈希值表名，保证值唯一。也可自己命名。")
+        self.inputDBTablePanel.Add(self.labelInputDBTable, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputDBTablePanel.Add(self.inputDBTable, 1, wx.EXPAND | wx.ALL, 2)
+        scollPanelSizer.Add(self.readmeInputDBTable, 0, wx.EXPAND | wx.ALL, 2)
+
+        # all 交换类型（swappable）
+        # 多对多 指定多对多模型（through）
+        # 多对多 指定多对多模型外键（through_fields）
+        # 一对一 父类链接(parent_link)
+        # 暂时不开放上述参数
 
         # 后触发按钮
         self.afterBtns.extend([
@@ -491,7 +525,7 @@ class ModelsCreateDialog(wx.Dialog):
             self.radiosAutoNow, self.radiosAutoNowAdd, self.inputUploadTo,
             self.choiceSelectModel, self.choiceSelectDelRule, self.inputRelationRemark,
             self.inputLimitChoicesTo, self.inputRelatedName, self.inputRelatedQueryName,
-            self.inputToField, self.radiosDBConstraint,
+            self.inputToField, self.radiosDBConstraint, self.inputDBTable,
         ])
 
         # 共用参数
@@ -522,6 +556,7 @@ class ModelsCreateDialog(wx.Dialog):
             self.inputRelatedQueryNameStaticBox, self.inputRelatedQueryName, self.labelInputRelatedQueryName, self.readmeInputRelatedQueryName,
             self.inputToFieldStaticBox, self.inputToField, self.labelInputToField, self.readmeInputToField,
             self.radiosDBConstraintStaticBox, self.radiosDBConstraint, self.labelRadiosDBConstraint, self.readmeRadiosDBConstraint,
+            self.inputDBTableStaticBox, self.inputDBTable, self.labelInputDBTable, self.readmeInputDBTable,
 
         ])
 
@@ -542,6 +577,7 @@ class ModelsCreateDialog(wx.Dialog):
             self.readmeInputRelationRemark,self.readmeInputLimitChoicesTo,
             self.readmeInputRelatedName,self.readmeInputRelatedQueryName,
             self.readmeInputToField,self.readmeRadiosDBConstraint,
+            self.readmeInputDBTable,
         ])
         self.labelStaticTexts.extend([
             self.choiceFieldTypeLabel,self.labelFieldModelName,
@@ -559,6 +595,7 @@ class ModelsCreateDialog(wx.Dialog):
             self.labelInputRelationRemark,self.labelInputLimitChoicesTo,
             self.labelInputRelatedName,self.labelInputRelatedQueryName,
             self.labelInputToField,self.labelRadiosDBConstraint,
+            self.labelInputDBTable,
         ])
 
         # 按钮点击事件
@@ -843,7 +880,7 @@ class ModelsCreateDialog(wx.Dialog):
 
         self.labelMetaVerboseNameOption = wx.StaticText(self.metaScollPanel, -1, "20、模型可读单数名称（verbose_name）", size=(STATIC_TEXT_WIDTH, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.metaVerboseNameOption = wx.TextCtrl(self.metaScollPanel, -1)
-        self.readmeMetaVerboseNameOption = wx.StaticText(self.metaScollPanel, -1, " ** 用于后台展示模型名称。")
+        self.readmeMetaVerboseNameOption = wx.StaticText(self.metaScollPanel, -1, " ** 用于后台展示模型的可读名称。")
         self.metaVerboseNameOptionPanel.Add(self.labelMetaVerboseNameOption, 0, wx.EXPAND | wx.ALL, 2)
         self.metaVerboseNameOptionPanel.Add(self.metaVerboseNameOption, 1, wx.EXPAND | wx.ALL, 2)
         metaScollPanelSizer.Add(self.readmeMetaVerboseNameOption, 0, wx.EXPAND | wx.ALL, 2)
@@ -963,8 +1000,10 @@ class ModelsCreateDialog(wx.Dialog):
             self.btnShowUnshowMeta.SetLabel('【显示】Meta元数据（表级参数设置）')
             self.panel.Layout()
 
-    def onBtnPreview(self, e):
-        """预览待插入代码"""
+    def _generate_create_code(self, mode: str='A'):
+        """生成创建模型代码"""
+        # A: 预览模式
+        # B: 写入模式
         pre_fields = self._get_fields_attrs() # 字段详细定义列表
         meta_attrs = self._get_meta_attrs() # Meta参数
        
@@ -980,33 +1019,40 @@ class ModelsCreateDialog(wx.Dialog):
             meta_code = '        pass'
 
         # __str__()返回值
-        str_msg = "        return ''"
+        str_msg = "        # return ''"
 
         # 如果没有设置主键，则自动增加主键【预览界面有效，实际代码无此行】
         if len([_ for _ in self.allRows if CON_YES==_['primary_key']]) <= 0: # 用户无主动设置主键
-            auto_primary = '    id = models.AutoField(primary_key=True)'
+            if 'A' == mode:
+                auto_primary = '    id = models.AutoField(primary_key=True)'
+            else:
+                auto_primary = ''
         else:
             auto_primary = ''
         
-        model_code = f"""
-class DemoModel(models.Model):
+        return f"""\
+class <model_name>(models.Model):
 {auto_primary}
 {fields_code}
 
-    class meta:
+    class Meta:
 {meta_code}
 
-    def __str__(self):
+    # def __str__(self):
 {str_msg}
 
-    def get_absolute_url(self):
-        from django.urls import reverse
-        return reverse('', args=[])
+    # def get_absolute_url(self):
+    #     from django.urls import reverse
+    #     return reverse('', args=[])
 
     def save(self, *args, **kwargs):
         # 注意：bulk_create()和update()不会触发save()
         super().save(*args, **kwargs) # 确保对象正确写入数据库
 """
+
+    def onBtnPreview(self, e):
+        """预览待插入代码"""
+        model_code = self._generate_create_code()
         CodePreviewBox(self, model_code)
 
     def _get_fields_attrs(self):
@@ -1026,7 +1072,7 @@ class DemoModel(models.Model):
 
             if field_type in CON_FOREIGN_FIELDS and '' != _["relate_model"]:
                 t = _['relate_model']
-                args.append(f"'{t}'")
+                args.append(f"{t}")
 
             # 关键字参数
             if _['field_name'] != _['db_column']: # 默认一致，不一致则新增
@@ -1103,7 +1149,7 @@ class DemoModel(models.Model):
 
             # 关联字段专属
             if field_type in CON_FOREIGN_FIELDS:
-                if '' != _["on_delete"]:
+                if '' != _["on_delete"] and 'ManyToManyField' != field_type:
                     t = _['on_delete']
                     args.append(f"on_delete={t}")
                 if '' != _["verbose_name"]:
@@ -1123,6 +1169,9 @@ class DemoModel(models.Model):
                     args.append(f"to_field='{t}'")
                 if CON_NO == _['db_constraint']:
                     args.append(f"db_constraint=False")
+                if '' != _['db_table']:
+                    t = _['db_table']
+                    args.append(f"db_table='{t}'")
 
             pre_fields.append(f"{field_name} = models.{field_type}({', '.join(args)})")
         return pre_fields
@@ -1641,6 +1690,7 @@ class DemoModel(models.Model):
             _.Enable(True)
         # 锁定新增按钮
         self.btnAddNew.Enable(False)
+        self.panel.Layout()
 
     def onBtnResetInput(self, e):
         """恢复字段默认值"""
@@ -1652,6 +1702,7 @@ class DemoModel(models.Model):
             self._disable_all_args()
             self._show_special_args() # 显示所有的可选参数
             self.choiceFieldType.Enable(True)
+            self.panel.Layout()
         dlg_tip.Close(True)
 
     def onBtnAddFieldToArea(self, e):
@@ -1691,6 +1742,7 @@ class DemoModel(models.Model):
             vinputRelatedQueryName = self.inputRelatedQueryName.GetValue().strip()
             vinputToField = self.inputToField.GetValue().strip()
             vradiosDBConstraint = self.radiosDBConstraint.GetSelection()
+            vinputDBTable = self.inputDBTable.GetValue().strip()
 
             # 先校验，后操作
             # 字段属性名+数据库列名+字段备注，三者只要有一个重复，便不允许新增该字段
@@ -1770,6 +1822,7 @@ class DemoModel(models.Model):
             insertRow['related_query_name'] = vinputRelatedQueryName
             insertRow['to_field'] = vinputToField
             insertRow['db_constraint'] = self._replace01_to_bool(vradiosDBConstraint)
+            insertRow['db_table'] = vinputDBTable
 
             self.allRows.append(insertRow)
 
@@ -1804,6 +1857,9 @@ class DemoModel(models.Model):
                     self.choicesFiledUniqueForMonth.Append(_['field_name'])
                     self.choicesFiledUniqueForYear.Append(_['field_name'])
 
+            self.panel.Layout()
+            TipsMessageOKBox(self, '字段添加成功，可在（待新增字段表格数据）中查看已添加字段信息。', '成功')
+
         dlg_tip.Close(True)
 
     def _replace01_to_bool(self, v):
@@ -1837,13 +1893,35 @@ class DemoModel(models.Model):
             if dlg_tip.ShowModal() == wx.ID_OK:
                 dlg = wx.TextEntryDialog(self, u"模型命名：", u"保存模型", u"")
                 if dlg.ShowModal() == wx.ID_OK:
-                    message = dlg.GetValue()  # 获取文本框中输入的值
+                    model_name = dlg.GetValue().strip()  # 获取要创建的模型名称
+                    if model_name:
+                        model_code = self._generate_create_code(mode='B').replace('<model_name>', model_name)
+                        # 将代码追加到选择的文件中
+                        file_path = self.inputSelectFile.GetValue().strip()
+                        if file_path and os.path.exists(file_path):
+                            append_file_whole(file_path, model_code)
+                            TipsMessageOKBox(self, '保存成功', '成功')
+                        else:
+                            TipsMessageOKBox(self, '路径无效，请重新选择路径', '错误')
+                    else:
+                        TipsMessageOKBox(self, '未输入模型名称', '错误')
                 dlg.Close(True)
             dlg_tip.Close(True)
         else:
             dlg = wx.TextEntryDialog(self, u"模型命名：", u"保存模型", u"")
             if dlg.ShowModal() == wx.ID_OK:
-                message = dlg.GetValue()  # 获取文本框中输入的值
+                model_name = dlg.GetValue().strip()  # 获取要创建的模型名称
+                if model_name:
+                    model_code = self._generate_create_code(mode='B').replace('<model_name>', model_name)
+                    # 将代码追加到选择的文件中
+                    file_path = self.inputSelectFile.GetValue().strip()
+                    if file_path and os.path.exists(file_path):
+                        append_file_whole(file_path, model_code)
+                        TipsMessageOKBox(self, '保存成功', '成功')
+                    else:
+                        TipsMessageOKBox(self, '路径无效，请重新选择路径', '错误')
+                else:
+                    TipsMessageOKBox(self, '未输入模型名称', '错误')
             dlg.Close(True)
 
     def _open_required_args(self):
@@ -1973,35 +2051,43 @@ class DemoModel(models.Model):
     def selectForeignKey(self):
         """多对一字段"""
         self.radiosFiledDbIndex.SetSelection(0)
+        self.inputFieldRemarkName.Enable(False) # 锁定位置参数备注名，使用关键字参数备注名
 
         self.choiceSelectModelStaticBox.Show(True)
         self.choiceSelectModel.Show(True)
         self.labelChoiceSelectModel.Show(True)
         self.readmeChoiceSelectModel.Show(True)
+
         self.choiceSelectDelRuleStaticBox.Show(True)
         self.choiceSelectDelRule.Show(True)
         self.labelChoiceSelectDelRule.Show(True)
         self.readmeChoiceSelectDelRule.Show(True)
+
         self.inputRelationRemarkStaticBox.Show(True)
         self.inputRelationRemark.Show(True)
         self.labelInputRelationRemark.Show(True)
         self.readmeInputRelationRemark.Show(True)
+
         self.inputLimitChoicesToStaticBox.Show(True)
         self.inputLimitChoicesTo.Show(True)
         self.labelInputLimitChoicesTo.Show(True)
         self.readmeInputLimitChoicesTo.Show(True)
+
         self.inputRelatedNameStaticBox.Show(True)
         self.inputRelatedName.Show(True)
         self.labelInputRelatedName.Show(True)
         self.readmeInputRelatedName.Show(True)
+
         self.inputRelatedQueryNameStaticBox.Show(True)
         self.inputRelatedQueryName.Show(True)
         self.labelInputRelatedQueryName.Show(True)
         self.readmeInputRelatedQueryName.Show(True)
+
         self.inputToFieldStaticBox.Show(True)
         self.inputToField.Show(True)
         self.labelInputToField.Show(True)
         self.readmeInputToField.Show(True)
+
         self.radiosDBConstraintStaticBox.Show(True)
         self.radiosDBConstraint.Show(True)
         self.labelRadiosDBConstraint.Show(True)
@@ -2019,10 +2105,101 @@ class DemoModel(models.Model):
     def selectManyToManyField(self):
         """多对多字段"""
         self.radiosFiledDbIndex.SetSelection(0)
+        self.inputFieldRemarkName.Enable(False) # 锁定位置参数备注名，使用关键字参数备注名
+
+        self.choiceSelectModelStaticBox.Show(True)
+        self.choiceSelectModel.Show(True)
+        self.labelChoiceSelectModel.Show(True)
+        self.readmeChoiceSelectModel.Show(True)
+
+        self.inputRelatedNameStaticBox.Show(True)
+        self.inputRelatedName.Show(True)
+        self.labelInputRelatedName.Show(True)
+        self.readmeInputRelatedName.Show(True)
+
+        self.inputRelatedQueryNameStaticBox.Show(True)
+        self.inputRelatedQueryName.Show(True)
+        self.labelInputRelatedQueryName.Show(True)
+        self.readmeInputRelatedQueryName.Show(True)
+
+        self.inputLimitChoicesToStaticBox.Show(True)
+        self.inputLimitChoicesTo.Show(True)
+        self.labelInputLimitChoicesTo.Show(True)
+        self.readmeInputLimitChoicesTo.Show(True)
+
+        self.radiosDBConstraintStaticBox.Show(True)
+        self.radiosDBConstraint.Show(True)
+        self.labelRadiosDBConstraint.Show(True)
+        self.readmeRadiosDBConstraint.Show(True)
+
+        self.inputDBTableStaticBox.Show(True)
+        self.inputDBTable.Show(True)
+        self.labelInputDBTable.Show(True)
+        self.readmeInputDBTable.Show(True)
+
+        self.choiceSelectModel.Enable(True)
+        self.inputLimitChoicesTo.Enable(True)
+        self.inputRelatedName.Enable(True)
+        self.inputRelatedQueryName.Enable(True)
+        self.radiosDBConstraint.Enable(True)
+        self.inputDBTable.Enable(True)
+
+        # 多对多字段不支持 validators、null
+        self.radiosFiledNull.Enable(False)
 
     def selectOneToOneField(self):
         """一对一字段"""
         self.radiosFiledDbIndex.SetSelection(0)
+        self.inputFieldRemarkName.Enable(False) # 锁定位置参数备注名，使用关键字参数备注名
+
+        self.choiceSelectModelStaticBox.Show(True)
+        self.choiceSelectModel.Show(True)
+        self.labelChoiceSelectModel.Show(True)
+        self.readmeChoiceSelectModel.Show(True)
+
+        self.choiceSelectDelRuleStaticBox.Show(True)
+        self.choiceSelectDelRule.Show(True)
+        self.labelChoiceSelectDelRule.Show(True)
+        self.readmeChoiceSelectDelRule.Show(True)
+
+        self.inputRelationRemarkStaticBox.Show(True)
+        self.inputRelationRemark.Show(True)
+        self.labelInputRelationRemark.Show(True)
+        self.readmeInputRelationRemark.Show(True)
+
+        self.inputLimitChoicesToStaticBox.Show(True)
+        self.inputLimitChoicesTo.Show(True)
+        self.labelInputLimitChoicesTo.Show(True)
+        self.readmeInputLimitChoicesTo.Show(True)
+
+        self.inputRelatedNameStaticBox.Show(True)
+        self.inputRelatedName.Show(True)
+        self.labelInputRelatedName.Show(True)
+        self.readmeInputRelatedName.Show(True)
+
+        self.inputRelatedQueryNameStaticBox.Show(True)
+        self.inputRelatedQueryName.Show(True)
+        self.labelInputRelatedQueryName.Show(True)
+        self.readmeInputRelatedQueryName.Show(True)
+
+        self.inputToFieldStaticBox.Show(True)
+        self.inputToField.Show(True)
+        self.labelInputToField.Show(True)
+        self.readmeInputToField.Show(True)
+
+        self.radiosDBConstraintStaticBox.Show(True)
+        self.radiosDBConstraint.Show(True)
+        self.labelRadiosDBConstraint.Show(True)
+        self.readmeRadiosDBConstraint.Show(True)
+
+        self.choiceSelectModel.Enable(True)
+        self.choiceSelectDelRule.Enable(True)
+        self.inputRelationRemark.Enable(True)
+        self.inputLimitChoicesTo.Enable(True)
+        self.inputRelatedName.Enable(True)
+        self.inputRelatedQueryName.Enable(True)
+        self.inputToField.Enable(True)
+        self.radiosDBConstraint.Enable(True)
 
         
     def onExit(self, e):

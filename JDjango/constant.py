@@ -70,6 +70,7 @@ CON_MODELSCREATEDIALOG_COLS = (
     '反向过滤器名称',
     '指定关联外键',
     '外键约束',
+    '多对多关联表名',
 )
 CON_ARGS_NAME_DICT = {
     '字段属性名' : 'field_name',
@@ -106,6 +107,7 @@ CON_ARGS_NAME_DICT = {
     '反向过滤器名称' : 'related_query_name',
     '指定关联外键' : 'to_field',
     '外键约束' : 'db_constraint',
+    '多对多关联表名' : 'db_table',
 }
 
 CON_VIEW_CHOICES = [

@@ -122,6 +122,9 @@ class AdminCreateSimpleDialog(wx.Dialog):
         dlg.Close(True)
 
 class AdminRenameDialog(wx.Dialog):
+
+    # 两个变量反了, 现只改文字,变量不变.
+
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '网站后台重命名', size=(300, 200))
         
@@ -145,7 +148,7 @@ class AdminRenameDialog(wx.Dialog):
         self.headerPanel.SetSizer(self.headerPanelSizer)
         self.panelSizer.Add(self.headerPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.headerFlag = wx.StaticText(self.headerPanel, -1, "登录界面名称：")
+        self.headerFlag = wx.StaticText(self.headerPanel, -1, "后台标题名称：")
         self.inputHeader = wx.TextCtrl(self.headerPanel, -1)
         self.headerPanelSizer.Add(self.headerFlag, 0, wx.EXPAND | wx.ALL, 2)
         self.headerPanelSizer.Add(self.inputHeader, 1, wx.EXPAND | wx.ALL, 2)
@@ -156,7 +159,7 @@ class AdminRenameDialog(wx.Dialog):
         self.titlePanel.SetSizer(self.titlePanelSizer)
         self.panelSizer.Add(self.titlePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.titleFlag = wx.StaticText(self.titlePanel, -1, "后台标题名称：")
+        self.titleFlag = wx.StaticText(self.titlePanel, -1, "登录界面名称：")
         self.inputTitle = wx.TextCtrl(self.titlePanel, -1)
         self.titlePanelSizer.Add(self.titleFlag, 0, wx.EXPAND | wx.ALL, 2)
         self.titlePanelSizer.Add(self.inputTitle, 1, wx.EXPAND | wx.ALL, 2)

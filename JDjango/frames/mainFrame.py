@@ -186,7 +186,7 @@ class Main(wx.Frame):
         self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
         menusCreate.AppendSeparator()
         modelsSubMenu = wx.Menu()
-        self.modelsGenerate = modelsSubMenu.Append(wx.ID_ANY, "&普通模型", "普通模型")
+        self.modelsGenerate = modelsSubMenu.Append(wx.ID_ANY, "&完整模型", "完整模型")
         self.modelsProxyGenerate = modelsSubMenu.Append(wx.ID_ANY, "&代理模型", "代理模型")
         menusCreate.Append(wx.ID_ANY, "&模型", modelsSubMenu)
         menusCreate.AppendSeparator()
@@ -219,6 +219,10 @@ class Main(wx.Frame):
         helps.AppendSeparator()
         menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
 
+        # 查看 菜单项
+        ssee = wx.Menu()
+        sseeExistModels = ssee.Append(wx.ID_ANY, "&当前项目的所有已知模型", "当前项目的所有已知模型") # 不放进按钮控制里
+
         # 运行端口与进程
         portProgress = wx.Menu()
         virtualenv = wx.Menu()
@@ -237,6 +241,13 @@ class Main(wx.Frame):
         progresser = wx.Menu()
         self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
         portProgress.Append(wx.ID_ANY, "&进程", progresser)
+        portProgress.AppendSeparator()
+        djangoOrder = wx.Menu()
+        self.portProgressMakemigrations = djangoOrder.Append(wx.ID_ANY, "&makemigrations（数据迁移）", "makemigrations（数据迁移）")
+        self.portProgressMigrate = djangoOrder.Append(wx.ID_ANY, "&migrate（数据写入）", "migrate（数据写入）")
+        self.portProgressFlush = djangoOrder.Append(wx.ID_ANY, "&flush（数据清空）", "flush（数据清空）")
+        self.portProgressCreatesuperuser = djangoOrder.Append(wx.ID_ANY, "&createsupersuer（创建管理员）", "createsupersuer（创建管理员）")
+        portProgress.Append(wx.ID_ANY, "&原生指令", djangoOrder)
         self.portProgressRun.Enable(False)
         self.portProgressStop.Enable(False)
         # self.portProgressVirtual.Enable(False)
@@ -335,7 +346,8 @@ class Main(wx.Frame):
         menuBar.Append(perCheck, "&单项检测")
         menuBar.Append(perFix, "&单项修复")
         menuBar.Append(admin, "&后台管理中心")
-        menuBar.Append(portProgress, "运行")
+        menuBar.Append(portProgress, "&运行")
+        menuBar.Append(ssee, "&查看")
         menuBar.Append(helps, "&帮助")
         menuBar.Append(directExit, "&退出")
         self.SetMenuBar(menuBar)
@@ -383,9 +395,55 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onPortProgressFaster, self.portProgressFaster) 
         self.Bind(wx.EVT_MENU, self.onPortProgressKillProgress, self.portProgressKillProgress) 
         self.Bind(wx.EVT_MENU, self.onPortProgressVirtual, self.portProgressVirtual) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressMakemigrations, self.portProgressMakemigrations) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressMigrate, self.portProgressMigrate) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressFlush, self.portProgressFlush) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressCreatesuperuser, self.portProgressCreatesuperuser) 
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onPortProgressMakemigrations(self, e):
+        """python manage.py makemigrations"""
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            return
+            
+        import subprocess
+        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
+        env_python3 = os.path.splitext(env.getPython3Env())[0]
+
+        subprocess.Popen(f'{env_python3} {path} makemigrations', shell=True)
+
+    def onPortProgressMigrate(self, e):
+        """python manage.py migtrate"""
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            return
+            
+        import subprocess
+        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
+        env_python3 = os.path.splitext(env.getPython3Env())[0]
+
+        subprocess.Popen(f'{env_python3} {path} migrate', shell=True)
+
+    def onPortProgressFlush(self, e):
+        """python manage.py flush"""
+
+    def onPortProgressCreatesuperuser(self, e):
+        """python manage.py createsuperuser"""
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            return
+            
+        import subprocess
+        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
+        env_python3 = os.path.splitext(env.getPython3Env())[0]
+
+        subprocess.Popen(f'{env_python3} {path} createsuperuser', shell=True)
 
     def onCreateProject1100(self, e):
         """创建Django1.10.0项目"""
@@ -417,19 +475,50 @@ class Main(wx.Frame):
     def onPortProgressFaster(self, e):
         """一键配置镜像环境"""
         rpath = os.path.expanduser('~')
-        if 'pip' in os.listdir(rpath):
-            pip_path = os.path.join(rpath, 'pip')
-            if 'pip.ini' in os.listdir(pip_path):
-                TipsMessageOKBox(self, '当前环境已配置镜像。', '重复提醒')
+        # 根据系统依次安装镜像环境
+        platform = env.getPlatform().lower()
+        if 'windows' == platform:
+            if 'pip' in os.listdir(rpath):
+                pip_path = os.path.join(rpath, 'pip')
+                if 'pip.ini' in os.listdir(pip_path):
+                    TipsMessageOKBox(self, '当前环境已配置镜像。', '重复提醒')
+                else:
+                    # TEMPLATE_DIR
+                    write_file(os.path.join(pip_path, 'pip.ini'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
+                    TipsMessageOKBox(self, '配置成功！', '提示')
             else:
-                # TEMPLATE_DIR
+                pip_path = os.path.join(rpath, 'pip')
+                os.mkdir(pip_path)
                 write_file(os.path.join(pip_path, 'pip.ini'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
                 TipsMessageOKBox(self, '配置成功！', '提示')
+        elif 'linux' == platform: # 理论上，Mac和Linux配置镜像环境步骤一致
+            if '.pip' in os.listdir(rpath):
+                pip_path = os.path.join(rpath, '.pip')
+                if 'pip.conf' in os.listdir(pip_path):
+                    TipsMessageOKBox(self, '当前环境已配置镜像。', '重复提醒')
+                else:
+                    write_file(os.path.join(pip_path, 'pip.conf'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
+                    TipsMessageOKBox(self, '配置成功！', '提示')
+            else:
+                pip_path = os.path.join(rpath, '.pip')
+                os.mkdir(pip_path)
+                write_file(os.path.join(pip_path, 'pip.conf'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
+                TipsMessageOKBox(self, '配置成功！', '提示')
+        elif 'darwin' == platform:
+            if '.pip' in os.listdir(rpath):
+                pip_path = os.path.join(rpath, '.pip')
+                if 'pip.conf' in os.listdir(pip_path):
+                    TipsMessageOKBox(self, '当前环境已配置镜像。', '重复提醒')
+                else:
+                    write_file(os.path.join(pip_path, 'pip.conf'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
+                    TipsMessageOKBox(self, '配置成功！', '提示')
+            else:
+                pip_path = os.path.join(rpath, '.pip')
+                os.mkdir(pip_path)
+                write_file(os.path.join(pip_path, 'pip.conf'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
+                TipsMessageOKBox(self, '配置成功！', '提示')
         else:
-            pip_path = os.path.join(rpath, 'pip')
-            os.mkdir(pip_path)
-            write_file(os.path.join(pip_path, 'pip.ini'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
-            TipsMessageOKBox(self, '配置成功！', '提示')
+            TipsMessageOKBox(self, '未知系统', '提示')
 
     def onModelsProxyGenerate(self, e):
         """创建代理模型"""

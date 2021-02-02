@@ -6,7 +6,7 @@
     </page>
 
     <env>
-        <platform>Darwin</platform>
+        <platform>Windows</platform>
         <python3>C:\Users\PC\Desktop\djangoProject\venv\Scripts\python.exe</python3>
         <port>8868</port>
         <encoding>
@@ -18,6 +18,7 @@
         <support name="all">
             <li>darwin</li>
             <li>windows</li>
+            <li>linux</li>
         </support>
         <support name="virtualenv">
             <li>windows</li>

@@ -67,6 +67,11 @@ def append_file(path: str, content: List[str]=[]) -> NoReturn:
     with open(path, 'a', encoding='utf-8') as f:
         f.write('\n' + ''.join(content))
 
+def append_file_whole(path: str, content: str) -> NoReturn:
+    """向文本末尾追加内容"""
+    with open(path, 'a', encoding='utf-8') as f:
+        f.write('\n' + content)
+
 def generate_secret_key(length: int=50) -> str:
     """更新 SECRET_KEY"""
     allChars = list(string.printable)
