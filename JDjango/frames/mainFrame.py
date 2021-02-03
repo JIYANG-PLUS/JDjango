@@ -229,6 +229,8 @@ class Main(wx.Frame):
         self.portProgressVirtual = virtualenv.Append(wx.ID_ANY, "&创建", "创建")
         virtualenv.AppendSeparator()
         self.portProgressVirtualChoice = virtualenv.Append(wx.ID_ANY, "&绑定", "绑定")
+        virtualenv.AppendSeparator()
+        self.portProgressVirtualView = virtualenv.Append(wx.ID_ANY, "&查看", "查看")
         portProgress.Append(wx.ID_ANY, "&虚拟环境", virtualenv)
         portProgress.AppendSeparator()
         self.portProgressRun = portProgress.Append(wx.ID_ANY, "&运行", "运行")
@@ -244,6 +246,7 @@ class Main(wx.Frame):
         self.portProgressMakemigrations = djangoOrder.Append(wx.ID_ANY, "&makemigrations（数据迁移）", "makemigrations（数据迁移）")
         self.portProgressMigrate = djangoOrder.Append(wx.ID_ANY, "&migrate（数据写入）", "migrate（数据写入）")
         self.portProgressFlush = djangoOrder.Append(wx.ID_ANY, "&flush（数据清空）", "flush（数据清空）")
+        self.portProgressCollectstatic = djangoOrder.Append(wx.ID_ANY, "&collectstatic（静态文件收集）", "collectstatic（静态文件收集）")
         self.portProgressCreatesuperuser = djangoOrder.Append(wx.ID_ANY, "&createsupersuer（创建管理员）", "createsupersuer（创建管理员）")
         portProgress.Append(wx.ID_ANY, "&原生指令", djangoOrder)
         portProgress.AppendSeparator()
@@ -402,9 +405,28 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onPortProgressFlush, self.portProgressFlush) 
         self.Bind(wx.EVT_MENU, self.onPortProgressCreatesuperuser, self.portProgressCreatesuperuser) 
         self.Bind(wx.EVT_MENU, self.onPortProgressPipInstall, self.portProgressPipInstall) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressCollectstatic, self.portProgressCollectstatic) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressVirtualView, self.portProgressVirtualView) 
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onPortProgressVirtualView(self, e):
+        """查看虚拟环境路径"""
+        TipsMessageOKBox(self, env.getPython3Env(), '虚拟环境路径')
+
+    def onPortProgressCollectstatic(self, e):
+        """python manage.py collectstatic"""
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            return
+            
+        import subprocess
+        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
+        env_python3 = os.path.splitext(env.getPython3Env())[0]
+
+        subprocess.Popen(f'{env_python3} {path} collectstatic', shell=True)
 
     def onPortProgressPipInstall(self, e):
         """虚拟环境安装包pip install"""
@@ -598,7 +620,7 @@ class Main(wx.Frame):
         except:
             self.infos.AppendText(out_infos(f"虚拟环境错误，或项目路径错误，或端口被占用。", level=3))
         else:
-            self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。（以实际为准）", level=1))
+            self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。请复制到浏览器打开。", level=1))
             self.portProgressRun.Enable(False)
             self.portProgressStop.Enable(True)
 

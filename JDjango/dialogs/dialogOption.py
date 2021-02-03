@@ -9,6 +9,19 @@ from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 from ..constant import *
 
+"""
+### 有关别名的一些说明：
+# 如果路径改变，可在environment.xml中配置完整的路径别名（如，windows下 admin.py 可扩展成 myfloder/admin.py，但是要确保路径紧邻该app路径下！）
+
+### 后台重命名规则
+# 若从没有显示命名过，则任选一处命名；
+# 若只有一处命名，则修改当前处命名；
+# 若有两个及以上的地方命名，会在修改界面予以警告。一旦触发修改，会删除所有，再任选一处命名。
+
+"""
+
+LABEL_LEN = 99
+
 class AdminCreateSimpleDialog(wx.Dialog):
     def __init__(self, parent):
         wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '站点注册(简单配置)', size=(600, 400))
@@ -60,36 +73,32 @@ class AdminCreateSimpleDialog(wx.Dialog):
 
 
     def onListBox1Listbox(self, e):
-        """多选列表事件"""
+        """列表选中监听事件事件"""
         bId = e.GetId()
         if bId == self.listBoxModels.GetId(): # 选择项目根路径
             selects = self.listBoxModels.GetSelections()
-            if len(selects) > 0: self.btn_register.Enable(True)
-            else: self.btn_register.Enable(False)
+            if len(selects) > 0:
+                self.btn_register.Enable(True) # 只有选择了模型才开放注册按钮
+            else:
+                self.btn_register.Enable(False)
 
     def onChoiceClick(self, e):
         """下拉框选择App值更新事件"""
-        key = e.GetString() # key即是app名
-        self.listBoxModels.Clear() # 清空
+        key = e.GetString() # 获取当前选中的应用程序名
+        self.listBoxModels.Clear() # 清空列表内容，用于展示当前选中app下的所有模型
         if key.strip():
-            # 指定赋值
-            # 路径筛选
-            APP_PATH = os.path.join(get_configs(CONFIG_PATH)['dirname'], key)
+            APP_PATH = os.path.join(get_configs(CONFIG_PATH)['dirname'], key) # 路径定位到当前app下
             if os.path.exists(APP_PATH) and os.path.isdir(APP_PATH):
-                # 获取路径下的所有文件
-                pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True)
-                # 读取配置文件的别名集合
-                alias = [os.path.basename(_) for _ in env.getModelsAlias()] # 仅取文件名
-                # 通过别名筛选即将读取解析的模型文件
-                pathModels = [_ for _ in pys if os.path.basename(_) in alias]
-                # 赋值的同时标注模块的来源
+                pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True) # 先取所有归属当前app下的文件路径
+                alias = [os.path.basename(_) for _ in env.getModelsAlias()] # 取所有模型别名（如：models.py）
+                pathModels = [_ for _ in pys if os.path.basename(_) in alias] # 以别名为依据，过滤所有文件中可能的模型文件
                 for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in toolModel.get_models_from_modelspy(_)]:
-                    self.listBoxModels.Append(' -- '.join(obj))
+                    self.listBoxModels.Append(' ------ '.join(obj)) # 赋值的同时标注模块的来源，用 ' ------ ' 隔开
 
     def onButtonClick(self, e):
         """界面按钮点击事件"""
         bId = e.GetId()
-        if bId == self.btn_register.GetId():
+        if bId == self.btn_register.GetId(): # 注册按钮点击
             self.onRegister(e)
 
     def onRegister(self, e):
@@ -98,36 +107,34 @@ class AdminCreateSimpleDialog(wx.Dialog):
         if dlg.ShowModal() == wx.ID_YES:
             selectNames = self.listBoxModels.GetStrings()
             selectIndexs = self.listBoxModels.GetSelections()
-            modelModels = [selectNames[_] for _ in selectIndexs]
-            appName = self.choiceApp.GetStrings()[self.choiceApp.GetSelection()] # 当前选中应用程序名
-            # 分类导入admin.py文件
-            modelFiles, models = [], []
+            modelModels = [selectNames[_] for _ in selectIndexs] # 取出所有要注册的模型
+            appName = self.choiceApp.GetStrings()[self.choiceApp.GetSelection()] # 当前选中app名
+
+            modelFiles, models = [], [] # modelFiles 无后缀名
             for _ in modelModels:
-                t1, t2 = _.split(' -- ')
-                modelFiles.append(t2.split('.')[0]) # 不取后缀名
+                t1, t2 = _.split(' ------ ') # t1是模型类名，t2是t1所在的文件的文件名
+                modelFiles.append(t2.split('.')[0]) # t2不取后缀名
                 models.append(t1)
             classify = set(modelFiles) # 将所有的模型文件名称去重
-            # 分类，组成键值对组合
-            importData = {}
+            
+            importData = {} # 构建插入数据包
             for _ in classify:
-                importData[_] = [] # 初始化键【模块名】
+                importData[_] = []
             for _ in zip(models, modelFiles):
-                importData[_[1]].append(_[0])
-            # 读取admin.py的别名
-            alias = env.getAdminAlias()
+                importData[_[1]].append(_[0]) # 以文件名为分组依据，将模型归类到对应的文件下
+           
+            alias = env.getAdminAlias() # 读取admin.py的别名
             for _ in alias:
-                # 如果路径改变，可在environment.xml中配置完整的路径别名（如 admin.py 可扩展成 myfloder/admin.py，但是要确保子路径位于该app父路径下 ）
                 # 下面将在所有的模块别名路径中写入注册数据【可能有点不合理】
-                write_admin_base(os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _), importData) # 写入注册代码
+                insert_path = os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _) # 因为 _ 别名是包含紧邻app路径之后的路径，所以理论上不管层级有多深，都可以找的到
+                write_admin_base(insert_path, importData) # 写入注册代码
             wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
         dlg.Close(True)
 
 class AdminRenameDialog(wx.Dialog):
 
-    # 两个变量反了, 现只改文字,变量不变.
-
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '网站后台重命名', size=(300, 200))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '网站后台重命名', size=(300, 180))
         
         self._init_UI()
         self._init_data()
@@ -143,7 +150,7 @@ class AdminRenameDialog(wx.Dialog):
         self.msgName = wx.TextCtrl(self.panel, -1)
         self.msgName.SetEditable(False)
 
-        # 登录界面重命名
+        # 后台标题名称重命名
         self.headerPanel = wx.Panel(self.panel) 
         self.headerPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.headerPanel.SetSizer(self.headerPanelSizer)
@@ -154,7 +161,7 @@ class AdminRenameDialog(wx.Dialog):
         self.headerPanelSizer.Add(self.headerFlag, 0, wx.EXPAND | wx.ALL, 2)
         self.headerPanelSizer.Add(self.inputHeader, 1, wx.EXPAND | wx.ALL, 2)
 
-        # 后台标题重命名
+        # 登录界面名称重命名
         self.titlePanel = wx.Panel(self.panel)
         self.titlePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.titlePanel.SetSizer(self.titlePanelSizer)
@@ -165,18 +172,6 @@ class AdminRenameDialog(wx.Dialog):
         self.titlePanelSizer.Add(self.titleFlag, 0, wx.EXPAND | wx.ALL, 2)
         self.titlePanelSizer.Add(self.inputTitle, 1, wx.EXPAND | wx.ALL, 2)
 
-        # 标题所在位置信息
-        # self.locPanel = wx.Panel(self.panel)
-        # self.locPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # self.locPanel.SetSizer(self.locPanelSizer)
-        # self.panelSizer.Add(self.locPanel, 0, wx.EXPAND | wx.ALL, 2)
-
-        # self.locFlag = wx.StaticText(self.locPanel, -1, "位置：")
-        # self.locTitle = wx.TextCtrl(self.locPanel, -1)
-        # self.locPanelSizer.Add(self.locFlag, 0, wx.EXPAND | wx.ALL, 2)
-        # self.locPanelSizer.Add(self.locTitle, 1, wx.EXPAND | wx.ALL, 2)
-        # self.locTitle.SetEditable(False)
-
         # 末尾按钮 和 提示信息   
         self.panelSizer.Add(self.btnModify, 1, wx.EXPAND | wx.ALL, 2)
         self.panelSizer.Add(self.msgName, 0, wx.EXPAND | wx.ALL, 2)
@@ -186,11 +181,8 @@ class AdminRenameDialog(wx.Dialog):
 
     def onBtnModify(self, e):
         """确认修改，重命名"""
-        # 若没有命名过，则任选一处命名
-        # 若只有一个命名，则修改本处命名
-        # 若有两个及以上命名，则删除所有，再任选一处命名
-        value_header = self.inputHeader.GetValue().strip() # 登录名
-        value_title = self.inputTitle.GetValue().strip() # 后台名
+        value_header = self.inputHeader.GetValue().strip()
+        value_title = self.inputTitle.GetValue().strip()
         result = []
         if value_header and 'None' != value_header: # 只要不为空，覆盖式赋值
             headers = get_site_header()
@@ -256,8 +248,6 @@ class AdminRenameDialog(wx.Dialog):
         else:
             self.inputTitle.SetValue(f'None')
             self.msgName.SetValue(f'读取正常')
-
-        # self.locTitle.SetValue('')
 
 class ProjectCreateDialog(wx.Dialog):
 
@@ -335,146 +325,152 @@ class SettingsDialog(wx.Dialog):
 
         wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '项目配置', size=(550, 600))
 
-        configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
-        self.DIRNAME = configs["dirname"]
-        self.DIRSETTINGS = os.path.join(self.DIRNAME, configs['project_name'], 'settings.py')
+        self.configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
+        # 正常来说，项目地址和settings.py的路径是不会改变，所以此处拿出。
+        self.DIRNAME = self.configs["dirname"]
+        self.DIRSETTINGS = os.path.join(self.DIRNAME, self.configs['project_name'], 'settings.py')
 
-        # 主布局
-        wholePanel = wx.Panel(self)
-        wholeBox = wx.BoxSizer(wx.VERTICAL) # 垂直
-        wholePanel.SetSizer(wholeBox)
+        self._init_UI()
 
-        # 底部工具栏
-        wholeToolsPanel = wx.Panel(wholePanel)
-        wholeToolsBox = wx.BoxSizer(wx.HORIZONTAL) # 水平
+        self.DATA_SETTINGS = {} # settings.py 数据包
+
+        self._init_data()
+
+        self._init_label_font()
+        self._init_status()
+
+    def _init_UI(self):
+        """初始化界面布局"""
+        # 一些控制容器
+        self.labelStaticTexts = []
+        
+        self.wholePanel = wx.Panel(self)
+        self.wholePanelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.wholePanel.SetSizer(self.wholePanelSizer)
+
+        self.labels = wx.Notebook(self.wholePanel)
+        self.wholePanelSizer.Add(self.labels, 1, wx.EXPAND | wx.ALL, 2)
+        
+        self._init_settings()        
+        self._init_databases()
+        self._init_rename()        
+
+        # 底部工具
+        wholeToolsPanel = wx.Panel(self.wholePanel)
+        wholeToolsBox = wx.BoxSizer(wx.HORIZONTAL)
         wholeToolsPanel.SetSizer(wholeToolsBox)
         self.saveConfig = buttons.GenButton(wholeToolsPanel, -1, '保存')
         wholeToolsBox.Add(self.saveConfig, 0, wx.EXPAND | wx.ALL, 2)
+        self.wholePanelSizer.Add(wholeToolsPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        labels = wx.Notebook(wholePanel)
+        # 事件监听
+        self.Bind(wx.EVT_BUTTON, self.onBtnSaveConfig, self.saveConfig)
+    
+    def _init_settings(self):
+        """setings页面布局"""
+        self.otherPanel = scrolledpanel.ScrolledPanel(self.labels, -1) # 其它（可滚动面板）
+        self.otherPanel.SetupScrolling()
+        otherPanelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.otherPanel.SetSizer(otherPanelSizer)
+        self.labels.AddPage(self.otherPanel, 'Settings')
 
-        """数据库"""
-        self.databasesPanel = wx.Panel(labels)
-
-        """Settings"""
-        self.otherPanel = scrolledpanel.ScrolledPanel(labels, -1) # 其它（可滚动面板）
-        self.otherPanel.SetupScrolling() # 开启滚动条
-        otherRefreshKeyPanel = wx.Panel(self.otherPanel) # SECRET_KEY
-        nm = wx.StaticBox(self.otherPanel, -1, 'ALLOWED_HOSTS') # 带边框的盒子
-        otherAllowedHostsPanel = wx.StaticBoxSizer(nm, wx.HORIZONTAL)
-        otherDebugPanel = wx.Panel(self.otherPanel) # DEBUG
-        otherIframePanel = wx.Panel(self.otherPanel) # iframe
-        otherLanguageCodePanel = wx.Panel(self.otherPanel) # LANGUAGE_CODE
-        otherTimeZonePanel = wx.Panel(self.otherPanel) # TIME_ZONE
-        otherUseI18NPanel = wx.Panel(self.otherPanel) # USE_I18N
-        otherUseL10NPanel = wx.Panel(self.otherPanel) # USE_L10N
-        otherUseTzPanel = wx.Panel(self.otherPanel) # USE_TZ
-
-        # 其它 控件
+        # SECRET_KEY
+        otherRefreshKeyPanel = wx.Panel(self.otherPanel)
+        otherRefreshKeyBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherRefreshKeyPanel.SetSizer(otherRefreshKeyBOX)
+        otherPanelSizer.Add(otherRefreshKeyPanel, 0, wx.EXPAND | wx.ALL, 2)
+        
         self.btnRefreshSecretKey = buttons.GenButton(otherRefreshKeyPanel, -1, '重置SECRET_KEY') # 刷新 SECRET_KEY
         self.inputRefreshSecretKey = wx.TextCtrl(otherRefreshKeyPanel, -1, style=wx.ALIGN_LEFT) # 显示 SECRET_KEY
         self.inputRefreshSecretKey.Enable(False)
-        self.radiosPanel = wx.RadioBox(otherDebugPanel, -1, "调式模式", choices=['开启', '关闭'])
-        self.radiosIframePanel = wx.RadioBox(otherIframePanel, -1, "iframe模式", choices=['开启', '关闭'])
-        self.radiosLanguageCodePanel = wx.RadioBox(otherLanguageCodePanel, -1, "语言环境", choices=['中文', '英文'])
-        self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区", choices=['伦敦时区', '北京时区'])
-        self.radiosUseI18NPanel = wx.RadioBox(otherUseI18NPanel, -1, "国际化", choices=['开启', '关闭'])
-        self.radiosUseL10NPanel = wx.RadioBox(otherUseL10NPanel, -1, "区域设置优先", choices=['开启', '关闭'])
-        self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区", choices=['开启', '关闭'])
-
-        self.inputAllowedHosts = wx.TextCtrl(self.otherPanel, -1, style = wx.ALIGN_LEFT) # ip设置
-
-        # 其它 布局
-        otherBox = wx.BoxSizer(wx.VERTICAL)
-        otherRefreshKeyBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherDebugBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherIframeBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherLanguageCodeBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherTimeZoneBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherUseI18NBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherUseL10NBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherUseTzBOX = wx.BoxSizer(wx.HORIZONTAL)
-
-        # 填充
         otherRefreshKeyBOX.Add(self.inputRefreshSecretKey, 1, wx.EXPAND | wx.ALL, 2)
         otherRefreshKeyBOX.Add(self.btnRefreshSecretKey, 0, wx.EXPAND | wx.ALL, 2)
-        otherDebugBOX.Add(self.radiosPanel, 1, wx.EXPAND | wx.ALL, 2)
-        otherIframeBOX.Add(self.radiosIframePanel, 1, wx.EXPAND | wx.ALL, 2)
-        otherLanguageCodeBOX.Add(self.radiosLanguageCodePanel, 1, wx.EXPAND | wx.ALL, 2)
-        otherTimeZoneBOX.Add(self.radiosTimeZonePanel, 1, wx.EXPAND | wx.ALL, 2)
-        otherUseI18NBOX.Add(self.radiosUseI18NPanel, 1, wx.EXPAND | wx.ALL, 2)
-        otherUseL10NBOX.Add(self.radiosUseL10NPanel, 1, wx.EXPAND | wx.ALL, 2)
-        otherUseTzBOX.Add(self.radiosUseTzPanel, 1, wx.EXPAND | wx.ALL, 2)
-
+        
+        # ALLOWED_HOSTS
+        nm = wx.StaticBox(self.otherPanel, -1, 'ALLOWED_HOSTS')
+        otherAllowedHostsPanel = wx.StaticBoxSizer(nm, wx.HORIZONTAL)
+        otherPanelSizer.Add(otherAllowedHostsPanel, 0, wx.EXPAND | wx.ALL, 2)
+        
+        self.inputAllowedHosts = wx.TextCtrl(self.otherPanel, -1, style = wx.ALIGN_LEFT) # ip设置
         otherAllowedHostsPanel.Add(self.inputAllowedHosts, 1, wx.EXPAND | wx.ALL, 2)
 
-        otherBox.Add(otherRefreshKeyPanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherAllowedHostsPanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherDebugPanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherLanguageCodePanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherTimeZonePanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherUseI18NPanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherUseL10NPanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherUseTzPanel, 0, wx.EXPAND | wx.ALL, 2)
-        otherBox.Add(otherIframePanel, 0, wx.EXPAND | wx.ALL, 2)
-
-        # 其它 面板绑定布局
-        otherRefreshKeyPanel.SetSizer(otherRefreshKeyBOX)
+        # DEBUG
+        otherDebugPanel = wx.Panel(self.otherPanel)
+        otherDebugBOX = wx.BoxSizer(wx.HORIZONTAL)
         otherDebugPanel.SetSizer(otherDebugBOX)
-        otherIframePanel.SetSizer(otherIframeBOX)
+        otherPanelSizer.Add(otherDebugPanel, 0, wx.EXPAND | wx.ALL, 2)
+        
+        self.radiosPanel = wx.RadioBox(otherDebugPanel, -1, "调式模式【DEBUG】", choices=['开启', '关闭'])
+        otherDebugBOX.Add(self.radiosPanel, 1, wx.EXPAND | wx.ALL, 2)
+        
+        # LANGUAGE_CODE
+        otherLanguageCodePanel = wx.Panel(self.otherPanel)
+        otherLanguageCodeBOX = wx.BoxSizer(wx.HORIZONTAL)
         otherLanguageCodePanel.SetSizer(otherLanguageCodeBOX)
+        otherPanelSizer.Add(otherLanguageCodePanel, 0, wx.EXPAND | wx.ALL, 2)
+        
+        self.radiosLanguageCodePanel = wx.RadioBox(otherLanguageCodePanel, -1, "语言环境【LANGUAGE_CODE】", choices=['中文', '英文'])
+        otherLanguageCodeBOX.Add(self.radiosLanguageCodePanel, 1, wx.EXPAND | wx.ALL, 2)
+        
+        # TIME_ZONE
+        otherTimeZonePanel = wx.Panel(self.otherPanel)
+        otherTimeZoneBOX = wx.BoxSizer(wx.HORIZONTAL)
         otherTimeZonePanel.SetSizer(otherTimeZoneBOX)
+        otherPanelSizer.Add(otherTimeZonePanel, 0, wx.EXPAND | wx.ALL, 2)
+        
+        self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区【TIME_ZONE】", choices=['伦敦时区', '北京时区'])
+        otherTimeZoneBOX.Add(self.radiosTimeZonePanel, 1, wx.EXPAND | wx.ALL, 2)
+        
+        # USE_I18N
+        otherUseI18NPanel = wx.Panel(self.otherPanel)
+        otherUseI18NBOX = wx.BoxSizer(wx.HORIZONTAL)
         otherUseI18NPanel.SetSizer(otherUseI18NBOX)
+        otherPanelSizer.Add(otherUseI18NPanel, 0, wx.EXPAND | wx.ALL, 2)
+        
+        self.radiosUseI18NPanel = wx.RadioBox(otherUseI18NPanel, -1, "国际化【USE_I18N】", choices=['开启', '关闭'])
+        otherUseI18NBOX.Add(self.radiosUseI18NPanel, 1, wx.EXPAND | wx.ALL, 2)
+        
+        # USE_L10N
+        otherUseL10NPanel = wx.Panel(self.otherPanel)
+        otherUseL10NBOX = wx.BoxSizer(wx.HORIZONTAL)
         otherUseL10NPanel.SetSizer(otherUseL10NBOX)
+        otherPanelSizer.Add(otherUseL10NPanel, 0, wx.EXPAND | wx.ALL, 2)
+        
+        self.radiosUseL10NPanel = wx.RadioBox(otherUseL10NPanel, -1, "区域设置优先【USE_L10N】", choices=['开启', '关闭'])
+        otherUseL10NBOX.Add(self.radiosUseL10NPanel, 1, wx.EXPAND | wx.ALL, 2)
+        
+        # USE_TZ
+        otherUseTzPanel = wx.Panel(self.otherPanel)
+        otherUseTzBOX = wx.BoxSizer(wx.HORIZONTAL)
         otherUseTzPanel.SetSizer(otherUseTzBOX)
-        self.otherPanel.SetSizer(otherBox)
+        otherPanelSizer.Add(otherUseTzPanel, 0, wx.EXPAND | wx.ALL, 2)
+        
+        self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区【USE_TZ】", choices=['开启', '关闭'])
+        otherUseTzBOX.Add(self.radiosUseTzPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        """项目重命名"""
-        self.projectRenamePanel = wx.Panel(labels)
-        self.renamePanel = wx.Panel(self.projectRenamePanel)
-        projectRenameBox = wx.BoxSizer(wx.VERTICAL)
-        renameBox = wx.BoxSizer(wx.VERTICAL)
-        horizontal_box = wx.BoxSizer(wx.HORIZONTAL)
+        # 主要是后台接口，暂时对静态文件、模板不予处理。
+        # STATIC_URL
+        # self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区【USE_TZ】", choices=['开启', '关闭'])
 
-        temp = wx.StaticBox(self.renamePanel, -1, 'Django项目：') # 带边框的盒子
-        static_config_box = wx.StaticBoxSizer(temp, wx.VERTICAL) # 垂直布局
+        # STATICFILES_DIRS
 
-        flagProjectName = wx.StaticText(self.renamePanel, -1, "您的项目名称：") # 项目名称
-        self.inputProjectName = wx.TextCtrl(self.renamePanel, -1, style=wx.ALIGN_LEFT) # 输入框
-        project_name = configs['project_name']
-        self.inputProjectName.SetValue(f"{project_name}")
+        # STATIC_ROOT
 
-        self.flagFirst = wx.StaticText(self.renamePanel, -1, "请先关闭所有占用此Django项目的程序。（否则会遇到修改权限问题）")
-        self.btnModify = buttons.GenButton(self.renamePanel, -1, label='修改（修改前请提前做好备份）')
-        self.flagTip = wx.StaticText(self.renamePanel, -1, "请确保您的项目名称在您整个项目中是独一无二的，否则本功能会严重破坏您的项目")
+        # MEDIA_URL
 
-        horizontal_box.Add(flagProjectName, 0, wx.ALL | wx.CENTER, 5)
-        horizontal_box.Add(self.inputProjectName, 0, wx.ALL | wx.CENTER, 5)
+        # MEDIA_ROOT
+        
+        # iframe
+        otherIframePanel = wx.Panel(self.otherPanel)
+        otherIframeBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherIframePanel.SetSizer(otherIframeBOX)
+        otherPanelSizer.Add(otherIframePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        static_config_box.Add(horizontal_box, 0, wx.ALL | wx.CENTER, 10)
-
-        renameBox.Add(static_config_box, 0, wx.ALL | wx.CENTER, 5)
-        renameBox.Add(self.flagFirst, 0, wx.ALL | wx.CENTER, 5)
-        renameBox.Add(self.flagTip, 0, wx.ALL | wx.CENTER, 5)
-        renameBox.Add(self.btnModify, 0, wx.ALL | wx.CENTER, 5)
-
-        projectRenameBox.Add(self.renamePanel, 1, wx.ALL | wx.CENTER, 5)
-
-        self.renamePanel.SetSizer(renameBox)
-        self.projectRenamePanel.SetSizer(projectRenameBox)
-
-        """填充页签"""
-        labels.AddPage(self.otherPanel, 'Settings')
-        labels.AddPage(self.databasesPanel, '数据库')
-        labels.AddPage(self.projectRenamePanel, '项目重命名')
-
-        wholeBox.Add(labels, 1, wx.EXPAND | wx.ALL, 2) # 添加多页签
-        wholeBox.Add(wholeToolsPanel, 0, wx.EXPAND | wx.ALL, 2) # 添加工具条
-
-        # 事件监听
+        self.radiosIframePanel = wx.RadioBox(otherIframePanel, -1, "iframe模式", choices=['开启', '关闭'])
+        otherIframeBOX.Add(self.radiosIframePanel, 1, wx.EXPAND | wx.ALL, 2)
+        
+        # 事件
         self.Bind(wx.EVT_BUTTON, self.onBtnRefreshSecretKey, self.btnRefreshSecretKey)
-        self.Bind(wx.EVT_BUTTON, self.onBtnModify, self.btnModify)
-        self.Bind(wx.EVT_BUTTON, self.onBtnSaveConfig, self.saveConfig)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosPanel)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosIframePanel)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosLanguageCodePanel)
@@ -483,15 +479,197 @@ class SettingsDialog(wx.Dialog):
         self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseL10NPanel)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseTzPanel)
 
-        # 基本对象
-        self.DATA_SETTINGS = {}
+    def _init_databases(self):
+        """databases页面布局"""
+        self.databasesPanel = wx.Panel(self.labels)
+        databasesPanelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.databasesPanel.SetSizer(databasesPanelSizer)
+        self.labels.AddPage(self.databasesPanel, '数据库')
 
-        # 初始化同步数据
-        self._init_data()
+        # 当前使用的引擎
+        self.labelRecentDatabase = wx.StaticText(self.databasesPanel, -1, "当前数据库引擎：", style=wx.ALIGN_CENTRE_HORIZONTAL)
+        databasesPanelSizer.Add(self.labelRecentDatabase, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 选择数据库引擎
+        self.choiceDatabaseStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.choiceDatabasePanel = wx.StaticBoxSizer(self.choiceDatabaseStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.choiceDatabasePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelChoiceDatabase = wx.StaticText(self.databasesPanel, -1, "切换引擎：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
+        self.choiceDatabase = wx.Choice(self.databasesPanel, -1, choices=[' ',]+env.getDjangoSupportDatabase())
+        self.choiceDatabasePanel.Add(self.labelChoiceDatabase, 0, wx.EXPAND | wx.ALL, 2)
+        self.choiceDatabasePanel.Add(self.choiceDatabase, 1, wx.EXPAND | wx.ALL, 2)
+
+        # ENGINE
+        self.inputEngineStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.inputEnginePanel = wx.StaticBoxSizer(self.inputEngineStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.inputEnginePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputEngine = wx.StaticText(self.databasesPanel, -1, "引擎名称：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
+        self.inputEngine = wx.TextCtrl(self.databasesPanel, -1)
+        self.inputEnginePanel.Add(self.labelInputEngine, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputEnginePanel.Add(self.inputEngine, 1, wx.EXPAND | wx.ALL, 2)
+
+        # NAME
+        self.inputNameStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.inputNamePanel = wx.StaticBoxSizer(self.inputNameStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.inputNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputName = wx.StaticText(self.databasesPanel, -1, "数据库名：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
+        self.inputName = wx.TextCtrl(self.databasesPanel, -1)
+        self.inputNamePanel.Add(self.labelInputName, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputNamePanel.Add(self.inputName, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 下面的参数在选择引擎的时候，按需开启
+        # USER
+        self.inputUserStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.inputUserPanel = wx.StaticBoxSizer(self.inputUserStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.inputUserPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputUser = wx.StaticText(self.databasesPanel, -1, "用户名：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
+        self.inputUser = wx.TextCtrl(self.databasesPanel, -1)
+        self.inputUserPanel.Add(self.labelInputUser, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputUserPanel.Add(self.inputUser, 1, wx.EXPAND | wx.ALL, 2)
+
+        # PASSWORD
+        self.inputPasswordStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.inputPasswordPanel = wx.StaticBoxSizer(self.inputPasswordStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.inputPasswordPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputPassword = wx.StaticText(self.databasesPanel, -1, "密码：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
+        self.inputPassword = wx.TextCtrl(self.databasesPanel, -1)
+        self.inputPasswordPanel.Add(self.labelInputPassword, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputPasswordPanel.Add(self.inputPassword, 1, wx.EXPAND | wx.ALL, 2)
+
+        # HOST
+        self.inputHostStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.inputHostPanel = wx.StaticBoxSizer(self.inputHostStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.inputHostPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputHost = wx.StaticText(self.databasesPanel, -1, "IP地址：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
+        self.inputHost = wx.TextCtrl(self.databasesPanel, -1)
+        self.inputHostPanel.Add(self.labelInputHost, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputHostPanel.Add(self.inputHost, 1, wx.EXPAND | wx.ALL, 2)
+
+        # PORT
+        self.inputPortStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.inputPortPanel = wx.StaticBoxSizer(self.inputPortStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.inputPortPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputPort = wx.StaticText(self.databasesPanel, -1, "端口：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
+        self.inputPort = wx.TextCtrl(self.databasesPanel, -1)
+        self.inputPortPanel.Add(self.labelInputPort, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputPortPanel.Add(self.inputPort, 1, wx.EXPAND | wx.ALL, 2)
+
+        # TEST
+        self.inputTestStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.inputTestPanel = wx.StaticBoxSizer(self.inputTestStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.inputTestPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelInputTest = wx.StaticText(self.databasesPanel, -1, "编码环境：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
+        self.inputTest = wx.TextCtrl(self.databasesPanel, -1)
+        self.inputTestPanel.Add(self.labelInputTest, 0, wx.EXPAND | wx.ALL, 2)
+        self.inputTestPanel.Add(self.inputTest, 1, wx.EXPAND | wx.ALL, 2)
+
+
+        # 标签美化
+        self.labelStaticTexts.extend([
+            self.labelRecentDatabase, self.labelChoiceDatabase,
+            self.labelInputEngine, self.labelInputName,
+
+            self.labelInputUser, self.labelInputPassword,
+            self.labelInputHost, self.labelInputPort,
+            self.labelInputTest, 
+        ])
+
+        # 事件
+        self.Bind(wx.EVT_CHOICE, self.onChoiceDatabase, self.choiceDatabase)
+
+    def _init_status(self):
+        """初始化控件状态"""
+        # database
+        self.inputEngine.Enable(False)
+
+    def onChoiceDatabase(self, e):
+        """选择要新建的字段类型"""
+        database_type = e.GetString().strip()
+
+        if not database_type:
+            return
+
+        if 'sqlite' == database_type:
+            self.inputEngine.SetValue('django.db.backends.sqlite3')
+            self.inputName.SetValue("os.path.join(BASE_DIR, 'db.sqlite3')")
+            self.inputTest.SetValue("")
+            self.inputPort.SetValue('')
+            
+        elif 'mysql' == database_type:
+            self.inputEngine.SetValue('django.db.backends.mysql')
+            self.inputName.SetValue("")
+            self.inputTest.SetValue("{'CHARSET' : 'utf8', 'COLLATION':'utf8_general_ci', }")
+            self.inputPort.SetValue('3306')
+
+        elif 'postgresql' == database_type:
+            self.inputEngine.SetValue('django.db.backends.postgresql')
+            self.inputName.SetValue("")
+            self.inputTest.SetValue("")
+            self.inputPort.SetValue('5432')
+
+        elif 'oracle' == database_type:
+            self.inputEngine.SetValue('django.db.backends.oracle')
+            self.inputName.SetValue("")
+            self.inputTest.SetValue("")
+            self.inputPort.SetValue('1521')
+
+        # 共用
+        self.inputHost.SetValue('127.0.0.1')
+
+
+    def _init_label_font(self):
+        """标签提示信息字体初始化"""
+        for _ in self.labelStaticTexts:
+            _.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+            _.SetForegroundColour(CON_COLOR_BLUE)
+
+    def _init_rename(self):
+        """rename页面布局"""
+        self.projectRenamePanel = wx.Panel(self.labels)
+        projectRenameBox = wx.BoxSizer(wx.VERTICAL)
+        self.projectRenamePanel.SetSizer(projectRenameBox)
+        self.labels.AddPage(self.projectRenamePanel, '项目重命名')
+
+        # 内部实际布局
+        self.renamePanel = wx.Panel(self.projectRenamePanel)
+        renameBox = wx.BoxSizer(wx.VERTICAL)
+        self.renamePanel.SetSizer(renameBox)
+        projectRenameBox.Add(self.renamePanel, 1, wx.ALL | wx.CENTER, 5)
+
+        # 名称输入框
+        inputNameStaticBox = wx.StaticBox(self.renamePanel, -1, 'Django项目：')
+        inputNamePanel = wx.StaticBoxSizer(inputNameStaticBox, wx.VERTICAL)
+        inputNameBoxHor = wx.BoxSizer(wx.HORIZONTAL)
+        inputNamePanel.Add(inputNameBoxHor, 0, wx.ALL | wx.CENTER, 10)
+        renameBox.Add(inputNamePanel, 0, wx.ALL | wx.CENTER, 5)
+
+        labelProjectName = wx.StaticText(self.renamePanel, -1, "您的项目名称：") # 项目名称
+        self.inputProjectName = wx.TextCtrl(self.renamePanel, -1, style=wx.ALIGN_LEFT) # 输入框
+        inputNameBoxHor.Add(labelProjectName, 0, wx.ALL | wx.CENTER, 5)
+        inputNameBoxHor.Add(self.inputProjectName, 0, wx.ALL | wx.CENTER, 5)
+
+        # 其它
+        self.labelFirst = wx.StaticText(self.renamePanel, -1, "请先关闭所有占用此Django项目的程序。（否则会遇到修改权限问题）")
+        self.btnModify = buttons.GenButton(self.renamePanel, -1, label='修改（修改前请提前做好备份）')
+        self.labelTip = wx.StaticText(self.renamePanel, -1, "请确保您的项目名称在您整个项目中是独一无二的，否则本功能会严重破坏您的项目")
+        renameBox.Add(self.labelFirst, 0, wx.ALL | wx.CENTER, 5)
+        renameBox.Add(self.labelTip, 0, wx.ALL | wx.CENTER, 5)
+        renameBox.Add(self.btnModify, 0, wx.ALL | wx.CENTER, 5)
+
+        # 事件绑定
+        self.Bind(wx.EVT_BUTTON, self.onBtnModify, self.btnModify)
 
     def _init_data(self):
         CONFIGS = get_configs(CONFIG_PATH)
-        # 0 开启，1关闭
+        # settings 0 开启，1关闭
         self.radiosPanel.SetSelection(0 if CONFIGS['DEBUG'] else 1)
         self.radiosIframePanel.SetSelection(0 if CONFIGS['X_FRAME_OPTIONS'] else 1)
         self.radiosLanguageCodePanel.SetSelection(0 if CONFIGS['LANGUAGE_CODE'].lower() in [_.lower() for _ in SETTINGSS['LANGUAGE_CODE'][0]] else 1)
@@ -501,6 +679,28 @@ class SettingsDialog(wx.Dialog):
         self.radiosUseTzPanel.SetSelection(0 if CONFIGS['USE_TZ'] else 1)
         self.inputRefreshSecretKey.SetValue(CONFIGS['SECRET_KEY'])
         self.inputAllowedHosts.SetValue(','.join(CONFIGS['ALLOWED_HOSTS']))
+
+        # 重命名
+        self.inputProjectName.SetValue(self.configs['project_name'])
+
+        # database
+        try:
+            t = get_configs(CONFIG_PATH)['DATABASES']['default']['ENGINE'].lower()
+            if 'sqlite3' in t:
+                n_engine = 'sqlite3'
+            elif 'mysql' in t:
+                n_engine = 'mysql'
+            elif 'oracle' in t:
+                n_engine = 'oracle'
+            elif 'postgresql' in t:
+                n_engine = 'postgresql'
+            else: # Django 原生不支持 SQLServer
+                n_engine = '未知'
+        except:
+            self.labelRecentDatabase.SetLabel(self.labelRecentDatabase.GetLabel()+'配置文件错误，读取状态失败！')
+        else:
+            self.labelRecentDatabase.SetLabel(self.labelRecentDatabase.GetLabel()+n_engine)
+        self.choiceDatabase.SetSelection(0)
 
     def onBtnSaveConfig(self, e):
         """保存修改"""
@@ -536,9 +736,11 @@ class SettingsDialog(wx.Dialog):
             temp = patt_sub_only_capture_obj(PATT_SECRET_KEY, self.inputRefreshSecretKey.GetValue(), temp)
             host_contents = [f"'{_}'" for _ in self.inputAllowedHosts.GetValue().strip().split(',') if _]
             temp = patt_sub_only_capture_obj_obtain_double(PATT_ALLOWED_HOSTS, ','.join(host_contents), temp)
+
             write_file(self.DIRSETTINGS, temp) # 更新settings.py文件
-            refresh_config() # 更新配置文件【重要！！！】
-            self.DATA_SETTINGS = {} # 防止重复确定
+            refresh_config() # 更新配置文件【重要且必须！！！】
+
+            self.DATA_SETTINGS = {} # 防止重复确定，重要！！！
         except:
             wx.MessageBox(f'错误，配置文件已损坏。', '错误', wx.OK | wx.ICON_INFORMATION)
         else:
@@ -549,9 +751,9 @@ class SettingsDialog(wx.Dialog):
         # 再次提醒
         dlgA = wx.MessageDialog(self, u"请再次确认", u"确认信息", wx.YES_NO | wx.ICON_QUESTION)
         if dlgA.ShowModal() == wx.ID_YES:
-            configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
+            self.configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
             # 获取新的名称
-            old_name = configs['project_name']
+            old_name = self.configs['project_name']
             new_name = self.inputProjectName.GetValue().strip()
 
             if old_name == new_name:

@@ -79,4 +79,15 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
+STATIC_URL = '/static/' # 非空值必须以 '/' 结尾
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') # 部署到正式环境专用路径（部署专用） # 默认从app的直接'static/'目录下寻找静态文件
+
+# 其他位置的静态文件
+STATICFILES_DIRS = [
+
+]
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

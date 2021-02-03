@@ -5,6 +5,12 @@ from ..tools import environment as env
 from ..settings import CONFIG_PATH, TEMPLATE_DIR
 from typing import Dict, List
 
+"""
+### 关于 settings.py 的说明：
+# 不允许在 settings.py 中引入任何的第三方库（尽管这是可行的行为）；
+# 若想要做一些环境初始化（如：MySQL配置），请移步到同目录下的 __init__.py 文件中设置。
+
+"""
 
 __all__ = [
     'startproject', # 新建项目
@@ -137,15 +143,17 @@ def write_admin_base(path: str, importData: Dict[str, List[str]]):
         for site_name in v:
             append_content(path, 'base.django', concat=['admin'], replace=True, model_name=k, site_name=site_name)
 
-def _get_all_py_path(alias):
-    # 遍历项目路径下的所有admin.py（包括别名）的文件，寻找注册名称信息
-    # 如果没有，则默认为Django，此时前台显示None
+def _get_all_py_path_by_alias(alias):
+    """根据别名筛选文件"""
     f_path = get_configs(CONFIG_PATH)["dirname"] # 项目根路径
-    # alias 取所有的admin.py及其别名
+    
     search_path = os.path.join(f_path, '**', '*')
     objs = glob.glob(search_path, recursive=True)
+    
+    alias = [os.path.basename(_) for _ in alias] # 只取文件名（功能扩展）
+
     temp = []
-    for _ in objs:
+    for _ in objs: # 取所有的 admin.py 及其别名
         if os.path.basename(_) in alias:
             temp.append(_)
     return temp # 当前项目根路径下所有的admin类型源文件路径
@@ -153,16 +161,16 @@ def _get_all_py_path(alias):
 def get_site_header():
     """获取登录界面名称"""
     options = []
-    for _ in _get_all_py_path(env.getAdminAlias()): # 逐个文件读取判断
+    for _ in _get_all_py_path_by_alias(env.getAdminAlias()): # 逐个文件读取判断
         source = ' '.join([t.strip() for t in read_file_list_del_comment(_)])
-        options.extend(PATT_HEADER_NAME.findall(source))
+        options.extend(PATT_HEADER_NAME.findall(source)) # 扣出登录界面名称
     return options
 
 def set_site_header(new_name, mode=0):
     """设置 获取登录界面名称"""
     # mode: 0没有，1仅一个，2多个
     # 删除所有的名称命名处
-    alias_paths = _get_all_py_path(env.getAdminAlias())
+    alias_paths = _get_all_py_path_by_alias(env.getAdminAlias())
     if 2 == mode:
         for _ in alias_paths:
             content = PATT_HEADER_NAME.sub('', read_file(_))
@@ -181,14 +189,14 @@ def set_site_header(new_name, mode=0):
 def get_site_title():
     """获取后台标题名称 注释见get_site_header"""
     options = []
-    for _ in _get_all_py_path(env.getAdminAlias()):
+    for _ in _get_all_py_path_by_alias(env.getAdminAlias()):
         source = ' '.join([t.strip() for t in read_file_list_del_comment(_)])
         options.extend(PATT_TITLE_NAME.findall(source))
     return options
 
 def set_site_title(new_name, mode=0):
     """设置 获取后台标题名称 注释见set_site_header"""
-    alias_paths = _get_all_py_path(env.getAdminAlias())
+    alias_paths = _get_all_py_path_by_alias(env.getAdminAlias())
     if 2 == mode:
         for _ in alias_paths:
             content = PATT_TITLE_NAME.sub('', read_file(_))
