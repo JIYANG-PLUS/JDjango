@@ -8,6 +8,7 @@ from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 from ..constant import *
+from .dialogTips import *
 
 """
 ### 有关别名的一些说明：
@@ -330,6 +331,8 @@ class SettingsDialog(wx.Dialog):
         self.DIRNAME = self.configs["dirname"]
         self.DIRSETTINGS = os.path.join(self.DIRNAME, self.configs['project_name'], 'settings.py')
 
+        self.specialControls = [] # 特殊的参数
+
         self._init_UI()
 
         self.DATA_SETTINGS = {} # settings.py 数据包
@@ -338,6 +341,7 @@ class SettingsDialog(wx.Dialog):
 
         self._init_label_font()
         self._init_status()
+        self._unshow_special_control()
 
     def _init_UI(self):
         """初始化界面布局"""
@@ -537,7 +541,7 @@ class SettingsDialog(wx.Dialog):
         databasesPanelSizer.Add(self.inputPasswordPanel, 0, wx.EXPAND | wx.ALL, 2)
 
         self.labelInputPassword = wx.StaticText(self.databasesPanel, -1, "密码：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_LEN, -1))
-        self.inputPassword = wx.TextCtrl(self.databasesPanel, -1)
+        self.inputPassword = wx.TextCtrl(self.databasesPanel, -1, style = wx.TE_PASSWORD)
         self.inputPasswordPanel.Add(self.labelInputPassword, 0, wx.EXPAND | wx.ALL, 2)
         self.inputPasswordPanel.Add(self.inputPassword, 1, wx.EXPAND | wx.ALL, 2)
 
@@ -571,6 +575,27 @@ class SettingsDialog(wx.Dialog):
         self.inputTestPanel.Add(self.labelInputTest, 0, wx.EXPAND | wx.ALL, 2)
         self.inputTestPanel.Add(self.inputTest, 1, wx.EXPAND | wx.ALL, 2)
 
+        # 按钮
+        self.btnOperationStaticBox = wx.StaticBox(self.databasesPanel, -1, '')
+        self.btnOperationPanel = wx.StaticBoxSizer(self.btnOperationStaticBox, wx.HORIZONTAL)
+        databasesPanelSizer.Add(self.btnOperationPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.btnOperationBlank = buttons.GenButton(self.databasesPanel, -1, ' ')
+        self.btnOperationTestLink = buttons.GenButton(self.databasesPanel, -1, '测试连接')
+        self.btnOperationChangeDataSource = buttons.GenButton(self.databasesPanel, -1, '切换数据源')
+        self.btnOperationPanel.Add(self.btnOperationBlank, 1, wx.EXPAND | wx.ALL, 2)
+        self.btnOperationPanel.Add(self.btnOperationTestLink, 0, wx.EXPAND | wx.ALL, 2)
+        self.btnOperationPanel.Add(self.btnOperationChangeDataSource, 0, wx.EXPAND | wx.ALL, 2)
+
+        # 专属控件
+        self.specialControls.extend([
+            self.inputUserStaticBox, self.labelInputUser, self.inputUser,
+            self.inputPasswordStaticBox, self.labelInputPassword, self.inputPassword,
+            self.inputHostStaticBox, self.labelInputHost, self.inputHost,
+            self.inputPortStaticBox, self.labelInputPort, self.inputPort,
+            self.inputTestStaticBox, self.labelInputTest, self.inputTest,
+            self.btnOperationStaticBox, self.btnOperationBlank, self.btnOperationTestLink, self.btnOperationChangeDataSource,
+        ])
 
         # 标签美化
         self.labelStaticTexts.extend([
@@ -585,14 +610,75 @@ class SettingsDialog(wx.Dialog):
         # 事件
         self.Bind(wx.EVT_CHOICE, self.onChoiceDatabase, self.choiceDatabase)
 
+        self.Bind(wx.EVT_BUTTON, self.onBtnOperationTestLink, self.btnOperationTestLink)
+        self.Bind(wx.EVT_BUTTON, self.onBtnOperationChangeDataSource, self.btnOperationChangeDataSource)
+
+    def onBtnOperationTestLink(self, e):
+        """测试连接"""
+
+        # 取出所有的值
+        name = self.inputName.GetValue().strip()
+        user = self.inputUser.GetValue().strip()
+        password = self.inputPassword.GetValue().strip()
+        host = self.inputHost.GetValue().strip()
+        port = int(self.inputPort.GetValue().strip())
+
+        if all([name, user, password, host, port]):
+            # 检测有没有安装 pymysql
+            try:
+                import pymysql
+            except:
+                TipsMessageOKBox(self, '您未安装pymysql模块，请在【运行】->【原生指令】->【pip install】弹出窗口输入【pymysql】进行安装。', '错误')
+            else:
+                try:
+                    conn = pymysql.connect(host=host, user=user, password=password, db=name, port=port)
+                    conn.ping()
+                except:
+                    TipsMessageOKBox(self, '连接失败', '错误')
+                else:
+                    TipsMessageOKBox(self, '连接成功', '成功')
+            finally:
+                try:
+                    conn.close()
+                except:
+                    pass
+        else:
+            TipsMessageOKBox(self, '请填全数据库信息。', '错误')
+
+    def onBtnOperationChangeDataSource(self, e):
+        """切换数据源"""
+        name = self.inputName.GetValue().strip()
+        user = self.inputUser.GetValue().strip()
+        password = self.inputPassword.GetValue().strip()
+        host = self.inputHost.GetValue().strip()
+        port = self.inputPort.GetValue().strip()
+
+        if all([name, user, password, host, port]):
+            pass
+        else:
+            TipsMessageOKBox(self, '请填全数据库信息。', '错误')
+
     def _init_status(self):
         """初始化控件状态"""
         # database
         self.inputEngine.Enable(False)
+        self.btnOperationBlank.Enable(False)
+
+    def _unshow_special_control(self):
+        """隐藏特殊控件"""
+        for _ in self.specialControls:
+            _.Show(False)
+
+    def _show_special_control(self):
+        """显示所有特殊控件"""
+        for _ in self.specialControls:
+            _.Show(True)
 
     def onChoiceDatabase(self, e):
         """选择要新建的字段类型"""
         database_type = e.GetString().strip()
+
+        self._unshow_special_control() # 先隐藏，后按需打开
 
         if not database_type:
             return
@@ -609,6 +695,8 @@ class SettingsDialog(wx.Dialog):
             self.inputTest.SetValue("{'CHARSET' : 'utf8', 'COLLATION':'utf8_general_ci', }")
             self.inputPort.SetValue('3306')
 
+            self._show_special_control()
+
         elif 'postgresql' == database_type:
             self.inputEngine.SetValue('django.db.backends.postgresql')
             self.inputName.SetValue("")
@@ -624,6 +712,7 @@ class SettingsDialog(wx.Dialog):
         # 共用
         self.inputHost.SetValue('127.0.0.1')
 
+        self.wholePanel.Layout()
 
     def _init_label_font(self):
         """标签提示信息字体初始化"""
