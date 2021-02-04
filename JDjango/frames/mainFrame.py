@@ -242,6 +242,7 @@ class Main(wx.Frame):
         portProgress.AppendSeparator()
         djangoOrder = wx.Menu()
         self.portProgressPipInstall = djangoOrder.Append(wx.ID_ANY, "&pip install", "pip install")
+        self.portProgressPipFreeze = djangoOrder.Append(wx.ID_ANY, "&pip freeze", "pip freeze")
         djangoOrder.AppendSeparator()
         self.portProgressMakemigrations = djangoOrder.Append(wx.ID_ANY, "&makemigrations（数据迁移）", "makemigrations（数据迁移）")
         self.portProgressMigrate = djangoOrder.Append(wx.ID_ANY, "&migrate（数据写入）", "migrate（数据写入）")
@@ -405,6 +406,7 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onPortProgressFlush, self.portProgressFlush) 
         self.Bind(wx.EVT_MENU, self.onPortProgressCreatesuperuser, self.portProgressCreatesuperuser) 
         self.Bind(wx.EVT_MENU, self.onPortProgressPipInstall, self.portProgressPipInstall) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressPipFreeze, self.portProgressPipFreeze) 
         self.Bind(wx.EVT_MENU, self.onPortProgressCollectstatic, self.portProgressCollectstatic) 
         self.Bind(wx.EVT_MENU, self.onPortProgressVirtualView, self.portProgressVirtualView) 
 
@@ -427,6 +429,17 @@ class Main(wx.Frame):
         env_python3 = os.path.splitext(env.getPython3Env())[0]
 
         subprocess.Popen(f'{env_python3} {path} collectstatic', shell=True)
+
+    def onPortProgressPipFreeze(self, e):
+        """导出包pip freeze"""
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            return
+        
+        import subprocess
+        env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
+        subprocess.Popen(f'{env_python3_pip} freeze', shell=True)
 
     def onPortProgressPipInstall(self, e):
         """虚拟环境安装包pip install"""
