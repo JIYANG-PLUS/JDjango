@@ -21,7 +21,7 @@ from .dialogTips import *
 
 """
 
-LABEL_LEN = 99
+LABEL_LEN = 99 # 数据库页签 标签 长度（用于美化布局）
 
 class AdminCreateSimpleDialog(wx.Dialog):
     def __init__(self, parent):
@@ -615,6 +615,7 @@ class SettingsDialog(wx.Dialog):
 
     def onBtnOperationTestLink(self, e):
         """测试连接"""
+        # 能看到按钮，必定选择了支持的数据源，否则绝对看不到
 
         # 取出所有的值
         name = self.inputName.GetValue().strip()
@@ -628,13 +629,13 @@ class SettingsDialog(wx.Dialog):
             try:
                 import pymysql
             except:
-                TipsMessageOKBox(self, '您未安装pymysql模块，请在【运行】->【原生指令】->【pip install】弹出窗口输入【pymysql】进行安装。', '错误')
+                TipsMessageOKBox(self, '此功能需要您在非虚拟环境安装pymysql模块。（pip install pymysql）', '错误') # ，请在【运行】->【原生指令】->【pip install】弹出窗口输入【pymysql】进行安装
             else:
                 try:
                     conn = pymysql.connect(host=host, user=user, password=password, db=name, port=port)
-                    conn.ping()
-                except:
-                    TipsMessageOKBox(self, '连接失败', '错误')
+                    # conn.ping() # 查看实时连接
+                except Exception as e:
+                    TipsMessageOKBox(self, f'连接失败。{e}', '错误')
                 else:
                     TipsMessageOKBox(self, '连接成功', '成功')
             finally:
@@ -647,14 +648,40 @@ class SettingsDialog(wx.Dialog):
 
     def onBtnOperationChangeDataSource(self, e):
         """切换数据源"""
-        name = self.inputName.GetValue().strip()
+        source = self.choiceDatabase.GetString(self.choiceDatabase.GetSelection()).strip()
+        django_engine = self.inputEngine.GetValue().strip()
+        test = self.inputTest.GetValue().strip()
+
+        if 'sqlite' == source:
+            name = f"os.path.join(BASE_DIR, '{self.inputName.GetValue().strip()}')"
+        else:
+            name = self.inputName.GetValue().strip()
         user = self.inputUser.GetValue().strip()
         password = self.inputPassword.GetValue().strip()
         host = self.inputHost.GetValue().strip()
         port = self.inputPort.GetValue().strip()
 
-        if all([name, user, password, host, port]):
-            pass
+        if all([name, user, password, host, port]) or ('sqlite' == source and all([name,])):
+            # update_settings_DTATBASES
+            dlg_tip = wx.MessageDialog(self, f"一旦切换数据源，之前的数据源配置将丢失，请做好备份。建议测试连接成功后进行切换！（sqlite无需测试）", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
+            if dlg_tip.ShowModal() == wx.ID_OK:
+                try:
+                    update_settings_DTATBASES(source,
+                        engine=django_engine,
+                        database_name = name,
+                        username = user,
+                        password = password,
+                        ip = host,
+                        port = port,
+                        test = test
+                    )
+                except Exception as e:
+                    print(e)
+                    TipsMessageOKBox(self, f'暂不支持{source}数据库引擎。', '错误')
+                else:
+                    last_engine = self.labelRecentDatabase.GetLabel().replace('当前数据库引擎：', '')
+                    TipsMessageOKBox(self, f'成功，数据库引擎已从{last_engine}替换成{source}！', '成功')
+            dlg_tip.Close(True)
         else:
             TipsMessageOKBox(self, '请填全数据库信息。', '错误')
 
@@ -685,9 +712,13 @@ class SettingsDialog(wx.Dialog):
 
         if 'sqlite' == database_type:
             self.inputEngine.SetValue('django.db.backends.sqlite3')
-            self.inputName.SetValue("os.path.join(BASE_DIR, 'db.sqlite3')")
+            self.inputName.SetValue("db.sqlite3") # os.path.join(BASE_DIR, 'db.sqlite3')
             self.inputTest.SetValue("")
             self.inputPort.SetValue('')
+
+            self.btnOperationStaticBox.Show(True)
+            self.btnOperationBlank.Show(True)
+            self.btnOperationChangeDataSource.Show(True)
             
         elif 'mysql' == database_type:
             self.inputEngine.SetValue('django.db.backends.mysql')
@@ -711,8 +742,10 @@ class SettingsDialog(wx.Dialog):
 
         # 共用
         self.inputHost.SetValue('127.0.0.1')
+        self.inputUser.SetValue('')
+        self.inputPassword.SetValue('')
 
-        self.wholePanel.Layout()
+        self.databasesPanel.Layout()
 
     def _init_label_font(self):
         """标签提示信息字体初始化"""

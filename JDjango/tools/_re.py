@@ -20,6 +20,7 @@ __all__ = [
     'PATT_TITLE_NAME',
     'PATT_HEADER_NAME',
     'PATT_URLPATTERNS',
+    'PATT_DAtABASES',
     'PATT_MODEL',
     'PATT_CHARS_REVERSED',
     'PATT_DIGITS_WHOLE',
@@ -49,6 +50,7 @@ PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 模板定位替换语法
 PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']')
 PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']')
 PATT_URLPATTERNS = re.compile(r'(?ms:urlpatterns\s*=\s*\[.*)')
+PATT_DAtABASES = re.compile(r'(?ms:DATABASES\s*=\s*\{.*)')
 PATT_MODEL = re.compile(r'class\s+(.+?)\(\s*[a-zA-Z0-9]*?[.]*?Model\s*\):') # 定位模型类
 
 def patt_sub_only_capture_obj(patt: object, replace_str: str, old_str: str) -> str:

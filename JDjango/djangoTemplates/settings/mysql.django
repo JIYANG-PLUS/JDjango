@@ -1,10 +1,10 @@
-'ENGINE': 'django.db.backends.mysql',
+
+    'default': {
+        'ENGINE': '${engine}',
         'NAME': '${database_name}',
         'USER': '${username}',
         'PASSWORD': '${password}',
         'HOST': '${ip}',
         'PORT': '${port}',
-        'TEST': {
-            'CHARSET' : 'utf8',
-            'COLLATION':'utf8_general_ci'
-        },
+        'TEST': ${test},
+    }

@@ -34,3 +34,15 @@ class CodePreviewDialog(wx.Dialog):
         self.panelSizer.Add(self.inputCode, 1, wx.EXPAND | wx.ALL, 2)
         self.inputCode.SetValue(code)
         self.inputCode.SetEditable(False)
+
+# dlg_tip = wx.MessageDialog(self, f"确认删除第{t}行？一旦删除不可恢复。", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
+# if dlg_tip.ShowModal() == wx.ID_OK:
+#     result = self.removeRows(row_indexs)
+#     if not result:
+#         TipsMessageOKBox(self, '删除成功！', '提示')
+#     else:
+#         if isinstance(result, list):
+#             TipsMessageOKBox(self, f"{'、'.join(result)}删除失败！", '提示')
+#         else:
+#             TipsMessageOKBox(self, '未知错误，删除失败。', '提示')
+# dlg_tip.Close(True)
