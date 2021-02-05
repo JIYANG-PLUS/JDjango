@@ -423,7 +423,7 @@ class SettingsDialog(wx.Dialog):
         otherTimeZonePanel.SetSizer(otherTimeZoneBOX)
         otherPanelSizer.Add(otherTimeZonePanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区【TIME_ZONE】", choices=['伦敦时区', '北京时区'])
+        self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区【TIME_ZONE】", choices=['伦敦时区', '北京时区', '美国芝加哥'])
         otherTimeZoneBOX.Add(self.radiosTimeZonePanel, 1, wx.EXPAND | wx.ALL, 2)
         
         # USE_I18N
@@ -796,7 +796,12 @@ class SettingsDialog(wx.Dialog):
         self.radiosPanel.SetSelection(0 if CONFIGS['DEBUG'] else 1)
         self.radiosIframePanel.SetSelection(0 if CONFIGS['X_FRAME_OPTIONS'] else 1)
         self.radiosLanguageCodePanel.SetSelection(0 if CONFIGS['LANGUAGE_CODE'].lower() in [_.lower() for _ in SETTINGSS['LANGUAGE_CODE'][0]] else 1)
-        self.radiosTimeZonePanel.SetSelection(0 if CONFIGS['TIME_ZONE'].lower() in [_.lower() for _ in SETTINGSS['TIME_ZONE'][0]] else 1)
+        for k, v in SETTINGSS['TIME_ZONE'].items():
+            if CONFIGS['TIME_ZONE'].lower() in [_.lower() for _ in v]:
+                self.radiosTimeZonePanel.SetSelection(k)
+                break
+        else:
+            self.radiosTimeZonePanel.SetSelection(0)
         self.radiosUseI18NPanel.SetSelection(0 if CONFIGS['USE_I18N'] else 1)
         self.radiosUseL10NPanel.SetSelection(0 if CONFIGS['USE_L10N'] else 1)
         self.radiosUseTzPanel.SetSelection(0 if CONFIGS['USE_TZ'] else 1)
@@ -820,7 +825,7 @@ class SettingsDialog(wx.Dialog):
             else: # Django 原生不支持 SQLServer
                 n_engine = '未知'
         except:
-            self.labelRecentDatabase.SetLabel(self.labelRecentDatabase.GetLabel()+'配置文件错误，读取状态失败！')
+            self.labelRecentDatabase.SetLabel(self.labelRecentDatabase.GetLabel()+'配置文件错误，读取失败！')
         else:
             self.labelRecentDatabase.SetLabel(self.labelRecentDatabase.GetLabel()+n_engine)
         self.choiceDatabase.SetSelection(0)

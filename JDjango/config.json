@@ -1,26 +1,19 @@
 {
-    "dirname": "C:\\Users\\PC\\Desktop\\TestModels",
-    "project_name": "TestModels",
+    "dirname": "/Users/jiyang/Desktop/jiyang",
+    "project_name": "jiyang",
     "app_names": [
+        "test",
         "main"
     ],
     "DATABASES": {
         "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": "demo",
-            "USER": "root",
-            "PASSWORD": "123456",
-            "HOST": "127.0.0.1",
-            "PORT": "3306",
-            "TEST": {
-                "CHARSET": "utf8",
-                "COLLATION": "utf8_general_ci"
-            }
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "/Users/jiyang/Desktop/jiyang/db.sqlite3"
         }
     },
     "DEBUG": true,
     "LANGUAGE_CODE": "zh-Hans",
-    "TIME_ZONE": "Asia/Shanghai",
+    "TIME_ZONE": "America/Chicago",
     "USE_I18N": true,
     "USE_L10N": true,
     "USE_TZ": true,
@@ -29,9 +22,7 @@
         "*"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
+    "SECRET_KEY": "<t]TwFZwIB77!^h*RPdH?b6e?-QazW-|[9;.)|;F%ro8v&]7Wr",
     "TEMPLATES_APP_DIRS": true,
-    "TEMPLATES_DIRS": [
-        "C:\\Users\\PC\\Desktop\\TestModels\\templates"
-    ]
+    "TEMPLATES_DIRS": []
 }

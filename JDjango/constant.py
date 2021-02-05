@@ -234,3 +234,14 @@ CON_FOREIGN_FIELDS = (
 
 CON_YES = '是'
 CON_NO = '否'
+
+CON_VIEWS_RETURN_TYPE = [
+    'HttpResponse',
+    'JsonResponse',
+    'StreamingHttpResponse',
+    'FileResponse',
+    'HttpResponseNotFound',
+    'Http404',
+    'SimpleTemplateResponse',
+    'TemplateResponse',
+]

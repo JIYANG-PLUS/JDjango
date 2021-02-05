@@ -143,19 +143,19 @@ class ViewGenerateDialog(wx.Dialog):
 
     def _init_right_panel(self):
         """初始化右子面板"""
-        # 视图名称
-        self.inputViewNameStaticBox = wx.StaticBox(self.leftPanel, -1, '')
-        self.inputViewNamePanel = wx.StaticBoxSizer(self.inputViewNameStaticBox, wx.HORIZONTAL)
-        self.leftPanelSizer.Add(self.inputViewNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+        # 返回值类型
+        self.choiceReturnTypeStaticBox = wx.StaticBox(self.rightPanel, -1, '')
+        self.choiceReturnTypePanel = wx.StaticBoxSizer(self.choiceReturnTypeStaticBox, wx.HORIZONTAL)
+        self.rightPanelSizer.Add(self.choiceReturnTypePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelInputViewName = wx.StaticText(self.leftPanel, -1, "视图名称：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
-        self.inputViewName = wx.TextCtrl(self.leftPanel, -1, style = wx.ALIGN_LEFT)
-        self.inputViewNamePanel.Add(self.labelInputViewName, 0, wx.EXPAND | wx.ALL, 2)
-        self.inputViewNamePanel.Add(self.inputViewName, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelChoiceReturnType = wx.StaticText(self.rightPanel, -1, "返回值类型：", style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.choiceReturnType = wx.Choice(self.rightPanel, -1, choices=[' ',]+CON_VIEWS_RETURN_TYPE)
+        self.choiceReturnTypePanel.Add(self.labelChoiceReturnType, 0, wx.EXPAND | wx.ALL, 2)
+        self.choiceReturnTypePanel.Add(self.choiceReturnType, 1, wx.EXPAND | wx.ALL, 2)
 
         # 标签美化
         self.labelStaticTexts.extend([
-            
+            self.labelChoiceReturnType,
         ])
 
     def onInputViewName(self, e):
