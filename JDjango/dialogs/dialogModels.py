@@ -19,7 +19,7 @@ Mac上布局有BUG，推测是RadioBox和scrolledpanel组合使用的问题，Ma
 3、在 self.allArgs 变量中注册参数控件（仅需要最核心的一个输入控件）；
 4、按 共用参数/特殊参数 区分，分别添加到 self.commonArgs / self.specialArgs 中（所有与核心控件相关的，包括布局都必须添加进去）；
 5、在 self.readmeStaticTexts 和 self.labelStaticTexts 中分别添加 字段说明 和 字段标签；
-6、在 onBtnAddFieldToArea() 方法中加入行数据（根据实际情况做个校验）；
+6、在 onBtnAddFieldToArea() 方法中加入行数据（根据实际情况适当做个校验）；
 7、如果是特殊参数，则在选中对应字段类型时予以显示；
 8、最终，在 onBtnPreview() 函数中，进行预览展示。
 
@@ -29,9 +29,14 @@ Mac上布局有BUG，推测是RadioBox和scrolledpanel组合使用的问题，Ma
 """
 
 """
-关联字段的一些注意点：
+### 关联字段的一些注意点：
 1、OneToOneField 字段类型和其它关联字段类型不同，默认的反向名称是 '<model_name>'，而 ManyToManyField 和 ForeignField 默认是 '<model_name>_set'；
 （当然，反向名称可以自己指定.）
+"""
+
+"""
+### 一些使用注意点：
+1、选择应用程序后，模型创建代码默认写入程序搜索到的第一个模型文件路径。（若路径不存在，请手动在应用程序中新建一个模型文件，并在environment.xml文件中注册别名。）
 """
 
 STATIC_TEXT_WIDTH = -1 # StaticText宽度
@@ -83,17 +88,19 @@ class ModelsCreateDialog(wx.Dialog):
         self.panel.SetSizer(self.panelSizer)
         # self.panel.SetBackgroundColour(CON_COLOR_MAIN)
 
-        # 选择文件写入路径
+        # 选择文件写入路径【此处更改为选择App】
         self.selectFilePanel = wx.Panel(self.panel)
         selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.selectFilePanel.SetSizer(selectFilePanelSizer)
         self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLACK)
+        self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLACK) # CON_COLOR_PURE_WHITE
 
-        self.btnSelectFile = buttons.GenButton(self.selectFilePanel, -1, '选择模型写入路径')
-        self.inputSelectFile = wx.TextCtrl(self.selectFilePanel, -1, style=wx.ALIGN_LEFT)
-        selectFilePanelSizer.Add(self.btnSelectFile, 0, wx.EXPAND | wx.ALL, 2)
-        selectFilePanelSizer.Add(self.inputSelectFile, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "选择模型所属的应用程序")
+        self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',]+get_all_apps_name())
+        selectFilePanelSizer.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
+        selectFilePanelSizer.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelSelectFile.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
+        self.labelSelectFile.SetForegroundColour(CON_COLOR_PURE_WHITE)
 
         # 自定义工具栏
         self.toolPanel = wx.Panel(self.panel)
@@ -599,7 +606,6 @@ class ModelsCreateDialog(wx.Dialog):
         ])
 
         # 按钮点击事件
-        self.Bind(wx.EVT_BUTTON, self.onBtnSelectPath, self.btnSelectFile)
         self.Bind(wx.EVT_BUTTON, self.onExit, self.btnExit)
         self.Bind(wx.EVT_BUTTON, self.onBtnAddNew, self.btnAddNew)
         self.Bind(wx.EVT_BUTTON, self.onBtnResetInput, self.btnResetInput)
@@ -1019,7 +1025,7 @@ class ModelsCreateDialog(wx.Dialog):
             meta_code = '        pass'
 
         # __str__()返回值
-        str_msg = "        # return ''"
+        str_msg = "    #     return ''"
 
         # 如果没有设置主键，则自动增加主键【预览界面有效，实际代码无此行】
         if len([_ for _ in self.allRows if CON_YES==_['primary_key']]) <= 0: # 用户无主动设置主键
@@ -1672,15 +1678,6 @@ class <model_name>(models.Model):
 
         self.panelSizer.Layout() # 重要！！！ 重新计算布局
 
-    def onBtnSelectPath(self, e):
-        """选择文件写入路径"""
-        dlg = wx.FileDialog(self, "选择写入文件", get_configs(CONFIG_PATH)['dirname'], "", "*.py", wx.FD_OPEN)
-        if dlg.ShowModal() == wx.ID_OK:
-            filename = dlg.GetFilename()
-            dirname = dlg.GetDirectory()
-            self.inputSelectFile.SetValue(os.path.join(dirname, filename))
-        dlg.Close(True)
-
     def onBtnAddNew(self, e):
         """新增字段"""
         self.choiceFieldType.Enable(True) # 开放字段下拉选择框
@@ -1896,13 +1893,17 @@ class <model_name>(models.Model):
                     model_name = dlg.GetValue().strip()  # 获取要创建的模型名称
                     if model_name:
                         model_code = self._generate_create_code(mode='B').replace('<model_name>', model_name)
-                        # 将代码追加到选择的文件中
-                        file_path = self.inputSelectFile.GetValue().strip()
-                        if file_path and os.path.exists(file_path):
-                            append_file_whole(file_path, model_code)
-                            TipsMessageOKBox(self, '保存成功', '成功')
+                        # 将代码追加到对应的应用程序中
+                        app_name = self.choiceSelectFile.GetString(self.choiceSelectFile.GetSelection()).strip()
+                        if app_name:
+                            temp_path = get_models_path_by_appname(app_name)
+                            if len(temp_path) > 0:
+                                append_file_whole(temp_path[0], model_code) # 默认写入第一个模型文件
+                                TipsMessageOKBox(self, '保存成功', '成功')
+                            else:
+                                TipsMessageOKBox(self, '程序缺失模型文件', '错误')
                         else:
-                            TipsMessageOKBox(self, '路径无效，请重新选择路径', '错误')
+                            TipsMessageOKBox(self, '请先选择模型所属的应用程序。', '错误')
                     else:
                         TipsMessageOKBox(self, '未输入模型名称', '错误')
                 dlg.Close(True)
@@ -1913,13 +1914,17 @@ class <model_name>(models.Model):
                 model_name = dlg.GetValue().strip()  # 获取要创建的模型名称
                 if model_name:
                     model_code = self._generate_create_code(mode='B').replace('<model_name>', model_name)
-                    # 将代码追加到选择的文件中
-                    file_path = self.inputSelectFile.GetValue().strip()
-                    if file_path and os.path.exists(file_path):
-                        append_file_whole(file_path, model_code)
-                        TipsMessageOKBox(self, '保存成功', '成功')
+                    # 将代码追加到对应的应用程序中
+                    app_name = self.choiceSelectFile.GetString(self.choiceSelectFile.GetSelection()).strip()
+                    if app_name:
+                        temp_path = get_models_path_by_appname(app_name)
+                        if len(temp_path) > 0:
+                            append_file_whole(temp_path[0], model_code) # 默认写入第一个模型文件
+                            TipsMessageOKBox(self, '保存成功', '成功')
+                        else:
+                            TipsMessageOKBox(self, '程序缺失模型文件', '错误')
                     else:
-                        TipsMessageOKBox(self, '路径无效，请重新选择路径', '错误')
+                        TipsMessageOKBox(self, '请先选择模型所属的应用程序', '错误')
                 else:
                     TipsMessageOKBox(self, '未输入模型名称', '错误')
             dlg.Close(True)

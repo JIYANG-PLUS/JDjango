@@ -10,10 +10,12 @@ CON_TIPS_COMMON = '提示信息'
 CON_COLOR_GREY = '#4f5049' # 灰色
 CON_COLOR_WHITE = '#ededed' # 白色
 CON_COLOR_BLACK = '#000000' # 纯黑
+CON_COLOR_PURE_WHITE = '#ffffff' # 纯白
 CON_COLOR_BLUE = '#285f5c' # 暗绿色
 CON_COLOR_RED = '#ff0000' # 红色
 CON_COLOR_MAIN = '#fbe4d5' # 程序主色调（屎黄色）
 CON_COLOR_RADIO = '#d2dce7'
+
 
 CON_MSG_PROGRESS_USE = """
     MacOS：
@@ -112,8 +114,14 @@ CON_ARGS_NAME_DICT = {
 
 # 视图类型选择
 CON_VIEW_TYPE_FUNC = '函数视图'
+CON_VIEW_TYPE_CLASS = '类视图'
+CON_VIEW_TYPE_LIST = '列表视图'
+CON_VIEW_TYPE_DETAIL = '详细视图'
 CON_VIEW_CHOICES = [
     CON_VIEW_TYPE_FUNC,
+    CON_VIEW_TYPE_CLASS,
+    CON_VIEW_TYPE_LIST,
+    CON_VIEW_TYPE_DETAIL,
 ]
 
 # 字段下拉选择

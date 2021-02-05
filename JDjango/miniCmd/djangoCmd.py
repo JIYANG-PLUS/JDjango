@@ -2,6 +2,7 @@ import os, json, glob
 from ..tools._tools import *
 from ..tools._re import *
 from ..tools import environment as env
+from ..tools import models as models_env
 from ..settings import CONFIG_PATH, TEMPLATE_DIR
 from typing import Dict, List
 
@@ -15,18 +16,26 @@ from typing import Dict, List
 class UnsupportDatabaseException(Exception): ...
 
 __all__ = [
+
     'startproject', # 新建项目
     'startapp', # 新建应用程序
-    'write_admin_base', # 创建最基本的后台管理中心
-    'get_site_header', # 获取后台站点登录名
+
     'get_site_title', # 获取后台站点网站名
+    'get_site_header', # 获取后台站点登录名
+    'get_all_apps_name', # 获取所有的应用程序名
+    'get_urlpatterns_content', # 获取urls.py中urlpatterns中括号内部的内容
+    'get_models_path_by_appname', # 获取当前app下所有的模型文件路径
+    'get_models_by_appname', # 获取当前app下的所有模型
+
     'set_site_header', # 设置后台站点登录名
     'set_site_title', # 设置后台站点网站名
-    'get_urlpatterns_content', # 获取urls.py中urlpatterns中括号内部的内容
+
+    'write_admin_base', # 创建最基本的后台管理中心
     'judge_in_main_urls', # 判断应用程序是否均在urls.py中注册
     'fix_urls', # 修复路由
     'refresh_config', # 更新配置文件config.json
     'update_settings_DTATBASES', # 数据库引擎更换
+    
 ]
 
 
@@ -338,3 +347,30 @@ def refresh_config()->None:
         temp_configs['TEMPLATES_DIRS'] = None # 默认模板路径
 
     dump_json(CONFIG_PATH, temp_configs)  # 写入配置文件
+
+def get_all_apps_name()->List[str]:
+    """获取所有的应用程序名"""
+    return get_configs(CONFIG_PATH)['app_names']
+
+def get_models_path_by_appname(appname: str)->List[str]:
+    """获取当前app下所有的模型文件路径"""
+    APP_PATH = os.path.join(get_configs(CONFIG_PATH)['dirname'], appname) # 路径定位到当前app下
+    models_path = []
+
+    if os.path.exists(APP_PATH) and os.path.isdir(APP_PATH):
+
+        pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True) # 先取所有归属当前app下的文件路径
+        alias = [os.path.basename(_) for _ in env.getModelsAlias()] # 取所有模型别名（如：models.py）
+        models_path.extend([_ for _ in pys if os.path.basename(_) in alias]) # 以别名为依据，过滤所有文件中可能的模型文件
+
+    return models_path
+
+def get_models_by_appname(appname: str)->List[str]:
+    """获取当前app下的所有模型"""
+    pathModels = get_models_path_by_appname(appname)
+    data = []
+    
+    for path in pathModels:
+        data.extend(models_env.get_models_from_modelspy(path))
+    
+    return data
