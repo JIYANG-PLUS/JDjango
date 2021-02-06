@@ -67,16 +67,15 @@ class ViewGenerateDialog(wx.Dialog):
         self.leftPanelSizer.Add(self.leftScrollPanel, 1, wx.EXPAND | wx.ALL, 2)
 
         # 选择文件写入路径【此处更改为选择App】
-        self.selectFilePanel = wx.Panel(self.leftScrollPanel)
-        selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.selectFilePanel.SetSizer(selectFilePanelSizer)
+        self.selectFilePanelStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
+        self.selectFilePanel = wx.StaticBoxSizer(self.selectFilePanelStaticBox, wx.HORIZONTAL)
         leftScrollPanelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
         # self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLACK) # CON_COLOR_PURE_WHITE
 
-        self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "选择视图所属的应用程序", size=(LABEL_COL_LEN, -1))
-        self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',]+get_all_apps_name())
-        selectFilePanelSizer.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
-        selectFilePanelSizer.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelSelectFile = wx.StaticText(self.leftScrollPanel, -1, "选择视图所属的应用程序", size=(LABEL_COL_LEN, -1))
+        self.choiceSelectFile = wx.Choice(self.leftScrollPanel, -1, choices=[' ',]+get_all_apps_name())
+        self.selectFilePanel.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
+        self.selectFilePanel.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)
         # self.labelSelectFile.SetFont(wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 
         # 选择视图类型
@@ -191,7 +190,9 @@ class ViewGenerateDialog(wx.Dialog):
 
     def onChoiceDecorators(self, e):
         """选择函数装饰器"""
-
+        decorator_type = e.GetString().strip()
+        self.argsStruct['decorator'] = f'@{decorator_type}' if decorator_type else ''
+        self._insert_data_to_template_by_argstruct()
 
     def onInputUrlPath(self, e):
         """路由路径指定"""
@@ -214,11 +215,15 @@ class ViewGenerateDialog(wx.Dialog):
         if self.argsStruct.get('view_name'):
             temp_template = temp_template.replace('${view_name}', self.argsStruct['view_name'])
 
+        # 装饰器
+        if self.argsStruct.get('decorator'):
+            temp_template = temp_template.replace('${decorator}', self.argsStruct['decorator'])
+
         self.inputCodeReview.SetValue(temp_template)
 
     def onChoiceViewType(self, e):
         """选择要新建的字段类型"""
-        view_type = e.GetString().strip(string.whitespace+'-')
+        view_type = e.GetString().strip()
 
         if not view_type:
             self.inputCodeReview.SetValue('')
