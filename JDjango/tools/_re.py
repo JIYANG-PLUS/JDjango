@@ -25,9 +25,12 @@ __all__ = [
     'PATT_CHARS_REVERSED',
     'PATT_DIGITS_WHOLE',
     'PATT_DIGITS_REVERSED',
+    'PATT_CAPTURE_URLSPATH_ARGS',
+    'PATT_FUNC_ARGS',
     # 方法
-    'patt_sub_only_capture_obj',
-    'patt_sub_only_capture_obj_obtain_double',
+    'patt_sub_only_capture_obj', # 正则表达式sub替换仅限于捕捉内容，而不是整体替换
+    'patt_sub_only_capture_obj_add', # 正则表达式sub替换仅限于捕捉内容，替换后内容为：<原捕捉内容> + add_str 
+    'patt_sub_only_capture_obj_obtain_double', # 多个两侧括号属性，保留括号替换
 ]
 
 PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
@@ -52,11 +55,21 @@ PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']')
 PATT_URLPATTERNS = re.compile(r'(?ms:urlpatterns\s*=\s*\[.*)')
 PATT_DAtABASES = re.compile(r'(?ms:DATABASES\s*=\s*\{.*)')
 PATT_MODEL = re.compile(r'class\s+(.+?)\(\s*[a-zA-Z0-9]*?[.]*?Model\s*\):') # 定位模型类
+PATT_CAPTURE_URLSPATH_ARGS = re.compile(r'<(.+?)>') # 捕捉路由参数信息
+PATT_FUNC_ARGS = re.compile(r'def\s+.+?\((.*?)\)')
+
 
 def patt_sub_only_capture_obj(patt: object, replace_str: str, old_str: str) -> str:
     """正则表达式sub替换仅限于捕捉内容，而不是整体替换"""
     if patt.search(old_str):
         return patt.sub(lambda x:x.group(0).replace(x.group(1), replace_str), old_str)
+    else:
+        return old_str
+
+def patt_sub_only_capture_obj_add(patt: object, add_str: str, old_str: str) -> str:
+    """正则表达式sub替换仅限于捕捉内容，替换后内容为：<原捕捉内容> + add_str """
+    if patt.search(old_str):
+        return patt.sub(lambda x:x.group(0).replace(x.group(1), x.group(1)+add_str), old_str)
     else:
         return old_str
 

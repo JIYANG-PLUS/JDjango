@@ -1,19 +1,17 @@
+from django.db.models import F, Q
+from django.shortcuts import *
+from django.views.generic import *
+from django.http import *
+from http import HTTPStatus
+
+# 装饰器
+from django.views.decorators.http import *
+from django.views.decorators.gzip import gzip_page
+from django.views.decorators.vary import vary_on_cookie, vary_on_headers
+from django.views.decorators.cache import cache_control, never_cache
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.db.models import F, Q
+
+# 内置模型
 from django.contrib.auth.models import User
-
-from django.shortcuts import (
-    render, get_object_or_404, redirect,
-    render_to_response, get_list_or_404,
-)
-
-from django.views.generic import (
-    View, ListView, DetailView,
-)
-
-from django.http import (
-    JsonResponse, HttpResponse, HttpResponseNotFound,
-    Http404,
-)
 

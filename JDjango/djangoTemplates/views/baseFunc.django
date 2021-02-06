@@ -1,0 +1,4 @@
+${decorator}
+def ${view_name}(request):
+    ${code_body}
+    ${return}

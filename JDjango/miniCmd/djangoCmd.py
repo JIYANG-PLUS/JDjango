@@ -24,8 +24,11 @@ __all__ = [
     'get_site_header', # 获取后台站点登录名
     'get_all_apps_name', # 获取所有的应用程序名
     'get_urlpatterns_content', # 获取urls.py中urlpatterns中括号内部的内容
+    'get_root_urls_paths_by_appname', # 通过app名称获取跟路由路径
     'get_models_path_by_appname', # 获取当前app下所有的模型文件路径
     'get_models_by_appname', # 获取当前app下的所有模型
+    'get_views_base_func', # 获取未改动的函数视图模板内容
+    'get_views_base_class', # 获取未改动的类视图模板内容
 
     'set_site_header', # 设置后台站点登录名
     'set_site_title', # 设置后台站点网站名
@@ -54,7 +57,7 @@ def read_file_lists(r_path: str, *args, **kwargs)->List[str]:
         lines = [PATT_REPLACE.sub(lambda x:kwargs[x.group(1)], _) for _ in lines]
     return lines
 
-def get_content(file_name, *args, **kwargs):
+def get_content(file_name: str, *args, **kwargs)->List[str]:
     """获取规则替换后的文件列表"""
     return read_file_lists(django_file_path(file_name, concat=kwargs.get('concat')), *args, **kwargs)
 
@@ -149,6 +152,14 @@ def startapp(app_name: str)->None:
     else:
         return 1
 
+def get_views_base_func():
+    """获取未改动的函数视图模板内容"""
+    return ''.join(get_content('baseFunc.django', concat=['views']))
+
+def get_views_base_class():
+    """获取未改动的类视图模板内容"""
+    return ''.join(get_content('baseClass.django', concat=['views']))
+
 def write_admin_base(path: str, importData: Dict[str, List[str]])->None:
     """管理中心后台简单注册"""
     for k, v in importData.items():
@@ -231,6 +242,9 @@ def get_urlpatterns_content(path: str)->str:
         return cut_content_by_doublecode(complex_content)
     else:
         return ''
+
+def get_root_urls_paths_by_appname(appname):
+    """"通过app名称获取跟路由路径"""
 
 def get_databases_content(path: str)->str:
     """获取DATABASE配置信息"""
@@ -374,3 +388,5 @@ def get_models_by_appname(appname: str)->List[str]:
         data.extend(models_env.get_models_from_modelspy(path))
     
     return data
+
+

@@ -15,7 +15,7 @@ class ViewGenerateDialog(wx.Dialog):
 
     def __init__(self, parent):
 
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增视图', size=(800, 600))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增视图', size=(920, 600))
 
         # 一些控制容器
         self.labelStaticTexts = []
@@ -48,119 +48,214 @@ class ViewGenerateDialog(wx.Dialog):
         
         self.splitWindow.Initialize(self.leftPanel)
         self.splitWindow.Initialize(self.rightPanel)
-        self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 500)
+        self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 520)
 
         self._init_left_panel()
         self._init_right_panel()
 
+        # 模板变量
+        self.views_template = ''
+        self.argsStruct = {} #存放模板内容替换的所有内容
+
     def _init_left_panel(self):
         """初始化左子面板"""
+        # 滚动面板
+        self.leftScrollPanel = scrolledpanel.ScrolledPanel(self.leftPanel, -1)
+        self.leftScrollPanel.SetupScrolling()
+        leftScrollPanelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.leftScrollPanel.SetSizer(leftScrollPanelSizer)
+        self.leftPanelSizer.Add(self.leftScrollPanel, 1, wx.EXPAND | wx.ALL, 2)
+
         # 选择文件写入路径【此处更改为选择App】
-        self.selectFilePanel = wx.Panel(self.leftPanel)
+        self.selectFilePanel = wx.Panel(self.leftScrollPanel)
         selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.selectFilePanel.SetSizer(selectFilePanelSizer)
-        self.leftPanelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
+        leftScrollPanelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
         # self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLACK) # CON_COLOR_PURE_WHITE
 
-        self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "选择视图所属的应用程序")
+        self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "选择视图所属的应用程序", size=(LABEL_COL_LEN, -1))
         self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',]+get_all_apps_name())
-        self.btnSubmit = buttons.GenButton(self.selectFilePanel, -1, '创建')
         selectFilePanelSizer.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
         selectFilePanelSizer.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)
-        selectFilePanelSizer.Add(self.btnSubmit, 0, wx.EXPAND | wx.ALL, 2)
-        self.labelSelectFile.SetFont(wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+        # self.labelSelectFile.SetFont(wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
 
+        # 选择视图类型
+        self.choiceViewTypeStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
+        self.viewTypePanel = wx.StaticBoxSizer(self.choiceViewTypeStaticBox, wx.HORIZONTAL)
+        leftScrollPanelSizer.Add(self.viewTypePanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelChoiceViewType = wx.StaticText(self.leftScrollPanel, -1, "选择要创建的视图类型：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
+        self.choiceViewType = wx.Choice(self.leftScrollPanel, -1, choices=[' ',]+CON_VIEW_CHOICES)
+        self.viewTypePanel.Add(self.labelChoiceViewType, 0, wx.EXPAND | wx.ALL, 2)
+        self.viewTypePanel.Add(self.choiceViewType, 1, wx.EXPAND | wx.ALL, 2)
 
         # 视图名称
-        self.inputViewNameStaticBox = wx.StaticBox(self.leftPanel, -1, '')
+        self.inputViewNameStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
         self.inputViewNamePanel = wx.StaticBoxSizer(self.inputViewNameStaticBox, wx.HORIZONTAL)
-        self.leftPanelSizer.Add(self.inputViewNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+        leftScrollPanelSizer.Add(self.inputViewNamePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelInputViewName = wx.StaticText(self.leftPanel, -1, "视图名称：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
-        self.inputViewName = wx.TextCtrl(self.leftPanel, -1, style = wx.ALIGN_LEFT)
+        self.labelInputViewName = wx.StaticText(self.leftScrollPanel, -1, "视图名称：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
+        self.inputViewName = wx.TextCtrl(self.leftScrollPanel, -1, style = wx.ALIGN_LEFT)
         self.inputViewNamePanel.Add(self.labelInputViewName, 0, wx.EXPAND | wx.ALL, 2)
         self.inputViewNamePanel.Add(self.inputViewName, 1, wx.EXPAND | wx.ALL, 2)
 
         # 路由反向解析名称【默认取 视图名称】
-        self.inputReverseViewNameStaticBox = wx.StaticBox(self.leftPanel, -1, '')
+        self.inputReverseViewNameStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
         self.inputReverseViewNamePanel = wx.StaticBoxSizer(self.inputReverseViewNameStaticBox, wx.HORIZONTAL)
-        self.leftPanelSizer.Add(self.inputReverseViewNamePanel, 0, wx.EXPAND | wx.ALL, 2)
+        leftScrollPanelSizer.Add(self.inputReverseViewNamePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelInputReverseViewName = wx.StaticText(self.leftPanel, -1, "路由反向解析名称：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
-        self.inputReverseViewName = wx.TextCtrl(self.leftPanel, -1, style = wx.ALIGN_LEFT)
+        self.labelInputReverseViewName = wx.StaticText(self.leftScrollPanel, -1, "反向解析名称：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
+        self.inputReverseViewName = wx.TextCtrl(self.leftScrollPanel, -1, style = wx.ALIGN_LEFT)
         self.inputReverseViewNamePanel.Add(self.labelInputReverseViewName, 0, wx.EXPAND | wx.ALL, 2)
         self.inputReverseViewNamePanel.Add(self.inputReverseViewName, 1, wx.EXPAND | wx.ALL, 2)
 
         # 路由路径指定
-        self.inputUrlPathStaticBox = wx.StaticBox(self.leftPanel, -1, '')
+        self.inputUrlPathStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
         self.inputUrlPathPanel = wx.StaticBoxSizer(self.inputUrlPathStaticBox, wx.HORIZONTAL)
-        self.leftPanelSizer.Add(self.inputUrlPathPanel, 0, wx.EXPAND | wx.ALL, 2)
+        leftScrollPanelSizer.Add(self.inputUrlPathPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelInputUrlPath = wx.StaticText(self.leftPanel, -1, "路由路径指定：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
-        self.inputUrlPath = wx.TextCtrl(self.leftPanel, -1, style = wx.ALIGN_LEFT)
+        self.labelInputUrlPath = wx.StaticText(self.leftScrollPanel, -1, "路径和参数：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
+        self.inputUrlPath = wx.TextCtrl(self.leftScrollPanel, -1, style = wx.ALIGN_LEFT)
         self.inputUrlPathPanel.Add(self.labelInputUrlPath, 0, wx.EXPAND | wx.ALL, 2)
         self.inputUrlPathPanel.Add(self.inputUrlPath, 1, wx.EXPAND | wx.ALL, 2)
 
         # 路由预览
-        self.inputUrlPreviewStaticBox = wx.StaticBox(self.leftPanel, -1, '')
+        self.inputUrlPreviewStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
         self.inputUrlPreviewPanel = wx.StaticBoxSizer(self.inputUrlPreviewStaticBox, wx.HORIZONTAL)
-        self.leftPanelSizer.Add(self.inputUrlPreviewPanel, 0, wx.EXPAND | wx.ALL, 2)
+        leftScrollPanelSizer.Add(self.inputUrlPreviewPanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelInputUrlPreview = wx.StaticText(self.leftPanel, -1, "路由预览：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
-        self.inputUrlPreview = wx.TextCtrl(self.leftPanel, -1, style = wx.ALIGN_LEFT)
+        self.labelInputUrlPreview = wx.StaticText(self.leftScrollPanel, -1, "路由预览：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
+        self.inputUrlPreview = wx.TextCtrl(self.leftScrollPanel, -1, style = wx.ALIGN_LEFT)
         self.inputUrlPreviewPanel.Add(self.labelInputUrlPreview, 0, wx.EXPAND | wx.ALL, 2)
         self.inputUrlPreviewPanel.Add(self.inputUrlPreview, 1, wx.EXPAND | wx.ALL, 2)
         self.inputUrlPreview.Enable(False)
 
-        # 选择视图类型
-        self.choiceViewTypeStaticBox = wx.StaticBox(self.leftPanel, -1, '')
-        self.viewTypePanel = wx.StaticBoxSizer(self.choiceViewTypeStaticBox, wx.HORIZONTAL)
-        self.leftPanelSizer.Add(self.viewTypePanel, 0, wx.EXPAND | wx.ALL, 2)
+        # 响应对象
+        self.choiceReturnTypeStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
+        self.choiceReturnTypePanel = wx.StaticBoxSizer(self.choiceReturnTypeStaticBox, wx.HORIZONTAL)
+        leftScrollPanelSizer.Add(self.choiceReturnTypePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.labelChoiceViewType = wx.StaticText(self.leftPanel, -1, "选择要创建的视图类型：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
-        self.choiceViewType = wx.Choice(self.leftPanel, -1, choices=[' ',]+CON_VIEW_CHOICES)
-        self.viewTypePanel.Add(self.labelChoiceViewType, 0, wx.EXPAND | wx.ALL, 2)
-        self.viewTypePanel.Add(self.choiceViewType, 1, wx.EXPAND | wx.ALL, 2)
+        self.labelChoiceReturnType = wx.StaticText(self.leftScrollPanel, -1, "响应对象：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
+        self.choiceReturnType = wx.Choice(self.leftScrollPanel, -1, choices=[' ',] + CON_VIEWS_RETURN_TYPE)
+        self.choiceReturnTypePanel.Add(self.labelChoiceReturnType, 0, wx.EXPAND | wx.ALL, 2)
+        self.choiceReturnTypePanel.Add(self.choiceReturnType, 1, wx.EXPAND | wx.ALL, 2)
 
+        # 快捷响应对象
+        self.choiceShortcutsStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
+        self.choiceShortcutsPanel = wx.StaticBoxSizer(self.choiceShortcutsStaticBox, wx.HORIZONTAL)
+        leftScrollPanelSizer.Add(self.choiceShortcutsPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelChoiceShortcuts = wx.StaticText(self.leftScrollPanel, -1, "快捷响应对象：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
+        self.choiceShortcuts = wx.Choice(self.leftScrollPanel, -1, choices=[' ',] + CON_VIEWS_SHORTCUTS)
+        self.choiceShortcutsPanel.Add(self.labelChoiceShortcuts, 0, wx.EXPAND | wx.ALL, 2)
+        self.choiceShortcutsPanel.Add(self.choiceShortcuts, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 装饰器
+        self.choiceDecoratorsStaticBox = wx.StaticBox(self.leftScrollPanel, -1, '')
+        self.choiceDecoratorsPanel = wx.StaticBoxSizer(self.choiceDecoratorsStaticBox, wx.HORIZONTAL)
+        leftScrollPanelSizer.Add(self.choiceDecoratorsPanel, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.labelChoiceDecorators = wx.StaticText(self.leftScrollPanel, -1, "装饰器：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
+        self.choiceDecorators = wx.Choice(self.leftScrollPanel, -1, choices=[' ',] + CON_VIEWS_DECORATORS)
+        self.choiceDecoratorsPanel.Add(self.labelChoiceDecorators, 0, wx.EXPAND | wx.ALL, 2)
+        self.choiceDecoratorsPanel.Add(self.choiceDecorators, 1, wx.EXPAND | wx.ALL, 2)
+
+        # 按钮
+        self.btnRetrySelect = buttons.GenButton(self.leftScrollPanel, -1, '重新选择视图类型')
+        self.btnSubmit = buttons.GenButton(self.leftScrollPanel, -1, '创建')
+        leftScrollPanelSizer.Add(self.btnRetrySelect, 0, wx.EXPAND | wx.ALL, 2)
+        leftScrollPanelSizer.Add(self.btnSubmit, 0, wx.EXPAND | wx.ALL, 2)
+        self.btnRetrySelect.SetBackgroundColour(CON_COLOR_BLUE)
+        self.btnRetrySelect.SetForegroundColour(CON_COLOR_WHITE)
+        self.btnSubmit.SetBackgroundColour(CON_COLOR_BLUE)
+        self.btnSubmit.SetForegroundColour(CON_COLOR_WHITE)
+
+        # 标签美化
+        self.labelStaticTexts.extend([
+            self.labelSelectFile,
+            self.labelChoiceViewType, self.labelInputUrlPath,
+            self.labelInputViewName, self.labelInputReverseViewName,
+            self.labelInputUrlPreview, self.labelChoiceReturnType,
+            self.labelChoiceShortcuts, self.labelChoiceDecorators,
+        ])
+
+        # 文本实时监听事件
+        self.Bind(wx.EVT_TEXT, self.onInputViewName, self.inputViewName)
+        self.Bind(wx.EVT_TEXT, self.onInputUrlPath, self.inputUrlPath)
+
+        # 下拉框选择事件
+        self.Bind(wx.EVT_CHOICE, self.onChoiceViewType, self.choiceViewType)
+
+        # 选择框选择事件
+        self.Bind(wx.EVT_CHOICE, self.onChoiceDecorators, self.choiceDecorators)
+
+    def onChoiceDecorators(self, e):
+        """选择函数装饰器"""
+
+
+    def onInputUrlPath(self, e):
+        """路由路径指定"""
+        path = self.inputUrlPath.GetValue().strip()
+        if PATT_CAPTURE_URLSPATH_ARGS.search(path):
+            args = PATT_CAPTURE_URLSPATH_ARGS.findall(path)
+            self.argsStruct['func_args'] = args
+
+            self._insert_data_to_template_by_argstruct()
+
+    def _insert_data_to_template_by_argstruct(self):
+        """用模板变量填充模板"""
+        temp_template = self.views_template
+
+        # 路由函数参数填充
+        if self.argsStruct.get('func_args'):
+            temp_template = patt_sub_only_capture_obj_add(PATT_FUNC_ARGS, ', '+', '.join(self.argsStruct['func_args']), temp_template)
+
+        # 路由方法名/类名
+        if self.argsStruct.get('view_name'):
+            temp_template = temp_template.replace('${view_name}', self.argsStruct['view_name'])
+
+        self.inputCodeReview.SetValue(temp_template)
+
+    def onChoiceViewType(self, e):
+        """选择要新建的字段类型"""
+        view_type = e.GetString().strip(string.whitespace+'-')
+
+        if not view_type:
+            self.inputCodeReview.SetValue('')
+            return
+
+        if CON_VIEW_TYPE_FUNC == view_type:
+            self.views_template = get_views_base_func()
+            self.inputCodeReview.SetValue(self.views_template)
+        elif CON_VIEW_TYPE_CLASS == view_type:
+            self.views_template = get_views_base_class()
+            self.inputCodeReview.SetValue(self.views_template)
+        else:
+            self.inputCodeReview.SetValue('')
+
+    def _init_right_panel(self):
+        """初始化右子面板"""
+        
         # 代码预览面板
-        self.codeReviewPanel = wx.Panel(self.leftPanel)
+        self.codeReviewPanel = wx.Panel(self.rightPanel)
         self.codeReviewPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.codeReviewPanel.SetSizer(self.codeReviewPanelSizer)
-        self.leftPanelSizer.Add(self.codeReviewPanel, 1, wx.EXPAND | wx.ALL, 2)
+        self.rightPanelSizer.Add(self.codeReviewPanel, 1, wx.EXPAND | wx.ALL, 2)
 
         self.inputCodeReview = wx.TextCtrl(self.codeReviewPanel, -1, style=wx.TE_MULTILINE)
         self.codeReviewPanelSizer.Add(self.inputCodeReview, 1, wx.EXPAND | wx.ALL, 2)
 
         # 标签美化
-        self.labelStaticTexts.extend([
-            self.labelChoiceViewType, self.labelInputUrlPath,
-            self.labelInputViewName, self.labelInputReverseViewName,
-            self.labelInputUrlPreview, 
-        ])
-
-        # 文本实时监听事件
-        self.Bind(wx.EVT_TEXT, self.onInputViewName, self.inputViewName)
-
-    def _init_right_panel(self):
-        """初始化右子面板"""
-        # 返回值类型
-        self.choiceReturnTypeStaticBox = wx.StaticBox(self.rightPanel, -1, '')
-        self.choiceReturnTypePanel = wx.StaticBoxSizer(self.choiceReturnTypeStaticBox, wx.HORIZONTAL)
-        self.rightPanelSizer.Add(self.choiceReturnTypePanel, 0, wx.EXPAND | wx.ALL, 2)
-
-        self.labelChoiceReturnType = wx.StaticText(self.rightPanel, -1, "返回值类型：", style=wx.ALIGN_CENTRE_HORIZONTAL)
-        self.choiceReturnType = wx.Choice(self.rightPanel, -1, choices=[' ',]+CON_VIEWS_RETURN_TYPE)
-        self.choiceReturnTypePanel.Add(self.labelChoiceReturnType, 0, wx.EXPAND | wx.ALL, 2)
-        self.choiceReturnTypePanel.Add(self.choiceReturnType, 1, wx.EXPAND | wx.ALL, 2)
-
-        # 标签美化
-        self.labelStaticTexts.extend([
-            self.labelChoiceReturnType,
-        ])
+        self.labelStaticTexts.extend([])
 
     def onInputViewName(self, e):
         """视图名称监听实时输入"""
-        self.inputReverseViewName.SetValue(self.inputViewName.GetValue().strip().lower())
+        view_name = self.inputViewName.GetValue().strip()
+        self.inputReverseViewName.SetValue(view_name.lower())
+        if view_name:
+            self.argsStruct['view_name'] = view_name
+            self._insert_data_to_template_by_argstruct() # 更新代码显示
+
         
     def _init_label_font(self):
         """标签提示信息字体初始化"""

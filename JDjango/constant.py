@@ -235,13 +235,50 @@ CON_FOREIGN_FIELDS = (
 CON_YES = '是'
 CON_NO = '否'
 
+# 试图响应类型 + 状态码
 CON_VIEWS_RETURN_TYPE = [
-    'HttpResponse',
+
+    'HttpResponse(200)',
+    'HttpResponseRedirect(302)', # 302 （地址）
+    'HttpResponsePermanentRedirect(301)', # 301 （地址）
+    'HttpResponseNotModified(304)', # 304 （无参）
+    'HttpResponseBadRequest(400)', # 400
+    'HttpResponseNotFound(404)', # 404
+    'HttpResponseForbidden(403)', # 403
+    'HttpResponseNotAllowed(405)', # 405
+    'HttpResponseGone(410)', # 410
+    'HttpResponseServerError(500)', # 500
+
     'JsonResponse',
-    'StreamingHttpResponse',
     'FileResponse',
-    'HttpResponseNotFound',
-    'Http404',
+    'StreamingHttpResponse',
     'SimpleTemplateResponse',
     'TemplateResponse',
+
+]
+
+
+# 快捷对象
+CON_VIEWS_SHORTCUTS = [
+    'render',
+    'render_to_response',
+    'redirect',
+    'get_object_or_404',
+    'get_list_or_404',
+]
+
+# 装饰器
+CON_VIEWS_DECORATORS = [
+    'require_http_methods()',
+    'require_safe()',
+    'require_GET()',
+    'require_POST()',
+    'condition()',
+    'etag()',
+    'last_modified()',
+    'gzip_page()',
+    'vary_on_cookie()',
+    'vary_on_headers()',
+    'cache_control()',
+    'never_cache()',
 ]
