@@ -87,16 +87,7 @@ class EnvParser:
     def save(self):
         self.TREE.write(ENV_PATH, encoding="utf-8", xml_declaration=True)
 
-
-def getEnvXmlObj():
-    """获取对象"""
-    return EnvParser(xml = os.path.join(BASE_DIR, ENV_PATH))
-
-def getFontSize():
-    """获取字体大小"""
-    obj = getEnvXmlObj()
-    node = obj.get_xpath_node('page/font-size')
-    return int(node.text)
+### 赋值
 
 def setFontSize(step = 1, method = 'add'):
     """设置字体大小"""
@@ -116,6 +107,25 @@ def setPython3Env(path):
     node = obj.get_xpath_node('env/python3')
     node.text = str(path)
     obj.save()
+
+def setPlatfrom(name):
+    """设置当前运行平台"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('env/platform')
+    node.text = str(name)
+    obj.save()
+
+### 取值
+
+def getEnvXmlObj():
+    """获取对象"""
+    return EnvParser(xml = os.path.join(BASE_DIR, ENV_PATH))
+
+def getFontSize():
+    """获取字体大小"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('page/font-size')
+    return int(node.text)
 
 def getModelsAlias():
     """获取所有models.py的别名"""
@@ -150,13 +160,6 @@ def getPlatform():
     node = obj.get_xpath_node('env/platform')
     return node.text if node.text else ''
 
-def setPlatfrom(name):
-    """设置当前运行平台"""
-    obj = getEnvXmlObj()
-    node = obj.get_xpath_node('env/platform')
-    node.text = str(name)
-    obj.save()
-
 def getAllSupportPlatform():
     """获取软件已支持的平台类型"""
     obj = getEnvXmlObj()
@@ -166,6 +169,19 @@ def getSupportEnvPlatform():
     """获取软件已支持虚拟环境运行的平台类型"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('env/support[name=virtualenv]')
+
+def getDjangoSupportDatabase():
+    """获取Django支持的所有数据库"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('env/database')
+
+def getRealPythonOrder():
+    """获取非虚拟环境的Python命令"""
+    obj = getEnvXmlObj()
+    node = obj.get_xpath_node('real/python3')
+    return node.text
+
+### 其它
 
 def killProgress(port = None):
     """终止进程"""
@@ -192,34 +208,3 @@ def killProgress(port = None):
     else: # 其他系统
         raise Exception('UnKnown system.')
 
-def getDjangoSupportDatabase():
-    """获取Django支持的所有数据库"""
-    obj = getEnvXmlObj()
-    return obj.get_childnode_lists('env/database')
-
-def getRealPythonOrder():
-    """获取非虚拟环境的Python命令"""
-    obj = getEnvXmlObj()
-    node = obj.get_xpath_node('real/python3')
-    return node.text
-
-# print(root.tag) # 查看标签
-# print(root.attrib) # 查看属性
-# print(root.text) # 查看文本内容（不读取子标签）
-# print(root[0][1].text) # 索引取值
-
-# for child in root:
-#     print(child.tag, child.attrib)
-
-
-# 遍历所有子集
-# for neighbor in root.iter('name'):
-#     print('HHH: ', neighbor.attrib)
-
-
-# 查找当前元素的直接子元素中带有特定标签的元素
-# Element.findall("property")
-
-# Element.find("property") 找带有特定标签的第一个子级
-# Element.text 访问文本内容
-# Element.get 访问元素的属性

@@ -49,11 +49,11 @@ class Main(wx.Frame):
             try:
                 self.dirname = get_configs(CONFIG_PATH)['dirname']
             except:
-                self.infos.AppendText(out_infos('历史数据失效！', level=3))
+                self.infos.AppendText(out_infos('历史项目失效！', level=3))
                 return
             else:
                 if not os.path.exists(self.dirname):
-                    self.infos.AppendText(out_infos('历史数据失效！', level=3))
+                    self.infos.AppendText(out_infos('历史项目失效！', level=3))
                     return
                 if 'manage.py' in os.listdir(self.dirname):
                     self.path.SetValue(f'当前项目路径：{self.dirname}')
@@ -70,7 +70,7 @@ class Main(wx.Frame):
                         # self.path.Clear()
                         self.infos.AppendText(out_infos(f'项目{os.path.basename(self.dirname)}导入成功！', level=1))
                 else:
-                    self.infos.AppendText(out_infos('历史数据失效！', level=3))
+                    self.infos.AppendText(out_infos('历史项目失效！', level=3))
 
     def _init_control_btn(self):
         """初始化功能按钮控制器"""

@@ -12,6 +12,12 @@ from typing import Dict, List
 # 若想要做一些环境初始化（如：MySQL配置），请移步到同目录下的 __init__.py 文件中设置。
 
 """
+###
+"""
+### 关于别名的一些注意点：
+# 更路由默认为urls.py，如非必要，请勿取别名。
+
+"""
 
 class UnsupportDatabaseException(Exception): ...
 
@@ -24,7 +30,7 @@ __all__ = [
     'get_site_header', # 获取后台站点登录名
     'get_all_apps_name', # 获取所有的应用程序名
     'get_urlpatterns_content', # 获取urls.py中urlpatterns中括号内部的内容
-    'get_root_urls_paths_by_appname', # 通过app名称获取跟路由路径
+    'get_app_rooturl_config_by_appname', # 通过app名称获取跟路由路径下的路由配置
     'get_models_path_by_appname', # 获取当前app下所有的模型文件路径
     'get_models_by_appname', # 获取当前app下的所有模型
     'get_views_base_func', # 获取未改动的函数视图模板内容
@@ -152,11 +158,11 @@ def startapp(app_name: str)->None:
     else:
         return 1
 
-def get_views_base_func():
+def get_views_base_func()->str:
     """获取未改动的函数视图模板内容"""
     return ''.join(get_content('baseFunc.django', concat=['views']))
 
-def get_views_base_class():
+def get_views_base_class()->str:
     """获取未改动的类视图模板内容"""
     return ''.join(get_content('baseClass.django', concat=['views']))
 
@@ -243,8 +249,16 @@ def get_urlpatterns_content(path: str)->str:
     else:
         return ''
 
-def get_root_urls_paths_by_appname(appname):
-    """"通过app名称获取跟路由路径"""
+def get_app_rooturl_config_by_appname(appname):
+    """"通过app名称获取跟路由路径下的路由配置"""
+    # CONFIG = get_configs(CONFIG_PATH)
+    # # 获取路由别名
+    # alias = [os.path.basename(_) for _ in env.getUrlsAlias()]
+    # assert len(alias) > 0
+    # # 获取跟路由
+    # root_urlpath = os.path.join(CONFIG['dirname'], CONFIG['project_name'], alias[0]) # 默认取第一个
+    # urlpatterns = get_urlpatterns_content(root_urlpath)
+    
 
 def get_databases_content(path: str)->str:
     """获取DATABASE配置信息"""
