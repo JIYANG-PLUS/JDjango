@@ -1,4 +1,4 @@
-import os, json, glob
+import os, json, glob, string
 from ..tools._tools import *
 from ..tools._re import *
 from ..tools import environment as env
@@ -249,16 +249,26 @@ def get_urlpatterns_content(path: str)->str:
     else:
         return ''
 
-def get_app_rooturl_config_by_appname(appname):
+def get_app_rooturl_config_by_appname(appname: str)->str:
     """"通过app名称获取跟路由路径下的路由配置"""
-    # CONFIG = get_configs(CONFIG_PATH)
-    # # 获取路由别名
-    # alias = [os.path.basename(_) for _ in env.getUrlsAlias()]
-    # assert len(alias) > 0
-    # # 获取跟路由
-    # root_urlpath = os.path.join(CONFIG['dirname'], CONFIG['project_name'], alias[0]) # 默认取第一个
-    # urlpatterns = get_urlpatterns_content(root_urlpath)
-    
+    CONFIG = get_configs(CONFIG_PATH)
+    # 获取路由别名
+    alias = [os.path.basename(_) for _ in env.getUrlsAlias()]
+    assert len(alias) > 0
+    # 获取根路由
+    root_urlpath = os.path.join(CONFIG['dirname'], CONFIG['project_name'], alias[0]) # 默认取第一个
+    urlpatterns = get_urlpatterns_content(root_urlpath).split('\n') # url内容区
+
+    temp_include = appname + '.' + alias[0].split('.')[0]
+
+    patt_name1 = re.compile(r"\((.+?),\s*include\s*\(\s*'" + temp_include + r"'\s*\)\s*\)")
+    patt_name2 = re.compile(r'\((.+?),\s*include\s*\(\s*"' + temp_include + r'"\s*\)\s*\)')
+
+    for _ in urlpatterns:
+        if patt_name1.search(_):
+            return patt_name1.findall(_)[0].strip(string.whitespace + '"\'')
+        if patt_name2.search(_):
+            return patt_name2.findall(_)[0].strip(string.whitespace + '"\'')
 
 def get_databases_content(path: str)->str:
     """获取DATABASE配置信息"""
@@ -402,5 +412,3 @@ def get_models_by_appname(appname: str)->List[str]:
         data.extend(models_env.get_models_from_modelspy(path))
     
     return data
-
-

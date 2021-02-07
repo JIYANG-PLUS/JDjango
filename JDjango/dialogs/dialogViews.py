@@ -19,11 +19,13 @@ class ViewGenerateDialog(wx.Dialog):
 
         # 一些控制容器
         self.labelStaticTexts = []
+        self.unshowCtrl = [] # 选择参数
 
         self._init_UI()
 
         # 布局后，美化界面
         self._init_label_font()
+        self._init_all_args()
 
     def _init_UI(self):
         """初始化界面布局"""
@@ -178,6 +180,12 @@ class ViewGenerateDialog(wx.Dialog):
             self.labelChoiceShortcuts, self.labelChoiceDecorators,
         ])
 
+        # 隐藏控制
+        self.unshowCtrl.extend([
+
+            self.btnRetrySelect, self.btnSubmit,
+        ])
+
         # 文本实时监听事件
         self.Bind(wx.EVT_TEXT, self.onInputViewName, self.inputViewName)
         self.Bind(wx.EVT_TEXT, self.onInputUrlPath, self.inputUrlPath)
@@ -194,14 +202,42 @@ class ViewGenerateDialog(wx.Dialog):
         self.argsStruct['decorator'] = f'@{decorator_type}' if decorator_type else ''
         self._insert_data_to_template_by_argstruct()
 
+    def _init_all_args(self):
+        """初始化所有的交互式控件值"""
+        self.choiceSelectFile.SetSelection(0)
+        self.choiceViewType.SetSelection(0)
+        self.inputViewName.SetValue('')
+        self.inputReverseViewName.SetValue('')
+        self.inputUrlPath.SetValue('')
+        self.inputUrlPreview.SetValue('')
+        self.choiceReturnType.SetSelection(0)
+        self.choiceShortcuts.SetSelection(0)
+        self.choiceDecorators.SetSelection(0)
+
     def onInputUrlPath(self, e):
         """路由路径指定"""
         path = self.inputUrlPath.GetValue().strip()
         if PATT_CAPTURE_URLSPATH_ARGS.search(path):
-            args = PATT_CAPTURE_URLSPATH_ARGS.findall(path)
+            args = [
+                _ if -1 == _.find(':') else _[_.find(':')+1:] 
+                for _ in PATT_CAPTURE_URLSPATH_ARGS.findall(path)
+            ]
             self.argsStruct['func_args'] = args
+        else:
+            self.argsStruct['func_args'] = []
+        self._insert_data_to_template_by_argstruct()
 
-            self._insert_data_to_template_by_argstruct()
+        # 路由预览
+        # get_app_rooturl_config_by_appname
+        app_name = self.choiceSelectFile.GetString(self.choiceSelectFile.GetSelection()).strip()
+        
+        if app_name:
+            root_name = get_app_rooturl_config_by_appname(app_name)
+            if root_name:
+                if '/' != root_name[-1]:
+                    root_name += '/'
+                # 显示
+                self.inputUrlPreview.SetValue('/' + root_name + path)
 
     def _insert_data_to_template_by_argstruct(self):
         """用模板变量填充模板"""
@@ -249,6 +285,7 @@ class ViewGenerateDialog(wx.Dialog):
 
         self.inputCodeReview = wx.TextCtrl(self.codeReviewPanel, -1, style=wx.TE_MULTILINE)
         self.codeReviewPanelSizer.Add(self.inputCodeReview, 1, wx.EXPAND | wx.ALL, 2)
+        self.inputCodeReview.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False))
 
         # 标签美化
         self.labelStaticTexts.extend([])
