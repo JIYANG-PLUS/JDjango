@@ -1,9 +1,9 @@
 class ${view_name}(View):
 
     def get(self, request):
-        ${code_body}
+    
         ${return}
     
     def post(self, request):
-        ${code_body}
+    
         ${return}

@@ -19,13 +19,14 @@ class ViewGenerateDialog(wx.Dialog):
 
         # 一些控制容器
         self.labelStaticTexts = []
-        self.unshowCtrl = [] # 选择参数
+        self.allCtrlsWithoutType = [] # 选择参数
 
         self._init_UI()
 
         # 布局后，美化界面
         self._init_label_font()
         self._init_all_args()
+        self._unshow_allctrls_withouttype()
 
     def _init_UI(self):
         """初始化界面布局"""
@@ -58,6 +59,16 @@ class ViewGenerateDialog(wx.Dialog):
         # 模板变量
         self.views_template = ''
         self.argsStruct = {} #存放模板内容替换的所有内容
+
+    def _unshow_allctrls_withouttype(self):
+        """隐藏所有的非类型选择交互式控件"""
+        for _ in self.allCtrlsWithoutType:
+            _.Show(False)
+
+    def _show_allctrls_withouttype(self):
+        """显示所有的非类型选择交互式控件"""
+        for _ in self.allCtrlsWithoutType:
+            _.Show(True)
 
     def _init_left_panel(self):
         """初始化左子面板"""
@@ -162,12 +173,12 @@ class ViewGenerateDialog(wx.Dialog):
         self.choiceDecoratorsPanel.Add(self.choiceDecorators, 1, wx.EXPAND | wx.ALL, 2)
 
         # 按钮
-        self.btnRetrySelect = buttons.GenButton(self.leftScrollPanel, -1, '重新选择视图类型')
+        # self.btnRetrySelect = buttons.GenButton(self.leftScrollPanel, -1, '重新选择视图类型')
         self.btnSubmit = buttons.GenButton(self.leftScrollPanel, -1, '创建')
-        leftScrollPanelSizer.Add(self.btnRetrySelect, 0, wx.EXPAND | wx.ALL, 2)
+        # leftScrollPanelSizer.Add(self.btnRetrySelect, 0, wx.EXPAND | wx.ALL, 2)
         leftScrollPanelSizer.Add(self.btnSubmit, 0, wx.EXPAND | wx.ALL, 2)
-        self.btnRetrySelect.SetBackgroundColour(CON_COLOR_BLUE)
-        self.btnRetrySelect.SetForegroundColour(CON_COLOR_WHITE)
+        # self.btnRetrySelect.SetBackgroundColour(CON_COLOR_BLUE)
+        # self.btnRetrySelect.SetForegroundColour(CON_COLOR_WHITE)
         self.btnSubmit.SetBackgroundColour(CON_COLOR_BLUE)
         self.btnSubmit.SetForegroundColour(CON_COLOR_WHITE)
 
@@ -181,9 +192,16 @@ class ViewGenerateDialog(wx.Dialog):
         ])
 
         # 隐藏控制
-        self.unshowCtrl.extend([
-
-            self.btnRetrySelect, self.btnSubmit,
+        self.allCtrlsWithoutType.extend([
+            self.inputViewNameStaticBox,self.labelInputViewName,self.inputViewName,
+            self.inputReverseViewNameStaticBox,self.labelInputReverseViewName,self.inputReverseViewName,
+            self.inputUrlPathStaticBox,self.labelInputUrlPath,self.inputUrlPath,
+            self.inputUrlPreviewStaticBox,self.labelInputUrlPreview,self.inputUrlPreview,
+            self.choiceReturnTypeStaticBox,self.labelChoiceReturnType,self.choiceReturnType,
+            self.choiceShortcutsStaticBox,self.labelChoiceShortcuts,self.choiceShortcuts,
+            self.choiceDecoratorsStaticBox,self.labelChoiceDecorators,self.choiceDecorators,
+            # self.btnRetrySelect,
+            self.btnSubmit,
         ])
 
         # 文本实时监听事件
@@ -252,14 +270,16 @@ class ViewGenerateDialog(wx.Dialog):
             temp_template = temp_template.replace('${view_name}', self.argsStruct['view_name'])
 
         # 装饰器
-        if self.argsStruct.get('decorator'):
+        if None != self.argsStruct.get('decorator'):
             temp_template = temp_template.replace('${decorator}', self.argsStruct['decorator'])
 
         self.inputCodeReview.SetValue(temp_template)
 
     def onChoiceViewType(self, e):
-        """选择要新建的字段类型"""
+        """选择要新建的视图类型"""
         view_type = e.GetString().strip()
+
+        self._unshow_allctrls_withouttype() # 全部关闭，按需开启
 
         if not view_type:
             self.inputCodeReview.SetValue('')
@@ -268,11 +288,32 @@ class ViewGenerateDialog(wx.Dialog):
         if CON_VIEW_TYPE_FUNC == view_type:
             self.views_template = get_views_base_func()
             self.inputCodeReview.SetValue(self.views_template)
+            # 显示本视图类型下的特殊参数设置
+
+            self._show_allctrls_withouttype()
+
         elif CON_VIEW_TYPE_CLASS == view_type:
             self.views_template = get_views_base_class()
             self.inputCodeReview.SetValue(self.views_template)
+            # 显示本视图类型下的特殊参数设置
+            self.inputViewNameStaticBox.Show(True)
+            self.labelInputViewName.Show(True)
+            self.inputViewName.Show(True)
+            self.inputReverseViewNameStaticBox.Show(True)
+            self.labelInputReverseViewName.Show(True)
+            self.inputReverseViewName.Show(True)
+            self.inputUrlPathStaticBox.Show(True)
+            self.labelInputUrlPath.Show(True)
+            self.inputUrlPath.Show(True)
+            self.inputUrlPreviewStaticBox.Show(True)
+            self.labelInputUrlPreview.Show(True)
+            self.inputUrlPreview.Show(True)
+            self.btnSubmit.Show(True)
+
         else:
             self.inputCodeReview.SetValue('')
+
+        self.leftPanel.Layout()
 
     def _init_right_panel(self):
         """初始化右子面板"""
