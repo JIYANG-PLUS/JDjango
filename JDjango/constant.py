@@ -269,6 +269,7 @@ CON_VIEWS_SHORTCUTS = [
 
 # 装饰器
 CON_VIEWS_DECORATORS = [
+    '（无）',
     'require_http_methods()',
     'require_safe()',
     'require_GET()',

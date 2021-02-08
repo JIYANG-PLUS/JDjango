@@ -633,7 +633,7 @@ class Main(wx.Frame):
         except:
             self.infos.AppendText(out_infos(f"虚拟环境错误，或项目路径错误，或端口被占用。", level=3))
         else:
-            self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。请复制到浏览器打开。", level=1))
+            self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。复制到浏览器打开。", level=1))
             self.portProgressRun.Enable(False)
             self.portProgressStop.Enable(True)
 

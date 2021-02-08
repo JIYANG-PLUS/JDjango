@@ -9,6 +9,11 @@ from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 from ..constant import *
 
+"""
+### 使用者自定义视图模板并为此模板编辑逻辑的步骤：
+
+"""
+
 LABEL_COL_LEN = 200
 
 class ViewGenerateDialog(wx.Dialog):
@@ -213,11 +218,30 @@ class ViewGenerateDialog(wx.Dialog):
 
         # 选择框选择事件
         self.Bind(wx.EVT_CHOICE, self.onChoiceDecorators, self.choiceDecorators)
+        self.Bind(wx.EVT_CHOICE, self.onChoiceReturnType, self.choiceReturnType)
+        self.Bind(wx.EVT_CHOICE, self.onChoiceShortcuts, self.choiceShortcuts)
+
+        # 按钮点击事件
+
+    def onChoiceReturnType(self, e):
+        """视图返回对象"""
+        return_obj = self.choiceReturnType.GetString(self.choiceReturnType.GetSelection()).strip()
+        if 'HttpResponse(200)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponse('Hello World!')"
+        else:
+            self.argsStruct['return_obj'] = ""
+        self._insert_data_to_template_by_argstruct()
+
+    def onChoiceShortcuts(self, e):
+        """视图快捷返回对象"""
+        shortcut_obj = self.choiceShortcuts.GetString(self.choiceShortcuts.GetSelection()).strip()
+        self.argsStruct['shortcut_obj'] = shortcut_obj
+        self._insert_data_to_template_by_argstruct()
 
     def onChoiceDecorators(self, e):
         """选择函数装饰器"""
         decorator_type = e.GetString().strip()
-        self.argsStruct['decorator'] = f'@{decorator_type}' if decorator_type else ''
+        self.argsStruct['decorator'] = f'@{decorator_type}' if decorator_type and '（无）' != decorator_type else ''
         self._insert_data_to_template_by_argstruct()
 
     def _init_all_args(self):
@@ -272,6 +296,14 @@ class ViewGenerateDialog(wx.Dialog):
         # 装饰器
         if None != self.argsStruct.get('decorator'):
             temp_template = temp_template.replace('${decorator}', self.argsStruct['decorator'])
+
+        # 试图返回对象
+        if self.argsStruct.get('return_obj'):
+            temp_template = temp_template.replace('${return}', self.argsStruct['return_obj'])
+
+        # 试图返回快捷对象
+        if self.argsStruct.get('shortcut_obj'):
+            temp_template = temp_template.replace('${return}', self.argsStruct['shortcut_obj'])
 
         self.inputCodeReview.SetValue(temp_template)
 
