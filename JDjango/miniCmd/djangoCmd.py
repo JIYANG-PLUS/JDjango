@@ -15,7 +15,7 @@ from typing import Dict, List
 ###
 """
 ### 关于别名的一些注意点：
-# 更路由默认为urls.py，如非必要，请勿取别名。
+# 根路由默认为urls.py，如非必要，请勿取别名。
 
 """
 
@@ -48,9 +48,9 @@ __all__ = [
 ]
 
 
-def django_file_path(file_name: str, concat: List[str]=[])->str:
+def django_file_path(file_name: str, concat: List[str]=None)->str:
     """补全模板路径"""
-    # 这里的concat用于弥补中间的残缺路径（因为文件可能分类在不同的文件夹下，只能保证根目录不变）
+    # 这里的concat用于弥补中间的残缺路径（因为文件可能分类在不同的文件夹下，但均使用同一个根目录）
     if None == concat:
         concat = []
     return os.path.join(TEMPLATE_DIR, *concat, file_name) # 模板路径
@@ -289,6 +289,8 @@ def update_settings_DTATBASES(db_type: str, *args, **kwargs)->None:
         DB_TYPE_NAME = 'mysql.django'
     elif 'sqlite' == db_type:
         DB_TYPE_NAME = 'sqlite.django'
+    else:
+        DB_TYPE_NAME = 'sqlite.django' # 默认 SQLite3 引擎
 
     config = get_configs(CONFIG_PATH)
     root_path = config['dirname']

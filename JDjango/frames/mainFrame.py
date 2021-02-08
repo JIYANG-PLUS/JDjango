@@ -219,10 +219,6 @@ class Main(wx.Frame):
         helps.AppendSeparator()
         menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
 
-        # 查看 菜单项
-        ssee = wx.Menu()
-        sseeExistModels = ssee.Append(wx.ID_ANY, "&当前项目的所有已知模型", "当前项目的所有已知模型") # 不放进按钮控制里
-
         # 运行端口与进程
         portProgress = wx.Menu()
         virtualenv = wx.Menu()
@@ -353,7 +349,6 @@ class Main(wx.Frame):
         menuBar.Append(perFix, "&单项修复")
         menuBar.Append(admin, "&后台管理中心")
         menuBar.Append(portProgress, "&运行")
-        menuBar.Append(ssee, "&查看")
         menuBar.Append(helps, "&帮助")
         menuBar.Append(directExit, "&退出")
         self.SetMenuBar(menuBar)
@@ -1037,6 +1032,7 @@ class Main(wx.Frame):
         for a in self.allInitBtns:
             for _ in self.allInitBtns[a][CON_CONTROL_CREATE]:
                 _.Enable(True) # 开启所有的创建按钮
+                
         self.modelsProxyGenerate.Enable(False) # 代理模型 功能暂未实现，待实现后去掉此行代码
         self.btn_config_project.Enable(True) # 选项
         self.menusSettings.Enable(True) # Settings

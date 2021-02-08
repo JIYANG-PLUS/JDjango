@@ -8,9 +8,10 @@ from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 from ..constant import *
+from .dialogTips import *
 
 """
-### 使用者自定义视图模板并为此模板编辑逻辑的步骤：
+### 使用者自定义视图模板并为此模板编辑逻辑的步骤：【后期补全】
 
 """
 
@@ -222,6 +223,32 @@ class ViewGenerateDialog(wx.Dialog):
         self.Bind(wx.EVT_CHOICE, self.onChoiceShortcuts, self.choiceShortcuts)
 
         # 按钮点击事件
+        self.Bind(wx.EVT_BUTTON, self.onBtnSubmit, self.btnSubmit)
+
+    def onBtnSubmit(self, e):
+        """创建视图"""
+        # 获取所有的值
+        vchoiceSelectFile = self.choiceSelectFile.GetString(self.choiceSelectFile.GetSelection()).strip()
+        vchoiceViewType = self.choiceViewType.GetString(self.choiceViewType.GetSelection()).strip()
+        vinputViewName = self.inputViewName.GetValue().strip()
+        vinputReverseViewName = self.inputReverseViewName.GetValue().strip()
+        vinputUrlPath = self.inputUrlPath.GetValue().strip()
+        vinputUrlPreview = self.inputUrlPreview.GetValue().strip()
+        vchoiceReturnType = self.choiceReturnType.GetString(self.choiceReturnType.GetSelection()).strip()
+        vchoiceShortcuts = self.choiceShortcuts.GetString(self.choiceShortcuts.GetSelection()).strip()
+        vchoiceDecorators = self.choiceDecorators.GetString(self.choiceDecorators.GetSelection()).strip()
+
+        if not vchoiceSelectFile:
+            TipsMessageOKBox(self, '请选择视图即将写入的应用程序', '错误')
+            return
+
+        if not vchoiceViewType:
+            TipsMessageOKBox(self, '无法写入空数据', '错误')
+            return
+
+        if not vinputUrlPath:
+            TipsMessageOKBox(self, '请正确填写路由路径', '错误')
+            return
 
     def onChoiceReturnType(self, e):
         """视图返回对象"""
