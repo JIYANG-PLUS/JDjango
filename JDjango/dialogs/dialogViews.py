@@ -404,9 +404,3 @@ class ViewGenerateDialog(wx.Dialog):
         for _ in self.labelStaticTexts:
             _.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
             _.SetForegroundColour(CON_COLOR_BLUE)
-
-    def onRadiosClick(self, e):
-        """"""
-        # print(self.radiosPanel.GetSelection()) # 获取当前选中元素的下标
-        pass
-
