@@ -1,3 +1,4 @@
+from os.path import basename
 import wx, json, glob, os
 import wx.lib.buttons as buttons
 from wx.lib import scrolledpanel
@@ -13,6 +14,12 @@ from .dialogTips import *
 """
 ### 使用者自定义视图模板并为此模板编辑逻辑的步骤：【后期补全】
 
+"""
+###
+"""
+### 路由默认写入根urls.py文件，也可用新的别名替代第一个名字（不推荐这么做，因为随之改动的地方会很多，除非你很熟悉Django，否则不建议更改urls.py在别名中的位置）。
+
+### urlpatterns参数必须要有一个空行，否则会错误处理。这将在未来版本中修复。
 """
 
 LABEL_COL_LEN = 200
@@ -237,6 +244,7 @@ class ViewGenerateDialog(wx.Dialog):
         vchoiceReturnType = self.choiceReturnType.GetString(self.choiceReturnType.GetSelection()).strip()
         vchoiceShortcuts = self.choiceShortcuts.GetString(self.choiceShortcuts.GetSelection()).strip()
         vchoiceDecorators = self.choiceDecorators.GetString(self.choiceDecorators.GetSelection()).strip()
+        vinputCodeReview = self.inputCodeReview.GetValue().strip()
 
         if not vchoiceSelectFile:
             TipsMessageOKBox(self, '请选择视图即将写入的应用程序', '错误')
@@ -246,9 +254,46 @@ class ViewGenerateDialog(wx.Dialog):
             TipsMessageOKBox(self, '无法写入空数据', '错误')
             return
 
-        if not vinputUrlPath:
+        if not vinputViewName:
+            TipsMessageOKBox(self, '视图名称不允许为空', '错误')
+            return
+
+        if not vinputReverseViewName:
+            TipsMessageOKBox(self, '反向名称不允许为空', '错误')
+            return
+
+        if not vinputUrlPath or '/' == vinputUrlPath: # 后期增加
             TipsMessageOKBox(self, '请正确填写路由路径', '错误')
             return
+
+        vinputUrlPath = vinputUrlPath if '/' == vinputUrlPath[-1] else vinputUrlPath+'/'
+
+        # 默认取路由urls.py别名
+        op_url = env.getUrlsAlias()[0] # 这里不做路径处理，路径默认是以应用程路目录为根目录向内延伸
+        # 取views.py别名
+        views = env.getViewsAlias()
+
+        # 拼接写入路径
+        CONFIG = get_configs(CONFIG_PATH)
+        op_path = os.path.join(CONFIG['dirname'], vchoiceSelectFile, op_url)
+        view_path = os.path.join(CONFIG['dirname'], vchoiceSelectFile, views[0])
+
+        # 下面只需要用到views的文件名
+        views = [os.path.basename(_) for _ in views][0]
+
+        content = get_urlpatterns_content(op_path)
+        if '函数视图' == vchoiceViewType:
+            temp = views.split('.')[0] + '.' + vinputViewName # 这里要分类处理
+        else:
+            temp = views.split('.')[0] + '.' + vinputViewName + '.as_view()' # 这里要分类处理
+        new_content = content + f"    path('{vinputUrlPath}', {temp}, name='{vinputReverseViewName}'),\n"
+
+        # 写入视图
+        append_file_whole(view_path, vinputCodeReview+'\n')
+        # 注册路由
+        write_file(op_path, read_file(op_path).replace(content, new_content))
+
+        TipsMessageOKBox(self, '路由添加成功', '成功')
 
     def onChoiceReturnType(self, e):
         """视图返回对象"""

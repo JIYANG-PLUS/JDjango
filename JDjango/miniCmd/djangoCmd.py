@@ -30,7 +30,7 @@ __all__ = [
     'get_site_header', # 获取后台站点登录名
     'get_all_apps_name', # 获取所有的应用程序名
     'get_urlpatterns_content', # 获取urls.py中urlpatterns中括号内部的内容
-    'get_app_rooturl_config_by_appname', # 通过app名称获取跟路由路径下的路由配置
+    'get_app_rooturl_config_by_appname', # 通过app名称获取根路由路径下的路由配置
     'get_models_path_by_appname', # 获取当前app下所有的模型文件路径
     'get_models_by_appname', # 获取当前app下的所有模型
     'get_views_base_func', # 获取未改动的函数视图模板内容
@@ -322,7 +322,7 @@ def get_all_need_register_urls(config: Dict[str, object])->List[str]:
     return [f'{_}.{alias}' for _ in apps] # 将所有的app名拼接上路由文件名（不带后缀名）
 
 def judge_in_main_urls()->List[str]:
-    """判断是否注册路由（返回位注册的路由）"""
+    """判断是否注册路由（返回未注册的路由）"""
     config = get_configs(CONFIG_PATH)
     root_path = config['dirname'] # Django项目根路径
     project_name = config['project_name'] # 项目名称

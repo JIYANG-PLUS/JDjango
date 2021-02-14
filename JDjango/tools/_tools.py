@@ -40,7 +40,7 @@ def read_file_list_del_comment(path: str) -> List[str]:
     return [patt.sub(' ', _) for _ in read_file_list(path)]
 
 def write_file(path: str, content: str) -> NoReturn:
-    """一次性写入文件"""
+    """一次性写入文件（覆盖写入）"""
     with open(path, 'w', encoding='utf-8') as f:
         f.write(content)
 

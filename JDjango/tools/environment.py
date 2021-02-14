@@ -137,6 +137,11 @@ def getAdminAlias():
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('alias/file[name=admin]')
 
+def getViewsAlias():
+    """获取所有views.py的别名"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('alias/file[name=views]')
+
 def getUrlsAlias():
     """获取所有urls.py的别名"""
     obj = getEnvXmlObj()
