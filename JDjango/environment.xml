@@ -6,7 +6,7 @@
     </page>
 
     <env>
-        <platform>Windows</platform>
+        <platform>Darwin</platform>
         <python3>C:\Users\PC\Desktop\djangoProject\venv\Scripts\python.exe</python3>
         <port>8868</port>
         <encoding>
@@ -46,5 +46,30 @@
         <file name="urls"><li>urls.py</li></file>
         <file name="views"><li>views.py</li></file>
     </alias>
+
+    <conflict-list>
+        <field-name>
+            <li>sn</li>
+            <li>clean</li>
+            <li>save</li>
+            <li>delete</li>
+            <li>clean_fields</li>
+            <li>validate_unique</li>
+            <li>full_clean</li>
+            <li>is_valid</li>
+            <li>from_db</li>
+            <li>refresh_from_db</li>
+            <li>get_deferred_fields</li>
+            <li>pk</li>
+            <li>get_absolute_url</li>
+            <li>get_FOO_display</li>
+            <li>get_next_by_FOO</li>
+            <li>get_previous_by_FOO</li>
+            <li>_state</li>
+            <li>__hash__</li>
+            <li>__eq__</li>
+            <li>__str__</li>
+        </field-name>
+    </conflict-list>
 
 </jdjango>

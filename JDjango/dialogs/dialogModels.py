@@ -1873,6 +1873,19 @@ class <model_name>(models.Model):
                 self.allRows.pop(i)
                 break
 
+    def _checkFiledsNameIsConflict(self)->bool:
+        """检查字段名是否与内置API名称冲突"""
+        # 取所有的模型内置API名
+        modelAPINames = env.getConflictFieldsName()
+        c_l = []
+        for _ in self.allRows:
+            if _['field_name'] in modelAPINames:
+                c_l.append(_['field_name'])
+        if len(c_l) > 0: # 冲突返回True
+            return True, c_l
+        else:
+            return False, c_l
+
     def onBtnExecSave(self, e):
         """保存"""
         if len(self.allRows) <= 0:
@@ -1899,6 +1912,11 @@ class <model_name>(models.Model):
                 dlg.Close(True)
             dlg_tip.Close(True)
         else:
+            check_result = self._checkFiledsNameIsConflict()
+            conflict_info = '、'.join(check_result[1])
+            if check_result[0]:
+                TipsMessageOKBox(self, f'{conflict_info} 字段名称与模型内置API名称冲突，请删除后重新新增字段。', '错误')
+                return
             dlg = wx.TextEntryDialog(self, u"模型命名：", u"保存模型", u"")
             if dlg.ShowModal() == wx.ID_OK:
                 model_name = dlg.GetValue().strip()  # 获取要创建的模型名称

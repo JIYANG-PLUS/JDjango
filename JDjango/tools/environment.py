@@ -106,14 +106,14 @@ def setFontSize(step = 1, method = 'add'):
             node.text = str(font_size - step)
     obj.save()
 
-def setPython3Env(path):
+def setPython3Env(path: str):
     """选择设置虚拟环境"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('env/python3')
     node.text = str(path)
     obj.save()
 
-def setPlatfrom(name):
+def setPlatfrom(name: str):
     """设置当前运行平台"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('env/platform')
@@ -190,6 +190,11 @@ def getRealPythonOrder():
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('real/python3')
     return node.text
+
+def getConflictFieldsName():
+    """获取冲突列表里的字段名集合"""
+    obj = getEnvXmlObj()
+    return obj.get_childnode_lists('conflict-list/field-name')
 
 ### 其它
 
