@@ -393,7 +393,6 @@ class ViewGenerateDialog(wx.Dialog):
             self.views_template = get_views_base_func()
             self.inputCodeReview.SetValue(self.views_template)
             # 显示本视图类型下的特殊参数设置
-
             self._show_allctrls_withouttype()
 
         elif CON_VIEW_TYPE_CLASS == view_type:

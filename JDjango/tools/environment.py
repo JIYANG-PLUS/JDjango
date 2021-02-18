@@ -1,5 +1,6 @@
 import os, re
 import xml.etree.ElementTree as ET
+from typing import Any, List
 from ..settings import BASE_DIR, ENV_PATH
 
 class XMLFileParserException(Exception): pass
@@ -19,33 +20,36 @@ class EnvParser:
             raise XMLFileParserException('XML文件读取异常。')
         self._init_pattern()
 
-    def _init_tree(self, xml):
+    def _init_tree(self, xml: str)->Any:
         try:
             self.TREE = ET.parse(xml)
         except:
             self.TREE = None
 
-    def _init_root(self):
+    def _init_root(self)->Any:
         if self.TREE:
             self.ROOT = self.TREE.getroot()
         else:
             self.ROOT = None
 
-    def _init_pattern(self):
-        self.patt_match_xpath = re.compile(r'([a-z]+?)\[([a-z]+?)=([a-z][0-9a-z].*?)\]') # 'path/json/prop[name=config]'
+    def _init_pattern(self)->None:
+        """XML专属正则"""
+        # 捕捉属性及其值
+        self.patt_match_xpath = re.compile(r'([a-z]+?)\[([a-z]+?)=([a-z][0-9a-z].*?)\]') # 如：'path/json/prop[name=config]'
 
-    def _check_ok(self):
+    def _check_ok(self)->bool:
+        """检测XML是否读取成功"""
         if not self.TREE or not self.ROOT:
             return False
         return True
 
-    def get_xpath_node(self, xpath):
+    def get_xpath_node(self, xpath: str)->object:
         """通过路径语法获取节点"""
-        searcher = self.ROOT
+        searcher = self.ROOT # 从根节点开始往下延伸寻找
         xpath_split = xpath.split('/')
-        for _ in xpath_split:
+        for _ in xpath_split: # 逐级查找
             temp = self.patt_match_xpath.match(_)
-            if temp:
+            if temp: # 如果包含属性限制
                 label, attr, v = (
                     temp.group(1)
                     , temp.group(2)
@@ -57,16 +61,18 @@ class EnvParser:
                     , attr
                     , v = v
                 )
-            else:
+            else: # 不包含属性的节点
                 try:
                     searcher = searcher.find(_)
                 except:
                     raise PathNotFoundException('路径不存在。')
         return searcher
 
-    def _get_node_by_attr(self, nodes, attr, v=''):
+    def _get_node_by_attr(self, nodes: object, attr: str, v: str=''):
         """通过属性限制获取节点"""
-        for node in nodes:
+        for node in nodes: # 循环遍历节点
+            # node.attrib: 获取所有的节点属性名
+            # node.attrib[attr]: 获取属性名为attr的值
             if attr in node.attrib and v == node.attrib[attr]:
                 return node
         else:
@@ -74,10 +80,8 @@ class EnvParser:
 
 
     def get_node_text(self, node):
+        """获取节点文本"""
         return node.text
-
-    def fill_base_path(self):
-        pass
 
     def get_childnode_lists(self, path):
         """获取所有直接孩子节点的文本内容"""
@@ -85,6 +89,7 @@ class EnvParser:
         return [_.text for _ in node]
 
     def save(self):
+        """保存XML更改"""
         self.TREE.write(ENV_PATH, encoding="utf-8", xml_declaration=True)
 
 ### 赋值
