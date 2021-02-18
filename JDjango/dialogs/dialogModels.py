@@ -93,7 +93,7 @@ class ModelsCreateDialog(wx.Dialog):
         selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.selectFilePanel.SetSizer(selectFilePanelSizer)
         self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLACK) # CON_COLOR_PURE_WHITE
+        self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLUE) # CON_COLOR_PURE_WHITE
 
         self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "选择模型所属的应用程序")
         self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',]+get_all_apps_name())
@@ -1879,7 +1879,7 @@ class <model_name>(models.Model):
         modelAPINames = env.getConflictFieldsName()
         c_l = []
         for _ in self.allRows:
-            if _['field_name'] in modelAPINames:
+            if _['field_name'].lower() in modelAPINames:
                 c_l.append(_['field_name'])
         if len(c_l) > 0: # 冲突返回True
             return True, c_l
