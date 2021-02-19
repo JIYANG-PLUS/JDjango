@@ -50,7 +50,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.commonArgs = [] # 共有的参数选项
         self.specialArgs = [] # 特有的参数选项
         self.afterBtns = [] # 所有的后触发按钮
-        self.allRows = [] # 所有的待新增按钮
+        self.allRows = [] # 所有的待新增字段及其参数
         self.readmeStaticTexts = [] # 所有的脚注提示信息控件
         self.labelStaticTexts = [] # 所有的标签控件
 
@@ -95,7 +95,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
         self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLUE) # CON_COLOR_PURE_WHITE
 
-        self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "选择模型所属的应用程序")
+        self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "请在右侧下拉列表选择模型所属的应用程序")
         self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',]+get_all_apps_name())
         selectFilePanelSizer.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
         selectFilePanelSizer.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)

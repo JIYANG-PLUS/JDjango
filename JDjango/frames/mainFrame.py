@@ -13,6 +13,19 @@ from ..tools import environment as env
 from ..settings import BASE_DIR, CONFIG_PATH, TEMPLATE_DIR
 from ..constant import *
 
+"""
+### 新增一个菜单按钮步骤
+#1 在菜单合适的位置添加按钮控件；
+#2 控制它的可用性，在项目引入之前开放还是之后；
+#3 为了简便控制，可以直接加载任意一个功能的create模块下，已达到可用性控制。（不可取但可行）
+
+### 新增命令的步骤
+#1 使用 subprocess 添加命令进程；
+#2 将进程添加进 cmdCodes 中;
+#3 在 info_cmdCodes 添加对照提示信息。
+
+"""
+
 cmd = CmdTools() # 命令行对象
 # 所有的功能按钮
 classifies = ['global', 'apps', 'views', 'urls', 'templates', 'forms', 'models', 'database', 'admin']
@@ -22,8 +35,11 @@ class Main(wx.Frame):
     def __init__(self, parent = None):
 
         wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = CON_JDJANGO_TITLE, pos = wx.DefaultPosition, size = wx.Size(960, 540), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
-        # 以下初始化流程必须按顺序进行（自上而下）
         
+        self.cmdCodes = [] # 所有的控制台指令（用于监听是否结束）
+        self.info_cmdCodes = {} # 用于对照输出指令提示信息
+        
+        # 以下初始化流程必须按顺序进行（自上而下）
         self._init_platform() # 初始化平台类型（加限制）
         self._init_control_btn() # 初始化运行时控制按钮
         self._init_UI()  # 初始化界面布局
@@ -177,6 +193,8 @@ class Main(wx.Frame):
         menus = wx.Menu()
         menuOpen = menus.Append(wx.ID_OPEN, "&查看文件", "查看文件")
         menus.AppendSeparator() # --
+        self.menuVSCode = menus.Append(wx.ID_ANY, "&使用VSCode打开项目", "使用VSCode打开项目")
+        menus.AppendSeparator() # --
         menusCreate = wx.Menu()
         menusCreateVersionProject =  wx.Menu()
         self.create_project_1_10_0 = menusCreateVersionProject.Append(wx.ID_ANY, "&Django1.10.0", "Django1.10.0")
@@ -274,6 +292,9 @@ class Main(wx.Frame):
         self.models_fix = perFix.Append(wx.ID_ANY, "&修复", "修复")
         self.database_fix = perFix.Append(wx.ID_ANY, "&数据库", "数据库")
 
+        # 三方应用集成
+        threeApp = wx.Menu()
+        self.django_sampleui = threeApp.Append(wx.ID_ANY, "&django-simpleui", "django-simpleui")
 
         # 应用程序
         self.allInitBtns['apps'][CON_CONTROL_CREATE].append(self.menuGenerate)
@@ -282,7 +303,7 @@ class Main(wx.Frame):
 
         # 视图
         self.allInitBtns['views'][CON_CONTROL_CREATE].extend([
-            self.viewsGenerateFunc
+            self.viewsGenerateFunc, self.menuVSCode, # 暂时将VSCode打开的按钮放这里控制流程
         ])
         self.allInitBtns['views'][CON_CONTROL_CHECK].append(self.views_check)
         self.allInitBtns['views'][CON_CONTROL_FIX].append(self.views_fix)
@@ -349,6 +370,7 @@ class Main(wx.Frame):
         menuBar.Append(perFix, "&单项修复")
         menuBar.Append(admin, "&后台管理中心")
         menuBar.Append(portProgress, "&运行")
+        menuBar.Append(threeApp, "&三方应用集成")
         menuBar.Append(helps, "&帮助")
         menuBar.Append(directExit, "&退出")
         self.SetMenuBar(menuBar)
@@ -359,6 +381,10 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onOpen, menuOpen)  # 文件打开点击事件
         self.Bind(wx.EVT_MENU, self.onGenerate, self.menuGenerate)  # 代码生成点击事件
         self.Bind(wx.EVT_MENU, self.onMenusSettings, self.menusSettings)  # Settings
+        self.Bind(wx.EVT_MENU, self.onMenuVSCode, self.menuVSCode)  # VSCode
+
+        # 三方应用集成
+        self.Bind(wx.EVT_MENU, self.onDjangoSampleui, self.django_sampleui)  # django_sampleui
 
         # 应用程序  事件绑定
         self.Bind(wx.EVT_MENU, self.onAppsCheck, self.apps_check) # 检测
@@ -408,14 +434,37 @@ class Main(wx.Frame):
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
 
+    def onDjangoSampleui(self, e):
+        """sampleui管理后台集成"""
+        TipsMessageOKBox(self, "功能正在准备中", '待定')
+
+    def onMenuVSCode(self, e):
+        """外部发起VSCode编辑"""
+        dlg_tip = wx.MessageDialog(self, f"打开之前请确认您已经安装了Visual Studio Code，并且已经配置了code环境。", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
+        if dlg_tip.ShowModal() == wx.ID_OK:
+            import subprocess
+            dirname = get_configs(CONFIG_PATH)['dirname']
+
+            self.cmdVscode = subprocess.Popen(f'code {dirname}', shell=True)
+            self.cmdCodes.append(self.cmdVscode)
+            self.info_cmdCodes[self.cmdVscode] = '开启VSCode编辑器'
+        dlg_tip.Close(True)
+
     def onPortProgressVirtualView(self, e):
         """查看虚拟环境路径"""
         TipsMessageOKBox(self, env.getPython3Env(), '虚拟环境路径')
 
-    def onPortProgressCollectstatic(self, e):
-        """python manage.py collectstatic"""
+    @property
+    def _check_env_exist(self)->bool:
+        """检测虚拟环境是否存在"""
         env_path = env.getPython3Env()
         if '' == env_path.strip() or not os.path.exists(env_path):
+            return False
+        return True
+
+    def onPortProgressCollectstatic(self, e):
+        """python manage.py collectstatic"""
+        if not self._check_env_exist:
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
             
@@ -423,23 +472,25 @@ class Main(wx.Frame):
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         env_python3 = os.path.splitext(env.getPython3Env())[0]
 
-        subprocess.Popen(f'{env_python3} {path} collectstatic', shell=True)
+        self.amdSubProcess = subprocess.Popen(f'{env_python3} {path} collectstatic', shell=True)
+        self.cmdCodes.append(self.amdSubProcess)
+        self.info_cmdCodes[self.amdSubProcess] = 'collectstatic'
 
     def onPortProgressPipFreeze(self, e):
         """导出包pip freeze"""
-        env_path = env.getPython3Env()
-        if '' == env_path.strip() or not os.path.exists(env_path):
+        if not self._check_env_exist:
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
         
         import subprocess
         env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
-        subprocess.Popen(f'{env_python3_pip} freeze', shell=True)
+        self.cmdEnvPipFreeze = subprocess.Popen(f'{env_python3_pip} freeze', shell=True)
+        self.cmdCodes.append(self.cmdEnvPipFreeze)
+        self.info_cmdCodes[self.cmdEnvPipFreeze] = 'freeze'
 
     def onPortProgressPipInstall(self, e):
         """虚拟环境安装包pip install"""
-        env_path = env.getPython3Env()
-        if '' == env_path.strip() or not os.path.exists(env_path):
+        if not self._check_env_exist:
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
         
@@ -451,13 +502,14 @@ class Main(wx.Frame):
             
             env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
 
-            subprocess.Popen(f'{env_python3_pip} install {module_name}', shell=True)
+            self.cmdPipInstall = subprocess.Popen(f'{env_python3_pip} install {module_name}', shell=True)
+            self.cmdCodes.append(self.cmdPipInstall)
+            self.info_cmdCodes[self.cmdPipInstall] = 'install'
         dlg.Close(True)
 
     def onPortProgressMakemigrations(self, e):
         """python manage.py makemigrations"""
-        env_path = env.getPython3Env()
-        if '' == env_path.strip() or not os.path.exists(env_path):
+        if not self._check_env_exist:
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
             
@@ -465,12 +517,13 @@ class Main(wx.Frame):
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         env_python3 = os.path.splitext(env.getPython3Env())[0]
 
-        subprocess.Popen(f'{env_python3} {path} makemigrations', shell=True)
+        self.cmdMakemigrations = subprocess.Popen(f'{env_python3} {path} makemigrations', shell=True)
+        self.cmdCodes.append(self.cmdMakemigrations)
+        self.info_cmdCodes[self.cmdMakemigrations] = 'makemigrations'
 
     def onPortProgressMigrate(self, e):
         """python manage.py migtrate"""
-        env_path = env.getPython3Env()
-        if '' == env_path.strip() or not os.path.exists(env_path):
+        if not self._check_env_exist:
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
             
@@ -478,12 +531,13 @@ class Main(wx.Frame):
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         env_python3 = os.path.splitext(env.getPython3Env())[0]
 
-        subprocess.Popen(f'{env_python3} {path} migrate', shell=True)
+        self.cmdMigrate = subprocess.Popen(f'{env_python3} {path} migrate', shell=True)
+        self.cmdCodes.append(self.cmdMigrate)
+        self.info_cmdCodes[self.cmdMigrate] = 'migrate'
 
     def onPortProgressFlush(self, e):
         """python manage.py flush"""
-        env_path = env.getPython3Env()
-        if '' == env_path.strip() or not os.path.exists(env_path):
+        if not self._check_env_exist:
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
              
@@ -491,12 +545,13 @@ class Main(wx.Frame):
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         env_python3 = os.path.splitext(env.getPython3Env())[0]
 
-        subprocess.Popen(f'{env_python3} {path} flush', shell=True)
+        self.cmdFlush = subprocess.Popen(f'{env_python3} {path} flush', shell=True)
+        self.cmdCodes.append(self.cmdFlush)
+        self.info_cmdCodes[self.cmdFlush] = 'flush'
 
     def onPortProgressCreatesuperuser(self, e):
         """python manage.py createsuperuser"""
-        env_path = env.getPython3Env()
-        if '' == env_path.strip() or not os.path.exists(env_path):
+        if not self._check_env_exist:
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
             
@@ -504,7 +559,9 @@ class Main(wx.Frame):
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         env_python3 = os.path.splitext(env.getPython3Env())[0]
 
-        subprocess.Popen(f'{env_python3} {path} createsuperuser', shell=True)
+        self.cmdCreateSuperuser = subprocess.Popen(f'{env_python3} {path} createsuperuser', shell=True)
+        self.cmdCodes.append(self.cmdCreateSuperuser)
+        self.info_cmdCodes[self.cmdCreateSuperuser] = 'createsuperuser'
 
     def onCreateProject1100(self, e):
         """创建Django1.10.0项目"""
@@ -612,8 +669,7 @@ class Main(wx.Frame):
         """子进程运行Django"""
         # 运行前必要检查
         # 检查一：虚拟环境是否正确配置
-        env_path = env.getPython3Env()
-        if '' == env_path.strip() or not os.path.exists(env_path):
+        if not self._check_env_exist:
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
 
@@ -750,6 +806,16 @@ class Main(wx.Frame):
                 self.SetStatusText("网站已关闭", 2)
         except:
             self.SetStatusText("网站已关闭", 2)
+
+        # 监听指令
+        for i, _ in enumerate(self.cmdCodes[::-1]):
+            try:
+                if (None != _.poll()):
+                    t_info = self.info_cmdCodes[_]
+                    self.infos.AppendText(out_infos(f"【{t_info}】指令执行完成！", level=1))
+                    self.cmdCodes.pop(i)
+            except:
+                self.infos.AppendText(out_infos(f"程序级错误，请联系作者修复。", level=3))
 
     def onAbout(self, e):
         """关于"""
