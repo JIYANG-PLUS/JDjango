@@ -22,6 +22,7 @@ from .dialogTips import *
 ### 存在隐患，在用户创建路由时应当判断路由明是否冲突，反向名称是否冲突。这将在未来版本中修复。
 
 ### urlpatterns参数必须要有一个空行，否则会错误处理。这将在未来版本中修复。
+
 """
 
 LABEL_COL_LEN = 200
@@ -268,32 +269,27 @@ class ViewGenerateDialog(wx.Dialog):
             TipsMessageOKBox(self, '请正确填写路由路径', '错误')
             return
 
-        vinputUrlPath = vinputUrlPath if '/' == vinputUrlPath[-1] else vinputUrlPath+'/'
+        vinputUrlPath = vinputUrlPath if '/' == vinputUrlPath[-1] else vinputUrlPath+'/' # 必须以 / 结尾
 
         # 默认取路由urls.py别名
         op_url = env.getUrlsAlias()[0] # 这里不做路径处理，路径默认是以应用程路目录为根目录向内延伸
-        # 取views.py别名
-        views = env.getViewsAlias()
+        views = env.getViewsAlias() # 取views.py别名
 
-        # 拼接写入路径
-        CONFIG = get_configs(CONFIG_PATH)
-        op_path = os.path.join(CONFIG['dirname'], vchoiceSelectFile, op_url)
-        view_path = os.path.join(CONFIG['dirname'], vchoiceSelectFile, views[0])
+        CONFIG = get_configs(CONFIG_PATH) # 项目路径
+        op_path = os.path.join(CONFIG['dirname'], vchoiceSelectFile, op_url) # 应用程序路由路径
+        view_path = os.path.join(CONFIG['dirname'], vchoiceSelectFile, views[0]) # 应用程序视图路径
 
-        # 下面只需要用到views的文件名
-        views = [os.path.basename(_) for _ in views][0]
+        views = [os.path.basename(_) for _ in views][0] # 取view文件名（带后缀）
 
-        content = get_urlpatterns_content(op_path)
+        content = get_urlpatterns_content(op_path) # 截取 urlpatterns 参数内容
         if '函数视图' == vchoiceViewType:
-            temp = views.split('.')[0] + '.' + vinputViewName # 这里要分类处理
+            temp = views.split('.')[0] + '.' + vinputViewName # 函数视图
         else:
-            temp = views.split('.')[0] + '.' + vinputViewName + '.as_view()' # 这里要分类处理
-        new_content = content + f"    path('{vinputUrlPath}', {temp}, name='{vinputReverseViewName}'),\n"
+            temp = views.split('.')[0] + '.' + vinputViewName + '.as_view()' # 类视图
+        new_content = content + f"    path('{vinputUrlPath}', {temp}, name='{vinputReverseViewName}'),\n" # 即将写入的路由
 
-        # 写入视图
-        append_file_whole(view_path, vinputCodeReview+'\n')
-        # 注册路由
-        write_file(op_path, read_file(op_path).replace(content, new_content))
+        append_file_whole(view_path, vinputCodeReview+'\n') # 写入视图
+        write_file(op_path, read_file(op_path).replace(content, new_content)) # 注册路由
 
         TipsMessageOKBox(self, '路由添加成功', '成功')
 
@@ -301,7 +297,25 @@ class ViewGenerateDialog(wx.Dialog):
         """视图返回对象"""
         return_obj = self.choiceReturnType.GetString(self.choiceReturnType.GetSelection()).strip()
         if 'HttpResponse(200)' == return_obj:
-            self.argsStruct['return_obj'] = "return HttpResponse('Hello World!')"
+            self.argsStruct['return_obj'] = "return HttpResponse('<h1>Hello World!<h1>', content_type='text/plain')"
+        elif 'HttpResponseNotFound(404)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponseNotFound('<p>404 Not Found.<p>')"
+        elif 'HttpResponseRedirect(302)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponseRedirect('<p>302重定向.<p>')"
+        elif 'HttpResponseNotModified(304)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponseNotModified('<p>304未改变.<p>')"
+        elif 'HttpResponseBadRequest(400)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponseBadRequest('<p>400.<p>')"
+        elif 'HttpResponseForbidden(403)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponseForbidden('<p>403拒绝连接.<p>')"
+        elif 'HttpResponseNotAllowed(405)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponseNotAllowed('<p>405无法访问.<p>')"
+        elif 'HttpResponseGone(410)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponseGone('<p>410.<p>')"
+        elif 'HttpResponseServerError(500)' == return_obj:
+            self.argsStruct['return_obj'] = "return HttpResponseServerError('<p>500服务器错误.<p>')"
+        elif 'JsonResponse' == return_obj:
+            self.argsStruct['return_obj'] = "return JsonResponse({'status':200,'datas':[1,2,3]})"
         else:
             self.argsStruct['return_obj'] = ""
         self._insert_data_to_template_by_argstruct()

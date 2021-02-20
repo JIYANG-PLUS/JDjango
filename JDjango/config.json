@@ -1,18 +1,18 @@
 {
-    "dirname": "C:\\Users\\PC\\Desktop\\TestModels",
-    "project_name": "TestModels",
+    "dirname": "C:\\Users\\PC\\Desktop\\TestAll",
+    "project_name": "TestAll",
     "app_names": [
-        "main"
+        "testapp"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "C:\\Users\\PC\\Desktop\\TestModels\\manyuser.db"
+            "NAME": "C:\\Users\\PC\\Desktop\\TestAll\\db.sqlite3"
         }
     },
     "DEBUG": true,
-    "LANGUAGE_CODE": "zh-Hans",
-    "TIME_ZONE": "Asia/Shanghai",
+    "LANGUAGE_CODE": "en-us",
+    "TIME_ZONE": "UTC",
     "USE_I18N": true,
     "USE_L10N": true,
     "USE_TZ": true,
@@ -24,6 +24,6 @@
     "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "C:\\Users\\PC\\Desktop\\TestModels\\templates"
+        "C:\\Users\\PC\\Desktop\\TestAll\\templates"
     ]
 }

@@ -423,7 +423,7 @@ class SettingsDialog(wx.Dialog):
         otherTimeZonePanel.SetSizer(otherTimeZoneBOX)
         otherPanelSizer.Add(otherTimeZonePanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区【TIME_ZONE】", choices=['伦敦时区', '北京时区', '美国芝加哥'])
+        self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区【TIME_ZONE】", choices=['伦敦时区', '上海时区', '美国芝加哥'])
         otherTimeZoneBOX.Add(self.radiosTimeZonePanel, 1, wx.EXPAND | wx.ALL, 2)
         
         # USE_I18N

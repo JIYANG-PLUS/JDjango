@@ -22,7 +22,7 @@ from ..constant import *
 ### 新增命令的步骤
 #1 使用 subprocess 添加命令进程；
 #2 将进程添加进 cmdCodes 中;
-#3 在 info_cmdCodes 添加对照提示信息。
+#3 在 info_cmdCodes 添加对照提示信息即可。
 
 """
 
@@ -58,7 +58,7 @@ class Main(wx.Frame):
         self._auto_loading_history() # 自动加载历史数据
 
     def _auto_loading_history(self):
-        """自动加载最新的一个历史数据"""
+        """自动加载最新的一个历史项目数据"""
         if os.path.exists(CONFIG_PATH):
             # 自动加载
             self._disable_all_btn() # 初始化按钮状态

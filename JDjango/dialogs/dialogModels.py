@@ -43,7 +43,7 @@ STATIC_TEXT_WIDTH = -1 # StaticText宽度
 
 class ModelsCreateDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(730, 888))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(730, 666))
 
         # 必要的控制容器
         self.allArgs = [] # 所有的参数选项
@@ -107,7 +107,7 @@ class ModelsCreateDialog(wx.Dialog):
         toolPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.toolPanel.SetSizer(toolPanelSizer)
         self.panelSizer.Add(self.toolPanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.toolPanel.SetBackgroundColour(CON_COLOR_BLACK)
+        self.toolPanel.SetBackgroundColour(CON_COLOR_BLUE)
 
         self.btnAddNew = buttons.GenButton(self.toolPanel, -1, '新增字段')
         self.btnResetInput = buttons.GenButton(self.toolPanel, -1, '重置字段')
@@ -116,6 +116,8 @@ class ModelsCreateDialog(wx.Dialog):
         self.btnPreview = buttons.GenButton(self.toolPanel, -1, '代码预览')
         self.btnExecSave = buttons.GenButton(self.toolPanel, -1, '保存')
         self.btnExit = buttons.GenButton(self.toolPanel, -1, '退出')
+        self.autoRegister = wx.CheckBox(self.toolPanel, -1, label = '自动注册后台')  # 是否自动注册后台单选框
+        self.autoRegister.SetForegroundColour(CON_COLOR_PURE_WHITE)
         self.btnWhite = buttons.GenButton(self.toolPanel, -1, ' ') # 空白区域补全按钮
         toolPanelSizer.Add(self.btnAddNew, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnResetInput, 0, wx.EXPAND | wx.ALL, 2)
@@ -124,6 +126,7 @@ class ModelsCreateDialog(wx.Dialog):
         toolPanelSizer.Add(self.btnPreview, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnExecSave, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnExit, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(self.autoRegister, 0, wx.EXPAND | wx.ALL, 2)
         toolPanelSizer.Add(self.btnWhite, 1, wx.EXPAND | wx.ALL, 2)
         self.btnWhite.Enable(False)
 
@@ -1886,8 +1889,33 @@ class <model_name>(models.Model):
         else:
             return False, c_l
 
+    def _auto_register_model(self, appName, model_name):
+        """自动注册模型到后台"""
+        if self.autoRegister.GetValue():
+            # models 存储模型类名
+            # modelFiles 是无后缀名的存储模型的文件名
+            modelFiles, models = [], [] # modelFiles 无后缀名
+            models.extend([model_name,])
+            modelfile_alias = os.path.basename(env.getModelsAlias()[0]).split('.')[0] # 默认取models.py的第一个别名
+            modelFiles.extend([modelfile_alias,])
+
+            classify = set(modelFiles) # 将所有的模型文件名称去重
+            
+            importData = {} # 构建插入数据包
+            for _ in classify:
+                importData[_] = []
+            for _ in zip(models, modelFiles):
+                importData[_[1]].append(_[0]) # 以文件名为分组依据，将模型归类到对应的文件下
+           
+            alias = env.getAdminAlias() # 读取admin.py的别名
+            for _ in alias:
+                # 下面将在所有的模块别名路径中写入注册数据【可能有点不合理】
+                insert_path = os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _) # 因为 _ 别名是包含紧邻app路径之后的路径，所以理论上不管层级有多深，都可以找的到
+                write_admin_base(insert_path, importData) # 写入注册代码
+
     def onBtnExecSave(self, e):
         """保存"""
+
         if len(self.allRows) <= 0:
             dlg_tip = wx.MessageDialog(self, f"未添加任何字段，是否创建空模型？", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
             if dlg_tip.ShowModal() == wx.ID_OK:
@@ -1902,6 +1930,7 @@ class <model_name>(models.Model):
                             temp_path = get_models_path_by_appname(app_name)
                             if len(temp_path) > 0:
                                 append_file_whole(temp_path[0], model_code) # 默认写入第一个模型文件
+                                self._auto_register_model(app_name, model_name) # 自动注册
                                 TipsMessageOKBox(self, '保存成功', '成功')
                             else:
                                 TipsMessageOKBox(self, '程序缺失模型文件', '错误')
@@ -1928,6 +1957,7 @@ class <model_name>(models.Model):
                         temp_path = get_models_path_by_appname(app_name)
                         if len(temp_path) > 0:
                             append_file_whole(temp_path[0], model_code) # 默认写入第一个模型文件
+                            self._auto_register_model(app_name, model_name) # 自动注册
                             TipsMessageOKBox(self, '保存成功', '成功')
                         else:
                             TipsMessageOKBox(self, '程序缺失模型文件', '错误')
