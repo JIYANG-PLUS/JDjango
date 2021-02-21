@@ -6,6 +6,7 @@ CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
 ENV_PATH = os.path.join(BASE_DIR, 'environment.xml')
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates')
 CMD_DIR = os.path.join(BASE_DIR, 'miniCmd')
+PRINT_PATH = os.path.join(BASE_DIR, 'tools', 'print_console.py')
 
 """超文本文档路径"""
 LOCAL_DOCS_PATH = os.path.join(BASE_DIR, 'docs', 'all', 'html')

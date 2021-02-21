@@ -10,7 +10,7 @@ from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
 from ..tools._re import *
 from ..tools import environment as env
-from ..settings import BASE_DIR, CONFIG_PATH, TEMPLATE_DIR
+from ..settings import BASE_DIR, CONFIG_PATH, TEMPLATE_DIR, PRINT_PATH
 from ..constant import *
 
 """
@@ -812,7 +812,15 @@ class Main(wx.Frame):
             try:
                 if (None != _.poll()):
                     t_info = self.info_cmdCodes[_]
-                    self.infos.AppendText(out_infos(f"【{t_info}】指令执行完成！", level=1))
+                    info = f"【{t_info}】指令执行完成！"
+                    self.infos.AppendText(out_infos(info, level=1))
+                    # 往进程添加提示信息
+                    import subprocess
+                    python_order = env.getRealPythonOrder()
+                    mode = 'print'
+                    self.cmdPipInstall = subprocess.Popen(f'{python_order} {PRINT_PATH} {mode} {info}', shell=True)
+
+                    # 已经完成的命令进行移除
                     self.cmdCodes.pop(i)
             except:
                 self.infos.AppendText(out_infos(f"程序级错误，请联系作者修复。", level=3))
