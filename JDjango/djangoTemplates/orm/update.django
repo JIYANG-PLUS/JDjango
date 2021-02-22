@@ -1,0 +1,6 @@
+<ul>
+    <h3>利用save()方法更新。</h3>
+    <li>obj = ${model_name}.objects.first()</li>
+    <li>obj.name = '假设有name属性'</li>
+    <li>obj.save()</li>
+</ul>

@@ -1,0 +1,10 @@
+<ul>
+    <h3>使用save()方法创建。</h3>
+    <li>obj = ${model_name}('${all_args}')</li>
+    <li>obj.save()</li>
+</ul>
+
+<ul>
+    <h3>一行代码创建，并返回对象。</h3>
+    <li>obj = ${model_name}.objects.create('${all_args}')</li>
+</ul>
