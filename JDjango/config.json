@@ -2,6 +2,7 @@
     "dirname": "C:\\Users\\PC\\Desktop\\TestAll",
     "project_name": "TestAll",
     "app_names": [
+        "JIYANG",
         "testapp"
     ],
     "DATABASES": {

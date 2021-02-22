@@ -5,6 +5,7 @@ from ..dialogs.dialogDocument import *
 from ..dialogs.dialogTips import *
 from ..dialogs.dialogModels import *
 from ..dialogs.dialogViews import *
+from ..dialogs.dialogORM import *
 from ..miniCmd.djangoCmd import startapp, judge_in_main_urls, fix_urls
 from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
@@ -231,6 +232,8 @@ class Main(wx.Frame):
         
         # 帮助 菜单项
         helps = wx.Menu()
+        self.helpsORM = helps.Append(wx.ID_ANY, "&ORM一键生成", "ORM一键生成")
+        helps.AppendSeparator()
         helpsDocumentation = helps.Append(wx.ID_ANY, "&参考文档", "参考文档")
         helps.AppendSeparator()
         self.helpsSeeOrKill = helps.Append(wx.ID_ANY, "&查看/终止进程", "查看/终止进程")
@@ -293,8 +296,8 @@ class Main(wx.Frame):
         self.database_fix = perFix.Append(wx.ID_ANY, "&数据库", "数据库")
 
         # 三方应用集成
-        threeApp = wx.Menu()
-        self.django_sampleui = threeApp.Append(wx.ID_ANY, "&django-simpleui", "django-simpleui")
+        # threeApp = wx.Menu()
+        # self.django_sampleui = threeApp.Append(wx.ID_ANY, "&django-simpleui", "django-simpleui")
 
         # 应用程序
         self.allInitBtns['apps'][CON_CONTROL_CREATE].append(self.menuGenerate)
@@ -370,7 +373,7 @@ class Main(wx.Frame):
         menuBar.Append(perFix, "&单项修复")
         menuBar.Append(admin, "&后台管理中心")
         menuBar.Append(portProgress, "&运行")
-        menuBar.Append(threeApp, "&三方应用集成")
+        # menuBar.Append(threeApp, "&三方应用集成")
         menuBar.Append(helps, "&帮助")
         menuBar.Append(directExit, "&退出")
         self.SetMenuBar(menuBar)
@@ -384,7 +387,7 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onMenuVSCode, self.menuVSCode)  # VSCode
 
         # 三方应用集成
-        self.Bind(wx.EVT_MENU, self.onDjangoSampleui, self.django_sampleui)  # django_sampleui
+        # self.Bind(wx.EVT_MENU, self.onDjangoSampleui, self.django_sampleui)  # django_sampleui
 
         # 应用程序  事件绑定
         self.Bind(wx.EVT_MENU, self.onAppsCheck, self.apps_check) # 检测
@@ -419,6 +422,7 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onPortProgressStop, self.portProgressStop)
         self.Bind(wx.EVT_MENU, self.onPortProgressVirtualChoice, self.portProgressVirtualChoice) 
         self.Bind(wx.EVT_MENU, self.onHelpSeeOrKill, self.helpsSeeOrKill) 
+        self.Bind(wx.EVT_MENU, self.onHelpsORM, self.helpsORM) 
         self.Bind(wx.EVT_MENU, self.onPortProgressFaster, self.portProgressFaster) 
         self.Bind(wx.EVT_MENU, self.onPortProgressKillProgress, self.portProgressKillProgress) 
         self.Bind(wx.EVT_MENU, self.onPortProgressVirtual, self.portProgressVirtual) 
@@ -434,9 +438,15 @@ class Main(wx.Frame):
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
 
-    def onDjangoSampleui(self, e):
-        """sampleui管理后台集成"""
-        TipsMessageOKBox(self, "功能正在准备中", '待定')
+    def onHelpsORM(self, e):
+        """ORM帮助（一键生成）"""
+        dlg = ORMDialog(self)
+        dlg.ShowModal()
+        dlg.Close(True)
+
+    # def onDjangoSampleui(self, e):
+    #     """sampleui管理后台集成"""
+    #     TipsMessageOKBox(self, "功能正在准备中", '待定')
 
     def onMenuVSCode(self, e):
         """外部发起VSCode编辑"""
