@@ -306,7 +306,9 @@ class Main(wx.Frame):
 
         # 视图
         self.allInitBtns['views'][CON_CONTROL_CREATE].extend([
-            self.viewsGenerateFunc, self.menuVSCode, # 暂时将VSCode打开的按钮放这里控制流程
+            self.viewsGenerateFunc, 
+            self.menuVSCode, # 暂时将VSCode打开的按钮放这里控制流程
+            self.helpsORM, # 暂时将orm放在这里参与流程控制
         ])
         self.allInitBtns['views'][CON_CONTROL_CHECK].append(self.views_check)
         self.allInitBtns['views'][CON_CONTROL_FIX].append(self.views_fix)

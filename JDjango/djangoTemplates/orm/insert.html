@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPDATE</title>
+    <title>INSERT</title>
     <style>
         * {margin: 0;padding: 0;box-sizing: border-box;}
         main {margin: 12px 16px;}
@@ -18,14 +18,19 @@
 <body>
     <main>
         <ol>
-            <li>利用save()方法更新
+            <li>使用save()方法创建
                 <div class="code">
-                    <span>obj = ${model_name}.objects.first()</span>
-                    <span>obj.name = '假设${model_name}有name属性'</span>
+                    <span>obj = ${model_name}(${all_args})</span>
                     <span>obj.save()</span>
                 </div>
             </li>
+            <li>一行代码创建，同时返回可操作对象
+                <div class="code">
+                    <span>obj = ${model_name}.objects.create(${all_args})</span>
+                </div>
+            </li>
         </ol>
+
     </main>
 </body>
 </html>

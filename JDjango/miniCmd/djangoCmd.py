@@ -414,3 +414,24 @@ def get_models_by_appname(appname: str)->List[str]:
         data.extend(models_env.get_models_from_modelspy(path))
     
     return data
+
+def get_orm_code(mode='select', *args, **kwargs):
+    """获得orm模板批量生成示例"""
+    file_name = ''
+    mode = mode.lower()
+    if 'select' == mode:
+        file_name = 'select.html'
+    elif 'insert' == mode:
+        file_name = 'insert.html'
+    elif 'delete' == mode:
+        file_name = 'delete.html'
+    elif 'update' == mode:
+        file_name = 'update.html'
+    else:
+        file_name = 'join.html'
+    content = get_content(file_name, concat=['orm'], replace=True
+        , model_name = kwargs.get('model_name')
+        , all_args = kwargs.get('all_args')
+    )
+
+    return content

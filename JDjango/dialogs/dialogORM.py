@@ -38,7 +38,6 @@ class ORMDialog(wx.Dialog):
 
         self.tree = wx.TreeCtrl(self.leftPanel, -1, wx.DefaultPosition, (-1, -1)) # , wx.TR_HAS_BUTTONS
         self.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self.OnClickTree, self.tree)
-        self.Bind(wx.EVT_TREE_ITEM_RIGHT_CLICK, self.onRightTreeClick, self.tree)
         leftPanelSizer.Add(self.tree, 1, wx.EXPAND | wx.ALL, 2)
 
     def _init_right_panel(self):
@@ -47,16 +46,7 @@ class ORMDialog(wx.Dialog):
         self.rightPanel.SetSizer(rightPanelSizer)
 
         self.browser = wx.html2.WebView.New(self.rightPanel) # style=wx.html.HW_NO_SelectION 不可选中文本
-        # self.browser.LoadURL(DJANGO_DOCS_URL['31']) # 加载页面
-        html_string = "<ul><li>1</li><li>2</li><li>3</li></ul>"
-        self.browser.SetPage(html_string, "") # 加载字符串
         rightPanelSizer.Add(self.browser, 1, wx.EXPAND | wx.ALL, 2)
-        
-    def onRightTreeClick(self, e):
-        """树子项右击"""
-        # parentNode = self.tree.GetItemParent(e.GetItem())
-        # nodeName = self.tree.GetItemText(parentNode)
-        # TipsMessageOKBox(self, nodeName, '123')
 
     def OnClickTree(self, e):
         """双击树节点事件"""
@@ -67,7 +57,12 @@ class ORMDialog(wx.Dialog):
         parentNode = self.tree.GetItemParent(e.GetItem())
         nodeName = self.tree.GetItemText(parentNode)
         if clickNodeName not in self.untouched:
-            TipsMessageOKBox(self, nodeName, '123')
+            html_string = ''.join(djcmd.get_orm_code(
+                mode = clickNodeName
+                , model_name = nodeName
+                , all_args = ''
+            ))
+            self.browser.SetPage(html_string, "") # 加载字符串
 
     def _init_tree(self):
         """构建左-左目录树"""
@@ -94,4 +89,4 @@ class ORMDialog(wx.Dialog):
         ])
 
         self.tree.Expand(self.root)
-        # self.tree.ExpandAll() # 展开所有节点
+        
