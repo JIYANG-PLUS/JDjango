@@ -8,7 +8,7 @@ from ..settings import CONFIG_PATH
 class ORMDialog(wx.Dialog):
     
     def __init__(self, parent, **kwargs):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = "ORM一键生成系统", size=(660, 350))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = "ORM一键生成系统", size=(888, 540))
 
         self._init_UI()
 
@@ -25,7 +25,7 @@ class ORMDialog(wx.Dialog):
         self.rightPanel = wx.Panel(self.splitWindow, style=wx.SUNKEN_BORDER) # 右子面板
         self.splitWindow.Initialize(self.leftPanel)
         self.splitWindow.Initialize(self.rightPanel)
-        self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 200)
+        self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 160)
         mainPanelSizer.Add(self.splitWindow, 1, wx.EXPAND | wx.ALL, 0)
 
         self._init_left_panel()
@@ -57,12 +57,28 @@ class ORMDialog(wx.Dialog):
         parentNode = self.tree.GetItemParent(e.GetItem())
         nodeName = self.tree.GetItemText(parentNode)
         if clickNodeName not in self.untouched:
+
+            # 各类替换值
+            all_args = '' # 所有参数的关键字赋值语句，中间用英文逗号隔开
+            foreign_attr_name = 'tempAttr' # ForeignKey 在本模型中的属性名
+            foreign_model_name = 'ForeignModel' # ForeignKey 模型名称
+            m2m_attr_name = 'tempAttr' # ManyToManyField 在本模型中的属性名
+            m2m_model_name = 'ManyToManyModel' # ManyToManyField 模型名称
+
             html_string = ''.join(djcmd.get_orm_code(
                 mode = clickNodeName
                 , model_name = nodeName
-                , all_args = ''
+                , all_args = all_args
+                , foreign_attr_name = foreign_attr_name
+                , foreign_model_name = foreign_model_name
+                , m2m_attr_name = m2m_attr_name
+                , m2m_model_name = m2m_model_name
+
             ))
             self.browser.SetPage(html_string, "") # 加载字符串
+        else:
+            """双击展开当前节点"""
+            self.tree.Expand(e.GetItem())
 
     def _init_tree(self):
         """构建左-左目录树"""
@@ -83,6 +99,7 @@ class ORMDialog(wx.Dialog):
                         temp_model = self.tree.AppendItem(temp, model)
                         for _ in types:
                             self.tree.AppendItem(temp_model, _)
+                self.tree.Expand(temp)
 
         self.untouched.extend([
             "应用程序",

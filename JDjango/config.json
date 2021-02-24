@@ -1,31 +1,30 @@
 {
-    "dirname": "/Users/jiyang/Desktop/Django/sys_pdf2json/firstapp",
-    "project_name": "firstapp",
+    "dirname": "C:\\Users\\PC\\Desktop\\TestAll",
+    "project_name": "TestAll",
     "app_names": [
-        "interest",
-        "accounts",
-        "hello"
+        "JIYANG",
+        "testapp"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Desktop/Django/sys_pdf2json/firstapp/db.sqlite3"
+            "NAME": "C:\\Users\\PC\\Desktop\\TestAll\\db.sqlite3"
         }
     },
-    "DEBUG": false,
-    "LANGUAGE_CODE": "en-us",
+    "DEBUG": true,
+    "LANGUAGE_CODE": "zh-Hans",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
-    "USE_TZ": false,
+    "USE_TZ": true,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
         "*"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "^so8te(zh1e+gu)(g)^v15++0ml^qj#a3n1o2q8vvqk_-3iyg6",
+    "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "/Users/jiyang/Desktop/Django/sys_pdf2json/firstapp/templates"
+        "C:\\Users\\PC\\Desktop\\TestAll\\templates"
     ]
 }

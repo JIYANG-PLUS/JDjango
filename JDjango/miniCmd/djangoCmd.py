@@ -429,9 +429,10 @@ def get_orm_code(mode='select', *args, **kwargs):
         file_name = 'update.html'
     else:
         file_name = 'join.html'
-    content = get_content(file_name, concat=['orm'], replace=True
-        , model_name = kwargs.get('model_name')
-        , all_args = kwargs.get('all_args')
-    )
+    content = get_content(file_name, concat=['orm'], replace=True, **kwargs)
 
     return content
+
+def get_model_args_codes(app_name, model_path, model_name):
+    """获取模型创建参数"""
+    # 待定的功能，看情况维护，暂时不添加到工具中

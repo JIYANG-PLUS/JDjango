@@ -9,15 +9,69 @@
         * {margin: 0;padding: 0;box-sizing: border-box;}
         main {margin: 12px 16px;}
         ol {list-style-type: decimal;list-style-position: inside;}
-        ol > li {color: blue;font-size: 18px;margin-bottom: 12px;}
-        div.code {color: black;background: rgb(197, 238, 214);margin-top: 3px;padding: 6px 12px;font-size: 17px;}
+        ol > li {color: blue;font-size: 15px;margin-bottom: 12px;font-weight: 700;}
+        div.code {color: black;background: rgb(197, 238, 214);margin-top: 3px;padding: 6px 12px;font-size: 15px;font-weight: normal;}
         div.code > span {display: block;margin: 3px 0;}
         div.code > span::before {content: ">>>";margin-right: 8px;color: blue;}
+        .remark {color: red;font-size: 13px;margin-left: 8px;font-weight: normal;}
+        .remark::before {content: '*';color: red;margin-right: 8px;}
     </style>
 </head>
 <body>
     <main>
-        <h1>SELECT 正在完善中</h1>
+        <ol>
+            <li>单一对象
+                <div class="code">
+                    <span>one_entry = ${model_name}.objects.get(pk=1)</span>
+                </div>
+                <div class="remark">符合条件的值必须有且只有一个，否则会抛异常</div>
+            </li>
+            <li>全部对象
+                <div class="code">
+                    <span>all_entries = ${model_name}.objects.all()</span>
+                </div>
+                <div class="remark">all_entries是可迭代对象</div>
+            </li>
+            <li>符合条件【WHERE】
+                <div class="code">
+                    <span>filter_entries = ${model_name}.objects.filter(...)</span>
+                </div>
+            </li>
+            <li>不符合条件【WHERE NOT】
+                <div class="code">
+                    <span>exclude_entries = ${model_name}.objects.exclude(...)</span>
+                </div>
+                <div class="remark">exclude 参数使用参考 filter ，一模一样，不同的是查询结果完全相反</div>
+            </li>
+            <li>排序【ORDER BY】
+                <div class="code">
+                    <span>order_entries = ${model_name}.objects.order_by('-pub_date')</span>
+                    <span>order_entries = ${model_name}.objects.order_by('?')</span>
+                </div>
+                <div class="remark">1、按照模型 Meta 中的 ordering 选项给出的排序元组排序</div>
+                <div class="remark">2、默认升序，前缀'-'表示倒序，'?'表示随机排序，不推荐随机排序</div>
+            </li>
+            <li>新字段以及聚合 【GROUP BY】
+                <div class="code">
+                    <span>obj = ${model_name}.objects.annotate(number_of_entries=Count('entry'))</span>
+                    <span>number_of_entries = obj[0].number_of_entries</span>
+                </div>
+                <div class="remark">1、from django.db.models import Count</div>
+                <div class="remark">2、entry 可以是外键在 ${model_name} 中的属性名</div>
+                <div class="remark">3、只有引用单个字段的聚合表达式才能成为位置参数，其他一切都必须是关键字参数</div>
+            </li>
+            <li>切片【slice】
+                <div class="code">
+                    <span>cut_entries = ${model_name}.objects.all()[:5]</span>
+                </div>
+                <div class="remark">和Python切片语法不同之处在于Django不允许负索引！</div>
+            </li>
+            <li>链式
+                <div class="code">
+                    <span>待定</span>
+                </div>
+            </li>
+        </ol>
     </main>
 </body>
 </html>

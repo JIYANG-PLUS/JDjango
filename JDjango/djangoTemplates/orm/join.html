@@ -9,15 +9,43 @@
         * {margin: 0;padding: 0;box-sizing: border-box;}
         main {margin: 12px 16px;}
         ol {list-style-type: decimal;list-style-position: inside;}
-        ol > li {color: blue;font-size: 18px;margin-bottom: 12px;}
-        div.code {color: black;background: rgb(197, 238, 214);margin-top: 3px;padding: 6px 12px;font-size: 17px;}
+        ol > li {color: blue;font-size: 15px;margin-bottom: 12px;font-weight: 700;}
+        div.code {color: black;background: rgb(197, 238, 214);margin-top: 3px;padding: 6px 12px;font-size: 15px;font-weight: normal;}
         div.code > span {display: block;margin: 3px 0;}
         div.code > span::before {content: ">>>";margin-right: 8px;color: blue;}
+        .remark {color: red;font-size: 13px;margin-left: 8px;font-weight: normal;}
+        .remark::before {content: '*';color: red;margin-right: 8px;}
     </style>
 </head>
 <body>
     <main>
-        <h1>JOIN 正在完善中</h1>
+        <ol>
+            <li>跨模型排序【ORDER BY】
+                <div class="code">
+                    <span>order_entries = ${model_name}.objects.order_by('foreignObj')</span>
+                    <span>order_entries = ${model_name}.objects.order_by('foreignObj__name')</span>
+                </div>
+                <div class="remark">1、foreignObj 是关联模型在 ${model_name} 中的字段属性名；name 是关联模型中的属性名。二者中间必须用两个下划线 '__' 连接</div>
+                <div class="remark">2、关联模型未配置 Meta 的 ordering 参数时，单个 foreignObj 等价于 foreignObj__id</div>
+                <div class="remark">2、关联模型配置了 Meta 的 ordering 参数时，单个 foreignObj 等价于 foreignObj__name（name为ordering中配置的属性）</div>
+            </li>
+
+            <li>更新ForeignKey字段【UPDATE】
+                <div class="code">
+                    <span>obj = ${model_name}.objects.first()</span>
+                    <span>foreign_obj = ${foreign_model_name}.objects.get(pk=1)</span>
+                    <span>obj.${foreign_attr_name} = foreign_obj</span>
+                    <span>obj.save()</span>
+                </div>
+            </li>
+            <li>更新ManyToManyField字段【UPDATE】
+                <div class="code">
+                    <span>obj = ${model_name}.objects.first()</span>
+                    <span>mtm_obj = ${m2m_model_name}.objects.get(pk=1)</span>
+                    <span>obj.${m2m_attr_name}.add(mtm_obj, ...)</span>
+                </div>
+            </li>
+        </ol>
     </main>
 </body>
 </html>
