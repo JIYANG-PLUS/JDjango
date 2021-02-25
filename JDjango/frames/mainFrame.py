@@ -261,6 +261,8 @@ class Main(wx.Frame):
         self.portProgressPipInstall = djangoOrder.Append(wx.ID_ANY, "&pip install", "pip install")
         self.portProgressPipFreeze = djangoOrder.Append(wx.ID_ANY, "&pip freeze", "pip freeze")
         djangoOrder.AppendSeparator()
+        self.portProgressShell = djangoOrder.Append(wx.ID_ANY, "&shell（Django交互式界面）", "shell（Django交互式界面）")
+        djangoOrder.AppendSeparator()
         self.portProgressMakemigrations = djangoOrder.Append(wx.ID_ANY, "&makemigrations（数据迁移）", "makemigrations（数据迁移）")
         self.portProgressMigrate = djangoOrder.Append(wx.ID_ANY, "&migrate（数据写入）", "migrate（数据写入）")
         self.portProgressFlush = djangoOrder.Append(wx.ID_ANY, "&flush（数据清空）", "flush（数据清空）")
@@ -428,7 +430,8 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onPortProgressFaster, self.portProgressFaster) 
         self.Bind(wx.EVT_MENU, self.onPortProgressKillProgress, self.portProgressKillProgress) 
         self.Bind(wx.EVT_MENU, self.onPortProgressVirtual, self.portProgressVirtual) 
-        self.Bind(wx.EVT_MENU, self.onPortProgressMakemigrations, self.portProgressMakemigrations) 
+        self.Bind(wx.EVT_MENU, self.onPortProgressMakemigrations, self.portProgressMakemigrations)
+        self.Bind(wx.EVT_MENU, self.onPortProgressShell, self.portProgressShell)
         self.Bind(wx.EVT_MENU, self.onPortProgressMigrate, self.portProgressMigrate) 
         self.Bind(wx.EVT_MENU, self.onPortProgressFlush, self.portProgressFlush) 
         self.Bind(wx.EVT_MENU, self.onPortProgressCreatesuperuser, self.portProgressCreatesuperuser) 
@@ -518,6 +521,21 @@ class Main(wx.Frame):
             self.cmdCodes.append(self.cmdPipInstall)
             self.info_cmdCodes[self.cmdPipInstall] = 'install'
         dlg.Close(True)
+
+    def onPortProgressShell(self, e):
+        """python manage.py shell"""
+        if not self._check_env_exist:
+            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            return
+
+        import subprocess
+        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
+        env_python3 = os.path.splitext(env.getPython3Env())[0]
+
+        self.cmdDjangoShell = subprocess.Popen(f'{env_python3} {path} shell', shell=True)
+        self.cmdCodes.append(self.cmdDjangoShell)
+        self.info_cmdCodes[self.cmdDjangoShell] = 'shell'
+        
 
     def onPortProgressMakemigrations(self, e):
         """python manage.py makemigrations"""

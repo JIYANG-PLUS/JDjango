@@ -15,6 +15,7 @@
         div.code > span::before {content: ">>>";margin-right: 8px;color: blue;}
         .remark {color: red;font-size: 13px;margin-left: 8px;font-weight: normal;}
         .remark::before {content: '*';color: red;margin-right: 8px;}
+        span.notes {color: rgb(172, 72, 218);font-weight: 700;font-size: 14px;margin: 6px 0;}
     </style>
 </head>
 <body>
@@ -27,7 +28,7 @@
                 </div>
                 <div class="remark">1、foreignObj 是关联模型在 ${model_name} 中的字段属性名；name 是关联模型中的属性名。二者中间必须用两个下划线 '__' 连接</div>
                 <div class="remark">2、关联模型未配置 Meta 的 ordering 参数时，单个 foreignObj 等价于 foreignObj__id</div>
-                <div class="remark">2、关联模型配置了 Meta 的 ordering 参数时，单个 foreignObj 等价于 foreignObj__name（name为ordering中配置的属性）</div>
+                <div class="remark">2、关联模型配置了 Meta 的 ordering 参数时，单个 foreignObj 等价于 foreignObj__name（ordering = ['name']）</div>
             </li>
 
             <li>更新ForeignKey字段【UPDATE】
@@ -38,6 +39,7 @@
                     <span>obj.save()</span>
                 </div>
             </li>
+
             <li>更新ManyToManyField字段【UPDATE】
                 <div class="code">
                     <span>obj = ${model_name}.objects.first()</span>
@@ -49,4 +51,3 @@
     </main>
 </body>
 </html>
-

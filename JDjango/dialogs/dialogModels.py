@@ -1047,6 +1047,9 @@ class <model_name>(models.Model):
     class Meta:
 {meta_code}
 
+    def __str__(self):
+        return '如：self.name'
+
 """
 
     def onBtnPreview(self, e):

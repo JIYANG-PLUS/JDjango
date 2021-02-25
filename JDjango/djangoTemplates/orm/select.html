@@ -15,60 +15,291 @@
         div.code > span::before {content: ">>>";margin-right: 8px;color: blue;}
         .remark {color: red;font-size: 13px;margin-left: 8px;font-weight: normal;}
         .remark::before {content: '*';color: red;margin-right: 8px;}
+        span.notes {color: rgb(172, 72, 218);font-weight: 700;font-size: 14px;margin: 6px 0;}
     </style>
 </head>
 <body>
     <main>
         <ol>
+            <li>指定数据库查询
+                <div class="code">
+                    <span>using_entries = ${model_name}.objects.using('backup')</span>
+                </div>
+                <div class="remark">backup 是数据库的别名</div>
+            </li>
             <li>单一对象
                 <div class="code">
                     <span>one_entry = ${model_name}.objects.get(pk=1)</span>
                 </div>
-                <div class="remark">符合条件的值必须有且只有一个，否则会抛异常</div>
+                <div class="remark">1、符合条件的值必须有且只有一个，否则会抛异常 DoesNotExist 、MultipleObjectsReturned</div>
+                <div class="remark">2、get() 方法返回的对象不是 QuerySet 类型，可单独使用 get() 返回单行对象</div>
+                <div class="remark">3、可以用 django.core.exceptions.ObjectDoesNotExist 统一处理异常</div>
             </li>
             <li>全部对象
                 <div class="code">
-                    <span>all_entries = ${model_name}.objects.all()</span>
+                    <span>all_entries: QuerySet = ${model_name}.objects.all()</span>
                 </div>
-                <div class="remark">all_entries是可迭代对象</div>
+                <div class="remark">1、all_entries是可迭代对象</div>
+                <div class="remark">2、all() 可用来更新之前缓存的 QuerySet</div>
+            </li>
+            <li>去重【DISTINCT】
+                <div class="code">
+                    <span>distinct_entries: QuerySet = ${model_name}.objects.distinct()</span>
+                </div>
+                <div class="remark">1、可能会得到意料之外的结果</div>
+                <div class="remark">2、目前只有 PostgreSQL 支持 distinct() 和 order_by() 连用，且两个函数的参数必须一模一样</div>
             </li>
             <li>符合条件【WHERE】
                 <div class="code">
-                    <span>filter_entries = ${model_name}.objects.filter(...)</span>
+                    <span class="notes">### 与 查询（以下三条语句等价）</span>
+                    <span>filter_entries: QuerySet = ${model_name}.objects.filter(x=1) & ${model_name}.objects.filter(y=2)</span>
+                    <span>filter_entries: QuerySet = ${model_name}.objects.filter(x=1, y=2)</span>
+                    <span>filter_entries: QuerySet = ${model_name}.objects.filter(Q(x=1) & Q(y=2))</span>
+                    <span class="notes">### 或 查询（以下两条语句等价）</span>
+                    <span>filter_entries: QuerySet = ${model_name}.objects.filter(x=1) | ${model_name}.objects.filter(y=2)</span>
+                    <span>filter_entries: QuerySet = ${model_name}.objects.filter(Q(x=1) | Q(y=2))</span>
                 </div>
+                <div class="remark">1、from django.db.models import Q</div>
             </li>
             <li>不符合条件【WHERE NOT】
                 <div class="code">
-                    <span>exclude_entries = ${model_name}.objects.exclude(...)</span>
+                    <span>exclude_entries: QuerySet = ${model_name}.objects.exclude(...)</span>
                 </div>
                 <div class="remark">exclude 参数使用参考 filter ，一模一样，不同的是查询结果完全相反</div>
             </li>
+            <li>子查询【IN】
+                <div class="code">
+                    <span>in_entries: dict = ${model_name}.objects.in_bulk(id_list=[1,2,3], field_name='pk')</span>
+                </div>
+                <div class="remark">id_list 为字段值列表；field_name 默认值为 'pk'</div>
+            </li>
             <li>排序【ORDER BY】
                 <div class="code">
-                    <span>order_entries = ${model_name}.objects.order_by('-pub_date')</span>
-                    <span>order_entries = ${model_name}.objects.order_by('?')</span>
+                    <span>order_entries: QuerySet = ${model_name}.objects.order_by('-pub_date', 'join_date')</span>
+                    <span>order_entries: QuerySet = ${model_name}.objects.order_by('?')</span>
+                    <span>order_entries: QuerySet = ${model_name}.objects.order_by(Coalesce('summary', 'headline').desc(nulls_first=False, nulls_last=True))</span>
                 </div>
                 <div class="remark">1、按照模型 Meta 中的 ordering 选项给出的排序元组排序</div>
                 <div class="remark">2、默认升序，前缀'-'表示倒序，'?'表示随机排序，不推荐随机排序</div>
+                <div class="remark">3、asc()正序、desc()倒序。参数 nulls_first 和 nulls_last 用于控制空值排序</div>
             </li>
-            <li>新字段以及聚合 【GROUP BY】
+            <li>新字段以及聚合分组【GROUP BY】
                 <div class="code">
-                    <span>obj = ${model_name}.objects.annotate(number_of_entries=Count('entry'))</span>
-                    <span>number_of_entries = obj[0].number_of_entries</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.annotate(number_of_entries=Count('entry'))</span>
+                    <span>number_of_entries: int = annotate_entries[0].number_of_entries</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.values('entry__authors').annotate(entries=Count('entry'))</span>
                 </div>
                 <div class="remark">1、from django.db.models import Count</div>
                 <div class="remark">2、entry 可以是外键在 ${model_name} 中的属性名</div>
                 <div class="remark">3、只有引用单个字段的聚合表达式才能成为位置参数，其他一切都必须是关键字参数</div>
+                <div class="remark">4、第三个语句含义：以 authors 属性分组，统计 ${model_name} 关联模型 entry 的 个数</div>
+            </li>
+            <li>结果集的连接【UNION】
+                <div class="code">
+                    <span>obj1: QuerySet = ${model_name}.objects.values_list('name')</span>
+                    <span>obj2: QuerySet = OtherModel.objects.values_list('headline')</span>
+                    <span>objs: QuerySet = obj1.union(obj2, ...).order_by('name')</span>
+                </div>
+                <div class="remark">有关 UNION 的注意点和 SQL 语法一致，以第一次连接的列名和类型为准</div>
+            </li>
+            <li>交集【INTERSECT】
+                <div class="code">
+                    <span>obj1: QuerySet = ${model_name}.objects.values_list('name')</span>
+                    <span>obj2: QuerySet = OtherModel.objects.values_list('headline')</span>
+                    <span>objs: QuerySet = obj1.intersection(obj2, ...)</span>
+                </div>
+                <div class="remark">注意点同 UNION</div>
+            </li>
+            <li>差集【EXCEPT】
+                <div class="code">
+                    <span>obj1: QuerySet = ${model_name}.objects.values_list('name')</span>
+                    <span>obj2: QuerySet = OtherModel.objects.values_list('headline')</span>
+                    <span>objs: QuerySet = obj1.difference(obj2, ...)</span>
+                </div>
+                <div class="remark">注意点同 UNION</div>
+            </li>
+            <li>空查询
+                <div class="code">
+                    <span>empty_entries: QuerySet = ${model_name}.objects.none()</span>
+                </div>
+                <div class="remark">1、isinstance(${model_name}.objects.none(), EmptyQuerySet) == True</div>
+                <div class="remark">999、from django.db.models.query import EmptyQuerySet</div>
+            </li>
+
+            <li>事务锁
+                <div class="code">
+                    <span>from django.db import transaction</span>
+                    <span>entries = ${model_name}.objects.select_for_update().filter(author=request.user)</span>
+                    <span>with transaction.atomic():</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;for entry in entries: ...</span>
+                </div>
+                <div class="remark">1、事务未结束前，查询行将一直处于锁定状态，直到事务结束</div>
+                <div class="remark">2、可传入 nowait=True 开启非阻塞模式</div>
+                <div class="remark">3、传入 skip_locked=True 忽略锁定记录。nowait 和 skip_locked 不可同时开启！</div>
+            </li>
+
+            <li>查询行数
+                <div class="code">
+                    <span>count_row: int = ${model_name}.objects.count()</span>
+                    <span>count_row: int = ${model_name}.objects.filter(headline__contains='Lennon').count()</span>
+                </div>
+                <div class="remark">等价于 len()，在有缓存时使用 len() 效率会更高</div>
+            </li>
+
+            <li>获取第一个对象
+                <div class="code">
+                    <span>first_row = ${model_name}.objects.all().first()</span>
+                </div>
+                <div class="remark">空值返回none</div>
+            </li>
+            <li>获取最新的对象
+                <div class="code">
+                    <span>latest_row = ${model_name}.objects.latest('pub_date', '-expire_date')</span>
+                </div>
+                <div class="remark">空值返回none</div>
+            </li>
+            <li>获取最后一个对象
+                <div class="code">
+                    <span>last_row = ${model_name}.objects.all().last()</span>
+                </div>
+                <div class="remark">空值返回none</div>
+            </li>
+            <li>获取最旧的对象
+                <div class="code">
+                    <span>earliest_row = ${model_name}.objects.earliest('pub_date', '-expire_date')</span>
+                </div>
+                <div class="remark">空值返回none</div>
+            </li>
+            <li>聚合字典
+                <div class="code">
+                    <span>aggregate_rows: dict = ${model_name}.objects.aggregate(number_of_entries=Count('entry'))</span>
+                </div>
+                <div class="remark">建议使用关键字参数，若使用位置参数，键默认为 entry__count</div>
+            </li>
+            <li>判断是否存在
+                <div class="code">
+                    <span>is_exists: bool = ${model_name}.objects.get(pk=1).exists()</span>
+                </div>
+            </li>
+
+            <!-- 以下查询主要方便编程 -->
+            <li>外键高效查询（缓存）
+                <div class="code">
+                    <span>obj = ${model_name}.objects.select_related('blog').get(id=5)</span>
+                    <span>obj = ${model_name}.objects.get(id=5).select_related('blog')</span>
+                    <span>attr = obj.blog</span>
+                    <span>without_relations = obj.select_related(None)</span>
+                </div>
+                <div class="remark">1、blog 是关联模型在 ${model_name} 中的属性名</div>
+                <div class="remark">2、使用好处是：当查询关联模型数据时，不需要再查询数据库</div>
+                <div class="remark">3、select_related 的顺序不重要</div>
+                <div class="remark">4、传递 None 清除外键的关联缓存数据</div>
+                <div class="remark">5、仅限 ForeignKey 或 OneToOneField 关系</div>
+            </li>
+            <li>多对多外键高效查询（缓存）
+                <div class="code">
+                    <span>obj: QuerySet = ${model_name}.objects.all().prefetch_related('blog')</span>
+                </div>
+                <div class="remark">1、比 select_related 功能更强大，支持多对多关系</div>
+            </li>
+            <li>原SQL查询
+                <div class="code">
+                    <span>${model_name}.objects.extra(</span>
+                    <span> select={</span>
+                    <span> &nbsp;&nbsp;&nbsp;&nbsp;'val': "select col from sometable where othercol = %s",</span>
+                    <span> &nbsp;&nbsp;&nbsp;&nbsp;'is_recent': "pub_date > '2006-01-01'",</span>
+                    <span> &nbsp;&nbsp;&nbsp;&nbsp;'entry_count': 'SELECT COUNT(*) FROM blog_entry WHERE blog_entry.blog_id = blog_blog.id',</span>
+                    <span> },</span>
+                    <span> select_params=(someparam,),</span>
+                    <span> where=["foo='%s' OR bar = '%s'", "baz = '%s'"]</span>
+                    <span> params=['a']</span>
+                    <span> order_by = ['-is_recent']</span>
+                    <span>)</span>
+                </div>
+                <div class="remark">1、即将被废弃的语法</div>
+                <div class="remark">2、val直接SQL语句（一般不这样写），entry_count子查询列，is_recent 为一新列，等价于：pub_date > '2006-01-01' AS is_recent</div>
+                <div class="remark">3、等价于：${model_name}.objects.annotate(val=RawSQL("select col from sometable where othercol = %s", (someparam,)))</div>
+                <div class="remark">4、也可用 raw(raw_query, params=None, translations=None) 进行原生查询，不同的是raw是全新的查询（忽略之前的查询集）</div>
+            </li>
+            <li>指定列不参与查询（高效）
+                <div class="code">
+                    <span>defer_entries = ${model_name}.objects.defer("headline", "body")</span>
+                    <span>all_entries = defer_entries.all()</span>
+                    <span>without_defer_entries = ${model_name}.defer(None)</span>
+                </div>
+                <div class="remark">1、查询结果中将不会出现 headline 和 body 列</div>
+                <div class="remark">2、传入 None 取消限制</div>
+            </li>
+            <li>指定列参与查询（高效）
+                <div class="code">
+                    <span>only_entries = ${model_name}.objects.only("name")</span>
+                    <span>all_entries = only_entries.all()</span>
+                    <span>without_only_entries = ${model_name}.only(None)</span>
+                </div>
+                <div class="remark">1、查询结果中只有 name 列</div>
+                <div class="remark">2、传入 None 取消限制</div>
             </li>
             <li>切片【slice】
                 <div class="code">
-                    <span>cut_entries = ${model_name}.objects.all()[:5]</span>
+                    <span>slice_entries: QuerySet = ${model_name}.objects.all()[:5]</span>
                 </div>
                 <div class="remark">和Python切片语法不同之处在于Django不允许负索引！</div>
             </li>
+            <li>倒序【reverse】
+                <div class="code">
+                    <span>reverse_entries: QuerySet = ${model_name}.objects.all().reverse()</span>
+                </div>
+            </li>
+            <li>与Python字典类型的对接
+                <div class="code">
+                    <span>v_ks: QuerySet = ${model_name}.objects.values()</span>
+                    <span>v_ks: QuerySet = ${model_name}.objects.all().values()</span>
+                    <span>v_ks: QuerySet = ${model_name}.objects.all().values('name')</span>
+                    <span>v_ks: QuerySet = ${model_name}.objects.all().values(lower_name=Lower('name'))</span>
+                    <span>v_ks: QuerySet = ${model_name}.objects.values().order_by('id')</span>
+                    <span>v_ks: QuerySet = ${model_name}.objects.order_by('id').values()</span>
+                </div>
+                <div class="remark">1、values()返回键值对，value('name')接收列名位置参数时，只返回name列</div>
+                <div class="remark">2、values(lower_name=Lower('name'))还可以接受聚合函数关键字参数</div>
+                <div class="remark">3、假设外键字段为 temp，则默认键名为 temp_id。具体的键名取决于传递的值</div>
+                <div class="remark">4、第1行和第2行等价；第5行和第6行等价</div>
+                <div class="remark">999、from django.db.models.functions import Lower</div>
+            </li>
+            <li>与Python元组类型的对接
+                <div class="code">
+                    <span>tuple_entries: QuerySet = ${model_name}.objects.values_list()</span>
+                    <span>tuple_entries: QuerySet = ${model_name}.objects.values_list('id', 'headline')</span>
+                    <span>tuple_entries: QuerySet = ${model_name}.objects.values_list('id', flat=True).order_by('id')</span>
+                    <span>tuple_entries: QuerySet = ${model_name}.objects.values_list('id', 'headline', named=True)</span>
+                </div>
+                <div class="remark">1、使用 flat=True 将查询结果的 (1,) 变为 1；这种情况只能是获取一列的情况</div>
+                <div class="remark">2、使用 named=True 将普通元组变为命名元组，使结果更易读，但这会造成一定的性能开销</div>
+            </li>
+            <li>与python datetime.date 类型的对接
+                <div class="code">
+                    <span>date_entries: QuerySet = ${model_name}.objects.dates('pub_date', 'year')</span>
+                    <span>date_entries: QuerySet = ${model_name}.objects.dates('pub_date', 'day', order='DESC')</span>
+                </div>
+                <div class="remark">1、dates() 方法只接受三个参数，2个位置参数，一个关键字参数</div>
+                <div class="remark">2、可选日期类型：year、month、week、day</div>
+                <div class="remark">3、order 关键字参数默认为 ASC</div>
+            </li>
+            <li>与python迭代器的对接（减少内存占用）
+                <div class="code">
+                    <span>iterator_entries: iterator = ${model_name}.objects.all().iterator(chunk_size=2000)</span>
+                </div>
+                <div class="remark">1、chunk_size 默认值为 2000，这是经过科学计算的结果</div>
+                <div class="remark">2、chunk_size优化 和 refetch_related优化放在一起没有意义</div>
+            </li>
+            <li>返回QuerySet执行计划的字符串
+                <div class="code">
+                    <span>${model_name}.objects.filter(title='My Blog').explain()</span>
+                </div>
+                <div class="remark">不同数据库的输出结果不同</div>
+            </li>
             <li>链式
                 <div class="code">
-                    <span>待定</span>
+                    <span>QuerySet可链式查询</span>
                 </div>
             </li>
         </ol>

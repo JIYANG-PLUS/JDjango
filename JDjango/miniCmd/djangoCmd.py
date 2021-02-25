@@ -427,6 +427,10 @@ def get_orm_code(mode='select', *args, **kwargs):
         file_name = 'delete.html'
     elif 'update' == mode:
         file_name = 'update.html'
+    elif 'field' == mode:
+        file_name = 'field.html'
+    elif 'aggregate' == mode:
+        file_name = 'aggregate.html'
     else:
         file_name = 'join.html'
     content = get_content(file_name, concat=['orm'], replace=True, **kwargs)

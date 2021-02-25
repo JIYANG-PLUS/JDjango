@@ -5,6 +5,14 @@ from ..tools._tools import *
 from ..miniCmd import djangoCmd as djcmd
 from ..settings import CONFIG_PATH
 
+"""
+### 为一键生成器添加新的ORM模板
+#1 创建模板HTML文件，并在 djangoCmd.py 文件的 get_orm_code 方法中进行关联
+#2 在本文件的 _init_tree 方法的 types 中添加前端显示名称（最好与HTML文件名一致）
+#3 若有新的模板变量，需在 html_string 中注册，否则模板引擎将无法工作
+
+"""
+
 class ORMDialog(wx.Dialog):
     
     def __init__(self, parent, **kwargs):
@@ -25,7 +33,7 @@ class ORMDialog(wx.Dialog):
         self.rightPanel = wx.Panel(self.splitWindow, style=wx.SUNKEN_BORDER) # 右子面板
         self.splitWindow.Initialize(self.leftPanel)
         self.splitWindow.Initialize(self.rightPanel)
-        self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 160)
+        self.splitWindow.SplitVertically(self.leftPanel, self.rightPanel, 180)
         mainPanelSizer.Add(self.splitWindow, 1, wx.EXPAND | wx.ALL, 0)
 
         self._init_left_panel()
@@ -59,7 +67,7 @@ class ORMDialog(wx.Dialog):
         if clickNodeName not in self.untouched:
 
             # 各类替换值
-            all_args = '' # 所有参数的关键字赋值语句，中间用英文逗号隔开
+            all_args = "name='example', ..." # 所有参数的关键字赋值语句，中间用英文逗号隔开
             foreign_attr_name = 'tempAttr' # ForeignKey 在本模型中的属性名
             foreign_model_name = 'ForeignModel' # ForeignKey 模型名称
             m2m_attr_name = 'tempAttr' # ManyToManyField 在本模型中的属性名
@@ -89,7 +97,7 @@ class ORMDialog(wx.Dialog):
 
         if app_names:
             self.untouched.extend(app_names)
-            types = ['SELECT', 'INSERT', 'DELETE', 'UPDATE', 'JOIN']
+            types = ['SELECT', 'INSERT', 'DELETE', 'UPDATE', 'FIELD', 'AGGREGATE', 'JOIN']
             for app_name in app_names:
                 temp = self.tree.AppendItem(self.root, app_name)
                 models = djcmd.get_models_by_appname(app_name) # 通过应用程序名获取所有的模型名称

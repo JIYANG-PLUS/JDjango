@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIELD</title>
+    <style>
+        * {margin: 0;padding: 0;box-sizing: border-box;}
+        main {margin: 12px 16px;}
+        h1 {font-size: 24px;margin-bottom: 12px;}
+        p {margin-bottom: 12px;color: brown;font-weight: 700;}
+        ol {list-style-type: decimal;list-style-position: inside;}
+        ol > li {color: blue;font-size: 15px;margin-bottom: 12px;font-weight: 700;}
+        div.code {color: black;background: rgb(197, 238, 214);margin-top: 3px;padding: 6px 12px;font-size: 15px;font-weight: normal;}
+        div.code > span {display: block;margin: 3px 0;}
+        div.code > span::before {content: ">>>";margin-right: 8px;color: blue;}
+        .remark {color: red;font-size: 13px;margin-left: 8px;font-weight: normal;}
+        .remark::before {content: '*';color: red;margin-right: 8px;}
+        span.notes {color: rgb(172, 72, 218);font-weight: 700;font-size: 14px;margin: 6px 0;}
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Field查找语法用于 filter()、exclude() 和 get() 的关键字参数</h1>
+        <p>** 描述符加前缀'i'表示不区分大小写，相关的描述符有：exact、contains、startswith、endswith、regex</p>
+        <ol>
+            <li>完全匹配【exact】
+                <div class="code">
+                    <span class="notes">### 以下两行完全等价</span>
+                    <span>${model_name}.objects.get(id=14)</span>
+                    <span>${model_name}.objects.get(id__exact=14)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE id = 14;</div>
+                <div class="remark">2、exact 是默认行为</div>
+            </li>
+            <li>包含【contains】
+                <div class="code">
+                    <span>${model_name}.objects.get(headline__contains='Lennon')</span>
+                </div>
+                <div class="remark">SQL等价于：SELECT ... WHERE headline LIKE '%Lennon%';</div>
+            </li>
+            <li>IN子查询【in】
+                <div class="code">
+                    <span>${model_name}.objects.filter(headline__in='abc')</span>
+                </div>
+                <div class="remark">SQL等价于：SELECT ... WHERE headline IN ('a', 'b', 'c');（'abc'是一个序列，会拆）</div>
+            </li>
+            <li>大于【gt】
+                <div class="code">
+                    <span>${model_name}.objects.filter(id__gt=4)</span>
+                </div>
+                <div class="remark">SQL等价于：SELECT ... WHERE id > 4;</div>
+            </li>
+            <li>大于等于【gte】
+                <div class="code">
+                    <span>${model_name}.objects.filter(id__gte=4)</span>
+                </div>
+                <div class="remark">SQL等价于：SELECT ... WHERE id >= 4;</div>
+            </li>
+            <li>小于【lt】
+                <div class="code">
+                    <span>${model_name}.objects.filter(id__lt=4)</span>
+                </div>
+                <div class="remark">SQL等价于：SELECT ... WHERE id < 4;</div>
+            </li>
+            <li>小于等于【lte】
+                <div class="code">
+                    <span>${model_name}.objects.filter(id__lte=4)</span>
+                </div>
+                <div class="remark">SQL等价于：SELECT ... WHERE id <= 4;</div>
+            </li>
+            <li>开头匹配【startswith】
+                <div class="code">
+                    <span>${model_name}.objects.filter(headline__startswith='Lennon')</span>
+                </div>
+                <div class="remark">SQL等价于：SELECT ... WHERE headline LIKE 'Lennon%';</div>
+            </li>
+            <li>结尾匹配【endswith】
+                <div class="code">
+                    <span>${model_name}.objects.filter(headline__endswith='Lennon')</span>
+                </div>
+                <div class="remark">SQL等价于：SELECT ... WHERE headline LIKE '%Lennon';</div>
+            </li>
+            <li>含两端范围【range】
+                <div class="code">
+                    <span>import datetime</span>
+                    <span>start_date = datetime.date(2005, 1, 1)</span>
+                    <span>end_date = datetime.date(2005, 3, 31)</span>
+                    <span>${model_name}.objects.filter(pub_date__range=(start_date, end_date))</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE pub_date BETWEEN '2005-01-01' and '2005-03-31';</div>
+                <div class="remark">2、用日期过滤 DateTimeField 不会包括最后一天的项目</div>
+                <div class="remark">3、不能把日期和日期时间混在一起</div>
+            </li>
+            <li>日期【date】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__date=datetime.date(2005, 1, 1))</span>
+                    <span>${model_name}.objects.filter(pub_date__date__gt=datetime.date(2005, 1, 1))</span>
+                </div>
+                <div class="remark">将日期字段转换为 datetime.date 操作</div>
+            </li>
+            <li>日期时间【time】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__time=datetime.time(14, 30))</span>
+                    <span>${model_name}.objects.filter(pub_date__time__range=(datetime.time(8), datetime.time(17)))</span>
+                </div>
+                <div class="remark">对于日期时间字段，将其值强制转换为时间。允许链式附加字段查找。取一个 datetime.time 的值。</div>
+            </li>
+            <li>年【year】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__year=2005)</span>
+                    <span>${model_name}.objects.filter(pub_date__year__gte=2005)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE pub_date BETWEEN '2005-01-01' AND '2005-12-31';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE pub_date >= '2005-01-01';</div>
+            </li>
+            <li> ISO 8601 周号年份匹配【iso_year】
+                <div class="code">
+                    <span>Entry.objects.filter(pub_date__iso_year=2005)</span>
+                    <span>Entry.objects.filter(pub_date__iso_year__gte=2005)</span>
+                </div>
+                <div class="remark">确切的SQL语法随数据库类型而定</div>
+            </li>
+            <li>月【month】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__month=12)</span>
+                    <span>${model_name}.objects.filter(pub_date__month__gte=6)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE EXTRACT('month' FROM pub_date) = '12';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('month' FROM pub_date) >= '6';</div>
+            </li>
+            <li>日【day】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__day=3)</span>
+                    <span>${model_name}.objects.filter(pub_date__day__gte=3)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) = '3';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) >= '3';</div>
+                <div class="remark">3、请注意，这将匹配任何带有 pub_date 的月份第三天的记录，如 1 月 3 日，7 月 3 日等。</div>
+            </li>
+            <li>周【week】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__week=52)</span>
+                    <span>${model_name}.objects.filter(pub_date__week__gte=32, pub_date__week__lte=38)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) = '3';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) >= '3';</div>
+                <div class="remark">3、对于日期和日期时间字段，根据 ISO-8601 ，返回星期号（1-52 或 53），即星期从星期一开始，第一周包含一年的第一个星期四。</div>
+            </li>
+            <li>星期几【week_day】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__week_day=2)</span>
+                    <span>${model_name}.objects.filter(pub_date__week_day__gte=2)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) = '3';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) >= '3';</div>
+                <div class="remark">3、从 1（星期日）到 7（星期六）取一个整数值，代表一周的一天。</div>
+                <div class="remark">4、请注意，这将匹配任何带有 pub_date 的记录，这些记录都是在星期一（一周的第 2 天）发生的，不管它发生在哪一年哪一月。周日的索引，第 1 天是周日，第 7 天是周六。</div>
+                <div class="remark">5、Django3.1 新增</div>
+            </li>
+            <li>ISO星期几【iso_week_day】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__iso_week_day=1)</span>
+                    <span>${model_name}.objects.filter(pub_date__iso_week_day__gte=1)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) = '3';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) >= '3';</div>
+                <div class="remark">3、对于日期和日期时间字段，精确匹配 ISO 8601 星期几。允许链接其他字段的查询。</div>
+                <div class="remark">4、请注意，这将匹配任何带有 pub_date 的记录，这些记录都是在星期一（一周的第 1 天）发生的，不管它发生在哪个月或哪个年。周日的索引是第 1 天是星期一，第 7 天是星期天。</div>
+            </li>
+            <li>季度【quarter】
+                <div class="code">
+                    <span>${model_name}.objects.filter(pub_date__quarter=2)</span>
+                </div>
+                <div class="remark">1、对于日期和日期时间字段，“一年的四分之一”匹配。允许链接额外的字段查找。取 1 到 4 之间的整数值，代表一年中的季度。</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('day' FROM pub_date) >= '3';</div>
+                <div class="remark">3、对于日期和日期时间字段，精确匹配 ISO 8601 星期几。允许链接其他字段的查询。</div>
+            </li>
+            <li>时【hour】
+                <div class="code">
+                    <span>${model_name}.objects.filter(timestamp__hour=23)</span>
+                    <span>${model_name}.objects.filter(time__hour=5)</span>
+                    <span>${model_name}.objects.filter(timestamp__hour__gte=12)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE EXTRACT('hour' FROM timestamp) = '23';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('hour' FROM time) = '5';</div>
+                <div class="remark">3、SQL等价于：SELECT ... WHERE EXTRACT('hour' FROM timestamp) >= '12';</div>
+                <div class="remark">4、对于日期时间和时间字段，精确的小时匹配。允许链式查找其他字段。取 0 到 23 之间的整数。</div>
+            </li>
+            <li>分【minute】
+                <div class="code">
+                    <span>${model_name}.objects.filter(timestamp__minute=29)</span>
+                    <span>${model_name}.objects.filter(time__minute=46)</span>
+                    <span>${model_name}.objects.filter(timestamp__minute__gte=29)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE EXTRACT('minute' FROM timestamp) = '29';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('minute' FROM time) = '46';</div>
+                <div class="remark">3、SQL等价于：SELECT ... WHERE EXTRACT('minute' FROM timestamp) >= '29';</div>
+                <div class="remark">4、对于日期时间和时间字段，精确的分钟匹配。允许链式查找其他字段。取 0 到 59 之间的整数。</div>
+            </li>
+            <li>秒【second】
+                <div class="code">
+                    <span>${model_name}.objects.filter(timestamp__second=31)</span>
+                    <span>${model_name}.objects.filter(time__second=2)</span>
+                    <span>${model_name}.objects.filter(timestamp__second__gte=31)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE EXTRACT('second' FROM timestamp) = '31';</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE EXTRACT('second' FROM time) = '2';</div>
+                <div class="remark">3、SQL等价于：SELECT ... WHERE EXTRACT('second' FROM timestamp) >= '31';</div>
+                <div class="remark">4、对于日期时间和时间字段，完全秒配。允许链式查找其他字段。取 0 到 59 之间的整数。</div>
+            </li>
+            <li>正则匹配【regex】
+                <div class="code">
+                    <span>${model_name}.objects.get(title__regex=r'^(An?|The) +')</span>
+                </div>
+                <div class="remark">1、MySQL-SQL等价于：SELECT ... WHERE title REGEXP BINARY '^(An?|The) +';</div>
+                <div class="remark">2、Oracle-SQL等价于：SELECT ... WHERE REGEXP_LIKE(title, '^(An?|The) +', 'c');</div>
+                <div class="remark">3、PostgreSQL-SQL等价于：SELECT ... WHERE title ~ '^(An?|The) +';</div>
+                <div class="remark">4、SQLite-SQL等价于：SELECT ... WHERE title REGEXP '^(An?|The) +';</div>
+                <div class="remark">5、正则表达式语法是使用中的数据库后端的语法。对于没有内置正则表达式支持的 SQLite 来说，这个功能是由（Python）用户定义的 REGEXP 函数提供的，因此正则表达式语法是 Python 的 re 模块的语法。</div>
+            </li>
+
+            <li>判断为空【IS NULL】
+                <div class="code">
+                    <span>${model_name}.objects.get(name__iexact=None)</span>
+                    <span>${model_name}.objects.filter(pub_date__isnull=True)</span>
+                </div>
+                <div class="remark">1、SQL等价于：SELECT ... WHERE name IS NULL;</div>
+                <div class="remark">2、SQL等价于：SELECT ... WHERE pub_date IS NULL;</div>
+                <div class="remark">3、推荐使用第二种</div>
+            </li>
+        </ol>
+    </main>
+</body>
+</html>
+

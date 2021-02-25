@@ -15,17 +15,40 @@
         div.code > span::before {content: ">>>";margin-right: 8px;color: blue;}
         .remark {color: red;font-size: 13px;margin-left: 8px;font-weight: normal;}
         .remark::before {content: '*';color: red;margin-right: 8px;}
+        span.notes {color: rgb(172, 72, 218);font-weight: 700;font-size: 14px;margin: 6px 0;}
     </style>
 </head>
 <body>
     <main>
         <ol>
-            <li>利用save()方法更新常规字段
+            <li>save()更新（不推荐）
                 <div class="code">
                     <span>obj = ${model_name}.objects.first()</span>
                     <span>obj.name = '假设${model_name}有name属性'</span>
                     <span>obj.save()</span>
                 </div>
+            </li>
+            <li>直接更新
+                <div class="code">
+                    <span>affect_rows: int = ${model_name}.objects.filter(id=1).update(age='1000')</span>
+                </div>
+                <div class="remark">1、错误的更新方法1：${model_name}.objects.update(blog__name='foo')，不可在模型上直接使用</div>
+                <div class="remark">2、错误的更新方法2：${model_name}.objects.get(pk=1).update(name='JJ')，不能再一个非QuerySet上使用，如：get()</div>
+                <div class="remark">3、affect_rows 是返回受影响的行数</div>
+                <div class="remark">4、update() 方法不会触发 pre_save 和 post_save 信号</div>
+                <div class="remark">5、update() 不能更新主键</div>
+            </li>
+            <li>批量更新（高效）
+                <div class="code">
+                    <span>objs = [</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;${model_name}.objects.create(headline='Entry 1'),</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;${model_name}.objects.create(headline='Entry 2'),</span>
+                    <span>]</span>
+                    <span>objs[0].headline = 'This is entry 1'</span>
+                    <span>objs[1].headline = 'This is entry 2'</span>
+                    <span>${model_name}.objects.bulk_update(objs, ['headline'])</span>
+                </div>
+                <div class="remark">可用 batch_size 参数控制一次更新的行数，详情参考：bulk_create</div>
             </li>
         </ol>
     </main>

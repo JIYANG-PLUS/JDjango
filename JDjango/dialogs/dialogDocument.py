@@ -79,6 +79,7 @@ class DocumentationDialog(wx.Dialog):
         self.leftPanelOfficialdocsRoot = self.leftPanelOfficialdocsTree.AddRoot(f'稳定版本')
         self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "3.1版本")
         self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "2.2版本")
+        self.leftPanelOfficialdocsTree.AppendItem(self.leftPanelOfficialdocsRoot, "国家法律法规数据库")
 
         self.leftPanelOfficialdocsTree.ExpandAll() # 展开所有节点
 
@@ -88,6 +89,7 @@ class DocumentationDialog(wx.Dialog):
         temp = {
             '3.1版本' : '31',
             '2.2版本' : '22',
+            '国家法律法规数据库' : 'law',
         }
         if nodeName != f'选择版本':
             self.browser.LoadURL(DJANGO_DOCS_URL[temp[nodeName]])

@@ -15,6 +15,7 @@ LOCAL_DOCS_PATH = os.path.join(BASE_DIR, 'docs', 'all', 'html')
 DJANGO_DOCS_URL = {
     '31' : r'https://docs.djangoproject.com/zh-hans/3.1/',
     '22' : r'https://docs.djangoproject.com/zh-hans/2.2/',
+    'law' : r'https://flk.npc.gov.cn/', # 国家法律法规
 }
 
 """settings.py文件所需常量"""

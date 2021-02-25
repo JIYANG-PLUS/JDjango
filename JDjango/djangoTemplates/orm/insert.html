@@ -15,21 +15,64 @@
         div.code > span::before {content: ">>>";margin-right: 8px;color: blue;}
         .remark {color: red;font-size: 13px;margin-left: 8px;font-weight: normal;}
         .remark::before {content: '*';color: red;margin-right: 8px;}
+        span.notes {color: rgb(172, 72, 218);font-weight: 700;font-size: 14px;margin: 6px 0;}
     </style>
 </head>
 <body>
     <main>
         <ol>
-            <li>使用save()方法插入行
+            <li>save()插入
                 <div class="code">
                     <span>obj = ${model_name}(${all_args})</span>
-                    <span>obj.save()</span>
+                    <span>obj.save(force_insert=True)</span>
                 </div>
+                <div class="remark">1、force_insert 开启表示总是会创建一个新的对象</div>
+                <div class="remark">2、参数正在考虑一键生成，目前算法正在设计中</div>
             </li>
             <li>一行代码插入行，同时返回可操作对象
                 <div class="code">
                     <span>obj = ${model_name}.objects.create(${all_args})</span>
                 </div>
+            </li>
+            <li>批量插入（高效）
+                <div class="code">
+                    <span class="notes">### 一次性全部插入</span>
+                    <span>${model_name}.objects.bulk_create([</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;${model_name}(${all_args}),</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;${model_name}(${all_args}),</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;${model_name}(${all_args}),</span>
+                    <span>])</span>
+                    <span class="notes">### 分批插入</span>
+                    <span>from itertools import islice</span>
+                    <span>batch_size = 100</span>
+                    <span>objs = (${model_name}(headline='Test %s' % i) for i in range(1000))</span>
+                    <span>while True:</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;batch = list(islice(objs, batch_size))</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;if not batch:</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break</span>
+                    <span>&nbsp;&nbsp;&nbsp;&nbsp;${model_name}.objects.bulk_create(batch, batch_size)</span>
+                </div>
+                <div class="remark">1、bulk_create 方法不会触发 pre_save 和 post_save 信号，既不会触发save()方法</div>
+                <div class="remark">2、不可用于多对多关系</div>
+                <div class="remark">3、可用 batch_size 关键字参数设置一次插入的行数</div>
+                <div class="remark">4、启用 ignore_conflicts 关键字参数会忽略插入任何不合格的约束条件的行</div>
+            </li>
+            <li>查找/新增
+                <div class="code">
+                    <span>obj, created = ${model_name}.objects.get_or_create(name='okk')</span>
+                    <span>obj, created = ${model_name}.objects.filter(name='okk').get_or_create(name='okk')</span>
+                </div>
+                <div class="remark">1、如果 obj 是新建的，则 created 为 True；否则为 False</div>
+                <div class="remark">2、可传入一个 defaults 参数，用于设置默认值，值为字典类型</div>
+                <div class="remark">3、为了避免生成重复记录，建议先过滤后查询新增</div>
+                <div class="remark">4、如果有一个名为 defaults 的字段，并且想在 get_or_create() 中使用它作为精确查询，使用 'defaults__exact'</div>
+                <div class="remark">5、请确保只在 POST 请求中使用它</div>
+            </li>
+            <li>更新/新增
+                <div class="code">
+                    <span>obj, created = ${model_name}.objects.update_or_create()</span>
+                </div>
+                <div class="remark">注意点参考 get_or_create </div>
             </li>
         </ol>
 
