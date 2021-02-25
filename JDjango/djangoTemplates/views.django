@@ -15,3 +15,5 @@ from django.contrib.auth.decorators import login_required
 # 内置模型
 from django.contrib.auth.models import User
 
+# 导入创建模型
+from .models import *

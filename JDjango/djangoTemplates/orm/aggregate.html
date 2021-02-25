@@ -30,9 +30,75 @@
                 </div>
                 <div class="remark">当与空的 QuerySet 一起使用时，聚合函数返回 None。例如，如果 QuerySet 不包含任何条目，Sum 聚合函数返回 None 而不是 0。一个例外是 Count，如果 QuerySet 为空，则返回 0。</div>
             </li>
-            <li>引用模型上字段的字符串【expressions】</li>
+            <li>平均值【Avg】
+                <div class="code">
+                    <span class="notes">### Avg(expression, output_field=None, distinct=False, filter=None, **extra)</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.annotate(numAvg=Avg('num'))</span>
+                    <span>avgNum: float = annotate_entries[0].numAvg</span>
+                </div>
+                <div class="remark">1、默认别名：fieldName__avg，fieldName 为原字段名</div>
+                <div class="remark">2、如果 distinct=True，Avg 返回非重复值的平均值。</div>
+                <div class="remark">3、如果输入是 int，则返回 float，否则与输入字段相同</div>
+            </li>
+            <li>计数【Count】
+                <div class="code">
+                    <span class="notes">### Count(expression, distinct=False, filter=None, **extra)</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.annotate(numCount=Count('num'))</span>
+                    <span>countNum: int = annotate_entries[0].numCount</span>
+                </div>
+                <div class="remark">1、默认别名：fieldName__count，fieldName 为原字段名</div>
+                <div class="remark">2、如果 distinct=True，Avg 返回非重复值的平均值。</div>
+                <div class="remark">3、返回类型：int</div>
+            </li>
+            <li>最大值【Max】
+                <div class="code">
+                    <span class="notes">### Max(expression, output_field=None, filter=None, **extra)</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.annotate(numMax=Max('num'))</span>
+                    <span>maxNum: object = annotate_entries[0].numMax</span>
+                </div>
+                <div class="remark">1、默认别名：fieldName__max，fieldName 为原字段名</div>
+                <div class="remark">2、返回类型：与输入字段相同</div>
+            </li>
+            <li>最小值【Min】
+                <div class="code">
+                    <span class="notes">### Min(expression, output_field=None, filter=None, **extra)</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.annotate(numMin=Min('num'))</span>
+                    <span>minNum: object = annotate_entries[0].numMin</span>
+                </div>
+                <div class="remark">1、默认别名：fieldName__min，fieldName 为原字段名</div>
+                <div class="remark">2、返回类型：与输入字段相同</div>
+            </li>
+            <li>标准差【StdDev】
+                <div class="code">
+                    <span class="notes">### StdDev(expression, output_field=None, sample=False, filter=None, **extra)</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.annotate(numStdDev=StdDev('num'))</span>
+                    <span>StdDevNum: object = annotate_entries[0].numStdDev</span>
+                </div>
+                <div class="remark">1、默认别名：fieldName__stddev，fieldName 为原字段名</div>
+                <div class="remark">2、返回类型。如果输入是 int，则返回 float，否则与输入字段相同</div>
+                <div class="remark">3、默认情况下，StdDev 返回总体标准差。 但是，如果 sample=True，则返回值为样本标准差。</div>
+            </li>
+            <li>求和【Sum】
+                <div class="code">
+                    <span class="notes">### Sum(expression, output_field=None, distinct=False, filter=None, **extra)</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.annotate(numSum=Sum('num'))</span>
+                    <span>sumNum: object = annotate_entries[0].numSum</span>
+                </div>
+                <div class="remark">1、默认别名：fieldName__sum，fieldName 为原字段名</div>
+                <div class="remark">2、返回类型：与输入字段相同</div>
+                <div class="remark">3、如果 distinct=True，则 Sum 返回非重复值的总和。</div>
+            </li>
+            <li>方差【Variance】
+                <div class="code">
+                    <span class="notes">### Variance(expression, output_field=None, sample=False, filter=None, **extra)</span>
+                    <span>annotate_entries: QuerySet = ${model_name}.objects.annotate(numVariance=Variance('num'))</span>
+                    <span>VarianceNum: object = annotate_entries[0].numVariance</span>
+                </div>
+                <div class="remark">1、默认别名：fieldName__variance，fieldName 为原字段名</div>
+                <div class="remark">2、返回类型。如果输入是 int，则返回 float，否则与输入字段相同</div>
+                <div class="remark">3、默认情况下， Variance 返回总体方差。 但是，如果 sample=True，则返回值将是样本方差。</div>
+            </li>
         </ol>
     </main>
 </body>
 </html>
-

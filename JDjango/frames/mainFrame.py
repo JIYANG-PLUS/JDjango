@@ -294,7 +294,7 @@ class Main(wx.Frame):
         self.views_fix = perFix.Append(wx.ID_ANY, "&视图", "视图")
         self.templates_fix = perFix.Append(wx.ID_ANY, "&模板", "模板")
         self.forms_fix = perFix.Append(wx.ID_ANY, "&表单", "表单")
-        self.models_fix = perFix.Append(wx.ID_ANY, "&修复", "修复")
+        self.models_fix = perFix.Append(wx.ID_ANY, "&模型", "模型")
         self.database_fix = perFix.Append(wx.ID_ANY, "&数据库", "数据库")
 
         # 三方应用集成

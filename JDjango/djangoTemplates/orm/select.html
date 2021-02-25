@@ -67,7 +67,7 @@
                 </div>
                 <div class="remark">exclude 参数使用参考 filter ，一模一样，不同的是查询结果完全相反</div>
             </li>
-            <li>子查询【IN】
+            <li>伪IN子查询【IN】
                 <div class="code">
                     <span>in_entries: dict = ${model_name}.objects.in_bulk(id_list=[1,2,3], field_name='pk')</span>
                 </div>
@@ -100,7 +100,7 @@
                     <span>obj2: QuerySet = OtherModel.objects.values_list('headline')</span>
                     <span>objs: QuerySet = obj1.union(obj2, ...).order_by('name')</span>
                 </div>
-                <div class="remark">有关 UNION 的注意点和 SQL 语法一致，以第一次连接的列名和类型为准</div>
+                <div class="remark">有关 UNION 的注意点和 SQL 语法一致，以第一个连接的列名和类型为准</div>
             </li>
             <li>交集【INTERSECT】
                 <div class="code">

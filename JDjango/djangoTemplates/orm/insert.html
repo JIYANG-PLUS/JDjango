@@ -52,7 +52,7 @@
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break</span>
                     <span>&nbsp;&nbsp;&nbsp;&nbsp;${model_name}.objects.bulk_create(batch, batch_size)</span>
                 </div>
-                <div class="remark">1、bulk_create 方法不会触发 pre_save 和 post_save 信号，既不会触发save()方法</div>
+                <div class="remark">1、bulk_create 方法不会触发 pre_save 和 post_save 信号，即不会触发save()方法</div>
                 <div class="remark">2、不可用于多对多关系</div>
                 <div class="remark">3、可用 batch_size 关键字参数设置一次插入的行数</div>
                 <div class="remark">4、启用 ignore_conflicts 关键字参数会忽略插入任何不合格的约束条件的行</div>
@@ -64,7 +64,7 @@
                 </div>
                 <div class="remark">1、如果 obj 是新建的，则 created 为 True；否则为 False</div>
                 <div class="remark">2、可传入一个 defaults 参数，用于设置默认值，值为字典类型</div>
-                <div class="remark">3、为了避免生成重复记录，建议先过滤后查询新增</div>
+                <div class="remark">3、为了避免生成重复记录，建议先过滤后查询新增，主要应对非主键字段重复的问题</div>
                 <div class="remark">4、如果有一个名为 defaults 的字段，并且想在 get_or_create() 中使用它作为精确查询，使用 'defaults__exact'</div>
                 <div class="remark">5、请确保只在 POST 请求中使用它</div>
             </li>
