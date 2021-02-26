@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOOLS</title>
+    <style>
+        * {margin: 0;padding: 0;box-sizing: border-box;}
+        main {margin: 12px 16px;}
+        ol {list-style-type: decimal;list-style-position: inside;}
+        ol > li {color: blue;font-size: 15px;margin-bottom: 12px;font-weight: 700;}
+        div.code {color: black;background: rgb(197, 238, 214);margin-top: 3px;padding: 6px 12px;font-size: 15px;font-weight: normal;}
+        div.code > span {display: block;margin: 3px 0;}
+        div.code > span::before {content: ">>>";margin-right: 8px;color: blue;}
+        .remark {color: red;font-size: 13px;margin-left: 8px;font-weight: normal;}
+        .remark::before {content: '*';color: red;margin-right: 8px;}
+        span.notes {color: rgb(172, 72, 218);font-weight: 700;font-size: 14px;margin: 6px 0;}
+    </style>
+</head>
+<body>
+    <main>
+        <ol>
+            <li>Q对象【复杂查询基础】
+                <div class="code">
+                    <span>from django.db.models import Q</span>
+                    <span class="notes">### 单个条件</span>
+                    <span>Q(question__startswith='What')</span>
+                    <span class="notes">### AND（&）</span>
+                    <span>Q(question__startswith='Who') & Q(pub_date__year=2005)</span>
+                    <span class="notes">### OR（|）</span>
+                    <span>Q(question__startswith='Who') | Q(question__startswith='What')</span>
+                    <span class="notes">### NOT（~）</span>
+                    <span>~Q(pub_date__year=2005)</span>
+                </div>
+                <div class="remark">1、一个Q对象表示一个SQL条件</div>
+                <div class="remark">2、Q对象的好处之一是可复用，之二是可进行相当复杂的查询</div>
+            </li>
+            <li>F对象【字段与字段的比较】
+                <div class="code">
+                    <span>from django.db.models import F</span>
+                    <span>from datetime import timedelta</span>
+                    <span>${model_name}.objects.filter(num1__gt=F('num2'))</span>
+                    <span>${model_name}.objects.filter(num1__gt=F('num2') * 2)</span>
+                    <span>${model_name}.objects.filter(rating__lt=F('num1') + F('num2'))</span>
+                    <span>${model_name}.objects.filter(authors__name=F('blog__name'))</span>
+                    <span>${model_name}.objects.filter(mod_date__gt=F('pub_date') + timedelta(days=3))</span>
+                    <span>F('somefield').bitand(16)</span>
+                </div>
+                <div class="remark">1、用于在同一模型实例中比较两个不同的字段</div>
+                <div class="remark">2、Django 支持对 F() 对象进行加、减、乘、除、求余和次方，另一操作数既可以是常量，也可以是其它 F() 对象</div>
+                <div class="remark">3、可以用双下划线在 F() 对象中通过关联关系查询。带有双下划线的 F() 对象将引入访问关联对象所需的任何连接</div>
+                <div class="remark">4、对于 date 和 date/time 字段，可以加上或减去一个 timedelta 对象</div>
+                <div class="remark">5、F() 对象通过 .bitand()， .bitor()， .bitxor()，.bitrightshift() 和 .bitleftshift() 支持位操作</div>
+                <div class="remark">6、F对象可解决数值更新的冲突问题</div>
+                <div class="remark">7、Oracle 不支持按位 XOR 操作；Django 3.1 添加对 .bitxor() 的支持</div>
+            </li>
+        </ol>
+    </main>
+</body>
+</html>
+

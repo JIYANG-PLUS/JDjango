@@ -97,7 +97,7 @@ class ORMDialog(wx.Dialog):
 
         if app_names:
             self.untouched.extend(app_names)
-            types = ['SELECT', 'INSERT', 'DELETE', 'UPDATE', 'FIELD', 'AGGREGATE', 'JOIN']
+            types = ['SELECT', 'INSERT', 'DELETE', 'UPDATE', 'JOIN', 'FIELD', 'AGGREGATE', 'TOOLS',]
             for app_name in app_names:
                 temp = self.tree.AppendItem(self.root, app_name)
                 models = djcmd.get_models_by_appname(app_name) # 通过应用程序名获取所有的模型名称
@@ -114,4 +114,4 @@ class ORMDialog(wx.Dialog):
         ])
 
         self.tree.Expand(self.root)
-        
+    

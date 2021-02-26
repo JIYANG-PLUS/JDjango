@@ -431,6 +431,8 @@ def get_orm_code(mode='select', *args, **kwargs):
         file_name = 'field.html'
     elif 'aggregate' == mode:
         file_name = 'aggregate.html'
+    elif 'tools' == mode:
+        file_name = 'tools.html'
     else:
         file_name = 'join.html'
     content = get_content(file_name, concat=['orm'], replace=True, **kwargs)
