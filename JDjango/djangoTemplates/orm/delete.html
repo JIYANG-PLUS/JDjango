@@ -23,7 +23,7 @@
         <ol>
             <li>删除
                 <div class="code">
-                    <span>delete_obj = Entry.objects.filter(pk=1).delete()</span>
+                    <span>delete_obj = ${model_name}.objects.filter(pk=1).delete()</span>
                 </div>
                 <div class="remark">1、不可在不可继续过滤的 QuerySet 上使用 delete()，如 get()</div>
                 <div class="remark">2、删除后返回删除的对象</div>
