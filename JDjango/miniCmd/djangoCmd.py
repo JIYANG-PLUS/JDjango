@@ -3,7 +3,7 @@ from ..tools._tools import *
 from ..tools._re import *
 from ..tools import environment as env
 from ..tools import models as models_env
-from ..settings import CONFIG_PATH, TEMPLATE_DIR
+from ..settings import CONFIG_PATH, TEMPLATE_DIR, COR_MIDDLEWARE
 from typing import Dict, List
 
 """
@@ -44,6 +44,9 @@ __all__ = [
     'fix_urls', # 修复路由
     'refresh_config', # 更新配置文件config.json
     'update_settings_DTATBASES', # 数据库引擎更换
+
+    'add_oneline_to_listattr', # 利用正则，向列表中加入一组元素
+    'pop_oneline_to_listattr',
     
 ]
 
@@ -90,15 +93,15 @@ def startproject(path: str, project_name: str)->None:
         new_file(os.path.join(PDir, 'settings.py'), content=get_content('settings.django', concat=['project'], replace=True, project_name=project_name))
         
         """templates"""
-        os.mkdir(os.path.join(path, 'templates'))
-        os.mkdir(os.path.join(path, 'templates', 'includes'))
-        new_file(os.path.join(path, 'templates', 'base.html'), content=get_content('baseHtml.django'))
+        # os.mkdir(os.path.join(path, 'templates'))
+        # os.mkdir(os.path.join(path, 'templates', 'includes'))
+        # new_file(os.path.join(path, 'templates', 'base.html'), content=get_content('baseHtml.django'))
 
         """static"""
-        os.mkdir(os.path.join(path, 'static'))
-        os.mkdir(os.path.join(path, 'static', 'js'))
-        os.mkdir(os.path.join(path, 'static', 'img'))
-        os.mkdir(os.path.join(path, 'static', 'css'))
+        # os.mkdir(os.path.join(path, 'static'))
+        # os.mkdir(os.path.join(path, 'static', 'js'))
+        # os.mkdir(os.path.join(path, 'static', 'img'))
+        # os.mkdir(os.path.join(path, 'static', 'css'))
 
         """manage.py"""
         new_file(os.path.join(path, 'manage.py'), content=get_content('manage.django', concat=['project'], replace=True, project_name=project_name))
@@ -128,26 +131,26 @@ def startapp(app_name: str)->None:
         """"""
         """""""""templates"""
         """"""
-        os.mkdir(os.path.join(APP_DIR, 'templates'))
-        os.mkdir(os.path.join(APP_DIR, 'templates', app_name))
-        os.mkdir(os.path.join(APP_DIR, 'templates', app_name, 'includes'))
-        TEMP_DIR = os.path.join(APP_DIR, 'templates', app_name)
-        new_file(os.path.join(TEMP_DIR, 'base.html'), content=get_content('baseHtml.django'))
-        new_file(os.path.join(TEMP_DIR, 'includes', 'paginator.html'), content=get_content('paginator.django'))
+        # os.mkdir(os.path.join(APP_DIR, 'templates'))
+        # os.mkdir(os.path.join(APP_DIR, 'templates', app_name))
+        # os.mkdir(os.path.join(APP_DIR, 'templates', app_name, 'includes'))
+        # TEMP_DIR = os.path.join(APP_DIR, 'templates', app_name)
+        # new_file(os.path.join(TEMP_DIR, 'base.html'), content=get_content('baseHtml.django'))
+        # new_file(os.path.join(TEMP_DIR, 'includes', 'paginator.html'), content=get_content('paginator.django'))
         """"""
         """""""""static"""
         """"""
-        os.mkdir(os.path.join(APP_DIR, 'static'))
-        os.mkdir(os.path.join(APP_DIR, 'static', app_name))
-        os.mkdir(os.path.join(APP_DIR, 'static', app_name, 'js'))
-        os.mkdir(os.path.join(APP_DIR, 'static', app_name, 'img'))
-        os.mkdir(os.path.join(APP_DIR, 'static', app_name, 'css'))
+        # os.mkdir(os.path.join(APP_DIR, 'static'))
+        # os.mkdir(os.path.join(APP_DIR, 'static', app_name))
+        # os.mkdir(os.path.join(APP_DIR, 'static', app_name, 'js'))
+        # os.mkdir(os.path.join(APP_DIR, 'static', app_name, 'img'))
+        # os.mkdir(os.path.join(APP_DIR, 'static', app_name, 'css'))
         """"""
         """""""""templatetags"""
         """"""
-        os.mkdir(os.path.join(APP_DIR, 'templatetags'))
-        new_file(os.path.join(APP_DIR, 'templatetags', '__init__.py'))
-        new_file(os.path.join(APP_DIR, 'templatetags', 'filter.py'), content=get_content('filter.django'))
+        # os.mkdir(os.path.join(APP_DIR, 'templatetags'))
+        # new_file(os.path.join(APP_DIR, 'templatetags', '__init__.py'))
+        # new_file(os.path.join(APP_DIR, 'templatetags', 'filter.py'), content=get_content('filter.django'))
         """"""
         """""""""migrations"""
         """"""
@@ -249,6 +252,16 @@ def get_urlpatterns_content(path: str)->str:
     else:
         return ''
 
+def get_list_patt_content(patt, path: str)->str:
+    """通过正则获取列表内容区域"""
+    content = read_file(path)
+    obj = patt.search(content)
+    if obj:
+        complex_content = patt.findall(content)[0]
+        return cut_content_by_doublecode(complex_content)
+    else:
+        return ''
+
 def get_app_rooturl_config_by_appname(appname: str)->str:
     """"通过app名称获取跟路由路径下的路由配置"""
     CONFIG = get_configs(CONFIG_PATH)
@@ -346,6 +359,22 @@ def fix_urls(app_url: str)->None:
     # 覆盖写入
     write_file(root_urlspy, content=replace_text)
 
+def add_oneline_to_listattr(setting_path: str, patt, idata: str, indent: int=4)->None:
+    """向列表变量添加行"""
+    content = get_list_patt_content(PATT_MIDDLEWARE, setting_path)
+    insert_data = " " * indent + f"{idata},\n"
+    new_content = f"{content}{insert_data}"
+    
+    write_file(setting_path, read_file(setting_path).replace(content, new_content))
+
+def pop_oneline_to_listattr(setting_path: str, patt, idata: str, indent: int=4)->None:
+    """向列表变量添加行"""
+    content = get_list_patt_content(PATT_MIDDLEWARE, setting_path)
+    insert_data = " " * indent + f"{idata},\n"
+    new_content = content.replace(insert_data, '')
+    
+    write_file(setting_path, read_file(setting_path).replace(content, new_content))
+
 def refresh_config()->None:
     """初始化配置文件"""
     PROJECT_CONFIG = get_configs(CONFIG_PATH)
@@ -374,6 +403,7 @@ def refresh_config()->None:
     temp_configs['ALLOWED_HOSTS'] = settings.get("ALLOWED_HOSTS") # 允许连接ip
     temp_configs['X_FRAME_OPTIONS'] = settings.get("X_FRAME_OPTIONS") # 是否开启iframe
     temp_configs['SECRET_KEY'] = settings.get("SECRET_KEY") # SECRET_KEY
+    temp_configs['CORS_ORIGIN_ALLOW_ALL'] = settings.get("CORS_ORIGIN_ALLOW_ALL") # 跨域
     temp_templates_app = settings.get("TEMPLATES")
     if temp_templates_app and len(temp_templates_app) > 0:
         try:

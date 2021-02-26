@@ -1006,6 +1006,7 @@ class Main(wx.Frame):
         configs['ALLOWED_HOSTS'] = settings.get("ALLOWED_HOSTS") # 允许连接ip
         configs['X_FRAME_OPTIONS'] = settings.get("X_FRAME_OPTIONS") # 是否开启iframe
         configs['SECRET_KEY'] = settings.get("SECRET_KEY") # SECRET_KEY
+        configs['CORS_ORIGIN_ALLOW_ALL'] = settings.get("CORS_ORIGIN_ALLOW_ALL") # 跨域
         temp_templates_app = settings.get("TEMPLATES")
         if temp_templates_app and len(temp_templates_app) > 0:
             try:

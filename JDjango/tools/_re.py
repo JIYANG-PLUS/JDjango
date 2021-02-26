@@ -5,6 +5,7 @@ __all__ = [
     # 属性
     'PATT_BASE_DIR',
     'PATT_INSTALLED_APPS',
+    'PATT_MIDDLEWARE',
     'PATT_SECRET_KEY',
     'PATT_DEBUG',
     'PATT_ALLOWED_HOSTS',
@@ -14,6 +15,7 @@ __all__ = [
     'PATT_USE_I18N',
     'PATT_USE_L10N',
     'PATT_USE_TZ',
+    'PATT_CORS_ORIGIN_ALLOW_ALL',
     'PATT_CHARS',
     'PATT_CHARSNUMBER',
     'PATT_REPLACE',
@@ -35,6 +37,7 @@ __all__ = [
 
 PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
 PATT_INSTALLED_APPS = re.compile(r"(?ms:INSTALLED_APPS\s.*?=\s.*?\[.*?\])")
+PATT_MIDDLEWARE = re.compile(r"(?ms:MIDDLEWARE\s.*?=\s.*?\[.*?\])")
 PATT_SECRET_KEY = re.compile(r"SECRET_KEY\s*=\s*[\'\"](.*?)[\'\"]")
 PATT_DEBUG = re.compile(r"DEBUG\s*=\s*(False|True)")
 PATT_ALLOWED_HOSTS = re.compile(r"ALLOWED_HOSTS\s*=\s*\[([\'\"]*.*?[\'\"]*)\]")
@@ -44,6 +47,7 @@ PATT_TIME_ZONE = re.compile(r"TIME_ZONE\s*=\s*'(.*?)'")
 PATT_USE_I18N = re.compile(r"USE_I18N\s*=\s*(False|True)")
 PATT_USE_L10N = re.compile(r"USE_L10N\s*=\s*(False|True)")
 PATT_USE_TZ = re.compile(r"USE_TZ\s*=\s*(False|True)")
+PATT_CORS_ORIGIN_ALLOW_ALL = re.compile(r"CORS_ORIGIN_ALLOW_ALL\s*=\s*(False|True)")
 PATT_CHARS = re.compile(r'^[a-zA-Z_]*$')
 PATT_CHARS_REVERSED = re.compile(r'[^a-zA-Z_]+')
 PATT_DIGITS_WHOLE = re.compile(r'^[1-9][0-9]*$')

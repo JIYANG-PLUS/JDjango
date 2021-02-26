@@ -8,6 +8,8 @@ DEFAULT_CHARSET = 'utf-8'
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ORIGIN_ALLOW_ALL = False
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

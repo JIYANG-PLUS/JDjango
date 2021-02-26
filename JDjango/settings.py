@@ -8,6 +8,9 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates')
 CMD_DIR = os.path.join(BASE_DIR, 'miniCmd')
 PRINT_PATH = os.path.join(BASE_DIR, 'tools', 'print_console.py')
 
+"""跨域中间件"""
+COR_MIDDLEWARE = "'corsheaders.middleware.CorsMiddleware'"
+
 """超文本文档路径"""
 LOCAL_DOCS_PATH = os.path.join(BASE_DIR, 'docs', 'all', 'html')
 

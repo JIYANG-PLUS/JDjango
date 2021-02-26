@@ -3,7 +3,7 @@ import wx.lib.buttons as buttons
 from wx.lib import scrolledpanel
 from ..tools._tools import *
 from ..tools._re import *
-from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS
+from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS, COR_MIDDLEWARE
 from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
@@ -464,6 +464,15 @@ class SettingsDialog(wx.Dialog):
         # MEDIA_URL
 
         # MEDIA_ROOT
+
+        # 跨域 CORS_ORIGIN_ALLOW_ALL  第三方库 django-cors-headers
+        otherCorsOriginAllowAllPanel = wx.Panel(self.otherPanel)
+        otherCorsOriginAllowAllBOX = wx.BoxSizer(wx.HORIZONTAL)
+        otherCorsOriginAllowAllPanel.SetSizer(otherCorsOriginAllowAllBOX)
+        otherPanelSizer.Add(otherCorsOriginAllowAllPanel, 0, wx.EXPAND | wx.ALL, 2)
+        
+        self.radiosCorsOriginAllowAllPanel = wx.RadioBox(otherCorsOriginAllowAllPanel, -1, "跨域请求", choices=['开启', '关闭'])
+        otherCorsOriginAllowAllBOX.Add(self.radiosCorsOriginAllowAllPanel, 1, wx.EXPAND | wx.ALL, 2)
         
         # iframe
         otherIframePanel = wx.Panel(self.otherPanel)
@@ -483,6 +492,7 @@ class SettingsDialog(wx.Dialog):
         self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseI18NPanel)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseL10NPanel)
         self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseTzPanel)
+        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosCorsOriginAllowAllPanel)
 
     def _init_databases(self):
         """databases页面布局"""
@@ -703,7 +713,7 @@ class SettingsDialog(wx.Dialog):
             _.Show(True)
 
     def onChoiceDatabase(self, e):
-        """选择要新建的字段类型"""
+        """选择数据库类型"""
         database_type = e.GetString().strip()
 
         self._unshow_special_control() # 先隐藏，后按需打开
@@ -807,6 +817,7 @@ class SettingsDialog(wx.Dialog):
         self.radiosUseTzPanel.SetSelection(0 if CONFIGS['USE_TZ'] else 1)
         self.inputRefreshSecretKey.SetValue(CONFIGS['SECRET_KEY'])
         self.inputAllowedHosts.SetValue(','.join(CONFIGS['ALLOWED_HOSTS']))
+        self.radiosCorsOriginAllowAllPanel.SetSelection(0 if CONFIGS['CORS_ORIGIN_ALLOW_ALL'] else 1)
 
         # 重命名
         self.inputProjectName.SetValue(self.configs['project_name'])
@@ -844,6 +855,8 @@ class SettingsDialog(wx.Dialog):
                 temp = patt_sub_only_capture_obj(PATT_USE_L10N, self.DATA_SETTINGS['USE_L10N'], temp)
             if None != self.DATA_SETTINGS.get('USE_TZ'):
                 temp = patt_sub_only_capture_obj(PATT_USE_TZ, self.DATA_SETTINGS['USE_TZ'], temp)
+            if None != self.DATA_SETTINGS.get('CORS_ORIGIN_ALLOW_ALL'):
+                temp = patt_sub_only_capture_obj(PATT_CORS_ORIGIN_ALLOW_ALL, self.DATA_SETTINGS['CORS_ORIGIN_ALLOW_ALL'], temp)
             if None != self.DATA_SETTINGS.get('X_FRAME_OPTIONS'):
                 if self.DATA_SETTINGS['X_FRAME_OPTIONS']: # 开启
                     if not CONFIGS['X_FRAME_OPTIONS']: # 且原文件不存在
@@ -866,6 +879,18 @@ class SettingsDialog(wx.Dialog):
             temp = patt_sub_only_capture_obj_obtain_double(PATT_ALLOWED_HOSTS, ','.join(host_contents), temp)
 
             write_file(self.DIRSETTINGS, temp) # 更新settings.py文件
+
+            # 跨域中间件介入
+            if 'True' == self.DATA_SETTINGS.get('CORS_ORIGIN_ALLOW_ALL'): # 开启时写入中间件
+                add_oneline_to_listattr(self.DIRSETTINGS, PATT_MIDDLEWARE, COR_MIDDLEWARE)
+                # 开进程，安装必须库
+                module_name = 'django-cors-headers'
+                import subprocess
+                env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
+                subprocess.Popen(f'{env_python3_pip} install {module_name}', shell=True)
+            else:
+                pop_oneline_to_listattr(self.DIRSETTINGS, PATT_MIDDLEWARE, COR_MIDDLEWARE)
+
             refresh_config() # 更新配置文件【重要且必须！！！】
 
             self.DATA_SETTINGS = {} # 防止重复确定，重要！！！
@@ -949,6 +974,8 @@ class SettingsDialog(wx.Dialog):
             self.DATA_SETTINGS['USE_L10N'] = 'True' if 0 == self.radiosUseL10NPanel.GetSelection() else 'False'
         elif key == self.radiosUseTzPanel.GetId(): # USE_TZ
             self.DATA_SETTINGS['USE_TZ'] = 'True' if 0 == self.radiosUseTzPanel.GetSelection() else 'False'
+        elif key == self.radiosCorsOriginAllowAllPanel.GetId(): # CORS_ORIGIN_ALLOW_ALL
+            self.DATA_SETTINGS['CORS_ORIGIN_ALLOW_ALL'] = 'True' if 0 == self.radiosCorsOriginAllowAllPanel.GetSelection() else 'False'
         
     def onBtnRefreshSecretKey(self, e):
         """刷新SECRET_KEY"""
