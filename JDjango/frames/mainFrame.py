@@ -225,6 +225,11 @@ class Main(wx.Frame):
         menus.Append(wx.ID_ANY, "&Django项目", menusProject)
         menus.AppendSeparator()
 
+        adminPFProject = wx.Menu()
+        self.simpleui = adminPFProject.Append(wx.ID_ANY, "&simpleui", "simpleui")
+        menus.Append(wx.ID_ANY, "&Admin皮肤切换", adminPFProject)
+        menus.AppendSeparator()
+
         settings = wx.Menu()
         fonts = wx.Menu()
         self.fonts_minus = fonts.Append(wx.ID_ANY, "&-1", "-1")
@@ -275,15 +280,23 @@ class Main(wx.Frame):
         self.portProgressCollectstatic = djangoOrder.Append(wx.ID_ANY, "&collectstatic（静态文件收集）", "collectstatic（静态文件收集）")
         self.portProgressCreatesuperuser = djangoOrder.Append(wx.ID_ANY, "&createsupersuer（创建管理员）", "createsupersuer（创建管理员）")
         portProgress.Append(wx.ID_ANY, "&原生指令", djangoOrder)
+
         portProgress.AppendSeparator()
+
         kfenv = wx.Menu()
         restFramework = wx.Menu()
         self.djangorestframework = restFramework.Append(wx.ID_ANY, "&djangorestframework", "djangorestframework")
         self.markdown = restFramework.Append(wx.ID_ANY, "&markdown", "markdown")
         self.django_filter = restFramework.Append(wx.ID_ANY, "&django-filter", "django-filter")
-        kfenv.Append(wx.ID_ANY, "&django-rest-framework", restFramework)
-        portProgress.Append(wx.ID_ANY, "&开发环境安装", kfenv)
+        self.drf_generators = restFramework.Append(wx.ID_ANY, "&drf-generators", "drf-generators")
+        kfenv.Append(wx.ID_ANY, "&三方库安装", restFramework)
+        self.registerkfenvRest = kfenv.Append(wx.ID_ANY, "&注册rest_framework", "注册rest_framework")
+        self.registerkfenvDrf = kfenv.Append(wx.ID_ANY, "&注册drf_generators", "注册drf_generators")
+        self.registerkfenvAll = kfenv.Append(wx.ID_ANY, "&一键全部注册", "一键全部注册")
+        portProgress.Append(wx.ID_ANY, "&路由集成", kfenv)
+
         portProgress.AppendSeparator()
+
         progresser = wx.Menu()
         self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
         portProgress.Append(wx.ID_ANY, "&进程", progresser)
@@ -323,8 +336,12 @@ class Main(wx.Frame):
         # 视图
         self.allInitBtns['views'][CON_CONTROL_CREATE].extend([
             self.viewsGenerateFunc, 
+
             self.menuVSCode, # 暂时将VSCode打开的按钮放这里控制流程
             self.helpsORM, # 暂时将orm放在这里参与流程控制
+            self.registerkfenvRest,
+            self.registerkfenvDrf,
+            self.registerkfenvAll,
         ])
         self.allInitBtns['views'][CON_CONTROL_CHECK].append(self.views_check)
         self.allInitBtns['views'][CON_CONTROL_FIX].append(self.views_fix)
@@ -453,9 +470,44 @@ class Main(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onPortProgressPipFreeze, self.portProgressPipFreeze) 
         self.Bind(wx.EVT_MENU, self.onPortProgressCollectstatic, self.portProgressCollectstatic) 
         self.Bind(wx.EVT_MENU, self.onPortProgressVirtualView, self.portProgressVirtualView) 
+        self.Bind(wx.EVT_MENU, self.onDjangorestframework, self.djangorestframework) 
+        self.Bind(wx.EVT_MENU, self.onMarkdown, self.markdown) 
+        self.Bind(wx.EVT_MENU, self.onDjango_filter, self.django_filter) 
+        self.Bind(wx.EVT_MENU, self.onSimpleui, self.simpleui) 
+        self.Bind(wx.EVT_MENU, self.onRegisterkfenvRest, self.registerkfenvRest) 
+        self.Bind(wx.EVT_MENU, self.onRegisterkfenvDrf, self.registerkfenvDrf) 
+        self.Bind(wx.EVT_MENU, self.onRegisterkfenvAll, self.registerkfenvAll) 
 
         # 退出 事件绑定
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit)
+
+    def onRegisterkfenvRest(self, e):
+        """注册rest_framework"""
+        TipsMessageOKBox(self, "功能正在实现中", '提示')
+
+    def onRegisterkfenvDrf(self, e):
+        """注册drf_generators"""
+        TipsMessageOKBox(self, "功能正在实现中", '提示')
+
+    def onRegisterkfenvAll(self, e):
+        """一键全部注册rest_framework、drf_generators"""
+        TipsMessageOKBox(self, "功能正在实现中", '提示')
+
+    def onSimpleui(self, e):
+        """admin皮肤切换"""
+        TipsMessageOKBox(self, "功能正在实现中", '提示')
+
+    def onDjango_filter(self, e):
+        """pip install django-filter"""
+        TipsMessageOKBox(self, "功能正在实现中", '提示')
+
+    def onMarkdown(self, e):
+        """pip install markdown"""
+        TipsMessageOKBox(self, "功能正在实现中", '提示')
+
+    def onDjangorestframework(self, e):
+        """pip install djangorestframework"""
+        TipsMessageOKBox(self, "功能正在实现中", '提示')
 
     def onHelpsORM(self, e):
         """ORM帮助（一键生成）"""

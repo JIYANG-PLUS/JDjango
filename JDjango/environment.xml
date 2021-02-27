@@ -6,7 +6,7 @@
     </page>
 
     <env>
-        <platform>Windows</platform>
+        <platform>Darwin</platform>
         <python3>/Users/jiyang/Desktop/testEnv/bin/python</python3>
         <port>8868</port>
         <encoding>

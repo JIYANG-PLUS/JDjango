@@ -78,7 +78,6 @@ class EnvParser:
         else:
             raise PathNotFoundException('路径不存在。')
 
-
     def get_node_text(self, node):
         """获取节点文本"""
         return node.text
@@ -222,4 +221,3 @@ def killProgress(port = None):
         pass
     else: # 其他系统
         raise Exception('UnKnown system.')
-
