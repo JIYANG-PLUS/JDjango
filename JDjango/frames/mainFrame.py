@@ -66,11 +66,11 @@ class Main(wx.Frame):
             try:
                 self.dirname = get_configs(CONFIG_PATH)['dirname']
             except:
-                self.infos.AppendText(out_infos('历史项目失效！', level=3))
+                self.infos.AppendText(out_infos('历史项目失效，已被移除，请重新选择！', level=3))
                 return
             else:
                 if not os.path.exists(self.dirname):
-                    self.infos.AppendText(out_infos('历史项目失效！', level=3))
+                    self.infos.AppendText(out_infos('历史项目失效，已被移除，请重新选择！', level=3))
                     return
                 if 'manage.py' in os.listdir(self.dirname):
                     self.path.SetValue(f'当前项目路径：{self.dirname}')
@@ -87,7 +87,7 @@ class Main(wx.Frame):
                         # self.path.Clear()
                         self.infos.AppendText(out_infos(f'项目{os.path.basename(self.dirname)}导入成功！', level=1))
                 else:
-                    self.infos.AppendText(out_infos('历史项目失效！', level=3))
+                    self.infos.AppendText(out_infos('历史项目失效，已被移除，请重新选择！', level=3))
 
     def _init_control_btn(self):
         """初始化功能按钮控制器"""
@@ -196,6 +196,7 @@ class Main(wx.Frame):
         menus.AppendSeparator() # --
         self.menuVSCode = menus.Append(wx.ID_ANY, "&使用VSCode打开项目", "使用VSCode打开项目")
         menus.AppendSeparator() # --
+
         menusCreate = wx.Menu()
         menusCreateVersionProject =  wx.Menu()
         self.create_project_1_10_0 = menusCreateVersionProject.Append(wx.ID_ANY, "&Django1.10.0", "Django1.10.0")
@@ -204,6 +205,7 @@ class Main(wx.Frame):
         menusCreate.AppendSeparator()
         self.menuGenerate = menusCreate.Append(wx.ID_ANY, "&应用程序", "应用程序")
         menusCreate.AppendSeparator()
+
         modelsSubMenu = wx.Menu()
         self.modelsGenerate = modelsSubMenu.Append(wx.ID_ANY, "&完整模型", "完整模型")
         self.modelsProxyGenerate = modelsSubMenu.Append(wx.ID_ANY, "&代理模型", "代理模型")
@@ -211,25 +213,29 @@ class Main(wx.Frame):
         menusCreate.AppendSeparator()
         self.viewsGenerateFunc = menusCreate.Append(wx.ID_ANY, "&视图", "视图")
         self.create_project.Enable(True)
+        menusCreate.AppendSeparator()
+        self.viewsRestFramework = menusCreate.Append(wx.ID_ANY, "&rest-framework", "rest-framework")
         menus.Append(wx.ID_ANY, "&新建", menusCreate)
         menus.AppendSeparator()
+
         menusProject = wx.Menu()
         self.menusSettings = menusProject.Append(wx.ID_ANY, "&Settings", "Settings")
         self.allInitBtns['global'][CON_CONTROL_OTHER].append(self.menusSettings)
         self.menusSettings.Enable(False)
         menus.Append(wx.ID_ANY, "&Django项目", menusProject)
-        menus.AppendSeparator() # --
+        menus.AppendSeparator()
+
         settings = wx.Menu()
         fonts = wx.Menu()
         self.fonts_minus = fonts.Append(wx.ID_ANY, "&-1", "-1")
         self.fonts_add = fonts.Append(wx.ID_ANY, "&+1", "+1")
         settings.Append(wx.ID_ANY, "&字体", fonts)
-        settings.AppendSeparator() # --
+        settings.AppendSeparator()
         self.language = settings.Append(wx.ID_ANY, "&语言", "语言")
-        settings.AppendSeparator() # --
+        settings.AppendSeparator()
         self.sqliteManageTool = settings.Append(wx.ID_ANY, "&SQLite3", "SQLite3")
         menus.Append(wx.ID_ANY, "&工具", settings)
-        
+
         # 帮助 菜单项
         helps = wx.Menu()
         self.helpsORM = helps.Append(wx.ID_ANY, "&ORM一键生成", "ORM一键生成")
@@ -269,6 +275,14 @@ class Main(wx.Frame):
         self.portProgressCollectstatic = djangoOrder.Append(wx.ID_ANY, "&collectstatic（静态文件收集）", "collectstatic（静态文件收集）")
         self.portProgressCreatesuperuser = djangoOrder.Append(wx.ID_ANY, "&createsupersuer（创建管理员）", "createsupersuer（创建管理员）")
         portProgress.Append(wx.ID_ANY, "&原生指令", djangoOrder)
+        portProgress.AppendSeparator()
+        kfenv = wx.Menu()
+        restFramework = wx.Menu()
+        self.djangorestframework = restFramework.Append(wx.ID_ANY, "&djangorestframework", "djangorestframework")
+        self.markdown = restFramework.Append(wx.ID_ANY, "&markdown", "markdown")
+        self.django_filter = restFramework.Append(wx.ID_ANY, "&django-filter", "django-filter")
+        kfenv.Append(wx.ID_ANY, "&django-rest-framework", restFramework)
+        portProgress.Append(wx.ID_ANY, "&开发环境安装", kfenv)
         portProgress.AppendSeparator()
         progresser = wx.Menu()
         self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
