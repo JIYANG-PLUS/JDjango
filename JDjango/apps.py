@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import wx
 
-from .frames.mainFrame import Main
+from .frames.mainFrame import MainFrameFinalGUI
 from .frames.sqliteFrame import SQLiteManageFrame
 from .frames.digitsRecognitionFrame import DigitRecognitionFrame
 from .frames.encryptionFrame import EncryptionFrame
@@ -12,7 +12,7 @@ class App(wx.App):
         wx.App.__init__(self, redirect, filename, useBestVisual, clearSigInt)
 
     def OnInit(self):
-        self.frame = Main()
+        self.frame = MainFrameFinalGUI()
         self.frame.SetWindowStyle(wx.DEFAULT_FRAME_STYLE) #  | wx.FRAME_TOOL_WINDOW
         self.frame.Show(True)
         self.SetTopWindow(self.frame)

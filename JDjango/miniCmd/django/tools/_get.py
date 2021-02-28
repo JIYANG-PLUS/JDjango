@@ -1,15 +1,7 @@
-import os, json, glob, string
-from ....tools._tools import *
-from ....tools._re import *
-from ....tools import environment as env
-from ....tools import models as models_env
-from ....settings import CONFIG_PATH, TEMPLATE_DIR, COR_MIDDLEWARE
-from typing import Dict, List
-
-from ..exceptions import *
 from .common import *
 
 __all__ = [
+
     'get_views_base_func', # 获取未改动的函数视图模板内容
     'get_views_base_class', # 获取未改动的类视图模板内容
     'get_site_header', # 获取后台站点登录名
@@ -22,6 +14,7 @@ __all__ = [
     'get_orm_code', # 获得orm模板批量生成示例
 
     'judge_in_main_urls', # 判断应用程序是否均在urls.py中注册
+    
 ]
 
 def get_all_apps_name()->List[str]:
@@ -53,7 +46,7 @@ def get_site_title()->List[str]:
     return options
 
 def get_app_rooturl_config_by_appname(appname: str)->str:
-    """"通过app名称获取跟路由路径下的路由配置"""
+    """"通过app名称获取根路由路径下的路由配置"""
     CONFIG = get_configs(CONFIG_PATH)
     # 获取路由别名
     alias = [os.path.basename(_) for _ in env.getUrlsAlias()]
