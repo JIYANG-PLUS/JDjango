@@ -1,17 +1,15 @@
 {
-    "dirname": "/Users/jiyang/Desktop/HHH",
-    "project_name": "HHH",
-    "app_names": [
-        "ffhghg"
-    ],
+    "dirname": "C:\\Users\\PC\\Desktop\\JIYANG",
+    "project_name": "JIYANG",
+    "app_names": [],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Desktop/HHH/db.sqlite3"
+            "NAME": "C:\\Users\\PC\\Desktop\\JIYANG\\db.sqlite3"
         }
     },
     "DEBUG": true,
-    "LANGUAGE_CODE": "en-us",
+    "LANGUAGE_CODE": "zh-Hans",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
@@ -25,6 +23,6 @@
     "CORS_ORIGIN_ALLOW_ALL": false,
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "/Users/jiyang/Desktop/HHH/templates"
+        "C:\\Users\\PC\\Desktop\\JIYANG\\templates"
     ]
 }

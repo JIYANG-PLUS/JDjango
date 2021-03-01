@@ -1,4 +1,4 @@
-from .funcs import *
+from .events import *
 
 """
 作用：界面以及功能的展示和补充

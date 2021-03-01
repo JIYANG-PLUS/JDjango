@@ -841,6 +841,14 @@ class SettingsDialog(wx.Dialog):
             self.labelRecentDatabase.SetLabel(self.labelRecentDatabase.GetLabel()+n_engine)
         self.choiceDatabase.SetSelection(0)
 
+    @property
+    def _check_env_exist(self)->bool:
+        """检测虚拟环境是否存在"""
+        env_path = env.getPython3Env()
+        if '' == env_path.strip() or not os.path.exists(env_path):
+            return False
+        return True
+
     def onBtnSaveConfig(self, e):
         """保存修改"""
         try:
@@ -882,6 +890,11 @@ class SettingsDialog(wx.Dialog):
 
             # 跨域中间件介入
             if 'True' == self.DATA_SETTINGS.get('CORS_ORIGIN_ALLOW_ALL'): # 开启时写入中间件
+                # 检测是否正确配置虚拟环境
+                if not self._check_env_exist:
+                    wx.MessageBox(f'虚拟环境未绑定，或绑定失败！（仅跨域请求更新失败）', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+                    return
+
                 add_oneline_to_listattr(self.DIRSETTINGS, PATT_MIDDLEWARE, COR_MIDDLEWARE)
                 # 开进程，安装必须库
                 module_name = 'django-cors-headers'

@@ -30,7 +30,7 @@ SETTINGSS = {
     },
     'TIME_ZONE' : {
         0 : ('UTC',), # 伦敦时区
-        1 : ('Asia/Shanghai',), # 北京时区 
+        1 : ('Asia/Shanghai',), # 上海时区 
         2 : ('America/Chicago',), # 美国芝加哥
     },
 }

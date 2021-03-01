@@ -1,7 +1,7 @@
-from .base import *
+from .basedata import *
 
 """
-作用：布局
+    作用：布局
 """
 
 class MainFrameGUI(wx.Frame, BaseData):
@@ -36,6 +36,9 @@ class MainFrameGUI(wx.Frame, BaseData):
         panelSizer.Add(self.midPanel, 1, wx.EXPAND | wx.ALL, 3)
         self.midPanel.SetBackgroundColour(CON_COLOR_WHITE)
 
+        '''
+            自定义工具条
+        '''
         self._init_self_tools()
 
         '''
@@ -73,7 +76,9 @@ class MainFrameGUI(wx.Frame, BaseData):
         self.menuOpen = menus.Append(wx.ID_OPEN, "&查看文件", "查看文件")
 
         self._append_separator(menus)
-        self.menuVSCode = menus.Append(wx.ID_ANY, "&使用VSCode打开项目", "使用VSCode打开项目")
+        menusOpenDjango = wx.Menu()
+        menus.Append(wx.ID_ANY, "&打开", menusOpenDjango)
+        self.menuVSCode = menusOpenDjango.Append(wx.ID_ANY, "&使用VSCode打开项目", "使用VSCode打开项目")
 
         self._append_separator(menus)
         menusCreate = wx.Menu()
@@ -106,9 +111,9 @@ class MainFrameGUI(wx.Frame, BaseData):
 
         self.menusSettings = menusProject.Append(wx.ID_ANY, "&Settings", "Settings")
         
-        self._append_separator(menus)
+        self._append_separator(menusProject)
         adminPFProject = wx.Menu()
-        menus.Append(wx.ID_ANY, "&Admin皮肤切换", adminPFProject)
+        menusProject.Append(wx.ID_ANY, "&Admin皮肤切换", adminPFProject)
 
         self.simpleui = adminPFProject.Append(wx.ID_ANY, "&simpleui", "simpleui")
         
@@ -288,9 +293,6 @@ class MainFrameGUI(wx.Frame, BaseData):
         self.btn_select_project = buttons.GenButton(toolLeftPanel, -1, label='选择Django项目')
         toolLeftPanelSizer.Add(self.btn_select_project, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.btn_clear_text = buttons.GenButton(toolLeftPanel, -1, label='清空')
-        toolLeftPanelSizer.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 2)
-
         self.btn_check_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]校验')
         toolLeftPanelSizer.Add(self.btn_check_project, 0, wx.EXPAND | wx.ALL, 2)
 
@@ -299,6 +301,9 @@ class MainFrameGUI(wx.Frame, BaseData):
 
         self.btn_config_project = buttons.GenButton(toolLeftPanel, -1, label='选项/修改')
         toolLeftPanelSizer.Add(self.btn_config_project, 0, wx.EXPAND | wx.ALL, 2)
+
+        self.btn_clear_text = buttons.GenButton(toolLeftPanel, -1, label='清空')
+        toolLeftPanelSizer.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 2)
 
         self.btn_docs = buttons.GenButton(toolLeftPanel, -1, label='文档')
         toolLeftPanelSizer.Add(self.btn_docs, 0, wx.EXPAND | wx.ALL, 2)

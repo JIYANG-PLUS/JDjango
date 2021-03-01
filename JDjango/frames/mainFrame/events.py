@@ -293,8 +293,6 @@ class MainFrameFuncs(MainFrameListener):
             wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
             return
 
-        # 检查二：项目路径是否正确（此处可省略，此步骤前已经多处检查）
-
         import subprocess
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         port = env.getDjangoRunPort()

@@ -1,7 +1,7 @@
 from .common import *
 
 """
-作用：基础数据
+    作用：基础数据
 """
 
 class BaseData:
@@ -10,8 +10,8 @@ class BaseData:
 
         self.cmdCodes = [] # 所有的控制台指令（用于监听是否结束）
         self.info_cmdCodes = {} # 用于对照输出指令提示信息
-        self.allInitBtns = {} # 所有需要控制的按钮
 
+        self.allInitBtns = {} # 所有需要控制的按钮
         self._init_control_btn() # 初始化运行时控制按钮
 
         # 独立于初始化之外的其它变量（检测和修复功能专用）
