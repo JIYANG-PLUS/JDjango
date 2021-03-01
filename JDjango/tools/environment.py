@@ -1,7 +1,8 @@
 import os, re
 import xml.etree.ElementTree as ET
 from typing import Any, List
-from ..settings import BASE_DIR, ENV_PATH
+from ..settings import BASE_DIR, ENV_PATH, CONFIG_PATH
+from ._tools import *
 
 class XMLFileParserException(Exception): pass
 class PathNotFoundException(Exception): pass
@@ -194,6 +195,12 @@ def getConflictFieldsName():
     """获取冲突列表里的字段名集合"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('conflict-list/field-name')
+
+def getDjangoOrderArgs(mode = 'manage.py'):
+    """获取Django的命令参数形式，如：python manage.py"""
+    path = os.path.join(get_configs(CONFIG_PATH)['dirname'], mode)
+    env_python3 = os.path.splitext(getPython3Env())[0]
+    return f"{env_python3} {path}"
 
 ### 其它
 

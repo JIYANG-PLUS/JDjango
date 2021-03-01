@@ -1,8 +1,24 @@
 from .gui import *
+from functools import wraps
 
 """
 作用：实现控件可见性可用性的控制
 """
+
+class VirtualEnvMustExist:
+    """装饰器：虚拟环境必须存在！！！"""
+    def __init__(self, *args, **kwargs): ...
+    def __call__(self, func, e=None):
+        @wraps(func)
+        def decorator(obj, *args, **kwargs):
+            env_path = env.getPython3Env()
+            if '' == env_path.strip() or not os.path.exists(env_path):
+                wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+                return
+            if len(args) > 0:
+                e = args[0]
+            return func(obj, e)
+        return decorator
 
 class MainFrameGUIControl(MainFrameGUI):
 

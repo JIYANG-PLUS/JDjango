@@ -185,11 +185,6 @@ class SQLiteManageFrame ( wx.Frame ):
 	def setTableData(self, datas):
 		"""初始化表格数据"""
 		self._clear_table()
-		# if headers:
-		# 	# 此处有个不想改的BUG
-		# 	for i, header in enumerate(headers):
-		# 		self.attrbutesGrid.SetCellValue(0, i, f'{header}')
-		# 		self.attrbutesGrid.SetCellBackgroundColour(0, i, 'yellow')
 
 		for i in range(LEN_COL):
 				self.attrbutesGrid.SetColLabelValue(i, ' ')

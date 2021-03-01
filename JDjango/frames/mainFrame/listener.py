@@ -99,8 +99,8 @@ class MainFrameListener(MainFrameGUIControl):
     def onDjangorestframework(self, e): ... # pip install djangorestframework
     def onHelpsORM(self, e): ... # ORM帮助（一键生成）
     def onMenuVSCode(self, e): ... # 外部发起VSCode编辑
+    def onPortProgressVirtual(self, e): ... # 创建虚拟环境
     def onPortProgressVirtualView(self, e): ... # 查看虚拟环境路径
-    def _check_env_exist(self)->bool: ... # 检测虚拟环境是否存在
     def onPortProgressCollectstatic(self, e): ... # python manage.py collectstatic
     def onPortProgressPipFreeze(self, e): ... # 导出包pip freeze
     def onPortProgressPipInstall(self, e): ... # 虚拟环境安装包pip install
@@ -110,7 +110,6 @@ class MainFrameListener(MainFrameGUIControl):
     def onPortProgressFlush(self, e): ... # python manage.py flush
     def onPortProgressCreatesuperuser(self, e): ... # python manage.py createsuperuser
     def onCreateProject1100(self, e): ... # 创建Django1.10.0项目
-    def onPortProgressVirtual(self, e): ... # 创建虚拟环境
     def onPortProgressKillProgress(self, e): ... # 终止进程
     def onPortProgressFaster(self, e): ... # 一键配置镜像环境
     def onModelsProxyGenerate(self, e): ... # 创建代理模型

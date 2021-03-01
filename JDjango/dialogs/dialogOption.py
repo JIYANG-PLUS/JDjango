@@ -600,6 +600,7 @@ class SettingsDialog(wx.Dialog):
 
         # 专属控件
         self.specialControls.extend([
+            self.inputNameStaticBox, self.labelInputName, self.inputName,
             self.inputUserStaticBox, self.labelInputUser, self.inputUser,
             self.inputPasswordStaticBox, self.labelInputPassword, self.inputPassword,
             self.inputHostStaticBox, self.labelInputHost, self.inputHost,
@@ -726,6 +727,10 @@ class SettingsDialog(wx.Dialog):
             self.inputName.SetValue("db.sqlite3") # os.path.join(BASE_DIR, 'db.sqlite3')
             self.inputTest.SetValue("")
             self.inputPort.SetValue('')
+
+            self.inputNameStaticBox.Show(True)
+            self.labelInputName.Show(True)
+            self.inputName.Show(True)
 
             self.btnOperationStaticBox.Show(True)
             self.btnOperationBlank.Show(True)

@@ -25,14 +25,17 @@ class MainFrameFuncs(MainFrameListener):
         """admin皮肤切换"""
         TipsMessageOKBox(self, "功能正在实现中", '提示')
 
+    @VirtualEnvMustExist()
     def onDjango_filter(self, e):
         """pip install django-filter"""
         TipsMessageOKBox(self, "功能正在实现中", '提示')
 
+    @VirtualEnvMustExist()
     def onMarkdown(self, e):
         """pip install markdown"""
         TipsMessageOKBox(self, "功能正在实现中", '提示')
 
+    @VirtualEnvMustExist()
     def onDjangorestframework(self, e):
         """pip install djangorestframework"""
         TipsMessageOKBox(self, "功能正在实现中", '提示')
@@ -59,20 +62,9 @@ class MainFrameFuncs(MainFrameListener):
         """查看虚拟环境路径"""
         TipsMessageOKBox(self, env.getPython3Env(), '虚拟环境路径')
 
-    @property
-    def _check_env_exist(self)->bool:
-        """检测虚拟环境是否存在"""
-        env_path = env.getPython3Env()
-        if '' == env_path.strip() or not os.path.exists(env_path):
-            return False
-        return True
-
+    @VirtualEnvMustExist()
     def onPortProgressCollectstatic(self, e):
         """python manage.py collectstatic"""
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-            
         import subprocess
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         env_python3 = os.path.splitext(env.getPython3Env())[0]
@@ -81,24 +73,18 @@ class MainFrameFuncs(MainFrameListener):
         self.cmdCodes.append(self.amdSubProcess)
         self.info_cmdCodes[self.amdSubProcess] = 'collectstatic'
 
+    @VirtualEnvMustExist()
     def onPortProgressPipFreeze(self, e):
         """导出包pip freeze"""
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-        
         import subprocess
         env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
         self.cmdEnvPipFreeze = subprocess.Popen(f'{env_python3_pip} freeze', shell=True)
         self.cmdCodes.append(self.cmdEnvPipFreeze)
         self.info_cmdCodes[self.cmdEnvPipFreeze] = 'freeze'
 
+    @VirtualEnvMustExist()
     def onPortProgressPipInstall(self, e):
         """虚拟环境安装包pip install"""
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-        
         dlg = wx.TextEntryDialog(self, u"包名：", u"虚拟环境安装三方库", u"")
         if dlg.ShowModal() == wx.ID_OK:
             module_name = dlg.GetValue()
@@ -112,74 +98,43 @@ class MainFrameFuncs(MainFrameListener):
             self.info_cmdCodes[self.cmdPipInstall] = 'install'
         dlg.Close(True)
 
+    @VirtualEnvMustExist()
     def onPortProgressShell(self, e):
         """python manage.py shell"""
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-
         import subprocess
-        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
-        env_python3 = os.path.splitext(env.getPython3Env())[0]
-
-        self.cmdDjangoShell = subprocess.Popen(f'{env_python3} {path} shell', shell=True)
+        self.cmdDjangoShell = subprocess.Popen(f'{env.getDjangoOrderArgs()} shell', shell=True)
         self.cmdCodes.append(self.cmdDjangoShell)
         self.info_cmdCodes[self.cmdDjangoShell] = 'shell'
         
-
+    @VirtualEnvMustExist()
     def onPortProgressMakemigrations(self, e):
         """python manage.py makemigrations"""
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-            
         import subprocess
-        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
-        env_python3 = os.path.splitext(env.getPython3Env())[0]
-
-        self.cmdMakemigrations = subprocess.Popen(f'{env_python3} {path} makemigrations', shell=True)
+        self.cmdMakemigrations = subprocess.Popen(f'{env.getDjangoOrderArgs()} makemigrations', shell=True)
         self.cmdCodes.append(self.cmdMakemigrations)
         self.info_cmdCodes[self.cmdMakemigrations] = 'makemigrations'
 
+    @VirtualEnvMustExist()
     def onPortProgressMigrate(self, e):
         """python manage.py migtrate"""
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-            
         import subprocess
-        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
-        env_python3 = os.path.splitext(env.getPython3Env())[0]
-
-        self.cmdMigrate = subprocess.Popen(f'{env_python3} {path} migrate', shell=True)
+        self.cmdMigrate = subprocess.Popen(f'{env.getDjangoOrderArgs()} migrate', shell=True)
         self.cmdCodes.append(self.cmdMigrate)
         self.info_cmdCodes[self.cmdMigrate] = 'migrate'
 
+    @VirtualEnvMustExist()
     def onPortProgressFlush(self, e):
         """python manage.py flush"""
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-             
         import subprocess
-        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
-        env_python3 = os.path.splitext(env.getPython3Env())[0]
-
-        self.cmdFlush = subprocess.Popen(f'{env_python3} {path} flush', shell=True)
+        self.cmdFlush = subprocess.Popen(f'{env.getDjangoOrderArgs()} flush', shell=True)
         self.cmdCodes.append(self.cmdFlush)
         self.info_cmdCodes[self.cmdFlush] = 'flush'
 
+    @VirtualEnvMustExist()
     def onPortProgressCreatesuperuser(self, e):
         """python manage.py createsuperuser"""
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-            
         import subprocess
-        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
-        env_python3 = os.path.splitext(env.getPython3Env())[0]
-
-        self.cmdCreateSuperuser = subprocess.Popen(f'{env_python3} {path} createsuperuser', shell=True)
+        self.cmdCreateSuperuser = subprocess.Popen(f'{env.getDjangoOrderArgs()} createsuperuser', shell=True)
         self.cmdCodes.append(self.cmdCreateSuperuser)
         self.info_cmdCodes[self.cmdCreateSuperuser] = 'createsuperuser'
 
@@ -285,14 +240,9 @@ class MainFrameFuncs(MainFrameListener):
         """查看或终止进程"""
         TipsMessageOKBox(self, CON_MSG_PROGRESS_USE, CON_TIPS_COMMON)
 
+    @VirtualEnvMustExist()
     def onPortProgressRun(self, e):
         """子进程运行Django"""
-        # 运行前必要检查
-        # 检查一：虚拟环境是否正确配置
-        if not self._check_env_exist:
-            wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-            return
-
         import subprocess
         path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         port = env.getDjangoRunPort()
@@ -316,9 +266,6 @@ class MainFrameFuncs(MainFrameListener):
 
     def onSqliteManageTool(self, e):
         """跨平台的Sqlite工具"""
-        # dlg = wx.MessageDialog(self, "请双击同级目录下的sqlite3Manager.pyw启动文件。", CON_TIPS_COMMON, wx.OK)
-        # dlg.ShowModal()
-        # dlg.Close(True)
         import subprocess
         manager = os.path.join(os.path.dirname(BASE_DIR), 'sqlite3Manager.pyw')
         subprocess.Popen(f'{env.getRealPythonOrder()} {manager}', shell=True)
