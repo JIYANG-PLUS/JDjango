@@ -126,66 +126,66 @@ def getEnvXmlObj():
     """获取对象"""
     return EnvParser(xml = os.path.join(BASE_DIR, ENV_PATH))
 
-def getFontSize():
+def getFontSize()->int:
     """获取字体大小"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('page/font-size')
     return int(node.text)
 
-def getModelsAlias():
+def getModelsAlias()->List[str]:
     """获取所有models.py的别名"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('alias/file[name=models]')
 
-def getAdminAlias():
+def getAdminAlias()->List[str]:
     """获取所有admin.py的别名"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('alias/file[name=admin]')
 
-def getViewsAlias():
+def getViewsAlias()->List[str]:
     """获取所有views.py的别名"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('alias/file[name=views]')
 
-def getUrlsAlias():
+def getUrlsAlias()->List[str]:
     """获取所有urls.py的别名"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('alias/file[name=urls]')
 
-def getDjangoRunPort():
+def getDjangoRunPort()->int:
     """获取Django的运行端口"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('env/port')
     return int(node.text)
 
-def getPython3Env():
+def getPython3Env()->str:
     """获取项目运行虚拟环境"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('env/python3')
     return node.text if node.text else ''
 
-def getPlatform():
+def getPlatform()->str:
     """获取当前运行的平台"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('env/platform')
     return node.text if node.text else ''
 
-def getAllSupportPlatform():
+def getAllSupportPlatform()->List[str]:
     """获取软件已支持的平台类型"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('env/support[name=all]')
 
-def getSupportEnvPlatform():
+def getSupportEnvPlatform()->List[str]:
     """获取软件已支持虚拟环境运行的平台类型"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('env/support[name=virtualenv]')
 
-def getDjangoSupportDatabase():
+def getDjangoSupportDatabase()->List[str]:
     """获取Django支持的所有数据库"""
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('env/database')
 
-def getRealPythonOrder():
+def getRealPythonOrder()->str:
     """获取非虚拟环境的Python命令"""
     obj = getEnvXmlObj()
     node = obj.get_xpath_node('real/python3')
@@ -196,11 +196,16 @@ def getConflictFieldsName():
     obj = getEnvXmlObj()
     return obj.get_childnode_lists('conflict-list/field-name')
 
-def getDjangoOrderArgs(mode = 'manage.py'):
+def getDjangoOrderArgs(mode: str = 'manage.py')->str:
     """获取Django的命令参数形式，如：python manage.py"""
     path = os.path.join(get_configs(CONFIG_PATH)['dirname'], mode)
     env_python3 = os.path.splitext(getPython3Env())[0]
     return f"{env_python3} {path}"
+
+def getPipInstallOrder():
+    """获取虚拟环境pip install命令"""
+    env_python3_pip = os.path.join(os.path.dirname(getPython3Env()), 'pip')
+    return f'{env_python3_pip} install'
 
 ### 其它
 

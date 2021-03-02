@@ -23,7 +23,6 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_config_project) # 选项/修改
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_exec) # 运行【命令】
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_clear_text) # 清空输入窗口
-        self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_docs) # 文档
 
         '''
             鼠标键盘监听
@@ -86,10 +85,21 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_MENU, self.onRegisterkfenvDrf, self.registerkfenvDrf) 
         self.Bind(wx.EVT_MENU, self.onRegisterkfenvAll, self.registerkfenvAll) 
 
+        '''
+            系统工具栏
+        '''
+        self.Bind(wx.EVT_TOOL, self.onPortProgressRun, self.shotcut_run)
+        self.Bind(wx.EVT_TOOL, self.onPortProgressStop, self.shotcut_stop)
+        self.Bind(wx.EVT_TOOL, self.onBtnOpenDocs, self.shotcut_info)
+
+        '''
+            其它
+        '''
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit) # 退出
 
 
     """基方法注册（一览无余）"""
+    def OnTest(self, e): ... # 测试函数，开发用
     def onRegisterkfenvRest(self, e): ... # 注册rest_framework
     def onRegisterkfenvDrf(self, e): ... # 注册drf_generators
     def onRegisterkfenvAll(self, e): ... # 一键全部注册rest_framework、drf_generators

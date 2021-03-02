@@ -11,5 +11,5 @@ from ..miniCmd.miniCmd import CmdTools
 from ..tools._tools import *
 from ..tools._re import *
 from ..tools import environment as env
-from ..settings import BASE_DIR, CONFIG_PATH, TEMPLATE_DIR, PRINT_PATH
+from ..settings import *
 from ..constant import *

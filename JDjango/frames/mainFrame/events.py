@@ -28,17 +28,26 @@ class MainFrameFuncs(MainFrameListener):
     @VirtualEnvMustExist()
     def onDjango_filter(self, e):
         """pip install django-filter"""
-        TipsMessageOKBox(self, "功能正在实现中", '提示')
+        import subprocess
+        self.cmdInstallDjangoFilter = subprocess.Popen(f'{env.getPipInstallOrder()} django-filter', shell=True)
+        self.cmdCodes.append(self.cmdInstallDjangoFilter)
+        self.info_cmdCodes[self.cmdInstallDjangoFilter] = 'django-filter'
 
     @VirtualEnvMustExist()
     def onMarkdown(self, e):
         """pip install markdown"""
-        TipsMessageOKBox(self, "功能正在实现中", '提示')
+        import subprocess
+        self.cmdInstallMarkdown = subprocess.Popen(f'{env.getPipInstallOrder()} markdown', shell=True)
+        self.cmdCodes.append(self.cmdInstallMarkdown)
+        self.info_cmdCodes[self.cmdInstallMarkdown] = 'markdown'
 
     @VirtualEnvMustExist()
     def onDjangorestframework(self, e):
         """pip install djangorestframework"""
-        TipsMessageOKBox(self, "功能正在实现中", '提示')
+        import subprocess
+        self.cmdInstallDjangorestframework = subprocess.Popen(f'{env.getPipInstallOrder()} djangorestframework', shell=True)
+        self.cmdCodes.append(self.cmdInstallDjangorestframework)
+        self.info_cmdCodes[self.cmdInstallDjangorestframework] = 'djangorestframework'
 
     def onHelpsORM(self, e):
         """ORM帮助（一键生成）"""
@@ -88,12 +97,8 @@ class MainFrameFuncs(MainFrameListener):
         dlg = wx.TextEntryDialog(self, u"包名：", u"虚拟环境安装三方库", u"")
         if dlg.ShowModal() == wx.ID_OK:
             module_name = dlg.GetValue()
-
             import subprocess
-            
-            env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
-
-            self.cmdPipInstall = subprocess.Popen(f'{env_python3_pip} install {module_name}', shell=True)
+            self.cmdPipInstall = subprocess.Popen(f'{env.getPipInstallOrder()} {module_name}', shell=True)
             self.cmdCodes.append(self.cmdPipInstall)
             self.info_cmdCodes[self.cmdPipInstall] = 'install'
         dlg.Close(True)
@@ -406,8 +411,6 @@ class MainFrameFuncs(MainFrameListener):
             self.onExecCommand()
         elif bId == self.btn_clear_text.GetId():
             self.onClear(e)
-        elif bId == self.btn_docs.GetId():
-            self.onBtnOpenDocs(e)
 
     def onBtnOpenDocs(self, e):
         """查看帮助文档"""
@@ -453,7 +456,6 @@ class MainFrameFuncs(MainFrameListener):
         except Exception as e:
             self.infos.AppendText(out_infos(f'{e}'))
 
-    
     def onSelectProjectRoot(self):
         """选择项目根路径【项目入口】"""
         dlg = wx.FileDialog(self, "选择Django项目的manage.py文件", r'', "", "*.py", wx.FD_OPEN)
@@ -537,3 +539,7 @@ class MainFrameFuncs(MainFrameListener):
         dlg = AdminCreateSimpleDialog(self)
         dlg.ShowModal()
         dlg.Close(True)
+
+    def OnTest(self, e):
+        """开发用，测试函数"""
+        TipsMessageOKBox(self, "有效", CON_TIPS_COMMON)

@@ -52,11 +52,6 @@ class MainFrameGUIControl(MainFrameGUI):
         for _ in self.needFonts:
             _.SetFont(font)
 
-        '''
-            单独控制的字体
-        '''
-        self.cmdTip.SetFont(wx.Font(12, wx.SWISS, wx.NORMAL, wx.BOLD, False))
-
     def _open_all_check_btn(self):
         """ 开启所有检测按钮权限 """
         for a in self.allInitBtns:

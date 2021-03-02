@@ -11,7 +11,8 @@ class MainFrameGUI(wx.Frame, BaseData):
         wx.Frame.__init__(self, parent, id = wx.ID_ANY, title = CON_JDJANGO_TITLE, pos = wx.DefaultPosition, size = wx.Size(960, 540), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
         
         self._init_UI()  # 初始化界面布局
-        self._init_menu()  # 初始化工具栏
+        self._init_menu()  # 初始化菜单栏
+        self._init_systoolBar() # 初始化系统工具栏
         self._init_statusbar()  # 初始化底部状态栏
         self._init_ctrls() # 初始化控制器
 
@@ -62,10 +63,28 @@ class MainFrameGUI(wx.Frame, BaseData):
         self._init_menu_perfix() # 单项修复 菜单项
         self._init_menu_admin() # 后台管理中心 菜单项
         self._init_menu_run() # 运行 菜单项
+        self._init_menu_integrate() # 集成 菜单项
         self._init_menu_helps() # 帮助 菜单项
         self._init_menu_quit() # 退出 菜单项
         
         self.SetMenuBar(self.topBar)
+
+    def _init_systoolBar(self):
+        """初始化系统工具栏"""
+        self.sys_toolbar = self.CreateToolBar(wx.TBK_HORZ_LAYOUT) # 工具栏
+        # self.sys_toolbar.SetBackgroundColour('#465789')
+
+        self.shotcut_run = self.sys_toolbar.AddTool(wx.ID_ANY, "运行", wx.Bitmap(BITMAP_RUN_PATH), shortHelp='运行')
+        self.shotcut_stop = self.sys_toolbar.AddTool(wx.ID_ANY, "停止", wx.Bitmap(BITMAP_STOP_PATH), shortHelp='停止')
+
+        # self._append_separator_to_tools()
+        # self.shotcut_database = self.sys_toolbar.AddTool(wx.ID_ANY, "数据库", wx.Bitmap(BITMAP_DATABASE_PATH), shortHelp='数据库')
+        # self.shotcut_setting = self.sys_toolbar.AddTool(wx.ID_ANY, "选项/修改", wx.Bitmap(BITMAP_SETTINGS_PATH), shortHelp='选项/修改')
+
+        self._append_separator_to_tools()
+        self.shotcut_info = self.sys_toolbar.AddTool(wx.ID_ANY, "帮助", wx.Bitmap(BITMAP_INFO_PATH), shortHelp='帮助')
+        
+        self.sys_toolbar.Realize() # Windows 适应
 
     def _init_menu_file(self):
         """文件"""
@@ -111,12 +130,6 @@ class MainFrameGUI(wx.Frame, BaseData):
 
         self.menusSettings = menusProject.Append(wx.ID_ANY, "&Settings", "Settings")
         
-        self._append_separator(menusProject)
-        adminPFProject = wx.Menu()
-        menusProject.Append(wx.ID_ANY, "&Admin皮肤切换", adminPFProject)
-
-        self.simpleui = adminPFProject.Append(wx.ID_ANY, "&simpleui", "simpleui")
-        
         self._append_separator(menus)
         settings = wx.Menu()
         menus.Append(wx.ID_ANY, "&工具", settings)
@@ -139,13 +152,13 @@ class MainFrameGUI(wx.Frame, BaseData):
         helps = wx.Menu()
         self.topBar.Append(helps, "&帮助")
         
-        self.helpsORM = helps.Append(wx.ID_ANY, "&ORM一键生成", "ORM一键生成")
+        self.helpsORM = helps.Append(wx.ID_ANY, "&AUTO-ORM", "AUTO-ORM")
 
         self._append_separator(helps)
         self.helpsDocumentation = helps.Append(wx.ID_ANY, "&参考文档", "参考文档")
 
         self._append_separator(helps)
-        self.helpsSeeOrKill = helps.Append(wx.ID_ANY, "&查看/终止进程", "查看/终止进程")
+        self.helpsSeeOrKill = helps.Append(wx.ID_ANY, "&进程", "进程")
 
         self._append_separator(helps)
         self.menuAbout = helps.Append(wx.ID_ANY, "&关于", "关于")
@@ -155,6 +168,11 @@ class MainFrameGUI(wx.Frame, BaseData):
 
         portProgress = wx.Menu()
         self.topBar.Append(portProgress, "&运行")
+
+        speeder = wx.Menu()
+        portProgress.Append(wx.ID_ANY, "&镜像源", speeder)
+
+        self.portProgressFaster = speeder.Append(wx.ID_ANY, "&一键配置", "一键配置")
 
         virtualenv = wx.Menu()
         portProgress.Append(wx.ID_ANY, "&虚拟环境", virtualenv)
@@ -166,16 +184,10 @@ class MainFrameGUI(wx.Frame, BaseData):
 
         self._append_separator(virtualenv)
         self.portProgressVirtualView = virtualenv.Append(wx.ID_ANY, "&查看", "查看")
-        
+
         self._append_separator(portProgress)
         self.portProgressRun = portProgress.Append(wx.ID_ANY, "&运行", "运行")
         self.portProgressStop = portProgress.Append(wx.ID_ANY, "&停止", "停止")
-
-        self._append_separator(portProgress)
-        speeder = wx.Menu()
-        portProgress.Append(wx.ID_ANY, "&Python镜像", speeder)
-
-        self.portProgressFaster = speeder.Append(wx.ID_ANY, "&一键配置", "一键配置")
         
         self._append_separator(portProgress)
         djangoOrder = wx.Menu()
@@ -195,8 +207,18 @@ class MainFrameGUI(wx.Frame, BaseData):
         self.portProgressCreatesuperuser = djangoOrder.Append(wx.ID_ANY, "&createsupersuer（创建管理员）", "createsupersuer（创建管理员）")
         
         self._append_separator(portProgress)
+        progresser = wx.Menu()
+        portProgress.Append(wx.ID_ANY, "&进程", progresser)
+
+        self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
+        
+    def _init_menu_integrate(self):
+        """集成 菜单项"""
+        integrateMenu = wx.Menu()
+        self.topBar.Append(integrateMenu, "&集成")
+
         kfenv = wx.Menu()
-        portProgress.Append(wx.ID_ANY, "&路由集成", kfenv)
+        integrateMenu.Append(wx.ID_ANY, "&路由集成", kfenv)
 
         self.registerkfenvRest = kfenv.Append(wx.ID_ANY, "&注册rest_framework", "注册rest_framework")
         self.registerkfenvDrf = kfenv.Append(wx.ID_ANY, "&注册drf_generators", "注册drf_generators")
@@ -209,13 +231,13 @@ class MainFrameGUI(wx.Frame, BaseData):
         self.markdown = restFramework.Append(wx.ID_ANY, "&markdown", "markdown")
         self.django_filter = restFramework.Append(wx.ID_ANY, "&django-filter", "django-filter")
         self.drf_generators = restFramework.Append(wx.ID_ANY, "&drf-generators", "drf-generators")
-        
-        self._append_separator(portProgress)
-        progresser = wx.Menu()
-        portProgress.Append(wx.ID_ANY, "&进程", progresser)
 
-        self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
-        
+        self._append_separator(integrateMenu)
+        adminPFProject = wx.Menu()
+        integrateMenu.Append(wx.ID_ANY, "&Admin皮肤切换", adminPFProject)
+
+        self.simpleui = adminPFProject.Append(wx.ID_ANY, "&simpleui", "simpleui")
+
     def _init_menu_quit(self):
         """退出"""
 
@@ -288,7 +310,7 @@ class MainFrameGUI(wx.Frame, BaseData):
         toolLeftPanel = wx.Panel(toolPanel)
         toolLeftPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         toolLeftPanel.SetSizer(toolLeftPanelSizer)
-        toolPanelSizer.Add(toolLeftPanel, 1, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(toolLeftPanel, 0, wx.EXPAND | wx.ALL, 2)
 
         self.btn_select_project = buttons.GenButton(toolLeftPanel, -1, label='选择Django项目')
         toolLeftPanelSizer.Add(self.btn_select_project, 0, wx.EXPAND | wx.ALL, 2)
@@ -305,22 +327,19 @@ class MainFrameGUI(wx.Frame, BaseData):
         self.btn_clear_text = buttons.GenButton(toolLeftPanel, -1, label='清空')
         toolLeftPanelSizer.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.btn_docs = buttons.GenButton(toolLeftPanel, -1, label='文档')
-        toolLeftPanelSizer.Add(self.btn_docs, 0, wx.EXPAND | wx.ALL, 2)
-
         '''
             自定义工具条 - 右侧
         '''
         toolRightPanel = wx.Panel(toolPanel)
         toolRightPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         toolRightPanel.SetSizer(toolRightPanelSizer)
-        toolPanelSizer.Add(toolRightPanel, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(toolRightPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        self.cmdTip = wx.StaticText(toolRightPanel, -1, "命令：")
-        toolRightPanelSizer.Add(self.cmdTip, 0, wx.EXPAND | wx.ALL, 2)
+        # self.cmdTip = wx.StaticText(toolRightPanel, -1, "命令：")
+        # toolRightPanelSizer.Add(self.cmdTip, 0, wx.EXPAND | wx.ALL, 2)
 
         self.cmdInput = wx.TextCtrl(toolRightPanel, -1, size=(200, -1))
-        toolRightPanelSizer.Add(self.cmdInput, 0, wx.EXPAND | wx.ALL, 2)
+        toolRightPanelSizer.Add(self.cmdInput, 1, wx.EXPAND | wx.ALL, 2)
         
         self.btn_exec = buttons.GenButton(toolRightPanel, -1, '执行/Enter')
         toolRightPanelSizer.Add(self.btn_exec, 0, wx.EXPAND | wx.ALL, 2)
@@ -402,3 +421,7 @@ class MainFrameGUI(wx.Frame, BaseData):
     def _append_separator(self, obj):
         """添加分割线"""
         obj.AppendSeparator()
+
+    def _append_separator_to_tools(self):
+        """向系统工具栏添加不可点击分割按钮"""
+        self.sys_toolbar.AddTool(wx.ID_ANY, "", wx.Bitmap(BITMAP_SPLIT_PATH), shortHelp='我是分割符').Enable(False)
