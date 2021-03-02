@@ -174,6 +174,7 @@ class MainFrameGUI(wx.Frame, BaseData):
 
         self.portProgressFaster = speeder.Append(wx.ID_ANY, "&一键配置", "一键配置")
 
+        self._append_separator(portProgress)
         virtualenv = wx.Menu()
         portProgress.Append(wx.ID_ANY, "&虚拟环境", virtualenv)
 
@@ -218,25 +219,31 @@ class MainFrameGUI(wx.Frame, BaseData):
         self.topBar.Append(integrateMenu, "&集成")
 
         kfenv = wx.Menu()
-        integrateMenu.Append(wx.ID_ANY, "&路由集成", kfenv)
-
-        self.registerkfenvRest = kfenv.Append(wx.ID_ANY, "&注册rest_framework", "注册rest_framework")
-        self.registerkfenvDrf = kfenv.Append(wx.ID_ANY, "&注册drf_generators", "注册drf_generators")
-        self.registerkfenvAll = kfenv.Append(wx.ID_ANY, "&一键全部注册", "一键全部注册")
+        integrateMenu.Append(wx.ID_ANY, "&路由", kfenv)
 
         restFramework = wx.Menu()
-        kfenv.Append(wx.ID_ANY, "&三方库安装", restFramework)
+        kfenv.Append(wx.ID_ANY, "&安装", restFramework)
 
         self.djangorestframework = restFramework.Append(wx.ID_ANY, "&djangorestframework", "djangorestframework")
         self.markdown = restFramework.Append(wx.ID_ANY, "&markdown", "markdown")
         self.django_filter = restFramework.Append(wx.ID_ANY, "&django-filter", "django-filter")
         self.drf_generators = restFramework.Append(wx.ID_ANY, "&drf-generators", "drf-generators")
 
+        self.registerkfenvRest = kfenv.Append(wx.ID_ANY, "&注册rest_framework", "注册rest_framework")
+        self.registerkfenvDrf = kfenv.Append(wx.ID_ANY, "&注册drf_generators", "注册drf_generators")
+        self.registerkfenvAll = kfenv.Append(wx.ID_ANY, "&一键注册", "一键注册")
+
         self._append_separator(integrateMenu)
         adminPFProject = wx.Menu()
-        integrateMenu.Append(wx.ID_ANY, "&Admin皮肤切换", adminPFProject)
+        integrateMenu.Append(wx.ID_ANY, "&皮肤", adminPFProject)
 
-        self.simpleui = adminPFProject.Append(wx.ID_ANY, "&simpleui", "simpleui")
+        self.fastSimpleui = adminPFProject.Append(wx.ID_ANY, "&simpleui", "simpleui")
+
+        # adminPFProjectSimpleui = wx.Menu()
+        # adminPFProject.Append(wx.ID_ANY, "&simpleui", adminPFProjectSimpleui)
+
+        # self.installSimpleui = adminPFProjectSimpleui.Append(wx.ID_ANY, "&安装simpleui", "安装simpleui")
+        # self.registerSimpleui = adminPFProjectSimpleui.Append(wx.ID_ANY, "&注册simpleui", "注册simpleui")
 
     def _init_menu_quit(self):
         """退出"""
@@ -424,4 +431,5 @@ class MainFrameGUI(wx.Frame, BaseData):
 
     def _append_separator_to_tools(self):
         """向系统工具栏添加不可点击分割按钮"""
+        # self.sys_toolbar.AddSeparator()
         self.sys_toolbar.AddTool(wx.ID_ANY, "", wx.Bitmap(BITMAP_SPLIT_PATH), shortHelp='我是分割符').Enable(False)

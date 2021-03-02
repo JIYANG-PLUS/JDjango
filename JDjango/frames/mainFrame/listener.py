@@ -78,12 +78,15 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_MENU, self.onPortProgressPipFreeze, self.portProgressPipFreeze) # freeze
         self.Bind(wx.EVT_MENU, self.onPortProgressCollectstatic, self.portProgressCollectstatic) # collectstatic
         self.Bind(wx.EVT_MENU, self.onDjangorestframework, self.djangorestframework) # restframework
+        self.Bind(wx.EVT_MENU, self.onDrfGenerators, self.drf_generators) # drf_generators
         self.Bind(wx.EVT_MENU, self.onMarkdown, self.markdown) # markdown
         self.Bind(wx.EVT_MENU, self.onDjango_filter, self.django_filter) # django_filter
-        self.Bind(wx.EVT_MENU, self.onSimpleui, self.simpleui) # simpleui
-        self.Bind(wx.EVT_MENU, self.onRegisterkfenvRest, self.registerkfenvRest) 
-        self.Bind(wx.EVT_MENU, self.onRegisterkfenvDrf, self.registerkfenvDrf) 
-        self.Bind(wx.EVT_MENU, self.onRegisterkfenvAll, self.registerkfenvAll) 
+        # self.Bind(wx.EVT_MENU, self.onInstallSimpleui, self.installSimpleui) # pip install simpleui
+        # self.Bind(wx.EVT_MENU, self.onRegisterSimpleui, self.registerSimpleui) # 注册 simpleui
+        self.Bind(wx.EVT_MENU, self.onFastSimpleui, self.fastSimpleui) # 一键配置 simpleui
+        self.Bind(wx.EVT_MENU, self.onRegisterkfenvRest, self.registerkfenvRest) # 注册rest_framework
+        self.Bind(wx.EVT_MENU, self.onRegisterkfenvDrf, self.registerkfenvDrf) # 注册drf_generators
+        self.Bind(wx.EVT_MENU, self.onRegisterkfenvAll, self.registerkfenvAll) # 一键全部注册rest_framework、drf_generators
 
         '''
             系统工具栏
@@ -100,10 +103,13 @@ class MainFrameListener(MainFrameGUIControl):
 
     """基方法注册（一览无余）"""
     def OnTest(self, e): ... # 测试函数，开发用
+    def onDrfGenerators(self, e): ... # pip install drf-generators
     def onRegisterkfenvRest(self, e): ... # 注册rest_framework
     def onRegisterkfenvDrf(self, e): ... # 注册drf_generators
     def onRegisterkfenvAll(self, e): ... # 一键全部注册rest_framework、drf_generators
-    def onSimpleui(self, e): ... # admin皮肤切换
+    def onFastSimpleui(self, e): ... # 一键配置 simpleui
+    def onInstallSimpleui(self, e): ... # 安装 simpleui
+    def onRegisterSimpleui(self, e): ... # 注册 simpleui
     def onDjango_filter(self, e): ... # pip install django-filter
     def onMarkdown(self, e): ... # pip install markdown
     def onDjangorestframework(self, e): ... # pip install djangorestframework

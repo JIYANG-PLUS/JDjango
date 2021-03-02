@@ -3,7 +3,7 @@ from ....tools._tools import *
 from ....tools._re import *
 from ....tools import environment as env
 from ....tools import models as models_env
-from ....settings import CONFIG_PATH, TEMPLATE_DIR, COR_MIDDLEWARE
+from ....settings import *
 from typing import Dict, List
 
 from ..exceptions import *

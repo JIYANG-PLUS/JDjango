@@ -8,8 +8,10 @@ __all__ = [
     'fix_urls', # 修复路由
     'refresh_config', # 更新配置文件config.json
     'update_settings_DTATBASES', # 数据库引擎更换
-    'add_oneline_to_listattr', # 利用正则，向列表中加入一组元素
-    'pop_oneline_to_listattr', # 利用正则，从列表中删除一组元素
+    'add_oneline_to_listattr', # 利用正则，向列表中加入一行元素
+    'add_lines_to_listattr', # 利用正则，向列表中加入多行元素
+    'pop_oneline_to_listattr', # 利用正则，从列表中删除一行元素
+    'pop_lines_to_listattr', # 利用正则，从列表中删除多行元素
     
 ]
 
@@ -154,21 +156,32 @@ def fix_urls(app_url: str)->None:
     # 覆盖写入
     write_file(root_urlspy, content=replace_text)
 
-def add_oneline_to_listattr(setting_path: str, patt, idata: str, indent: int=4)->None:
-    """向列表变量添加行"""
-    content = get_list_patt_content(PATT_MIDDLEWARE, setting_path)
+def add_oneline_to_listattr(setting_path: str, patt, idata: str, indent: int=4, position:int = -1)->None:
+    """向列表变量添加一行"""
+    content = get_list_patt_content(patt, setting_path)
     insert_data = " " * indent + f"{idata},\n"
-    new_content = f"{content}{insert_data}"
-    
+    if -1 == position:
+        new_content = f"{content}{insert_data}"
+    else:
+        new_content = f"\n{insert_data}{content}"
     write_file(setting_path, read_file(setting_path).replace(content, new_content))
 
+def add_lines_to_listattr(setting_path: str, patt, idatas: List[str], indent: int=4)->None:
+    """向列表变量添加多行"""
+    for idata in idatas:
+        add_oneline_to_listattr(setting_path, patt, idata, indent)
+
 def pop_oneline_to_listattr(setting_path: str, patt, idata: str, indent: int=4)->None:
-    """向列表变量添加行"""
-    content = get_list_patt_content(PATT_MIDDLEWARE, setting_path)
+    """向列表变量删除一行"""
+    content = get_list_patt_content(patt, setting_path)
     insert_data = " " * indent + f"{idata},\n"
     new_content = content.replace(insert_data, '')
-    
     write_file(setting_path, read_file(setting_path).replace(content, new_content))
+
+def pop_lines_to_listattr(setting_path: str, patt, idatas: List[str], indent: int=4)->None:
+    """向列表变量删除多行"""
+    for idata in idatas:
+        pop_oneline_to_listattr(setting_path, patt, idata, indent)
 
 def refresh_config()->None:
     """初始化配置文件"""

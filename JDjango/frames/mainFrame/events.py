@@ -1,5 +1,5 @@
 from .listener import *
-
+import subprocess
 """
 作用：实现事件功能
 """
@@ -8,46 +8,91 @@ class MainFrameFuncs(MainFrameListener):
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.order_container = (self.cmdCodes, self.info_cmdCodes,)
+
+        self.name_rest_framework = "'rest_framework'"
+        self.name_drf_generators = "'drf_generators'"
+        self.name_simpleui = "'simpleui'"
+
+    @VirtualEnvMustExistDecorator()
+    def onFastSimpleui(self, e):
+        """一键配置simpleui"""
+        self.onInstallSimpleui(e)
+        self.onRegisterSimpleui(e)
+        TipsMessageOKBox(self, "simpleui皮肤使用成功！", '成功')
+
+    @RegisterOriginOrderDecorator(msg = 'simpleui')
+    @VirtualEnvMustExistDecorator()
+    def onInstallSimpleui(self, e):
+        """pip install simpleui"""
+        return (
+            subprocess.Popen(f'{env.getPipOrderArgs()} simpleui', shell=True)
+            , *self.order_container
+        )
+
+    def onRegisterSimpleui(self, e):
+        """注册 simpleui"""
+        add_oneline_to_listattr(get_django_settings_path(), PATT_INSTALLED_APPS, self.name_simpleui, position=1)
+
+    @RegisterOriginOrderDecorator(msg = 'drf-generators')
+    @VirtualEnvMustExistDecorator()
+    def onDrfGenerators(self, e):
+        """pip install drf-generators"""
+        return (
+            subprocess.Popen(f'{env.getPipOrderArgs()} drf-generators', shell=True)
+            , *self.order_container
+        )
 
     def onRegisterkfenvRest(self, e):
         """注册rest_framework"""
-        TipsMessageOKBox(self, "功能正在实现中", '提示')
+        add_oneline_to_listattr(get_django_settings_path(), PATT_INSTALLED_APPS, self.name_rest_framework)
+        TipsMessageOKBox(self, "rest_framework注册成功", '成功')
 
     def onRegisterkfenvDrf(self, e):
         """注册drf_generators"""
-        TipsMessageOKBox(self, "功能正在实现中", '提示')
+        add_oneline_to_listattr(get_django_settings_path(), PATT_INSTALLED_APPS, self.name_drf_generators)
+        TipsMessageOKBox(self, "drf_generators注册成功", '成功')
 
     def onRegisterkfenvAll(self, e):
         """一键全部注册rest_framework、drf_generators"""
-        TipsMessageOKBox(self, "功能正在实现中", '提示')
+        idatas = [self.name_rest_framework, self.name_drf_generators, ]
+        add_lines_to_listattr(
+            get_django_settings_path()
+            , PATT_INSTALLED_APPS
+            , idatas
+        )
+        TipsMessageOKBox(self, ', '.join([_.strip("'") for _ in idatas])+'注册成功', '成功')
 
     def onSimpleui(self, e):
         """admin皮肤切换"""
         TipsMessageOKBox(self, "功能正在实现中", '提示')
 
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'django-filter')
+    @VirtualEnvMustExistDecorator()
     def onDjango_filter(self, e):
         """pip install django-filter"""
-        import subprocess
-        self.cmdInstallDjangoFilter = subprocess.Popen(f'{env.getPipInstallOrder()} django-filter', shell=True)
-        self.cmdCodes.append(self.cmdInstallDjangoFilter)
-        self.info_cmdCodes[self.cmdInstallDjangoFilter] = 'django-filter'
+        return (
+            subprocess.Popen(f'{env.getPipOrderArgs()} django-filter', shell=True)
+            , *self.order_container
+        )
 
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'markdown')
+    @VirtualEnvMustExistDecorator()
     def onMarkdown(self, e):
         """pip install markdown"""
-        import subprocess
-        self.cmdInstallMarkdown = subprocess.Popen(f'{env.getPipInstallOrder()} markdown', shell=True)
-        self.cmdCodes.append(self.cmdInstallMarkdown)
-        self.info_cmdCodes[self.cmdInstallMarkdown] = 'markdown'
+        return (
+            subprocess.Popen(f'{env.getPipOrderArgs()} markdown', shell=True)
+            , *self.order_container
+        )
 
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'djangorestframework')
+    @VirtualEnvMustExistDecorator()
     def onDjangorestframework(self, e):
         """pip install djangorestframework"""
-        import subprocess
-        self.cmdInstallDjangorestframework = subprocess.Popen(f'{env.getPipInstallOrder()} djangorestframework', shell=True)
-        self.cmdCodes.append(self.cmdInstallDjangorestframework)
-        self.info_cmdCodes[self.cmdInstallDjangorestframework] = 'djangorestframework'
+        return (
+            subprocess.Popen(f'{env.getPipOrderArgs()} djangorestframework', shell=True)
+            , *self.order_container
+        )
 
     def onHelpsORM(self, e):
         """ORM帮助（一键生成）"""
@@ -59,9 +104,7 @@ class MainFrameFuncs(MainFrameListener):
         """外部发起VSCode编辑"""
         dlg_tip = wx.MessageDialog(self, f"打开之前请确认您已经安装了Visual Studio Code，并且已经配置了code环境。", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
         if dlg_tip.ShowModal() == wx.ID_OK:
-            import subprocess
             dirname = get_configs(CONFIG_PATH)['dirname']
-
             self.cmdVscode = subprocess.Popen(f'code {dirname}', shell=True)
             self.cmdCodes.append(self.cmdVscode)
             self.info_cmdCodes[self.cmdVscode] = '开启VSCode编辑器'
@@ -71,77 +114,79 @@ class MainFrameFuncs(MainFrameListener):
         """查看虚拟环境路径"""
         TipsMessageOKBox(self, env.getPython3Env(), '虚拟环境路径')
 
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'collectstatic')
+    @VirtualEnvMustExistDecorator()
     def onPortProgressCollectstatic(self, e):
         """python manage.py collectstatic"""
-        import subprocess
-        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
-        env_python3 = os.path.splitext(env.getPython3Env())[0]
+        return (
+            subprocess.Popen(f'{env.getDjangoOrderArgs()} collectstatic', shell=True)
+            , *self.order_container
+        )
 
-        self.amdSubProcess = subprocess.Popen(f'{env_python3} {path} collectstatic', shell=True)
-        self.cmdCodes.append(self.amdSubProcess)
-        self.info_cmdCodes[self.amdSubProcess] = 'collectstatic'
-
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'freeze')
+    @VirtualEnvMustExistDecorator()
     def onPortProgressPipFreeze(self, e):
         """导出包pip freeze"""
-        import subprocess
-        env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
-        self.cmdEnvPipFreeze = subprocess.Popen(f'{env_python3_pip} freeze', shell=True)
-        self.cmdCodes.append(self.cmdEnvPipFreeze)
-        self.info_cmdCodes[self.cmdEnvPipFreeze] = 'freeze'
+        return (
+            subprocess.Popen(f'{env.getPipOrderArgs(mode="freeze")}', shell=True)
+            , *self.order_container
+        )
 
-    @VirtualEnvMustExist()
+    @VirtualEnvMustExistDecorator()
     def onPortProgressPipInstall(self, e):
         """虚拟环境安装包pip install"""
         dlg = wx.TextEntryDialog(self, u"包名：", u"虚拟环境安装三方库", u"")
         if dlg.ShowModal() == wx.ID_OK:
             module_name = dlg.GetValue()
-            import subprocess
-            self.cmdPipInstall = subprocess.Popen(f'{env.getPipInstallOrder()} {module_name}', shell=True)
+            self.cmdPipInstall = subprocess.Popen(f'{env.getPipOrderArgs()} {module_name}', shell=True)
             self.cmdCodes.append(self.cmdPipInstall)
             self.info_cmdCodes[self.cmdPipInstall] = 'install'
         dlg.Close(True)
 
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'shell')
+    @VirtualEnvMustExistDecorator()
     def onPortProgressShell(self, e):
         """python manage.py shell"""
-        import subprocess
-        self.cmdDjangoShell = subprocess.Popen(f'{env.getDjangoOrderArgs()} shell', shell=True)
-        self.cmdCodes.append(self.cmdDjangoShell)
-        self.info_cmdCodes[self.cmdDjangoShell] = 'shell'
+        return (
+            subprocess.Popen(f'{env.getDjangoOrderArgs()} shell', shell=True)
+            , *self.order_container
+        )
         
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'makemigrations')
+    @VirtualEnvMustExistDecorator()
     def onPortProgressMakemigrations(self, e):
         """python manage.py makemigrations"""
-        import subprocess
-        self.cmdMakemigrations = subprocess.Popen(f'{env.getDjangoOrderArgs()} makemigrations', shell=True)
-        self.cmdCodes.append(self.cmdMakemigrations)
-        self.info_cmdCodes[self.cmdMakemigrations] = 'makemigrations'
+        return (
+            subprocess.Popen(f'{env.getDjangoOrderArgs()} makemigrations', shell=True)
+            , *self.order_container
+        )
 
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'migrate')
+    @VirtualEnvMustExistDecorator()
     def onPortProgressMigrate(self, e):
         """python manage.py migtrate"""
-        import subprocess
-        self.cmdMigrate = subprocess.Popen(f'{env.getDjangoOrderArgs()} migrate', shell=True)
-        self.cmdCodes.append(self.cmdMigrate)
-        self.info_cmdCodes[self.cmdMigrate] = 'migrate'
+        return (
+            subprocess.Popen(f'{env.getDjangoOrderArgs()} migrate', shell=True)
+            , *self.order_container
+        )
 
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'flush')
+    @VirtualEnvMustExistDecorator()
     def onPortProgressFlush(self, e):
         """python manage.py flush"""
-        import subprocess
-        self.cmdFlush = subprocess.Popen(f'{env.getDjangoOrderArgs()} flush', shell=True)
-        self.cmdCodes.append(self.cmdFlush)
-        self.info_cmdCodes[self.cmdFlush] = 'flush'
+        return (
+            subprocess.Popen(f'{env.getDjangoOrderArgs()} flush', shell=True)
+            , *self.order_container
+        )
 
-    @VirtualEnvMustExist()
+    @RegisterOriginOrderDecorator(msg = 'createsuperuser')
+    @VirtualEnvMustExistDecorator()
     def onPortProgressCreatesuperuser(self, e):
         """python manage.py createsuperuser"""
-        import subprocess
-        self.cmdCreateSuperuser = subprocess.Popen(f'{env.getDjangoOrderArgs()} createsuperuser', shell=True)
-        self.cmdCodes.append(self.cmdCreateSuperuser)
-        self.info_cmdCodes[self.cmdCreateSuperuser] = 'createsuperuser'
+        return (
+            subprocess.Popen(f'{env.getDjangoOrderArgs()} createsuperuser', shell=True)
+            , *self.order_container
+        )
 
     def onCreateProject1100(self, e):
         """创建Django1.10.0项目"""
@@ -245,15 +290,12 @@ class MainFrameFuncs(MainFrameListener):
         """查看或终止进程"""
         TipsMessageOKBox(self, CON_MSG_PROGRESS_USE, CON_TIPS_COMMON)
 
-    @VirtualEnvMustExist()
+    @VirtualEnvMustExistDecorator()
     def onPortProgressRun(self, e):
         """子进程运行Django"""
-        import subprocess
-        path = os.path.join(get_configs(CONFIG_PATH)['dirname'], 'manage.py')
         port = env.getDjangoRunPort()
-        env_python3 = os.path.splitext(env.getPython3Env())[0]
         try:
-            self.server = subprocess.Popen(f'{env_python3} {path} runserver {port}', shell=True) # , stderr=subprocess.PIPE, stdout=subprocess.PIPE
+            self.server = subprocess.Popen(f'{env.getDjangoOrderArgs()} runserver {port}', shell=True) # , stderr=subprocess.PIPE, stdout=subprocess.PIPE
         except:
             self.infos.AppendText(out_infos(f"虚拟环境错误，或项目路径错误，或端口被占用。", level=3))
         else:
@@ -271,7 +313,6 @@ class MainFrameFuncs(MainFrameListener):
 
     def onSqliteManageTool(self, e):
         """跨平台的Sqlite工具"""
-        import subprocess
         manager = os.path.join(os.path.dirname(BASE_DIR), 'sqlite3Manager.pyw')
         subprocess.Popen(f'{env.getRealPythonOrder()} {manager}', shell=True)
 
@@ -479,9 +520,6 @@ class MainFrameFuncs(MainFrameListener):
                     self.infos.AppendText(out_infos(f'项目{os.path.basename(self.dirname)}导入成功！', level=1))
             else:
                 self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
-        else:
-            # self.infos.AppendText(out_infos('您已取消选择。', level=2))
-            pass
         dlg.Close(True)
 
     def onAppsCheck(self, e):

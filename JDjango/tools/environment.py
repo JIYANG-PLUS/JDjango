@@ -202,10 +202,10 @@ def getDjangoOrderArgs(mode: str = 'manage.py')->str:
     env_python3 = os.path.splitext(getPython3Env())[0]
     return f"{env_python3} {path}"
 
-def getPipInstallOrder():
+def getPipOrderArgs(mode = 'install'):
     """获取虚拟环境pip install命令"""
     env_python3_pip = os.path.join(os.path.dirname(getPython3Env()), 'pip')
-    return f'{env_python3_pip} install'
+    return f'{env_python3_pip} {mode}'
 
 ### 其它
 

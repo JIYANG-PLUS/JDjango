@@ -12,6 +12,7 @@ __all__ = [
     'get_models_path_by_appname', # 获取当前app下所有的模型文件路径
     'get_models_by_appname', # 获取当前app下的所有模型
     'get_orm_code', # 获得orm模板批量生成示例
+    'get_django_settings_path', # 获取Django路径下的settings.py的路径
 
     'judge_in_main_urls', # 判断应用程序是否均在urls.py中注册
     
@@ -133,3 +134,10 @@ def judge_in_main_urls()->List[str]:
     urlpatterns_content = get_urlpatterns_content(root_urlspy) # 锁定路由文本区域
     app_urls = get_all_need_register_urls(config)
     return [_ for _ in app_urls if _ not in urlpatterns_content]
+
+def get_django_settings_path()->str:
+    """获取Django路径下的settings.py的路径"""
+    configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
+    DIRNAME = configs["dirname"]
+    DIRSETTINGS = os.path.join(DIRNAME, configs['project_name'], 'settings.py')
+    return DIRSETTINGS
