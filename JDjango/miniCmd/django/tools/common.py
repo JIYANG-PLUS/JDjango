@@ -5,6 +5,7 @@ from ....tools import environment as env
 from ....tools import models as models_env
 from ....settings import *
 from typing import Dict, List
+from . import config as SCONFIGS
 
 from ..exceptions import *
 
@@ -43,19 +44,26 @@ def get_urlpatterns_content(path: str)->str:
     else:
         return ''
 
-def get_list_patt_content(patt, path: str)->str:
+def get_list_patt_content(patt, path: str, leftCode: str='[', rightCode: str=']')->str:
     """通过正则获取列表内容区域"""
     content = read_file(path)
     obj = patt.search(content)
     if obj:
         complex_content = patt.findall(content)[0]
-        return cut_content_by_doublecode(complex_content)
+        return cut_content_by_doublecode(complex_content, leftCode=leftCode, rightCode=rightCode)
     else:
         return ''
 
+def get_django_settings_path()->str:
+    """获取Django路径下的settings.py的路径"""
+    configs = get_configs(CONFIG_PATH)
+    DIRNAME = configs["dirname"]
+    DIRSETTINGS = os.path.join(DIRNAME, configs['project_name'], 'settings.py')
+    return DIRSETTINGS
+
 def get_all_py_path_by_alias(alias: List[str])->List[str]:
     """根据别名筛选文件"""
-    f_path = get_configs(CONFIG_PATH)["dirname"] # 项目根路径
+    f_path = SCONFIGS.dirname # 项目根路径
     
     search_path = os.path.join(f_path, '**', '*')
     objs = glob.glob(search_path, recursive=True)

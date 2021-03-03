@@ -19,6 +19,7 @@ class MainFrameFuncs(MainFrameListener):
         """一键配置simpleui"""
         self.onInstallSimpleui(e)
         self.onRegisterSimpleui(e)
+        self.fastSimpleui.Enable(False)
         TipsMessageOKBox(self, "simpleui皮肤使用成功！", '成功')
 
     @RegisterOriginOrderDecorator(msg = 'simpleui')
@@ -62,10 +63,6 @@ class MainFrameFuncs(MainFrameListener):
             , idatas
         )
         TipsMessageOKBox(self, ', '.join([_.strip("'") for _ in idatas])+'注册成功', '成功')
-
-    def onSimpleui(self, e):
-        """admin皮肤切换"""
-        TipsMessageOKBox(self, "功能正在实现中", '提示')
 
     @RegisterOriginOrderDecorator(msg = 'django-filter')
     @VirtualEnvMustExistDecorator()
@@ -276,6 +273,8 @@ class MainFrameFuncs(MainFrameListener):
         except:
             self.infos.AppendText(out_infos(f"网站未正常启动或启动异常，导致关闭失败。", level=3))
         else:
+            self.shotcut_run.Enable(True)
+            self.shotcut_stop.Enable(False)
             self.infos.AppendText(out_infos(f"网站已关闭。", level=1))
 
     def onPortProgressVirtualChoice(self, e):
@@ -299,6 +298,9 @@ class MainFrameFuncs(MainFrameListener):
         except:
             self.infos.AppendText(out_infos(f"虚拟环境错误，或项目路径错误，或端口被占用。", level=3))
         else:
+            # 放开 工具栏 停止按钮
+            self.shotcut_run.Enable(False)
+            self.shotcut_stop.Enable(True)
             import webbrowser
             webbrowser.open(f"http://127.0.0.1:{port}/admin/")
             self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。可复制到浏览器打开", level=1))

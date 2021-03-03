@@ -96,7 +96,7 @@ class ModelsCreateDialog(wx.Dialog):
         self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLUE) # CON_COLOR_PURE_WHITE
 
         self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "请在右侧下拉列表选择模型所属的应用程序")
-        self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',]+get_all_apps_name())
+        self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',] + SCONFIGS.app_names)
         selectFilePanelSizer.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
         selectFilePanelSizer.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)
         self.labelSelectFile.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))

@@ -102,7 +102,7 @@ class ViewGenerateDialog(wx.Dialog):
         # self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLACK) # CON_COLOR_PURE_WHITE
 
         self.labelSelectFile = wx.StaticText(self.leftScrollPanel, -1, "选择视图所属的应用程序", size=(LABEL_COL_LEN, -1))
-        self.choiceSelectFile = wx.Choice(self.leftScrollPanel, -1, choices=[' ',]+get_all_apps_name())
+        self.choiceSelectFile = wx.Choice(self.leftScrollPanel, -1, choices=[' ',] + SCONFIGS.app_names)
         self.selectFilePanel.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
         self.selectFilePanel.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)
         # self.labelSelectFile.SetFont(wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
@@ -113,7 +113,7 @@ class ViewGenerateDialog(wx.Dialog):
         leftScrollPanelSizer.Add(self.viewTypePanel, 0, wx.EXPAND | wx.ALL, 2)
 
         self.labelChoiceViewType = wx.StaticText(self.leftScrollPanel, -1, "选择要创建的视图类型：", style=wx.ALIGN_CENTRE_HORIZONTAL, size=(LABEL_COL_LEN, -1))
-        self.choiceViewType = wx.Choice(self.leftScrollPanel, -1, choices=[' ',]+CON_VIEW_CHOICES)
+        self.choiceViewType = wx.Choice(self.leftScrollPanel, -1, choices=[' ',] + CON_VIEW_CHOICES)
         self.viewTypePanel.Add(self.labelChoiceViewType, 0, wx.EXPAND | wx.ALL, 2)
         self.viewTypePanel.Add(self.choiceViewType, 1, wx.EXPAND | wx.ALL, 2)
 

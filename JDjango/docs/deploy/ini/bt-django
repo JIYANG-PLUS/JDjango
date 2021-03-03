@@ -1,0 +1,19 @@
+#SSL-START SSL相关配置，请勿删除或修改下一行带注释的404规则
+    #error_page 404/404.html;
+    #SSL-END
+
+=========================================此处是分隔符以上删除
+            location / {
+           include uwsgi_params;
+           uwsgi_pass 127.0.0.1:8998;  #端口要和uwsgi里配置的一样
+           uwsgi_param UWSGI_SCRIPT nationproject.wsgi;  #wsgi.py所在的目录名+.wsgi
+           uwsgi_param UWSGI_CHDIR /www/wwwroot/www.database.com/; #项目路径
+           
+        }
+        location /static/ {
+        alias /www/wwwroot/www.database.com/static/; #静态资源路径
+        }
+
+
+=========================================此处是分隔符以下删除
+    #ERROR-PAGE-START  错误页配置，可以注释、删除或修改

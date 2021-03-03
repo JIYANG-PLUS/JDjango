@@ -1,0 +1,14 @@
+# 经验来自于：@coshare
+
+1.买好centos 的vps
+2.安装好宝塔面板（官网一键安装）
+3.进入面板，到软件商店安装nginx、mysql、python管理器
+4.在项目管理器中设置Python版本。
+5.网站栏目中，添加项目站点，创建mysql后台数据库
+6.上传Django项目源码（记得把需要的库全部放在这里requirements.txt）
+7.在manage.py同级目录下面新建uwsgi.ini（见 ini 目录下的 uwsgi.ini 文件）
+8.点击网站，修改网站配置（见 ini 目录下的 bt-django 文件）
+9.在Python项目管理插件里添加项目
+10.激活虚拟环境source /www/wwwroot/myblog/myblog_venv/bin/activate
+
+打开ip，网站应该是自动运行了

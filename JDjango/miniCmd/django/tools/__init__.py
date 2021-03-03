@@ -7,7 +7,9 @@
 # 根路由默认为urls.py，如非必要，请勿取别名。
 
 """
-
-from ._get import *
-from ._set import *
-from ._other import *
+from .common import get_django_settings_path
+from .gets import *
+from .sets import *
+from .judge import *
+from .other import *
+from . import config as SCONFIGS

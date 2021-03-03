@@ -29,6 +29,7 @@ __all__ = [
     'PATT_DIGITS_REVERSED',
     'PATT_CAPTURE_URLSPATH_ARGS',
     'PATT_FUNC_ARGS',
+    'PATT_COMMENT',
     # 方法
     'patt_sub_only_capture_obj', # 正则表达式sub替换仅限于捕捉内容，而不是整体替换
     'patt_sub_only_capture_obj_add', # 正则表达式sub替换仅限于捕捉内容，替换后内容为：<原捕捉内容> + add_str 
@@ -61,6 +62,7 @@ PATT_DAtABASES = re.compile(r'(?ms:DATABASES\s*=\s*\{.*)')
 PATT_MODEL = re.compile(r'class\s+(.+?)\(\s*[a-zA-Z0-9]*?[.]*?Model\s*\):') # 定位模型类
 PATT_CAPTURE_URLSPATH_ARGS = re.compile(r'<(.+?)>') # 捕捉路由参数信息
 PATT_FUNC_ARGS = re.compile(r'def\s+.+?\((.*?)\)')
+PATT_COMMENT = re.compile(r'(\s*#.*?$)') # 注释
 
 
 def patt_sub_only_capture_obj(patt: object, replace_str: str, old_str: str) -> str:

@@ -6,27 +6,14 @@ __all__ = [
     'get_views_base_class', # 获取未改动的类视图模板内容
     'get_site_header', # 获取后台站点登录名
     'get_site_title', # 获取后台站点网站名
-    'get_all_apps_name', # 获取所有的应用程序名
-    'get_urlpatterns_content', # 获取urls.py中urlpatterns中括号内部的内容
     'get_app_rooturl_config_by_appname', # 通过app名称获取根路由路径下的路由配置
     'get_models_path_by_appname', # 获取当前app下所有的模型文件路径
     'get_models_by_appname', # 获取当前app下的所有模型
     'get_orm_code', # 获得orm模板批量生成示例
-    'get_django_settings_path', # 获取Django路径下的settings.py的路径
-    'get_installed_library', # 获取已经安装的第三方库（从 INSTALL_APP 中获取判断）
 
     'judge_in_main_urls', # 判断应用程序是否均在urls.py中注册
     
 ]
-
-@property
-def app_names():
-    """待定"""
-    return get_configs(CONFIG_PATH)['app_names']
-
-def get_all_apps_name()->List[str]:
-    """获取所有的应用程序名"""
-    return get_configs(CONFIG_PATH)['app_names']
 
 def get_views_base_func()->str:
     """获取未改动的函数视图模板内容"""
@@ -141,13 +128,6 @@ def judge_in_main_urls()->List[str]:
     app_urls = get_all_need_register_urls(config)
     return [_ for _ in app_urls if _ not in urlpatterns_content]
 
-def get_django_settings_path()->str:
-    """获取Django路径下的settings.py的路径"""
-    configs = get_configs(CONFIG_PATH)
-    DIRNAME = configs["dirname"]
-    DIRSETTINGS = os.path.join(DIRNAME, configs['project_name'], 'settings.py')
-    return DIRSETTINGS
-
 def get_admin_register_models()->List[str]:
     """获取已经注册的后台应用"""
     configs = get_configs(CONFIG_PATH)
@@ -155,5 +135,3 @@ def get_admin_register_models()->List[str]:
     for app in apps:
         ...
 
-def get_installed_library():
-    """获取已经安装的第三方库（从 INSTALL_APP 中获取判断）"""
