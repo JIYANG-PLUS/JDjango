@@ -1,7 +1,7 @@
 Windows使用步骤：
-第一步：安装Python3.7及以上版本（暂时不要安装Python3.9，因为3.9版本的解析器和一些语法发生改变，我还暂未做过测试）；
+第一步：安装Python3.7及以上版本
 第二步：pip install -r requirements.txt
-第三步：双击starter.pyw
+第三步：双击 starter.pyw
 
 
 # 对 Windows 用户

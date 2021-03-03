@@ -13,10 +13,16 @@ __all__ = [
     'get_models_by_appname', # 获取当前app下的所有模型
     'get_orm_code', # 获得orm模板批量生成示例
     'get_django_settings_path', # 获取Django路径下的settings.py的路径
+    'get_installed_library', # 获取已经安装的第三方库（从 INSTALL_APP 中获取判断）
 
     'judge_in_main_urls', # 判断应用程序是否均在urls.py中注册
     
 ]
+
+@property
+def app_names():
+    """待定"""
+    return get_configs(CONFIG_PATH)['app_names']
 
 def get_all_apps_name()->List[str]:
     """获取所有的应用程序名"""
@@ -137,7 +143,17 @@ def judge_in_main_urls()->List[str]:
 
 def get_django_settings_path()->str:
     """获取Django路径下的settings.py的路径"""
-    configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
+    configs = get_configs(CONFIG_PATH)
     DIRNAME = configs["dirname"]
     DIRSETTINGS = os.path.join(DIRNAME, configs['project_name'], 'settings.py')
     return DIRSETTINGS
+
+def get_admin_register_models()->List[str]:
+    """获取已经注册的后台应用"""
+    configs = get_configs(CONFIG_PATH)
+    apps = configs['app_names'] # 获取所有的app名称
+    for app in apps:
+        ...
+
+def get_installed_library():
+    """获取已经安装的第三方库（从 INSTALL_APP 中获取判断）"""

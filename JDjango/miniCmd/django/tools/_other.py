@@ -163,7 +163,7 @@ def add_oneline_to_listattr(setting_path: str, patt, idata: str, indent: int=4, 
     if -1 == position:
         new_content = f"{content}{insert_data}"
     else:
-        new_content = f"\n{insert_data}{content}"
+        new_content = f"\n{insert_data[:-1]}{content}"
     write_file(setting_path, read_file(setting_path).replace(content, new_content))
 
 def add_lines_to_listattr(setting_path: str, patt, idatas: List[str], indent: int=4)->None:

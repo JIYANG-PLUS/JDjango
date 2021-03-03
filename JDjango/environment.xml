@@ -6,8 +6,8 @@
     </page>
 
     <env>
-        <platform>Darwin</platform>
-        <python3>/Users/jiyang/Desktop/testEnv/bin/python</python3>
+        <platform>Windows</platform>
+        <python3>C:\Users\PC\Desktop\venv\Scripts\python.exe</python3>
         <port>8868</port>
         <encoding>
             <li>utf-8</li>

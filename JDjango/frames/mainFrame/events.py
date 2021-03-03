@@ -26,7 +26,7 @@ class MainFrameFuncs(MainFrameListener):
     def onInstallSimpleui(self, e):
         """pip install simpleui"""
         return (
-            subprocess.Popen(f'{env.getPipOrderArgs()} simpleui', shell=True)
+            subprocess.Popen(f'{env.getPipOrderArgs()} simpleui==2021.3', shell=True)
             , *self.order_container
         )
 
