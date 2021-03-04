@@ -327,7 +327,7 @@ class SettingsDialog(wx.Dialog):
 
         wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '项目配置', size=(550, 600))
 
-        self.configs = get_configs(os.path.join(BASE_DIR, 'config.json'))
+        self.configs = get_configs(CONFIG_PATH)
         # 正常来说，项目地址和settings.py的路径是不会改变，所以此处拿出。
         self.DIRNAME = self.configs["dirname"]
         self.DIRSETTINGS = os.path.join(self.DIRNAME, self.configs['project_name'], 'settings.py')
@@ -825,7 +825,7 @@ class SettingsDialog(wx.Dialog):
         self.radiosCorsOriginAllowAllPanel.SetSelection(0 if CONFIGS['CORS_ORIGIN_ALLOW_ALL'] else 1)
 
         # 重命名
-        self.inputProjectName.SetValue(self.configs['project_name'])
+        self.inputProjectName.SetValue(CONFIGS['project_name'])
 
         # database
         try:
