@@ -129,10 +129,10 @@ class MainFrameListener(MainFrameGUIControl):
     def onPortProgressKillProgress(self, e): ... # 终止进程
     def onPortProgressFaster(self, e): ... # 一键配置镜像环境
     def onModelsProxyGenerate(self, e): ... # 创建代理模型
-    def onPortProgressStop(self, e): ... # 关闭网站运行状态
+    def onPortProgressStop(self, e): ... # 关闭
     def onPortProgressVirtualChoice(self, e): ... # 选择虚拟环境
     def onHelpSeeOrKill(self, e): ... # 查看或终止进程
-    def onPortProgressRun(self, e): ... # 子进程运行Django
+    def onPortProgressRun(self, e): ... # 运行
     def onModelsGenerate(self, e): ... # 创建模型
     def onSqliteManageTool(self, e): ... # 跨平台的Sqlite工具
     def onMenusSettings(self, e): ... # Settings

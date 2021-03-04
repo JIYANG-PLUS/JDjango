@@ -265,17 +265,18 @@ class MainFrameFuncs(MainFrameListener):
 
     def onPortProgressStop(self, e):
         """关闭网站运行状态"""
-        self.portProgressRun.Enable(True)
-        self.portProgressStop.Enable(False)
         try:
             self.server.terminate()
             env.killProgress()
         except:
             self.infos.AppendText(out_infos(f"网站未正常启动或启动异常，导致关闭失败。", level=3))
         else:
-            self.shotcut_run.Enable(True)
-            self.shotcut_stop.Enable(False)
             self.infos.AppendText(out_infos(f"网站已关闭。", level=1))
+            self.portProgressRun.Enable(True)
+            self.portProgressStop.Enable(False)
+
+            self.sys_toolbar.EnableTool(self.shotcut_run.GetId(), True)
+            self.sys_toolbar.EnableTool(self.shotcut_stop.GetId(), False)
 
     def onPortProgressVirtualChoice(self, e):
         """选择虚拟环境"""
@@ -298,14 +299,14 @@ class MainFrameFuncs(MainFrameListener):
         except:
             self.infos.AppendText(out_infos(f"虚拟环境错误，或项目路径错误，或端口被占用。", level=3))
         else:
-            # 放开 工具栏 停止按钮
-            self.shotcut_run.Enable(False)
-            self.shotcut_stop.Enable(True)
             import webbrowser
             webbrowser.open(f"http://127.0.0.1:{port}/admin/")
             self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。可复制到浏览器打开", level=1))
             self.portProgressRun.Enable(False)
             self.portProgressStop.Enable(True)
+
+            self.sys_toolbar.EnableTool(self.shotcut_run.GetId(), False)
+            self.sys_toolbar.EnableTool(self.shotcut_stop.GetId(), True)
 
     def onModelsGenerate(self, e):
         """创建模型"""
@@ -488,7 +489,7 @@ class MainFrameFuncs(MainFrameListener):
                     s = cmd.ping(*args)
                 elif 'date' == command.lower():
                     s = cmd.date()
-                elif 'print' == order_split[0].lower():
+                elif '>' == order_split[0].lower():
                     s = cmd.print(' '.join(args))
                 else:
                     s = cmd.exec(' '.join(order_split))

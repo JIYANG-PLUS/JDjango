@@ -94,7 +94,6 @@ class MainFrameFinalGUI(MainFrameFuncs):
                 self.fastSimpleui.Enable(False)
         except: ...
 
-
     def __del__(self):
         """释放资源"""
         try:

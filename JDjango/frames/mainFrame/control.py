@@ -66,13 +66,11 @@ class MainFrameGUIControl(MainFrameGUI):
         self.portProgressStop.Enable(False)
 
         # 锁定 工具栏 停止按钮
-        self.shotcut_stop.Enable(False)
+        self.sys_toolbar.EnableTool(self.shotcut_run.GetId(), False)
+        self.sys_toolbar.EnableTool(self.shotcut_stop.GetId(), False)
 
     def _set_fonts(self, e):
         """统一设置字体"""
-        '''
-            统一设置字体
-        '''
         font = wx.Font(env.getFontSize(), wx.SWISS, wx.NORMAL, wx.BOLD, False)
         for _ in self.needFonts:
             _.SetFont(font)
@@ -110,6 +108,7 @@ class MainFrameGUIControl(MainFrameGUI):
 
         if self.platform_name.lower() in env.getSupportEnvPlatform(): # 平台限制
             self.portProgressRun.Enable(True) # 运行
+            self.sys_toolbar.EnableTool(self.shotcut_run.GetId(), True)
 
     def _init_config(self):
         """初始化配置文件"""
