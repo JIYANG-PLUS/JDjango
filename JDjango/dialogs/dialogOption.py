@@ -5,7 +5,7 @@ from ..tools._tools import *
 from ..tools._re import *
 from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS, COR_MIDDLEWARE
 from ..tools import environment as env
-from ..tools import models as toolModel
+from ..tools import models as model_env
 from ..miniCmd.djangoCmd import *
 from ..constant import *
 from .dialogTips import *
@@ -88,13 +88,14 @@ class AdminCreateSimpleDialog(wx.Dialog):
         """下拉框选择App值更新事件"""
         key = e.GetString() # 获取当前选中的应用程序名
         self.listBoxModels.Clear() # 清空列表内容，用于展示当前选中app下的所有模型
+        already_regieter_models = get_admin_register_models()
         if key.strip():
             APP_PATH = os.path.join(get_configs(CONFIG_PATH)['dirname'], key) # 路径定位到当前app下
             if os.path.exists(APP_PATH) and os.path.isdir(APP_PATH):
                 pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True) # 先取所有归属当前app下的文件路径
                 alias = [os.path.basename(_) for _ in env.getModelsAlias()] # 取所有模型别名（如：models.py）
                 pathModels = [_ for _ in pys if os.path.basename(_) in alias] # 以别名为依据，过滤所有文件中可能的模型文件
-                for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in toolModel.get_models_from_modelspy(_)]:
+                for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in model_env.get_models_from_modelspy(_) if mo not in already_regieter_models]:
                     self.listBoxModels.Append(' ------ '.join(obj)) # 赋值的同时标注模块的来源，用 ' ------ ' 隔开
 
     def onButtonClick(self, e):

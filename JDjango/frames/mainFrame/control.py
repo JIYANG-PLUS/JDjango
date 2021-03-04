@@ -162,5 +162,4 @@ class MainFrameGUIControl(MainFrameGUI):
             configs['TEMPLATES_APP_DIRS'] = None
             configs['TEMPLATES_DIRS'] = None # 默认模板路径
 
-        
         dump_json(CONFIG_PATH, configs)  # 写入配置文件

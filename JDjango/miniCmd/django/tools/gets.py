@@ -10,6 +10,7 @@ __all__ = [
     'get_models_path_by_appname', # 获取当前app下所有的模型文件路径
     'get_models_by_appname', # 获取当前app下的所有模型
     'get_orm_code', # 获得orm模板批量生成示例
+    'get_admin_register_models', # 获取已经注册的后台应用
 
     'judge_in_main_urls', # 判断应用程序是否均在urls.py中注册
     
@@ -132,6 +133,11 @@ def get_admin_register_models()->List[str]:
     """获取已经注册的后台应用"""
     configs = get_configs(CONFIG_PATH)
     apps = configs['app_names'] # 获取所有的app名称
+    admin_alias = env.getAdminAlias() # 获取所有的admin.py路径
+    models = []
     for app in apps:
-        ...
-
+        for _ in admin_alias:
+            temp_path = os.path.join(configs['dirname'], app, _)
+            temp_models = PATT_REGISTER.findall(read_file(temp_path))
+            models.extend(temp_models)
+    return models
