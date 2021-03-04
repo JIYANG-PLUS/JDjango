@@ -65,10 +65,6 @@ class MainFrameGUIControl(MainFrameGUI):
         self.portProgressRun.Enable(False)
         self.portProgressStop.Enable(False)
 
-        # simpleui是否启用
-        if djcmd.judge_installed_library(name='simpleui'):
-            self.fastSimpleui.Enable(False)
-
         # 锁定 工具栏 停止按钮
         self.shotcut_stop.Enable(False)
 

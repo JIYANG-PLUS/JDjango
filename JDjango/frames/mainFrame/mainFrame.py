@@ -87,6 +87,13 @@ class MainFrameFinalGUI(MainFrameFuncs):
             except:
                 self.infos.AppendText(out_infos(f"程序级错误，请联系作者修复。", level=3))
 
+        # 按钮监听 不可用
+        # simpleui是否启用
+        try:
+            if djcmd.judge_installed_library(name='simpleui'):
+                self.fastSimpleui.Enable(False)
+        except: ...
+
 
     def __del__(self):
         """释放资源"""
