@@ -91,9 +91,13 @@ class MainFrameListener(MainFrameGUIControl):
         '''
             系统工具栏
         '''
+        # self.Bind(wx.EVT_TOOL, self., self.shotcut_file)
         self.Bind(wx.EVT_TOOL, self.onPortProgressRun, self.shotcut_run)
         self.Bind(wx.EVT_TOOL, self.onPortProgressStop, self.shotcut_stop)
         self.Bind(wx.EVT_TOOL, self.onBtnOpenDocs, self.shotcut_info)
+        self.Bind(wx.EVT_TOOL, self.onPortProgressShell, self.shotcut_command)
+        self.Bind(wx.EVT_TOOL, self.onPortProgressMakemigrations, self.shotcut_makemigration)
+        self.Bind(wx.EVT_TOOL, self.onPortProgressMigrate, self.shotcut_migrate)
 
         '''
             其它

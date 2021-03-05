@@ -1,12 +1,12 @@
 Windows使用步骤：
 第一步：安装Python3.7及以上版本
 第二步：pip install -r requirements.txt
-第三步：双击 starter.pyw
+第三步：双击 starter.py
 
 
 # 对 Windows 用户
-调式窗口默认关闭，若要开启调试窗口，将 starter.pyw 改为 starter.py ，再双击即可。
-【强烈建议不走编辑器运行的 Windows 用户这么操作，不然看不到程序的输出】
+调式窗口默认开启，若要关闭调试窗口，将 starter.py 改为 starter.pyw ，再双击即可。
+【强烈建议不走编辑器运行的 Windows 用户开启调试窗口，不然看不到程序的输出】
 
 
 # 对 MacOS 用户

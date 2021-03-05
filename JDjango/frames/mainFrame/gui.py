@@ -74,12 +74,22 @@ class MainFrameGUI(wx.Frame, BaseData):
         self.sys_toolbar = self.CreateToolBar(wx.TBK_HORZ_LAYOUT) # 工具栏
         # self.sys_toolbar.SetBackgroundColour('#465789')
 
+        # self._append_separator_to_tools()
+        # self.shotcut_file = self.sys_toolbar.AddTool(wx.ID_ANY, "选择Django项目", wx.Bitmap(BITMAP_FILE_PATH), shortHelp='选择Django项目')
+
         self.shotcut_run = self.sys_toolbar.AddTool(wx.ID_ANY, "运行", wx.Bitmap(BITMAP_RUN_PATH), shortHelp='运行')
         self.shotcut_stop = self.sys_toolbar.AddTool(wx.ID_ANY, "停止", wx.Bitmap(BITMAP_STOP_PATH), shortHelp='停止')
 
         # self._append_separator_to_tools()
         # self.shotcut_database = self.sys_toolbar.AddTool(wx.ID_ANY, "数据库", wx.Bitmap(BITMAP_DATABASE_PATH), shortHelp='数据库')
         # self.shotcut_setting = self.sys_toolbar.AddTool(wx.ID_ANY, "选项/修改", wx.Bitmap(BITMAP_SETTINGS_PATH), shortHelp='选项/修改')
+
+        self._append_separator_to_tools()
+        self.shotcut_command = self.sys_toolbar.AddTool(wx.ID_ANY, "shell", wx.Bitmap(BITMAP_COMMAND_PATH), shortHelp='shell')
+
+        self._append_separator_to_tools()
+        self.shotcut_makemigration = self.sys_toolbar.AddTool(wx.ID_ANY, "makemigration", wx.Bitmap(BITMAP_MAKEMIGRATION_PATH), shortHelp='makemigration')
+        self.shotcut_migrate = self.sys_toolbar.AddTool(wx.ID_ANY, "migrate", wx.Bitmap(BITMAP_MIGRATE_PATH), shortHelp='migrate')
 
         self._append_separator_to_tools()
         self.shotcut_info = self.sys_toolbar.AddTool(wx.ID_ANY, "帮助", wx.Bitmap(BITMAP_INFO_PATH), shortHelp='帮助')
