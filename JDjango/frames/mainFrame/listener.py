@@ -98,6 +98,7 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_TOOL, self.onPortProgressShell, self.shotcut_command)
         self.Bind(wx.EVT_TOOL, self.onPortProgressMakemigrations, self.shotcut_makemigration)
         self.Bind(wx.EVT_TOOL, self.onPortProgressMigrate, self.shotcut_migrate)
+        self.Bind(wx.EVT_TOOL, self.onPortProgressPipInstall, self.shotcut_pipinstall)
 
         '''
             其它

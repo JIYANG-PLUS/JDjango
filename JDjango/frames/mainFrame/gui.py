@@ -92,6 +92,9 @@ class MainFrameGUI(wx.Frame, BaseData):
         self.shotcut_migrate = self.sys_toolbar.AddTool(wx.ID_ANY, "migrate", wx.Bitmap(BITMAP_MIGRATE_PATH), shortHelp='migrate')
 
         self._append_separator_to_tools()
+        self.shotcut_pipinstall = self.sys_toolbar.AddTool(wx.ID_ANY, "pip install", wx.Bitmap(BITMAP_PIPINSTALL_PATH), shortHelp='pip install')
+
+        self._append_separator_to_tools()
         self.shotcut_info = self.sys_toolbar.AddTool(wx.ID_ANY, "帮助", wx.Bitmap(BITMAP_INFO_PATH), shortHelp='帮助')
         
         self.sys_toolbar.Realize() # Windows 适应
