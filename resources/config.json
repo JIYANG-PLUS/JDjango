@@ -1,30 +1,30 @@
 {
-    "dirname": "/Users/jiyang/Desktop/nationproject",
-    "project_name": "nationproject",
+    "dirname": "C:\\Users\\PC\\Desktop\\JIYANG",
+    "project_name": "JIYANG",
     "app_names": [
-        "basicdata"
+        "myapp"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Desktop/nationproject/db.sqlite3"
+            "NAME": "C:\\Users\\PC\\Desktop\\JIYANG\\db.sqlite3"
         }
     },
     "DEBUG": true,
-    "LANGUAGE_CODE": "zh-hans",
+    "LANGUAGE_CODE": "zh-Hans",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
-    "USE_TZ": false,
+    "USE_TZ": true,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
         "*"
     ],
     "X_FRAME_OPTIONS": null,
     "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
-    "CORS_ORIGIN_ALLOW_ALL": true,
+    "CORS_ORIGIN_ALLOW_ALL": false,
     "TEMPLATES_APP_DIRS": true,
     "TEMPLATES_DIRS": [
-        "/Users/jiyang/Desktop/nationproject/templates"
+        "C:\\Users\\PC\\Desktop\\JIYANG\\templates"
     ]
 }

@@ -1,7 +1,15 @@
 import os
 
 """常用路径"""
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    , 'resources'
+)
+
+### pyinstaller 打包备用路径
+if not os.path.exists(BASE_DIR):
+    BASE_DIR = os.path.join(os.getcwd(), 'resources')
+
 CONFIG_PATH = os.path.join(BASE_DIR, 'config.json')
 ENV_PATH = os.path.join(BASE_DIR, 'environment.xml')
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates')
@@ -67,4 +75,3 @@ SUPPORT_LS = (
     , '.vue', '.c', '.java', '.cpp', '.cs'
     , '.sln', '.xml', '.json', 
 )
-
