@@ -4,7 +4,7 @@ from ....tools._re import *
 from ....tools import environment as env
 from ....tools import models as models_env
 from ....settings import *
-from typing import Dict, List
+from typing import Dict, List, Any
 from . import config as SCONFIGS
 
 from ..exceptions import *
@@ -75,3 +75,11 @@ def get_all_py_path_by_alias(alias: List[str])->List[str]:
             temp.append(_)
     return temp # 当前项目根路径下所有的admin类型源文件路径
 
+def convert_bool_str(b_str: str)->Any:
+    """将布尔值的字符串转为True、False 或 None"""
+    if 'True' == b_str:
+        return True
+    elif 'False' == b_str:
+        return False
+    else:
+        return None

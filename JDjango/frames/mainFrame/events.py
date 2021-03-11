@@ -202,9 +202,13 @@ class MainFrameFuncs(MainFrameListener):
             else:
                 venv.create(env_dir, system_site_packages=False, clear=True, symlinks=False, with_pip=True, prompt=None)
                 # 分操作系统自动绑定python解释器
-                this_platform = env.getPlatform()
-                if 'windows' == this_platform.lower():
+                this_platform = env.getPlatform().lower()
+                if 'windows' == this_platform:
                     temp_path = os.path.join(env_dir, 'Scripts', 'python.exe')
+                    env.setPython3Env(temp_path)
+                    TipsMessageOKBox(self, f'创建并绑定成功，命令路径：{temp_path}', '提示')
+                elif 'darwin' == this_platform:
+                    temp_path = os.path.join(env_dir, 'bin', 'python')
                     env.setPython3Env(temp_path)
                     TipsMessageOKBox(self, f'创建并绑定成功，命令路径：{temp_path}', '提示')
                 else:

@@ -48,19 +48,7 @@ def set_configs(setting_path: str, configs: Dict[str, object], *args)->None:
     """填写 Django 项目 settings.py 的 数据包 configs"""
 
     settings = {}
-
-    # 这里修改为直接从文本解析，摆脱对环境的依赖
-    with open(setting_path, 'r', encoding='utf-8') as f:
-        settings_content = f.read()
-
-    ### 思路一：直接一个一个匹配
-
-    # get_list_patt_content_contain_code(PATT_DATABASES, settings_content, leftCode='{', rightCode='}')
-
-
-
-
-
+    
     with open(setting_path, 'r', encoding='utf-8') as f:
         text = PATT_BASE_DIR.sub('', f.read())
         exec(f"BASE_DIR = r'{args[0]}'", {}, settings)
@@ -89,3 +77,50 @@ def set_configs(setting_path: str, configs: Dict[str, object], *args)->None:
     else:
         configs['TEMPLATES_APP_DIRS'] = None
         configs['TEMPLATES_DIRS'] = None # 默认模板路径
+
+    # with open(setting_path, 'r', encoding='utf-8') as f:
+    #     settings_content = f.read()
+
+    #     configs['DATABASES'] = eval(get_list_patt_content_contain_code(PATT_DATABASES, settings_content, leftCode='{', rightCode='}')) # 数据库
+
+    #     if PATT_DEBUG.search(settings_content): temp = PATT_DEBUG.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['DEBUG'] = convert_bool_str(temp) # 调试状态
+
+    #     if PATT_LANGUAGE_CODE.search(settings_content): temp = PATT_LANGUAGE_CODE.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['LANGUAGE_CODE'] = temp # 语言环境
+
+    #     if PATT_TIME_ZONE.search(settings_content): temp = PATT_TIME_ZONE.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['TIME_ZONE'] = f"{temp}" # 时区
+
+    #     if PATT_USE_I18N.search(settings_content): temp = PATT_USE_I18N.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['USE_I18N'] = convert_bool_str(temp) # 全局语言设置
+        
+    #     if PATT_USE_L10N.search(settings_content): temp = PATT_USE_L10N.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['USE_L10N'] = convert_bool_str(temp)
+
+    #     if PATT_USE_TZ.search(settings_content): temp = PATT_USE_TZ.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['USE_TZ'] = convert_bool_str(temp) # 是否使用标准时区
+
+    #     # configs['STATIC_URL'] = settings.get("STATIC_URL") # 静态文件路径
+
+    #     if PATT_ALLOWED_HOSTS.search(settings_content): temp = PATT_ALLOWED_HOSTS.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['ALLOWED_HOSTS'] = eval('[' + temp + ']') # 允许连接ip
+
+    #     if PATT_X_FRAME_OPTIONS.search(settings_content): temp = PATT_X_FRAME_OPTIONS.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['X_FRAME_OPTIONS'] = temp # 是否开启iframe
+
+    #     if PATT_SECRET_KEY.search(settings_content): temp = PATT_SECRET_KEY.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['SECRET_KEY'] = f"{temp}" # SECRET_KEY
+
+    #     if PATT_CORS_ORIGIN_ALLOW_ALL.search(settings_content): temp = PATT_CORS_ORIGIN_ALLOW_ALL.findall(settings_content)[0]
+    #     else: temp = None
+    #     configs['CORS_ORIGIN_ALLOW_ALL'] = convert_bool_str(temp) # 跨域
