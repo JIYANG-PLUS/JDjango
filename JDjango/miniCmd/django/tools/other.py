@@ -124,7 +124,7 @@ def update_settings_DTATBASES(db_type: str, *args, **kwargs)->None:
     project_name = config['project_name']
     root_settingspy = os.path.join(root_path, project_name, 'settings.py')
 
-    DAtABASES_content = get_databases_content(root_settingspy)
+    DAtABASES_content = get_list_patt_content(PATT_DATABASES, root_settingspy, leftCode='{', rightCode='}')
 
     template_str = get_content(DB_TYPE_NAME, concat=['settings',], replace=True, 
         engine = kwargs['engine'], 
@@ -148,7 +148,7 @@ def fix_urls(app_url: str)->None:
     root_path = config['dirname'] # Django项目根路径
     project_name = config['project_name'] # 项目名称
     root_urlspy = os.path.join(root_path, project_name, 'urls.py') # 定位项目的主urls.py文件
-    urlpatterns_content = get_urlpatterns_content(root_urlspy) # 锁定路由文本区域
+    urlpatterns_content = get_list_patt_content(PATT_URLPATTERNS, root_urlspy) # 锁定路由文本区域
 
     insert_str = f"path('{app_url.split('.')[0]}/', include('{app_url}')),"
     whole_text = read_file(root_urlspy)
@@ -160,9 +160,9 @@ def add_oneline_to_listattr(setting_path: str, patt, idata: str, indent: int=4, 
     """向列表变量添加一行"""
     content = get_list_patt_content(patt, setting_path)
     insert_data = " " * indent + f"{idata},\n"
-    if -1 == position:
+    if -1 == position: # 尾插
         new_content = f"{content}{insert_data}"
-    else:
+    else: # 头插
         new_content = f"\n{insert_data[:-1]}{content}"
     write_file(setting_path, read_file(setting_path).replace(content, new_content))
 
@@ -172,14 +172,14 @@ def add_lines_to_listattr(setting_path: str, patt, idatas: List[str], indent: in
         add_oneline_to_listattr(setting_path, patt, idata, indent)
 
 def pop_oneline_to_listattr(setting_path: str, patt, idata: str, indent: int=4)->None:
-    """向列表变量删除一行"""
+    """向settings.py中的列表类型变量删除一指定行"""
     content = get_list_patt_content(patt, setting_path)
     insert_data = " " * indent + f"{idata},\n"
     new_content = content.replace(insert_data, '')
     write_file(setting_path, read_file(setting_path).replace(content, new_content))
 
 def pop_lines_to_listattr(setting_path: str, patt, idatas: List[str], indent: int=4)->None:
-    """向列表变量删除多行"""
+    """向settings.py中的列表类型变量删除多指定行"""
     for idata in idatas:
         pop_oneline_to_listattr(setting_path, patt, idata, indent)
 

@@ -4,7 +4,7 @@ import wx.grid
 class TableAttrbutesDialog(wx.Dialog):
     
     def __init__(self, parent, **kwargs):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = f"{kwargs['node_name']}的字段属性", size=(660, 350))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = f"{kwargs['node_name']}的字段属性", size=(660, 350), style=wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.RESIZE_BORDER)
 
         self._init_UI()
 

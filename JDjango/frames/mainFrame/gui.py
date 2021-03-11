@@ -85,6 +85,7 @@ class MainFrameGUI(wx.Frame, BaseData):
         # self.shotcut_setting = self.sys_toolbar.AddTool(wx.ID_ANY, "选项/修改", wx.Bitmap(BITMAP_SETTINGS_PATH), shortHelp='选项/修改')
 
         self._append_separator_to_tools()
+        self.shotcut_code = self.sys_toolbar.AddTool(wx.ID_ANY, "VSCode打开", wx.Bitmap(BITMAP_CODE_PATH), shortHelp='VSCode打开')
         self.shotcut_command = self.sys_toolbar.AddTool(wx.ID_ANY, "shell", wx.Bitmap(BITMAP_COMMAND_PATH), shortHelp='shell')
 
         self._append_separator_to_tools()
@@ -394,6 +395,11 @@ class MainFrameGUI(wx.Frame, BaseData):
             self.registerkfenvRest,
             self.registerkfenvDrf,
             self.registerkfenvAll,
+            # """可用性失效，后期需修复"""
+            self.shotcut_code,
+            self.shotcut_command,
+            self.shotcut_makemigration,
+            self.shotcut_migrate,
             # 临时存放 结束
         ])
         self.allInitBtns['views'][CON_CONTROL_CHECK].append(self.views_check)

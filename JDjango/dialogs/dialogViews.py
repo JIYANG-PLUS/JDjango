@@ -31,7 +31,7 @@ class ViewGenerateDialog(wx.Dialog):
 
     def __init__(self, parent):
 
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增视图', size=(920, 600))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增视图', size=(920, 600), style=wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.RESIZE_BORDER)
 
         # 一些控制容器
         self.labelStaticTexts = []
@@ -281,7 +281,8 @@ class ViewGenerateDialog(wx.Dialog):
 
         views = [os.path.basename(_) for _ in views][0] # 取view文件名（带后缀）
 
-        content = get_urlpatterns_content(op_path) # 截取 urlpatterns 参数内容
+        content = get_list_patt_content(PATT_URLPATTERNS, op_path) # 截取 urlpatterns 参数内容
+        
         if '函数视图' == vchoiceViewType:
             temp = views.split('.')[0] + '.' + vinputViewName # 函数视图
         else:

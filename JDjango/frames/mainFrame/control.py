@@ -1,46 +1,8 @@
 from .gui import *
-from functools import wraps
 
 """
 作用：实现控件可见性可用性的控制
 """
-
-class VirtualEnvMustExistDecorator:
-    """装饰器：虚拟环境必须存在！！！"""
-    def __init__(self, *args, **kwargs): ...
-    def __call__(self, func, e=None):
-        @wraps(func)
-        def decorator(obj, *args, **kwargs):
-            env_path = env.getPython3Env()
-            if '' == env_path.strip() or not os.path.exists(env_path):
-                wx.MessageBox(f'虚拟环境未绑定，或绑定失败！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-                return
-            if len(args) > 0:
-                e = args[0]
-            return func(obj, e)
-        return decorator
-
-class RegisterOriginOrderDecorator:
-    """系统命令装饰"""
-    def __init__(self, *args, **kwargs):
-        self.cmdCodes = []
-        self.info_cmdCodes = {}
-        if 'msg' in kwargs:
-            self.msg = kwargs['msg']
-        else:
-            self.msg = 'UnKnown'
-    def __call__(self, func, e=None):
-        @wraps(func)
-        def decorator(obj, *args, **kwargs):
-            if len(args) > 0:
-                e = args[0]
-            func_return = func(obj, e)
-            if not func_return:
-                return
-            cmdObj, self.cmdCodes, self.info_cmdCodes = func_return
-            self.cmdCodes.append(cmdObj)
-            self.info_cmdCodes[cmdObj] = self.msg
-        return decorator
 
 class MainFrameGUIControl(MainFrameGUI):
 
@@ -113,6 +75,7 @@ class MainFrameGUIControl(MainFrameGUI):
     def _init_config(self):
         """初始化配置文件"""
         configs = {} # 全局配置文件待写入
+
         # 必要前缀赋值
         configs['dirname'] = self.dirname # 项目路径
         configs['project_name'] = os.path.basename(self.dirname) # 项目名称
@@ -132,34 +95,6 @@ class MainFrameGUIControl(MainFrameGUI):
             self.infos.AppendText(out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
             return
 
-        settings = {}
-        with open(self.path_settings, 'r', encoding='utf-8') as f:
-            text = PATT_BASE_DIR.sub('', f.read())
-            exec(f"BASE_DIR = r'{self.dirname}'", {}, settings)
-            exec(text, {}, settings)
-
-        configs['DATABASES'] = settings.get('DATABASES') # 数据库
-        configs['DEBUG'] = settings.get("DEBUG") # 调试状态
-        configs['LANGUAGE_CODE'] = settings.get("LANGUAGE_CODE") # 语言环境
-        configs['TIME_ZONE'] = settings.get("TIME_ZONE") # 时区
-        configs['USE_I18N'] = settings.get("USE_I18N") # 全局语言设置
-        configs['USE_L10N'] = settings.get("USE_L10N")
-        configs['USE_TZ'] = settings.get("USE_TZ") # 是否使用标准时区
-        configs['STATIC_URL'] = settings.get("STATIC_URL") # 静态文件路径
-        configs['ALLOWED_HOSTS'] = settings.get("ALLOWED_HOSTS") # 允许连接ip
-        configs['X_FRAME_OPTIONS'] = settings.get("X_FRAME_OPTIONS") # 是否开启iframe
-        configs['SECRET_KEY'] = settings.get("SECRET_KEY") # SECRET_KEY
-        configs['CORS_ORIGIN_ALLOW_ALL'] = settings.get("CORS_ORIGIN_ALLOW_ALL") # 跨域
-        temp_templates_app = settings.get("TEMPLATES")
-        if temp_templates_app and len(temp_templates_app) > 0:
-            try:
-                configs['TEMPLATES_APP_DIRS'] = temp_templates_app[0]['APP_DIRS'] # 是否开启应用程序模板文件路径
-                configs['TEMPLATES_DIRS'] = temp_templates_app[0]['DIRS'] # 默认模板路径
-            except:
-                configs['TEMPLATES_APP_DIRS'] = None
-                configs['TEMPLATES_DIRS'] = None # 默认模板路径
-        else:
-            configs['TEMPLATES_APP_DIRS'] = None
-            configs['TEMPLATES_DIRS'] = None # 默认模板路径
+        set_configs(self.path_settings, configs, self.dirname) # 第三个参数测试用
 
         dump_json(CONFIG_PATH, configs)  # 写入配置文件

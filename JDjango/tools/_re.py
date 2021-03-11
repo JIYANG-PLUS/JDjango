@@ -1,42 +1,5 @@
 import re
 
-# 正则表达式对象
-__all__ = [
-    # 属性
-    'PATT_BASE_DIR',
-    'PATT_INSTALLED_APPS',
-    'PATT_MIDDLEWARE',
-    'PATT_SECRET_KEY',
-    'PATT_DEBUG',
-    'PATT_ALLOWED_HOSTS',
-    'PATT_X_FRAME_OPTIONS',
-    'PATT_LANGUAGE_CODE',
-    'PATT_TIME_ZONE',
-    'PATT_USE_I18N',
-    'PATT_USE_L10N',
-    'PATT_USE_TZ',
-    'PATT_CORS_ORIGIN_ALLOW_ALL',
-    'PATT_CHARS',
-    'PATT_CHARSNUMBER',
-    'PATT_REPLACE',
-    'PATT_TITLE_NAME',
-    'PATT_HEADER_NAME',
-    'PATT_URLPATTERNS',
-    'PATT_DAtABASES',
-    'PATT_MODEL',
-    'PATT_CHARS_REVERSED',
-    'PATT_DIGITS_WHOLE',
-    'PATT_DIGITS_REVERSED',
-    'PATT_CAPTURE_URLSPATH_ARGS',
-    'PATT_FUNC_ARGS',
-    'PATT_COMMENT',
-    'PATT_REGISTER',
-    # 方法
-    'patt_sub_only_capture_obj', # 正则表达式sub替换仅限于捕捉内容，而不是整体替换
-    'patt_sub_only_capture_obj_add', # 正则表达式sub替换仅限于捕捉内容，替换后内容为：<原捕捉内容> + add_str 
-    'patt_sub_only_capture_obj_obtain_double', # 多个两侧括号属性，保留括号替换
-]
-
 PATT_BASE_DIR = re.compile(r'BASE_DIR\s*=\s*os.path.dirname\s*\(\s*os.path.dirname\s*\(\s*os.path.abspath\s*\(\s*__file__\s*\)\s*\)\s*\)')
 PATT_INSTALLED_APPS = re.compile(r"(?ms:INSTALLED_APPS\s.*?=\s.*?\[.*?\])")
 PATT_MIDDLEWARE = re.compile(r"(?ms:MIDDLEWARE\s.*?=\s.*?\[.*?\])")
@@ -48,8 +11,10 @@ PATT_LANGUAGE_CODE = re.compile(r"LANGUAGE_CODE\s*=\s*'(.*?)'")
 PATT_TIME_ZONE = re.compile(r"TIME_ZONE\s*=\s*'(.*?)'")
 PATT_USE_I18N = re.compile(r"USE_I18N\s*=\s*(False|True)")
 PATT_USE_L10N = re.compile(r"USE_L10N\s*=\s*(False|True)")
+PATT_DATABASES = re.compile(r'(?ms:DATABASES\s*=\s*\{.*)')
 PATT_USE_TZ = re.compile(r"USE_TZ\s*=\s*(False|True)")
 PATT_CORS_ORIGIN_ALLOW_ALL = re.compile(r"CORS_ORIGIN_ALLOW_ALL\s*=\s*(False|True)")
+
 PATT_CHARS = re.compile(r'^[a-zA-Z_]*$')
 PATT_CHARS_REVERSED = re.compile(r'[^a-zA-Z_]+')
 PATT_DIGITS_WHOLE = re.compile(r'^[1-9][0-9]*$')
@@ -59,13 +24,13 @@ PATT_REPLACE = re.compile(r'[$][{](.*?)[}]') # 模板定位替换语法
 PATT_TITLE_NAME = re.compile(r'admin.site.site_title\s*=\s*[\"\'](.*?)[\"\']')
 PATT_HEADER_NAME = re.compile(r'admin.site.site_header\s*=\s*[\"\'](.*?)[\"\']')
 PATT_URLPATTERNS = re.compile(r'(?ms:urlpatterns\s*=\s*\[.*)')
-PATT_DAtABASES = re.compile(r'(?ms:DATABASES\s*=\s*\{.*)')
 PATT_MODEL = re.compile(r'class\s+(.+?)\(\s*[a-zA-Z0-9]*?[.]*?Model\s*\):') # 定位模型类
 PATT_CAPTURE_URLSPATH_ARGS = re.compile(r'<(.+?)>') # 捕捉路由参数信息
 PATT_FUNC_ARGS = re.compile(r'def\s+.+?\((.*?)\)')
 PATT_COMMENT = re.compile(r'(\s*#.*?$)') # 注释
 PATT_REGISTER = re.compile(r'admin.site.register\s*\(\s*(.+?)\s*\)')
 
+"""扩展正则函数功能"""
 
 def patt_sub_only_capture_obj(patt: object, replace_str: str, old_str: str) -> str:
     """正则表达式sub替换仅限于捕捉内容，而不是整体替换"""

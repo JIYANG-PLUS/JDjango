@@ -34,18 +34,8 @@ def append_content(path: str, name: str, *args, **kwargs)->None:
     content = get_content(name, *args, **kwargs)
     append_file(path, content)
 
-def get_urlpatterns_content(path: str)->str:
-    """获取urlpatterns列表内容区域"""
-    content = read_file(path)
-    obj = PATT_URLPATTERNS.search(content)
-    if obj:
-        complex_content = PATT_URLPATTERNS.findall(content)[0]
-        return cut_content_by_doublecode(complex_content)
-    else:
-        return ''
-
 def get_list_patt_content(patt, path: str, leftCode: str='[', rightCode: str=']')->str:
-    """通过正则获取列表内容区域"""
+    """通过正则和括号匹配算法获取列表内容区域"""
     content = read_file(path)
     obj = patt.search(content)
     if obj:
@@ -53,6 +43,15 @@ def get_list_patt_content(patt, path: str, leftCode: str='[', rightCode: str=']'
         return cut_content_by_doublecode(complex_content, leftCode=leftCode, rightCode=rightCode)
     else:
         return ''
+
+def get_list_patt_content_contain_code(patt, content: str, leftCode: str='[', rightCode: str=']')->str:
+    """通过正则和括号匹配算法获取列表内容区域（包含两侧括号）"""
+    obj = patt.search(content)
+    if obj:
+        complex_content = patt.findall(content)[0]
+        return leftCode + cut_content_by_doublecode(complex_content, leftCode=leftCode, rightCode=rightCode) + rightCode
+    else:
+        return leftCode + rightCode
 
 def get_django_settings_path()->str:
     """获取Django路径下的settings.py的路径"""
@@ -76,12 +75,3 @@ def get_all_py_path_by_alias(alias: List[str])->List[str]:
             temp.append(_)
     return temp # 当前项目根路径下所有的admin类型源文件路径
 
-def get_databases_content(path: str)->str:
-    """获取DATABASE配置信息"""
-    content = read_file(path)
-    obj = PATT_DAtABASES.search(content)
-    if obj:
-        complex_content = PATT_DAtABASES.findall(content)[0]
-        return cut_content_by_doublecode(complex_content, leftCode='{', rightCode='}')
-    else:
-        return ''

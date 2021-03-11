@@ -83,13 +83,5 @@ class Reducer:
             f.write(cls.reduce_json(path))
 
 if __name__ == "__main__":
-    # # pprint(datas)
-    # print(datas)
     os.chdir(r'C:\Users\PC\desktop')
     Reducer.json_save_to('./test.json')
-
-
-# 待测试
-# 退货通知单 下推 销售退货单 ReturnNoticePushReturnStock
-# 拣货单 下推 直接调拨单 PickingPushDirectTransfer 【子单据体赋值情况、直接调拨单审核反审核功能】
-# 

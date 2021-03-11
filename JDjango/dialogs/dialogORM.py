@@ -16,7 +16,7 @@ from ..settings import CONFIG_PATH
 class ORMDialog(wx.Dialog):
     
     def __init__(self, parent, **kwargs):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = "ORM一键生成系统", size=(888, 540))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = "ORM一键生成系统", size=(888, 540), style=wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.RESIZE_BORDER)
 
         self._init_UI()
 

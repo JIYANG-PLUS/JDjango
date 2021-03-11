@@ -11,7 +11,7 @@ class DocumentationDialog(wx.Dialog):
 
     def __init__(self, parent):
 
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '帮助文档', size=(1200, 800))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '帮助文档', size=(1200, 800), style=wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.RESIZE_BORDER)
         
         labels = wx.Notebook(self)
         self.officialdocs = wx.Panel(labels) # 官方文档

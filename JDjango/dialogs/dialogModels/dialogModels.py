@@ -1,14 +1,7 @@
 import wx, json, glob, os, string
 import wx.lib.buttons as buttons
 from wx.lib import scrolledpanel
-from .dialogTips import *
-from ..tools._tools import *
-from ..tools._re import *
-from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS
-from ..tools import environment as env
-from ..tools import models as toolModel
-from ..miniCmd.djangoCmd import *
-from ..constant import *
+from ..common import *
 
 """
 Mac上布局有BUG，推测是RadioBox和scrolledpanel组合使用的问题，Mac上勉强还能用，暂时不改。（已修复，控件顺序影响布局）
@@ -43,7 +36,7 @@ STATIC_TEXT_WIDTH = -1 # StaticText宽度
 
 class ModelsCreateDialog(wx.Dialog):
     def __init__(self, parent):
-        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(730, 666))
+        wx.Dialog.__init__(self, parent, id = wx.ID_ANY, title = '新增模型', size=(730, 666), style=wx.DEFAULT_DIALOG_STYLE|wx.MAXIMIZE_BOX|wx.MINIMIZE_BOX|wx.RESIZE_BORDER)
 
         # 必要的控制容器
         self.allArgs = [] # 所有的参数选项

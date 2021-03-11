@@ -1,5 +1,6 @@
 from .listener import *
 import subprocess
+
 """
 作用：实现事件功能
 """
@@ -200,7 +201,14 @@ class MainFrameFuncs(MainFrameListener):
                 TipsMessageOKBox(self, f'检测到选择的文件夹下存在其它文件，禁止操作。', '提示')
             else:
                 venv.create(env_dir, system_site_packages=False, clear=True, symlinks=False, with_pip=True, prompt=None)
-                TipsMessageOKBox(self, f'创建成功，虚拟目录：{env_dir}', '提示')
+                # 分操作系统自动绑定python解释器
+                this_platform = env.getPlatform()
+                if 'windows' == this_platform.lower():
+                    temp_path = os.path.join(env_dir, 'Scripts', 'python.exe')
+                    env.setPython3Env(temp_path)
+                    TipsMessageOKBox(self, f'创建并绑定成功，命令路径：{temp_path}', '提示')
+                else:
+                    TipsMessageOKBox(self, f'创建成功，虚拟目录：{env_dir}', '提示')
         dlg.Destroy()
 
     def onPortProgressKillProgress(self, e):
@@ -394,7 +402,15 @@ class MainFrameFuncs(MainFrameListener):
         
     def onAbout(self, e):
         """关于"""
-        TipsMessageOKBox(self, "关于软件：目前为个人使用版。【部分功能正在实现】", CON_TIPS_COMMON)
+        aboutInfo = wx.adv.AboutDialogInfo()
+        aboutInfo.SetName("JDjango")
+        aboutInfo.SetVersion(MY_APP_VERSION_STRING)
+        aboutInfo.SetDescription(T_("一种快速编写Django的辅助工具！QQ交流群：781517315"))
+        aboutInfo.SetCopyright("(C) 2020-2021")
+        aboutInfo.SetWebSite("https://github.com/JIYANG-PLUS/JDjango")
+        aboutInfo.AddDeveloper("笔小芯 -- jiyangj@foxmail.com")
+
+        wx.adv.AboutBox(aboutInfo)
 
     def onExit(self, e):
         """退出"""

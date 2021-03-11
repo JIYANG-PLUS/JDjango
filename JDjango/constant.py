@@ -1,3 +1,6 @@
+# 版本
+MY_APP_VERSION_STRING = 'V-0.0.1'
+
 # mainFrame.py
 CON_CONTROL_CHECK = 'check'
 CON_CONTROL_FIX = 'fix'

@@ -31,6 +31,7 @@ BITMAP_MIGRATE_PATH = os.path.join(BITMAP_DIR, f'migrate_{BITMAP_SIZE}px.png')
 BITMAP_MAKEMIGRATION_PATH = os.path.join(BITMAP_DIR, f'makemigration_{BITMAP_SIZE}px.png')
 BITMAP_FILE_PATH = os.path.join(BITMAP_DIR, f'file_{BITMAP_SIZE}px.png')
 BITMAP_PIPINSTALL_PATH = os.path.join(BITMAP_DIR, f'pipinstall_{BITMAP_SIZE}px.png')
+BITMAP_CODE_PATH = os.path.join(BITMAP_DIR, f'code_{BITMAP_SIZE}px.png')
 
 """跨域中间件"""
 COR_MIDDLEWARE = "'corsheaders.middleware.CorsMiddleware'"

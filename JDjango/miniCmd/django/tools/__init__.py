@@ -7,7 +7,7 @@
 # 根路由默认为urls.py，如非必要，请勿取别名。
 
 """
-from .common import get_django_settings_path, get_urlpatterns_content
+from .common import *
 from .gets import *
 from .sets import *
 from .judge import *

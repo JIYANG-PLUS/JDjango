@@ -48,7 +48,7 @@ def get_app_rooturl_config_by_appname(appname: str)->str:
     assert len(alias) > 0
     # 获取根路由
     root_urlpath = os.path.join(CONFIG['dirname'], CONFIG['project_name'], alias[0]) # 默认取第一个
-    urlpatterns = get_urlpatterns_content(root_urlpath).split('\n') # url内容区
+    urlpatterns = get_list_patt_content(PATT_URLPATTERNS, root_urlpath).split('\n') # url内容区
 
     temp_include = appname + '.' + alias[0].split('.')[0]
 
@@ -125,7 +125,7 @@ def judge_in_main_urls()->List[str]:
     root_path = config['dirname'] # Django项目根路径
     project_name = config['project_name'] # 项目名称
     root_urlspy = os.path.join(root_path, project_name, 'urls.py') # 定位项目的主urls.py文件
-    urlpatterns_content = get_urlpatterns_content(root_urlspy) # 锁定路由文本区域
+    urlpatterns_content = get_list_patt_content(PATT_URLPATTERNS, root_urlspy) # 锁定路由文本区域
     app_urls = get_all_need_register_urls(config)
     return [_ for _ in app_urls if _ not in urlpatterns_content]
 

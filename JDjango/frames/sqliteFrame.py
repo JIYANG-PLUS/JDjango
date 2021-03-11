@@ -141,6 +141,7 @@ class SQLiteManageFrame ( wx.Frame ):
 			else:
 				self.sql_msg.SetValue(f"执行成功，受影响行数：{affect_rows}。")
 
+
 	def _init_table(self):
 		"""初始化表格"""
 		self.attrbutesGrid = wx.grid.Grid( self.leftRightPanel, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -192,7 +193,6 @@ class SQLiteManageFrame ( wx.Frame ):
 		for row, _ in enumerate(datas):
 			for col, data in enumerate(_):
 				self.attrbutesGrid.SetCellValue(row, col, f'{data}')
-		
 
 	def onRightTreeClick(self, e):
 		"""树子项右击直接查看属性"""
