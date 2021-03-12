@@ -1,5 +1,4 @@
-import wx
-import wx.grid
+from ..common import *
 
 class TableAttrbutesDialog(wx.Dialog):
     

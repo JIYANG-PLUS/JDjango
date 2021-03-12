@@ -1,11 +1,4 @@
-import wx, os
-import wx.lib.buttons as buttons
-import wx.html2
-from ..tools._tools import *
-from .. settings import DJANGO_DOCS_URL, LOCAL_DOCS_PATH
-from ..tools import environment as env
-from ..tools import models as toolModel
-from ..miniCmd.djangoCmd import *
+from ..common import *
 
 class DocumentationDialog(wx.Dialog):
 

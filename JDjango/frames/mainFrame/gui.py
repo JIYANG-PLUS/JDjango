@@ -450,5 +450,5 @@ class MainFrameGUI(wx.Frame, BaseData):
 
     def _append_separator_to_tools(self):
         """向系统工具栏添加不可点击分割按钮"""
-        # self.sys_toolbar.AddSeparator()
-        self.sys_toolbar.AddTool(wx.ID_ANY, "", wx.Bitmap(BITMAP_SPLIT_PATH), shortHelp='我是分割符').Enable(False)
+        self.sys_toolbar.AddSeparator()
+        # self.sys_toolbar.AddTool(wx.ID_ANY, "", wx.Bitmap(BITMAP_SPLIT_PATH), shortHelp='我是分割符').Enable(False)

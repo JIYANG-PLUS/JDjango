@@ -1,15 +1,4 @@
-from os.path import basename
-import wx, json, glob, os
-import wx.lib.buttons as buttons
-from wx.lib import scrolledpanel
-from ..tools._tools import *
-from ..tools._re import *
-from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS
-from ..tools import environment as env
-from ..tools import models as toolModel
-from ..miniCmd.djangoCmd import *
-from ..constant import *
-from .dialogTips import *
+from ..common import *
 
 """
 ### 使用者自定义视图模板并为此模板编辑逻辑的步骤：【后期补全】

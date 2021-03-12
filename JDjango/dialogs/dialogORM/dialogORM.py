@@ -1,9 +1,4 @@
-import wx
-import wx.html2
-from .dialogTips import *
-from ..tools._tools import *
-from ..miniCmd import djangoCmd as djcmd
-from ..settings import CONFIG_PATH
+from ..common import *
 
 """
 ### 为一键生成器添加新的ORM模板
@@ -73,7 +68,7 @@ class ORMDialog(wx.Dialog):
             m2m_attr_name = 'tempAttr' # ManyToManyField 在本模型中的属性名
             m2m_model_name = 'ManyToManyModel' # ManyToManyField 模型名称
 
-            html_string = ''.join(djcmd.get_orm_code(
+            html_string = ''.join(get_orm_code(
                 mode = clickNodeName
                 , model_name = nodeName
                 , all_args = all_args
@@ -100,7 +95,7 @@ class ORMDialog(wx.Dialog):
             types = ['SELECT', 'INSERT', 'DELETE', 'UPDATE', 'JOIN', 'FIELD', 'AGGREGATE', 'TOOLS',]
             for app_name in app_names:
                 temp = self.tree.AppendItem(self.root, app_name)
-                models = djcmd.get_models_by_appname(app_name) # 通过应用程序名获取所有的模型名称
+                models = get_models_by_appname(app_name) # 通过应用程序名获取所有的模型名称
                 if models:
                     self.untouched.extend(models)
                     for model in models:

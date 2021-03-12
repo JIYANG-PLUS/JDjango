@@ -1,6 +1,3 @@
-import wx, json, glob, os, string
-import wx.lib.buttons as buttons
-from wx.lib import scrolledpanel
 from ..common import *
 
 """

@@ -1,14 +1,4 @@
-import wx, json, glob, os
-import wx.lib.buttons as buttons
-from wx.lib import scrolledpanel
-from ..tools._tools import *
-from ..tools._re import *
-from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS, COR_MIDDLEWARE
-from ..tools import environment as env
-from ..tools import models as model_env
-from ..miniCmd.djangoCmd import *
-from ..constant import *
-from .dialogTips import *
+from ..common import *
 
 LABEL_LEN = 99 # 数据库页签 标签 长度（用于美化布局）
 

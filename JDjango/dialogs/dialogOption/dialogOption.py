@@ -1,14 +1,4 @@
-import wx, json, glob, os
-import wx.lib.buttons as buttons
-from wx.lib import scrolledpanel
-from ..tools._tools import *
-from ..tools._re import *
-from ..settings import BASE_DIR, CONFIG_PATH, SETTINGSS, COR_MIDDLEWARE
-from ..tools import environment as env
-from ..tools import models as model_env
-from ..miniCmd.djangoCmd import *
-from ..constant import *
-from .dialogTips import *
+from ..common import *
 
 class AdminCreateSimpleDialog(wx.Dialog):
     def __init__(self, parent):
@@ -81,7 +71,7 @@ class AdminCreateSimpleDialog(wx.Dialog):
                 pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True) # 先取所有归属当前app下的文件路径
                 alias = [os.path.basename(_) for _ in env.getModelsAlias()] # 取所有模型别名（如：models.py）
                 pathModels = [_ for _ in pys if os.path.basename(_) in alias] # 以别名为依据，过滤所有文件中可能的模型文件
-                for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in model_env.get_models_from_modelspy(_) if mo not in already_regieter_models]:
+                for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in toolModel.get_models_from_modelspy(_) if mo not in already_regieter_models]:
                     self.listBoxModels.Append(' ------ '.join(obj)) # 赋值的同时标注模块的来源，用 ' ------ ' 隔开
 
     def onButtonClick(self, e):

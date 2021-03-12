@@ -18,7 +18,7 @@ PRINT_PATH = os.path.join(BASE_DIR, 'tools', 'print_console.py')
 BITMAP_DIR = os.path.join(BASE_DIR, 'static', 'bitmap')
 
 """矢量图路径"""
-BITMAP_SIZE = 24 # 矢量图大小，可取值：16、24
+BITMAP_SIZE = 16 # 矢量图大小，可取值：16、24
 BITMAP_EXIT_PATH = os.path.join(BITMAP_DIR, f'exit_{BITMAP_SIZE}px.png')
 BITMAP_SETTINGS_PATH = os.path.join(BITMAP_DIR, f'settings_{BITMAP_SIZE}px.png')
 BITMAP_DATABASE_PATH = os.path.join(BITMAP_DIR, f'database_{BITMAP_SIZE}px.png')
