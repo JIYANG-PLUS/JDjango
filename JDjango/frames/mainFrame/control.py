@@ -76,10 +76,10 @@ class MainFrameGUIControl(MainFrameGUI):
         """初始化配置文件"""
         configs = {} # 全局配置文件待写入
 
-        # 必要前缀赋值
         configs['dirname'] = self.dirname # 项目路径
         configs['project_name'] = os.path.basename(self.dirname) # 项目名称
         apps = os.listdir(self.dirname) # 所有的应用程序（包含主程序）
+
         try:
             apps.remove(configs['project_name']) # 移除主程序
         except:
@@ -87,14 +87,13 @@ class MainFrameGUIControl(MainFrameGUI):
             return
 
         configs['app_names'] = [_ for _ in apps if os.path.exists(os.path.join(self.dirname, _, 'migrations'))] # 以迁移目录为依据进行筛选
-        
         self.path_settings = os.path.join(self.dirname, configs['project_name'], 'settings.py')
+
         try:
             assert os.path.exists(self.path_settings)
         except Exception as e:
             self.infos.AppendText(out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
             return
-
-        set_configs(self.path_settings, configs, self.dirname) # 第三个参数测试用
-
-        dump_json(CONFIG_PATH, configs)  # 写入配置文件
+        else:
+            set_configs(self.path_settings, configs) # 第三个参数测试用
+            dump_json(CONFIG_PATH, configs)  # 写入配置文件

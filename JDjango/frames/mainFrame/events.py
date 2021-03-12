@@ -547,14 +547,12 @@ class MainFrameFuncs(MainFrameListener):
 
     def onAppsCheck(self, e):
         """应用程序 检测"""
-        apps = get_configs(CONFIG_PATH)['app_names']
-        settings = {}
+        apps = get_configs(CONFIG_PATH)['app_names'] # 实际的 所有 应用程序
         flag = 0
         with open(self.path_settings, 'r', encoding='utf-8') as f:
-            text = f.read().replace('__file__', '"."')
-            exec(text, {}, settings)
+            settings_apps = eval(get_list_patt_content_contain_code(PATT_INSTALLED_APPS, f.read()))
         for app in apps:
-            if app not in settings['INSTALLED_APPS']:
+            if app not in settings_apps:
                 self.unapps.add(app)
                 self.infos.AppendText(out_infos(f'{app}应用程序未注册！', 2))
                 flag = 1

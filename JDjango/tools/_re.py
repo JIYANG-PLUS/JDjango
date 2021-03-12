@@ -14,6 +14,9 @@ PATT_USE_L10N = re.compile(r"USE_L10N\s*=\s*(False|True)")
 PATT_DATABASES = re.compile(r'(?ms:DATABASES\s*=\s*\{.*)')
 PATT_USE_TZ = re.compile(r"USE_TZ\s*=\s*(False|True)")
 PATT_CORS_ORIGIN_ALLOW_ALL = re.compile(r"CORS_ORIGIN_ALLOW_ALL\s*=\s*(False|True)")
+PATT_STATIC_URL = re.compile(r"STATIC_URL\s*=\s*[\'\"](.*?)[\'\"]")
+PATT_TEMPLATES = re.compile(r'(?ms:TEMPLATES\s*=\s*\[.*)')
+PATT_ROOT_URLCONF = re.compile(r"ROOT_URLCONF\s*=\s*[\'\"](.*?)[\'\"]")
 
 PATT_CHARS = re.compile(r'^[a-zA-Z_]*$')
 PATT_CHARS_REVERSED = re.compile(r'[^a-zA-Z_]+')
@@ -30,7 +33,7 @@ PATT_FUNC_ARGS = re.compile(r'def\s+.+?\((.*?)\)')
 PATT_COMMENT = re.compile(r'(\s*#.*?$)') # 注释
 PATT_REGISTER = re.compile(r'admin.site.register\s*\(\s*(.+?)\s*\)')
 
-"""扩展正则函数功能"""
+"""扩展正则函数功能（独立功能）"""
 
 def patt_sub_only_capture_obj(patt: object, replace_str: str, old_str: str) -> str:
     """正则表达式sub替换仅限于捕捉内容，而不是整体替换"""

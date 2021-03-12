@@ -1,16 +1,18 @@
 {
-    "dirname": "/Users/jiyang/Desktop/HHH",
-    "project_name": "HHH",
+    "dirname": "C:\\Users\\PC\\Desktop\\djangoProject\\demo",
+    "project_name": "demo",
     "app_names": [
-        "ffhghg"
+        "app4556",
+        "demoapp",
+        "ghfgh"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Desktop/HHH/db.sqlite3"
+            "NAME": "d:\\sources\\GitHub\\JDjango\\resources\\db.sqlite3"
         }
     },
-    "DEBUG": true,
+    "DEBUG": false,
     "LANGUAGE_CODE": "zh-Hans",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
@@ -18,13 +20,25 @@
     "USE_TZ": true,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
-        "*"
+        "0.0.0.0"
     ],
-    "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
-    "CORS_ORIGIN_ALLOW_ALL": false,
-    "TEMPLATES_APP_DIRS": true,
-    "TEMPLATES_DIRS": [
-        "/Users/jiyang/Desktop/HHH/templates"
-    ]
+    "X_FRAME_OPTIONS": "'ALLOWALL'",
+    "SECRET_KEY": "oD=*(;wrK,9qi[xz|Ajg-V_5:A785nMafgwo/pGo1vqh]ZwdN{",
+    "CORS_ORIGIN_ALLOW_ALL": true,
+    "TEMPLATES": [
+        {
+            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "DIRS": [],
+            "APP_DIRS": true,
+            "OPTIONS": {
+                "context_processors": [
+                    "django.template.context_processors.debug",
+                    "django.template.context_processors.request",
+                    "django.contrib.auth.context_processors.auth",
+                    "django.contrib.messages.context_processors.messages"
+                ]
+            }
+        }
+    ],
+    "ROOT_URLCONF": "demo.urls"
 }

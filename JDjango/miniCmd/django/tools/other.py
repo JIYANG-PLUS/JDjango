@@ -1,4 +1,5 @@
 from .common import *
+from .sets import set_configs
 
 __all__ = [
 
@@ -188,40 +189,10 @@ def refresh_config()->None:
     PROJECT_CONFIG = get_configs(CONFIG_PATH)
     PROJECT_BASE_DIR = PROJECT_CONFIG['dirname']
     DIRSETTINGS = os.path.join(PROJECT_BASE_DIR, PROJECT_CONFIG['project_name'], 'settings.py')
-    # 更新配置文件
     temp_configs = {} # 全局配置文件待写入
-    # 必要前缀赋值
     temp_configs['dirname'] = PROJECT_BASE_DIR # 项目路径
     temp_configs['project_name'] = os.path.basename(PROJECT_BASE_DIR) # 项目名称
     apps = os.listdir(PROJECT_BASE_DIR) # 所有的应用程序（包含主程序）
     temp_configs['app_names'] = [_ for _ in apps if os.path.exists(os.path.join(PROJECT_BASE_DIR, _, 'migrations'))] # 以迁移目录为依据进行筛选
-    settings = {}
-    with open(DIRSETTINGS, 'r', encoding='utf-8') as f:
-        text = PATT_BASE_DIR.sub('', f.read())
-        exec(f"BASE_DIR = r'{PROJECT_BASE_DIR}'", {}, settings)
-        exec(text, {}, settings)
-    temp_configs['DATABASES'] = settings.get('DATABASES') # 数据库
-    temp_configs['DEBUG'] = settings.get("DEBUG") # 调试状态
-    temp_configs['LANGUAGE_CODE'] = settings.get("LANGUAGE_CODE") # 语言环境
-    temp_configs['TIME_ZONE'] = settings.get("TIME_ZONE") # 时区
-    temp_configs['USE_I18N'] = settings.get("USE_I18N") # 全局语言设置
-    temp_configs['USE_L10N'] = settings.get("USE_L10N")
-    temp_configs['USE_TZ'] = settings.get("USE_TZ") # 是否使用标准时区
-    temp_configs['STATIC_URL'] = settings.get("STATIC_URL") # 静态文件路径
-    temp_configs['ALLOWED_HOSTS'] = settings.get("ALLOWED_HOSTS") # 允许连接ip
-    temp_configs['X_FRAME_OPTIONS'] = settings.get("X_FRAME_OPTIONS") # 是否开启iframe
-    temp_configs['SECRET_KEY'] = settings.get("SECRET_KEY") # SECRET_KEY
-    temp_configs['CORS_ORIGIN_ALLOW_ALL'] = settings.get("CORS_ORIGIN_ALLOW_ALL") # 跨域
-    temp_templates_app = settings.get("TEMPLATES")
-    if temp_templates_app and len(temp_templates_app) > 0:
-        try:
-            temp_configs['TEMPLATES_APP_DIRS'] = temp_templates_app[0]['APP_DIRS'] # 是否开启应用程序模板文件路径
-            temp_configs['TEMPLATES_DIRS'] = temp_templates_app[0]['DIRS'] # 默认模板路径
-        except:
-            temp_configs['TEMPLATES_APP_DIRS'] = None
-            temp_configs['TEMPLATES_DIRS'] = None # 默认模板路径
-    else:
-        temp_configs['TEMPLATES_APP_DIRS'] = None
-        temp_configs['TEMPLATES_DIRS'] = None # 默认模板路径
-
+    set_configs(DIRSETTINGS, temp_configs)
     dump_json(CONFIG_PATH, temp_configs)  # 写入配置文件

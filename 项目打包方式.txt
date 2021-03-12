@@ -11,6 +11,9 @@ pyinstaller -F app.py
 #方式二： 打包生成【不带黑窗口】的单个【可执行文件】（仅Windows有效）
 pyinstaller -F -w app.py
 
+# 有图标的打包方式（https://www.easyicon.net/）
+pyinstaller -F -i ./image.ico app.py
+
 
 ### 其它注意点
 #1 若打包内存在相对路径，需要处理相对路径的导入问题，否则打包失败（本项目已处理相对路径问题，可正常打包）

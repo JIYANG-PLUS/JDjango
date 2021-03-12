@@ -105,5 +105,3 @@ class MainFrameListener(MainFrameGUIControl):
             其它
         '''
         self.Bind(wx.EVT_MENU, self.onExit, self.btnDirectExit) # 退出
-
-
