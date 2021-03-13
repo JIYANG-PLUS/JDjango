@@ -14,6 +14,8 @@ class MainFrameListener(MainFrameGUIControl):
     def _register_listener(self):
         """注册监听事件"""
 
+        self.Bind(wx.EVT_CLOSE, self.onCloseWindow)
+
         '''
             界面按钮监听
         '''

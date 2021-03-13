@@ -19,6 +19,8 @@ class BaseData:
         self.unurls = set() # 未注册的路由
         self.needfix = set() # 需要修复的模块
 
+        self.timer = None
+
     def _init_control_btn(self):
         """初始化功能按钮控制器"""
         for _ in classifies:

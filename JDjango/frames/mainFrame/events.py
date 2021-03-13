@@ -602,3 +602,13 @@ class MainFrameFuncs(MainFrameListener):
     def OnTest(self, e):
         """开发用，测试函数"""
         TipsMessageOKBox(self, "有效", CON_TIPS_COMMON)
+
+    def onCloseWindow(self, e):
+        """窗口关闭前操作"""
+        if self.timer is not None:
+            self.timer.Stop()
+            self.timer = None
+        self.Destroy()
+
+    def DoSearch(self,  text):
+        return True
