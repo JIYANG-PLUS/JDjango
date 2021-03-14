@@ -19,6 +19,10 @@
 # if success:
 #     return text_data.GetText()
 
-# 下载文件
+### 下载文件
 # from wx.tools import wxget
 # wx.tools.wxget.download_file(r'https://www.python.org/ftp/python/3.7.8/python-3.7.8.exe', trusted=True)
+
+### 输出错误栈
+# import traceback
+# print(traceback.print_exc())
