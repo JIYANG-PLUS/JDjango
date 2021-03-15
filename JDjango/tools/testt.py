@@ -16,16 +16,43 @@ class TestPanel(wx.Panel):
                 | wxpg.PG_AUTO_SORT
                 | wxpg.PG_TOOLBAR
         )
+
         pgPanel.ExtraStyle |= wxpg.PG_EX_HELP_AS_TOOLTIPS
 
-        pgPanel.AddPage( "Page 1 - Testing All" )
+        pgPanel.AddPage( "第一页" )
+
+        pgPanel.Append(wxpg.PropertyCategory("基本配置"))
+        pgPanel.Append(wxpg.StringProperty("名称",value="测试名称"))
 
         topsizer.Add(pgPanel, 1, wx.EXPAND | wx.ALL, 5)
 
+        # 注册监听界面值改变事件
+        pgPanel.Bind( wxpg.EVT_PG_CHANGED, self.OnPropGridChange )
+        pgPanel.Bind( wxpg.EVT_PG_PAGE_CHANGED, self.OnPropGridPageChange )
+        pgPanel.Bind( wxpg.EVT_PG_SELECTED, self.OnPropGridSelect )
+        pgPanel.Bind( wxpg.EVT_PG_RIGHT_CLICK, self.OnPropGridRightClick )
+
+        # 适应主窗口
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(panel, 1, wx.EXPAND)
         self.SetSizer(sizer)
         self.SetAutoLayout(True)
+
+    def OnPropGridChange(self, event):
+        """单元格值更新"""
+        p = event.GetProperty()
+
+    def OnPropGridPageChange(self, event):
+        """页面值更新"""
+        index = self.pg.GetSelectedPage()
+
+    def OnPropGridSelect(self, event):
+        """单元格选中事件"""
+        p = event.GetProperty()
+
+    def OnPropGridRightClick(self, event):
+        """单元格右击事件"""
+        p = event.GetProperty()
 
 
 class MainFrameGUI(wx.Frame):

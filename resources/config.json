@@ -1,13 +1,15 @@
 {
-    "dirname": "/Users/jiyang/Desktop/HHH",
-    "project_name": "HHH",
+    "dirname": "C:\\Users\\PC\\Desktop\\djangoProject\\demo",
+    "project_name": "demo",
     "app_names": [
-        "ffhghg"
+        "app4556",
+        "demoapp",
+        "ghfgh"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Documents/GitHub/JDjango/resources/db.sqlite3"
+            "NAME": "d:\\sources\\GitHub\\JDjango\\resources\\db.sqlite3"
         }
     },
     "DEBUG": false,
@@ -18,17 +20,15 @@
     "USE_TZ": true,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
-        "*"
+        "0.0.0.0"
     ],
-    "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
-    "CORS_ORIGIN_ALLOW_ALL": false,
+    "X_FRAME_OPTIONS": "'ALLOWALL'",
+    "SECRET_KEY": "oD=*(;wrK,9qi[xz|Ajg-V_5:A785nMafgwo/pGo1vqh]ZwdN{",
+    "CORS_ORIGIN_ALLOW_ALL": true,
     "TEMPLATES": [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
-            "DIRS": [
-                "/Users/jiyang/Documents/GitHub/JDjango/resources/templates"
-            ],
+            "DIRS": [],
             "APP_DIRS": true,
             "OPTIONS": {
                 "context_processors": [
@@ -40,5 +40,5 @@
             }
         }
     ],
-    "ROOT_URLCONF": "HHH.urls"
+    "ROOT_URLCONF": "demo.urls"
 }
