@@ -1,4 +1,5 @@
 import wx
+import wx.adv
 import wx.propgrid as wxpg
 
 class TestPanel(wx.Panel):
@@ -21,8 +22,76 @@ class TestPanel(wx.Panel):
 
         pgPanel.AddPage( "第一页" )
 
-        pgPanel.Append(wxpg.PropertyCategory("基本配置"))
-        pgPanel.Append(wxpg.StringProperty("名称",value="测试名称"))
+        ### 常用属性
+        pgPanel.Append(wxpg.PropertyCategory("常用属性"))
+        # 添加简单文本属性
+        txtProp = pgPanel.Append(wxpg.StringProperty("文本", value="默认名称"))
+        # 添加密码属性
+        pwdProp = pgPanel.Append(wxpg.StringProperty('密码', value='请输入密码'))
+        pwdProp.SetAttribute('Hint', 'This is a hint')
+        pwdProp.SetAttribute('Password', True)
+        # 添加整型属性
+        intProp = pgPanel.Append(wxpg.IntProperty("整数", value=100))
+        # 添加浮点型属性
+        floatProp = pgPanel.Append(wxpg.FloatProperty("浮点型", value=123.456))
+        # 添加布尔属性
+        boolProp = pgPanel.Append(wxpg.BoolProperty("布尔", value=True))
+        # 布尔属性复选框
+        checkboxProp = pgPanel.Append(wxpg.BoolProperty("复选框", value=True))
+        pgPanel.SetPropertyAttribute(checkboxProp, "UseCheckbox", True)
+        # pgPanel.SetPropertyAttribute("复选框", "UseCheckbox", True) # 效果等同于上一句
+
+
+        ### 更多属性
+        pgPanel.Append(wxpg.PropertyCategory("更多属性"))
+        # 多行长文本属性
+        longstrProp = pgPanel.Append(wxpg.LongStringProperty("长文本", value="This is a\nmulti-line string\nwith\ttabs\nmixed\tin."))
+        # 目录选择属性
+        dirProp = pgPanel.Append(wxpg.DirProperty("目录", value=r""))
+        # 文件选择属性
+        fileProp = pgPanel.Append(wxpg.FileProperty("文件", value=r""))
+        pgPanel.SetPropertyAttribute("文件", wxpg.PG_FILE_SHOW_FULL_PATH, 0) # 显示全路径
+        pgPanel.SetPropertyAttribute("文件", wxpg.PG_FILE_INITIAL_PATH, r".") # 文件选择初始路径
+        # 数组字符串属性
+        arraystrProp = pgPanel.Append( wxpg.ArrayStringProperty("数组字符串", value=['A','B','C']) )
+        # 枚举属性
+        enumProp = pgPanel.Append(
+            wxpg.EnumProperty("枚举", "枚举",
+                [
+                    '枚举1',
+                    '枚举2',
+                    '枚举3'
+                ],
+                [10, 11, 12],
+                0
+            )
+        )
+        # 可编辑枚举属性
+        editenumProp = pgPanel.Append(
+            wxpg.EditEnumProperty("可编辑枚举", "可编辑枚举",
+                ['A', 'B', 'C'],
+                [0, 1, 2],
+                "文本不在列表中"
+            )
+        )
+
+
+        ### 高级属性
+        pgPanel.Append(wxpg.PropertyCategory("高级属性"))
+        pgPanel.Append(wxpg.DateProperty("日期", value=wx.DateTime.Now()))
+        pgPanel.SetPropertyAttribute("日期", wxpg.PG_DATE_PICKER_STYLE, wx.adv.DP_DROPDOWN|wx.adv.DP_SHOWCENTURY)
+        pgPanel.Append(wxpg.FontProperty("字体", value=panel.GetFont()))
+        pgPanel.Append(wxpg.ColourProperty("颜色", value=panel.GetBackgroundColour()))
+        pgPanel.Append(wxpg.SystemColourProperty("系统颜色"))
+        pgPanel.Append(wxpg.ImageFileProperty("图片"))
+        pgPanel.Append(wxpg.MultiChoiceProperty("多选", choices=['多选1', '多选2', '多选+']))
+
+
+        ### 附加属性
+        pgPanel.Append(wxpg.PropertyCategory("附加属性"))
+        pgPanel.Append(wxpg.IntProperty("整数上下调整", value=256))
+        pgPanel.SetPropertyEditor("整数上下调整", "SpinCtrl")
+
 
         topsizer.Add(pgPanel, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -44,7 +113,7 @@ class TestPanel(wx.Panel):
 
     def OnPropGridPageChange(self, event):
         """页面值更新"""
-        index = self.pg.GetSelectedPage()
+        index = self.pgPanel.GetSelectedPage()
 
     def OnPropGridSelect(self, event):
         """单元格选中事件"""
