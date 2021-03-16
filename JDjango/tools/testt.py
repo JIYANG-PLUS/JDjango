@@ -23,7 +23,7 @@ class TestPanel(wx.Panel):
         pgPanel.AddPage( "第一页" )
 
         ### 常用属性
-        pgPanel.Append(wxpg.PropertyCategory("常用属性"))
+        pgPanel.Append(wxpg.PropertyCategory("1 - 常用属性"))
         # 添加简单文本属性
         txtProp = pgPanel.Append(wxpg.StringProperty("文本", value="默认名称"))
         # 添加密码属性
@@ -43,7 +43,7 @@ class TestPanel(wx.Panel):
 
 
         ### 更多属性
-        pgPanel.Append(wxpg.PropertyCategory("更多属性"))
+        pgPanel.Append(wxpg.PropertyCategory("2 - 更多属性"))
         # 多行长文本属性
         longstrProp = pgPanel.Append(wxpg.LongStringProperty("长文本", value="This is a\nmulti-line string\nwith\ttabs\nmixed\tin."))
         # 目录选择属性
@@ -77,7 +77,7 @@ class TestPanel(wx.Panel):
 
 
         ### 高级属性
-        pgPanel.Append(wxpg.PropertyCategory("高级属性"))
+        pgPanel.Append(wxpg.PropertyCategory("3 - 高级属性"))
         pgPanel.Append(wxpg.DateProperty("日期", value=wx.DateTime.Now()))
         pgPanel.SetPropertyAttribute("日期", wxpg.PG_DATE_PICKER_STYLE, wx.adv.DP_DROPDOWN|wx.adv.DP_SHOWCENTURY)
         pgPanel.Append(wxpg.FontProperty("字体", value=panel.GetFont()))
@@ -88,7 +88,7 @@ class TestPanel(wx.Panel):
 
 
         ### 附加属性
-        pgPanel.Append(wxpg.PropertyCategory("附加属性"))
+        pgPanel.Append(wxpg.PropertyCategory("4 - 附加属性"))
         pgPanel.Append(wxpg.IntProperty("整数上下调整", value=256))
         pgPanel.SetPropertyEditor("整数上下调整", "SpinCtrl")
 
