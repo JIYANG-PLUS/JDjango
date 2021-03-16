@@ -364,7 +364,7 @@ class SingleChoiceDialogAdapter(wxpg.PGEditorDialogAdapter):
             self.SetValue(s)
             return True
 
-        return False;
+        return False
 
 class SingleChoiceProperty(wxpg.StringProperty):
     def __init__(self, label, name=wxpg.PG_LABEL, value=''):

@@ -19,7 +19,7 @@ class SettingsDialog(wx.Dialog):
 
         self.DATA_SETTINGS = {} # settings.py 数据包
 
-        self._init_data()
+        # self._init_data()
 
         self._init_label_font()
         self._init_status()
@@ -50,130 +50,135 @@ class SettingsDialog(wx.Dialog):
         self.wholePanelSizer.Add(wholeToolsPanel, 0, wx.EXPAND | wx.ALL, 2)
 
         # 事件监听
-        self.Bind(wx.EVT_BUTTON, self.onBtnSaveConfig, self.saveConfig)
-    
+        # self.Bind(wx.EVT_BUTTON, self.onBtnSaveConfig, self.saveConfig)
+
     def _init_settings(self):
         """setings页面布局"""
-        self.otherPanel = scrolledpanel.ScrolledPanel(self.labels, -1) # 其它（可滚动面板）
-        self.otherPanel.SetupScrolling()
-        otherPanelSizer = wx.BoxSizer(wx.VERTICAL)
-        self.otherPanel.SetSizer(otherPanelSizer)
-        self.labels.AddPage(self.otherPanel, 'Settings')
+        self.settingsPanel = SettingsPropertyPanel(self.labels)
+        self.labels.AddPage(self.settingsPanel, 'Settings')
+    
+    # def _init_settings(self):
+    #     """setings页面布局"""
+    #     self.otherPanel = scrolledpanel.ScrolledPanel(self.labels, -1) # 其它（可滚动面板）
+    #     self.otherPanel.SetupScrolling()
+    #     otherPanelSizer = wx.BoxSizer(wx.VERTICAL)
+    #     self.otherPanel.SetSizer(otherPanelSizer)
+    #     self.labels.AddPage(self.otherPanel, 'Settings')
 
-        # SECRET_KEY
-        otherRefreshKeyPanel = wx.Panel(self.otherPanel)
-        otherRefreshKeyBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherRefreshKeyPanel.SetSizer(otherRefreshKeyBOX)
-        otherPanelSizer.Add(otherRefreshKeyPanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # SECRET_KEY
+    #     otherRefreshKeyPanel = wx.Panel(self.otherPanel)
+    #     otherRefreshKeyBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherRefreshKeyPanel.SetSizer(otherRefreshKeyBOX)
+    #     otherPanelSizer.Add(otherRefreshKeyPanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.btnRefreshSecretKey = buttons.GenButton(otherRefreshKeyPanel, -1, '重置SECRET_KEY') # 刷新 SECRET_KEY
-        self.inputRefreshSecretKey = wx.TextCtrl(otherRefreshKeyPanel, -1, style=wx.ALIGN_LEFT) # 显示 SECRET_KEY
-        self.inputRefreshSecretKey.Enable(False)
-        otherRefreshKeyBOX.Add(self.inputRefreshSecretKey, 1, wx.EXPAND | wx.ALL, 2)
-        otherRefreshKeyBOX.Add(self.btnRefreshSecretKey, 0, wx.EXPAND | wx.ALL, 2)
+    #     self.btnRefreshSecretKey = buttons.GenButton(otherRefreshKeyPanel, -1, '重置SECRET_KEY') # 刷新 SECRET_KEY
+    #     self.inputRefreshSecretKey = wx.TextCtrl(otherRefreshKeyPanel, -1, style=wx.ALIGN_LEFT) # 显示 SECRET_KEY
+    #     self.inputRefreshSecretKey.Enable(False)
+    #     otherRefreshKeyBOX.Add(self.inputRefreshSecretKey, 1, wx.EXPAND | wx.ALL, 2)
+    #     otherRefreshKeyBOX.Add(self.btnRefreshSecretKey, 0, wx.EXPAND | wx.ALL, 2)
         
-        # ALLOWED_HOSTS
-        nm = wx.StaticBox(self.otherPanel, -1, 'ALLOWED_HOSTS')
-        otherAllowedHostsPanel = wx.StaticBoxSizer(nm, wx.HORIZONTAL)
-        otherPanelSizer.Add(otherAllowedHostsPanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # ALLOWED_HOSTS
+    #     nm = wx.StaticBox(self.otherPanel, -1, 'ALLOWED_HOSTS')
+    #     otherAllowedHostsPanel = wx.StaticBoxSizer(nm, wx.HORIZONTAL)
+    #     otherPanelSizer.Add(otherAllowedHostsPanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.inputAllowedHosts = wx.TextCtrl(self.otherPanel, -1, style = wx.ALIGN_LEFT) # ip设置
-        otherAllowedHostsPanel.Add(self.inputAllowedHosts, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.inputAllowedHosts = wx.TextCtrl(self.otherPanel, -1, style = wx.ALIGN_LEFT) # ip设置
+    #     otherAllowedHostsPanel.Add(self.inputAllowedHosts, 1, wx.EXPAND | wx.ALL, 2)
 
-        # DEBUG
-        otherDebugPanel = wx.Panel(self.otherPanel)
-        otherDebugBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherDebugPanel.SetSizer(otherDebugBOX)
-        otherPanelSizer.Add(otherDebugPanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # DEBUG
+    #     otherDebugPanel = wx.Panel(self.otherPanel)
+    #     otherDebugBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherDebugPanel.SetSizer(otherDebugBOX)
+    #     otherPanelSizer.Add(otherDebugPanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosPanel = wx.RadioBox(otherDebugPanel, -1, "调式模式【DEBUG】", choices=['开启', '关闭'])
-        otherDebugBOX.Add(self.radiosPanel, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.radiosPanel = wx.RadioBox(otherDebugPanel, -1, "调式模式【DEBUG】", choices=['开启', '关闭'])
+    #     otherDebugBOX.Add(self.radiosPanel, 1, wx.EXPAND | wx.ALL, 2)
         
-        # LANGUAGE_CODE
-        otherLanguageCodePanel = wx.Panel(self.otherPanel)
-        otherLanguageCodeBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherLanguageCodePanel.SetSizer(otherLanguageCodeBOX)
-        otherPanelSizer.Add(otherLanguageCodePanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # LANGUAGE_CODE
+    #     otherLanguageCodePanel = wx.Panel(self.otherPanel)
+    #     otherLanguageCodeBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherLanguageCodePanel.SetSizer(otherLanguageCodeBOX)
+    #     otherPanelSizer.Add(otherLanguageCodePanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosLanguageCodePanel = wx.RadioBox(otherLanguageCodePanel, -1, "语言环境【LANGUAGE_CODE】", choices=['中文', '英文'])
-        otherLanguageCodeBOX.Add(self.radiosLanguageCodePanel, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.radiosLanguageCodePanel = wx.RadioBox(otherLanguageCodePanel, -1, "语言环境【LANGUAGE_CODE】", choices=['中文', '英文'])
+    #     otherLanguageCodeBOX.Add(self.radiosLanguageCodePanel, 1, wx.EXPAND | wx.ALL, 2)
         
-        # TIME_ZONE
-        otherTimeZonePanel = wx.Panel(self.otherPanel)
-        otherTimeZoneBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherTimeZonePanel.SetSizer(otherTimeZoneBOX)
-        otherPanelSizer.Add(otherTimeZonePanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # TIME_ZONE
+    #     otherTimeZonePanel = wx.Panel(self.otherPanel)
+    #     otherTimeZoneBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherTimeZonePanel.SetSizer(otherTimeZoneBOX)
+    #     otherPanelSizer.Add(otherTimeZonePanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区【TIME_ZONE】", choices=['伦敦时区', '上海时区', '美国芝加哥'])
-        otherTimeZoneBOX.Add(self.radiosTimeZonePanel, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.radiosTimeZonePanel = wx.RadioBox(otherTimeZonePanel, -1, "时区【TIME_ZONE】", choices=['伦敦时区', '上海时区', '美国芝加哥'])
+    #     otherTimeZoneBOX.Add(self.radiosTimeZonePanel, 1, wx.EXPAND | wx.ALL, 2)
         
-        # USE_I18N
-        otherUseI18NPanel = wx.Panel(self.otherPanel)
-        otherUseI18NBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherUseI18NPanel.SetSizer(otherUseI18NBOX)
-        otherPanelSizer.Add(otherUseI18NPanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # USE_I18N
+    #     otherUseI18NPanel = wx.Panel(self.otherPanel)
+    #     otherUseI18NBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherUseI18NPanel.SetSizer(otherUseI18NBOX)
+    #     otherPanelSizer.Add(otherUseI18NPanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosUseI18NPanel = wx.RadioBox(otherUseI18NPanel, -1, "国际化【USE_I18N】", choices=['开启', '关闭'])
-        otherUseI18NBOX.Add(self.radiosUseI18NPanel, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.radiosUseI18NPanel = wx.RadioBox(otherUseI18NPanel, -1, "国际化【USE_I18N】", choices=['开启', '关闭'])
+    #     otherUseI18NBOX.Add(self.radiosUseI18NPanel, 1, wx.EXPAND | wx.ALL, 2)
         
-        # USE_L10N
-        otherUseL10NPanel = wx.Panel(self.otherPanel)
-        otherUseL10NBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherUseL10NPanel.SetSizer(otherUseL10NBOX)
-        otherPanelSizer.Add(otherUseL10NPanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # USE_L10N
+    #     otherUseL10NPanel = wx.Panel(self.otherPanel)
+    #     otherUseL10NBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherUseL10NPanel.SetSizer(otherUseL10NBOX)
+    #     otherPanelSizer.Add(otherUseL10NPanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosUseL10NPanel = wx.RadioBox(otherUseL10NPanel, -1, "区域设置优先【USE_L10N】", choices=['开启', '关闭'])
-        otherUseL10NBOX.Add(self.radiosUseL10NPanel, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.radiosUseL10NPanel = wx.RadioBox(otherUseL10NPanel, -1, "区域设置优先【USE_L10N】", choices=['开启', '关闭'])
+    #     otherUseL10NBOX.Add(self.radiosUseL10NPanel, 1, wx.EXPAND | wx.ALL, 2)
         
-        # USE_TZ
-        otherUseTzPanel = wx.Panel(self.otherPanel)
-        otherUseTzBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherUseTzPanel.SetSizer(otherUseTzBOX)
-        otherPanelSizer.Add(otherUseTzPanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # USE_TZ
+    #     otherUseTzPanel = wx.Panel(self.otherPanel)
+    #     otherUseTzBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherUseTzPanel.SetSizer(otherUseTzBOX)
+    #     otherPanelSizer.Add(otherUseTzPanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区【USE_TZ】", choices=['开启', '关闭'])
-        otherUseTzBOX.Add(self.radiosUseTzPanel, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区【USE_TZ】", choices=['开启', '关闭'])
+    #     otherUseTzBOX.Add(self.radiosUseTzPanel, 1, wx.EXPAND | wx.ALL, 2)
 
-        # 主要是后台接口，暂时对静态文件、模板不予处理。
-        # STATIC_URL
-        # self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区【USE_TZ】", choices=['开启', '关闭'])
+    #     # 主要是后台接口，暂时对静态文件、模板不予处理。
+    #     # STATIC_URL
+    #     # self.radiosUseTzPanel = wx.RadioBox(otherUseTzPanel, -1, "系统时区【USE_TZ】", choices=['开启', '关闭'])
 
-        # STATICFILES_DIRS
+    #     # STATICFILES_DIRS
 
-        # STATIC_ROOT
+    #     # STATIC_ROOT
 
-        # MEDIA_URL
+    #     # MEDIA_URL
 
-        # MEDIA_ROOT
+    #     # MEDIA_ROOT
 
-        # 跨域 CORS_ORIGIN_ALLOW_ALL  第三方库 django-cors-headers
-        otherCorsOriginAllowAllPanel = wx.Panel(self.otherPanel)
-        otherCorsOriginAllowAllBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherCorsOriginAllowAllPanel.SetSizer(otherCorsOriginAllowAllBOX)
-        otherPanelSizer.Add(otherCorsOriginAllowAllPanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # 跨域 CORS_ORIGIN_ALLOW_ALL  第三方库 django-cors-headers
+    #     otherCorsOriginAllowAllPanel = wx.Panel(self.otherPanel)
+    #     otherCorsOriginAllowAllBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherCorsOriginAllowAllPanel.SetSizer(otherCorsOriginAllowAllBOX)
+    #     otherPanelSizer.Add(otherCorsOriginAllowAllPanel, 0, wx.EXPAND | wx.ALL, 2)
         
-        self.radiosCorsOriginAllowAllPanel = wx.RadioBox(otherCorsOriginAllowAllPanel, -1, "跨域请求", choices=['开启', '关闭'])
-        otherCorsOriginAllowAllBOX.Add(self.radiosCorsOriginAllowAllPanel, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.radiosCorsOriginAllowAllPanel = wx.RadioBox(otherCorsOriginAllowAllPanel, -1, "跨域请求", choices=['开启', '关闭'])
+    #     otherCorsOriginAllowAllBOX.Add(self.radiosCorsOriginAllowAllPanel, 1, wx.EXPAND | wx.ALL, 2)
         
-        # iframe
-        otherIframePanel = wx.Panel(self.otherPanel)
-        otherIframeBOX = wx.BoxSizer(wx.HORIZONTAL)
-        otherIframePanel.SetSizer(otherIframeBOX)
-        otherPanelSizer.Add(otherIframePanel, 0, wx.EXPAND | wx.ALL, 2)
+    #     # iframe
+    #     otherIframePanel = wx.Panel(self.otherPanel)
+    #     otherIframeBOX = wx.BoxSizer(wx.HORIZONTAL)
+    #     otherIframePanel.SetSizer(otherIframeBOX)
+    #     otherPanelSizer.Add(otherIframePanel, 0, wx.EXPAND | wx.ALL, 2)
 
-        self.radiosIframePanel = wx.RadioBox(otherIframePanel, -1, "iframe模式", choices=['开启', '关闭'])
-        otherIframeBOX.Add(self.radiosIframePanel, 1, wx.EXPAND | wx.ALL, 2)
+    #     self.radiosIframePanel = wx.RadioBox(otherIframePanel, -1, "iframe模式", choices=['开启', '关闭'])
+    #     otherIframeBOX.Add(self.radiosIframePanel, 1, wx.EXPAND | wx.ALL, 2)
         
-        # 事件
-        self.Bind(wx.EVT_BUTTON, self.onBtnRefreshSecretKey, self.btnRefreshSecretKey)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosPanel)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosIframePanel)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosLanguageCodePanel)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosTimeZonePanel)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseI18NPanel)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseL10NPanel)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseTzPanel)
-        self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosCorsOriginAllowAllPanel)
+    #     # 事件
+    #     self.Bind(wx.EVT_BUTTON, self.onBtnRefreshSecretKey, self.btnRefreshSecretKey)
+    #     self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosPanel)
+    #     self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosIframePanel)
+    #     self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosLanguageCodePanel)
+    #     self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosTimeZonePanel)
+    #     self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseI18NPanel)
+    #     self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseL10NPanel)
+    #     self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosUseTzPanel)
+    #     self.Bind(wx.EVT_RADIOBOX, self.onRadioBox, self.radiosCorsOriginAllowAllPanel)
 
     def _init_databases(self):
         """databases页面布局"""
@@ -534,68 +539,68 @@ class SettingsDialog(wx.Dialog):
             return False
         return True
 
-    def onBtnSaveConfig(self, e):
-        """保存修改"""
-        try:
-            CONFIGS = get_configs(CONFIG_PATH)
-            content_settings = read_file(self.DIRSETTINGS)
-            temp = content_settings
-            if None != self.DATA_SETTINGS.get('DEBUG'):
-                temp = patt_sub_only_capture_obj(PATT_DEBUG, self.DATA_SETTINGS['DEBUG'], temp)
-            if None != self.DATA_SETTINGS.get('USE_I18N'):
-                temp = patt_sub_only_capture_obj(PATT_USE_I18N, self.DATA_SETTINGS['USE_I18N'], temp)
-            if None != self.DATA_SETTINGS.get('USE_L10N'):
-                temp = patt_sub_only_capture_obj(PATT_USE_L10N, self.DATA_SETTINGS['USE_L10N'], temp)
-            if None != self.DATA_SETTINGS.get('USE_TZ'):
-                temp = patt_sub_only_capture_obj(PATT_USE_TZ, self.DATA_SETTINGS['USE_TZ'], temp)
-            if None != self.DATA_SETTINGS.get('CORS_ORIGIN_ALLOW_ALL'):
-                temp = patt_sub_only_capture_obj(PATT_CORS_ORIGIN_ALLOW_ALL, self.DATA_SETTINGS['CORS_ORIGIN_ALLOW_ALL'], temp)
-            if None != self.DATA_SETTINGS.get('X_FRAME_OPTIONS'):
-                if self.DATA_SETTINGS['X_FRAME_OPTIONS']: # 开启
-                    if not CONFIGS['X_FRAME_OPTIONS']: # 且原文件不存在
-                        TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates', 'settings', 'iframe.django')
-                        # 在文件末尾添加iframe开启代码
-                        write_file(self.DIRSETTINGS, temp) # 刷新
-                        append_file(self.DIRSETTINGS, read_file_list(TEMPLATE_DIR))
-                        temp = read_file(self.DIRSETTINGS) # 刷新
-                else: # 关闭（删除）
-                    temp = PATT_X_FRAME_OPTIONS.sub('', temp)
-            if None != self.DATA_SETTINGS.get('LANGUAGE_CODE'):
-                re_str = SETTINGSS['LANGUAGE_CODE'][self.DATA_SETTINGS['LANGUAGE_CODE']][0]
-                temp = patt_sub_only_capture_obj(PATT_LANGUAGE_CODE, re_str, temp)
-            if None != self.DATA_SETTINGS.get('TIME_ZONE'):
-                re_str = SETTINGSS['TIME_ZONE'][self.DATA_SETTINGS['TIME_ZONE']][0]
-                temp = patt_sub_only_capture_obj(PATT_TIME_ZONE, re_str, temp)
-            # 写入SECRET_KEY和HOST
-            temp = patt_sub_only_capture_obj(PATT_SECRET_KEY, self.inputRefreshSecretKey.GetValue(), temp)
-            host_contents = [f"'{_}'" for _ in self.inputAllowedHosts.GetValue().strip().split(',') if _]
-            temp = patt_sub_only_capture_obj_obtain_double(PATT_ALLOWED_HOSTS, ','.join(host_contents), temp)
+    # def onBtnSaveConfig(self, e):
+    #     """保存修改"""
+    #     try:
+    #         CONFIGS = get_configs(CONFIG_PATH)
+    #         content_settings = read_file(self.DIRSETTINGS)
+    #         temp = content_settings
+    #         if None != self.DATA_SETTINGS.get('DEBUG'):
+    #             temp = patt_sub_only_capture_obj(PATT_DEBUG, self.DATA_SETTINGS['DEBUG'], temp)
+    #         if None != self.DATA_SETTINGS.get('USE_I18N'):
+    #             temp = patt_sub_only_capture_obj(PATT_USE_I18N, self.DATA_SETTINGS['USE_I18N'], temp)
+    #         if None != self.DATA_SETTINGS.get('USE_L10N'):
+    #             temp = patt_sub_only_capture_obj(PATT_USE_L10N, self.DATA_SETTINGS['USE_L10N'], temp)
+    #         if None != self.DATA_SETTINGS.get('USE_TZ'):
+    #             temp = patt_sub_only_capture_obj(PATT_USE_TZ, self.DATA_SETTINGS['USE_TZ'], temp)
+    #         if None != self.DATA_SETTINGS.get('CORS_ORIGIN_ALLOW_ALL'):
+    #             temp = patt_sub_only_capture_obj(PATT_CORS_ORIGIN_ALLOW_ALL, self.DATA_SETTINGS['CORS_ORIGIN_ALLOW_ALL'], temp)
+    #         if None != self.DATA_SETTINGS.get('X_FRAME_OPTIONS'):
+    #             if self.DATA_SETTINGS['X_FRAME_OPTIONS']: # 开启
+    #                 if not CONFIGS['X_FRAME_OPTIONS']: # 且原文件不存在
+    #                     TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates', 'settings', 'iframe.django')
+    #                     # 在文件末尾添加iframe开启代码
+    #                     write_file(self.DIRSETTINGS, temp) # 刷新
+    #                     append_file(self.DIRSETTINGS, read_file_list(TEMPLATE_DIR))
+    #                     temp = read_file(self.DIRSETTINGS) # 刷新
+    #             else: # 关闭（删除）
+    #                 temp = PATT_X_FRAME_OPTIONS.sub('', temp)
+    #         if None != self.DATA_SETTINGS.get('LANGUAGE_CODE'):
+    #             re_str = SETTINGSS['LANGUAGE_CODE'][self.DATA_SETTINGS['LANGUAGE_CODE']][0]
+    #             temp = patt_sub_only_capture_obj(PATT_LANGUAGE_CODE, re_str, temp)
+    #         if None != self.DATA_SETTINGS.get('TIME_ZONE'):
+    #             re_str = SETTINGSS['TIME_ZONE'][self.DATA_SETTINGS['TIME_ZONE']][0]
+    #             temp = patt_sub_only_capture_obj(PATT_TIME_ZONE, re_str, temp)
+    #         # 写入SECRET_KEY和HOST
+    #         temp = patt_sub_only_capture_obj(PATT_SECRET_KEY, self.inputRefreshSecretKey.GetValue(), temp)
+    #         host_contents = [f"'{_}'" for _ in self.inputAllowedHosts.GetValue().strip().split(',') if _]
+    #         temp = patt_sub_only_capture_obj_obtain_double(PATT_ALLOWED_HOSTS, ','.join(host_contents), temp)
 
-            write_file(self.DIRSETTINGS, temp) # 更新settings.py文件
+    #         write_file(self.DIRSETTINGS, temp) # 更新settings.py文件
 
-            # 跨域中间件介入
-            if 'True' == self.DATA_SETTINGS.get('CORS_ORIGIN_ALLOW_ALL'): # 开启时写入中间件
-                # 检测是否正确配置虚拟环境
-                if not self._check_env_exist:
-                    wx.MessageBox(f'虚拟环境未绑定，或绑定失败！（仅跨域请求更新失败）', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-                    return
+    #         # 跨域中间件介入
+    #         if 'True' == self.DATA_SETTINGS.get('CORS_ORIGIN_ALLOW_ALL'): # 开启时写入中间件
+    #             # 检测是否正确配置虚拟环境
+    #             if not self._check_env_exist:
+    #                 wx.MessageBox(f'虚拟环境未绑定，或绑定失败！（仅跨域请求更新失败）', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+    #                 return
 
-                add_oneline_to_listattr(self.DIRSETTINGS, PATT_MIDDLEWARE, COR_MIDDLEWARE)
-                # 开进程，安装必须库
-                module_name = 'django-cors-headers'
-                import subprocess
-                env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
-                subprocess.Popen(f'{env_python3_pip} install {module_name}', shell=True)
-            else:
-                pop_oneline_to_listattr(self.DIRSETTINGS, PATT_MIDDLEWARE, COR_MIDDLEWARE)
+    #             add_oneline_to_listattr(self.DIRSETTINGS, PATT_MIDDLEWARE, COR_MIDDLEWARE)
+    #             # 开进程，安装必须库
+    #             module_name = 'django-cors-headers'
+    #             import subprocess
+    #             env_python3_pip = os.path.join(os.path.dirname(env.getPython3Env()), 'pip')
+    #             subprocess.Popen(f'{env_python3_pip} install {module_name}', shell=True)
+    #         else:
+    #             pop_oneline_to_listattr(self.DIRSETTINGS, PATT_MIDDLEWARE, COR_MIDDLEWARE)
 
-            refresh_config() # 更新配置文件【重要且必须！！！】
+    #         refresh_config() # 更新配置文件【重要且必须！！！】
 
-            self.DATA_SETTINGS = {} # 防止重复确定，重要！！！
-        except:
-            wx.MessageBox(f'错误，配置文件已损坏。', '错误', wx.OK | wx.ICON_INFORMATION)
-        else:
-            wx.MessageBox(f'修改成功！', '成功', wx.OK | wx.ICON_INFORMATION)
+    #         self.DATA_SETTINGS = {} # 防止重复确定，重要！！！
+    #     except:
+    #         wx.MessageBox(f'错误，配置文件已损坏。', '错误', wx.OK | wx.ICON_INFORMATION)
+    #     else:
+    #         wx.MessageBox(f'修改成功！', '成功', wx.OK | wx.ICON_INFORMATION)
         
     def onBtnModify(self, e):
         """重命名项目名称"""
@@ -654,29 +659,29 @@ class SettingsDialog(wx.Dialog):
                 pass # 待完成
         dlgA.Close(True)
 
-    def onRadioBox(self, e):
-        """单选框组事件"""
-        # 原则上只对需要改变的内容进行修改
-        key = e.GetId()
-        if key == self.radiosPanel.GetId(): # DEBUG
-            self.DATA_SETTINGS['DEBUG'] = 'True' if 0 == self.radiosPanel.GetSelection() else 'False'
-        elif key == self.radiosIframePanel.GetId(): # X_FRAME_OPTIONS
-            self.DATA_SETTINGS['X_FRAME_OPTIONS'] = True if 0 == self.radiosIframePanel.GetSelection() else False
-        elif key == self.radiosLanguageCodePanel.GetId(): # LANGUAGE_CODE
-            self.DATA_SETTINGS['LANGUAGE_CODE'] = self.radiosLanguageCodePanel.GetSelection()
-        elif key == self.radiosTimeZonePanel.GetId(): # TIME_ZONE
-            self.DATA_SETTINGS['TIME_ZONE'] = self.radiosTimeZonePanel.GetSelection()
-        elif key == self.radiosUseI18NPanel.GetId(): # USE_I18N
-            self.DATA_SETTINGS['USE_I18N'] = 'True' if 0 == self.radiosUseI18NPanel.GetSelection() else 'False'
-        elif key == self.radiosUseL10NPanel.GetId(): # USE_L10N
-            self.DATA_SETTINGS['USE_L10N'] = 'True' if 0 == self.radiosUseL10NPanel.GetSelection() else 'False'
-        elif key == self.radiosUseTzPanel.GetId(): # USE_TZ
-            self.DATA_SETTINGS['USE_TZ'] = 'True' if 0 == self.radiosUseTzPanel.GetSelection() else 'False'
-        elif key == self.radiosCorsOriginAllowAllPanel.GetId(): # CORS_ORIGIN_ALLOW_ALL
-            self.DATA_SETTINGS['CORS_ORIGIN_ALLOW_ALL'] = 'True' if 0 == self.radiosCorsOriginAllowAllPanel.GetSelection() else 'False'
+    # def onRadioBox(self, e):
+    #     """单选框组事件"""
+    #     # 原则上只对需要改变的内容进行修改
+    #     key = e.GetId()
+    #     if key == self.radiosPanel.GetId(): # DEBUG
+    #         self.DATA_SETTINGS['DEBUG'] = 'True' if 0 == self.radiosPanel.GetSelection() else 'False'
+    #     elif key == self.radiosIframePanel.GetId(): # X_FRAME_OPTIONS
+    #         self.DATA_SETTINGS['X_FRAME_OPTIONS'] = True if 0 == self.radiosIframePanel.GetSelection() else False
+    #     elif key == self.radiosLanguageCodePanel.GetId(): # LANGUAGE_CODE
+    #         self.DATA_SETTINGS['LANGUAGE_CODE'] = self.radiosLanguageCodePanel.GetSelection()
+    #     elif key == self.radiosTimeZonePanel.GetId(): # TIME_ZONE
+    #         self.DATA_SETTINGS['TIME_ZONE'] = self.radiosTimeZonePanel.GetSelection()
+    #     elif key == self.radiosUseI18NPanel.GetId(): # USE_I18N
+    #         self.DATA_SETTINGS['USE_I18N'] = 'True' if 0 == self.radiosUseI18NPanel.GetSelection() else 'False'
+    #     elif key == self.radiosUseL10NPanel.GetId(): # USE_L10N
+    #         self.DATA_SETTINGS['USE_L10N'] = 'True' if 0 == self.radiosUseL10NPanel.GetSelection() else 'False'
+    #     elif key == self.radiosUseTzPanel.GetId(): # USE_TZ
+    #         self.DATA_SETTINGS['USE_TZ'] = 'True' if 0 == self.radiosUseTzPanel.GetSelection() else 'False'
+    #     elif key == self.radiosCorsOriginAllowAllPanel.GetId(): # CORS_ORIGIN_ALLOW_ALL
+    #         self.DATA_SETTINGS['CORS_ORIGIN_ALLOW_ALL'] = 'True' if 0 == self.radiosCorsOriginAllowAllPanel.GetSelection() else 'False'
         
-    def onBtnRefreshSecretKey(self, e):
-        """刷新SECRET_KEY"""
-        new_key = generate_secret_key()
-        self.DATA_SETTINGS['SECRET_KEY'] = new_key
-        self.inputRefreshSecretKey.SetValue(new_key)
+    # def onBtnRefreshSecretKey(self, e):
+    #     """刷新SECRET_KEY"""
+    #     new_key = generate_secret_key()
+    #     self.DATA_SETTINGS['SECRET_KEY'] = new_key
+    #     self.inputRefreshSecretKey.SetValue(new_key)

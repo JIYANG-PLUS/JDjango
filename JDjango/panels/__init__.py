@@ -1,1 +1,1 @@
-from .PropertyPanel import *
+from .SettingsPropertyPanel import *

@@ -12,3 +12,4 @@ from ..tools import environment as env
 from ..tools import models as toolModel
 from ..miniCmd.djangoCmd import *
 from ..constant import *
+from ..panels import *
