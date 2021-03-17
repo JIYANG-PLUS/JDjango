@@ -1,16 +1,16 @@
 {
-    "dirname": "/Users/jiyang/Desktop/HHH",
-    "project_name": "HHH",
+    "dirname": "C:\\Users\\PC\\Desktop\\TestORM",
+    "project_name": "TestORM",
     "app_names": [
-        "ffhghg"
+        "testAPP"
     ],
     "DATABASES": {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": "/Users/jiyang/Documents/GitHub/JDjango/resources/db.sqlite3"
+            "NAME": "d:\\sources\\GitHub\\JDjango\\resources\\db.sqlite3"
         }
     },
-    "DEBUG": false,
+    "DEBUG": true,
     "LANGUAGE_CODE": "zh-Hans",
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
@@ -27,7 +27,7 @@
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
             "DIRS": [
-                "/Users/jiyang/Documents/GitHub/JDjango/resources/templates"
+                "d:\\sources\\GitHub\\JDjango\\resources\\templates"
             ],
             "APP_DIRS": true,
             "OPTIONS": {
@@ -40,5 +40,5 @@
             }
         }
     ],
-    "ROOT_URLCONF": "HHH.urls"
+    "ROOT_URLCONF": "TestORM.urls"
 }
