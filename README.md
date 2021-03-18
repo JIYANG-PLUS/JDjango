@@ -1,4 +1,4 @@
-# JDjango
+# JDjango（此项目在GitHub上暂时停止更新，目前选项配置功能模块不可用，已移至Gitee上更新）
  一个写Django项目的辅助工具
 <h1>V1.0.0版本实现功能：</h1>
 <ol>
