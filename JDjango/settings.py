@@ -6,7 +6,7 @@ BASE_DIR = os.path.join(
     , 'resources'
 )
 
-### pyinstaller 打包备用路径
+### pyinstaller 打包专用路径
 if not os.path.exists(BASE_DIR):
     BASE_DIR = os.path.join(os.getcwd(), 'resources')
 
@@ -15,7 +15,10 @@ ENV_PATH = os.path.join(BASE_DIR, 'environment.xml')
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'djangoTemplates')
 CMD_DIR = os.path.join(BASE_DIR, 'miniCmd')
 PRINT_PATH = os.path.join(BASE_DIR, 'tools', 'print_console.py')
+SITE_PACKAGES_PATH = os.path.join(BASE_DIR, 'tools', 'get_site_packages.py')
 BITMAP_DIR = os.path.join(BASE_DIR, 'static', 'bitmap')
+KV_PATH = os.path.join(BASE_DIR, 'propertys.json')
+PIPS_PATH = os.path.join(BASE_DIR, 'pips.json')
 
 """矢量图路径"""
 BITMAP_SIZE = 16 # 矢量图大小，可取值：16、24
@@ -33,6 +36,8 @@ BITMAP_FILE_PATH = os.path.join(BITMAP_DIR, f'file_{BITMAP_SIZE}px.png')
 BITMAP_PIPINSTALL_PATH = os.path.join(BITMAP_DIR, f'pipinstall_{BITMAP_SIZE}px.png')
 BITMAP_CODE_PATH = os.path.join(BITMAP_DIR, f'code_{BITMAP_SIZE}px.png')
 
+BITMAP_LIST_FIT_PATH = os.path.join(BITMAP_DIR, f'database_24px.png')
+
 """跨域中间件"""
 COR_MIDDLEWARE = "'corsheaders.middleware.CorsMiddleware'"
 
@@ -44,20 +49,6 @@ DJANGO_DOCS_URL = {
     '31' : r'https://docs.djangoproject.com/zh-hans/3.1/',
     '22' : r'https://docs.djangoproject.com/zh-hans/2.2/',
     'law' : r'https://flk.npc.gov.cn/', # 国家法律法规
-}
-
-"""settings.py文件所需常量"""
-SETTINGSS = {
-    # 这里的0和1表示单选框组的第一个和第二个
-    'LANGUAGE_CODE' : {
-        0 : ('zh-Hans', 'zh_Hans'), # 中文
-        1 : ('en-us', 'en_us', ), # 英文
-    },
-    'TIME_ZONE' : {
-        0 : ('UTC',), # 伦敦时区
-        1 : ('Asia/Shanghai',), # 上海时区 
-        2 : ('America/Chicago',), # 美国芝加哥
-    },
 }
 
 """本软件运行环境（该功能待定）"""

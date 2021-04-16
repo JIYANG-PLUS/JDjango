@@ -91,7 +91,7 @@ class ViewGenerateDialog(wx.Dialog):
         # self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLACK) # CON_COLOR_PURE_WHITE
 
         self.labelSelectFile = wx.StaticText(self.leftScrollPanel, -1, "选择视图所属的应用程序", size=(LABEL_COL_LEN, -1))
-        self.choiceSelectFile = wx.Choice(self.leftScrollPanel, -1, choices=[' ',] + SCONFIGS.app_names)
+        self.choiceSelectFile = wx.Choice(self.leftScrollPanel, -1, choices=[' ',] + djangotools.SCONFIGS.app_names())
         self.selectFilePanel.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
         self.selectFilePanel.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)
         # self.labelSelectFile.SetFont(wx.Font(16, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
@@ -239,23 +239,23 @@ class ViewGenerateDialog(wx.Dialog):
         vinputCodeReview = self.inputCodeReview.GetValue().strip()
 
         if not vchoiceSelectFile:
-            TipsMessageOKBox(self, '请选择视图即将写入的应用程序', '错误')
+            RichMsgDialog.showOkMsgDialog(self, '请选择视图即将写入的应用程序', '错误')
             return
 
         if not vchoiceViewType:
-            TipsMessageOKBox(self, '无法写入空数据', '错误')
+            RichMsgDialog.showOkMsgDialog(self, '无法写入空数据', '错误')
             return
 
         if not vinputViewName:
-            TipsMessageOKBox(self, '视图名称不允许为空', '错误')
+            RichMsgDialog.showOkMsgDialog(self, '视图名称不允许为空', '错误')
             return
 
         if not vinputReverseViewName:
-            TipsMessageOKBox(self, '反向名称不允许为空', '错误')
+            RichMsgDialog.showOkMsgDialog(self, '反向名称不允许为空', '错误')
             return
 
         if not vinputUrlPath or '/' == vinputUrlPath: # 后期增加
-            TipsMessageOKBox(self, '请正确填写路由路径', '错误')
+            RichMsgDialog.showOkMsgDialog(self, '请正确填写路由路径', '错误')
             return
 
         vinputUrlPath = vinputUrlPath if '/' == vinputUrlPath[-1] else vinputUrlPath+'/' # 必须以 / 结尾
@@ -270,7 +270,7 @@ class ViewGenerateDialog(wx.Dialog):
 
         views = [os.path.basename(_) for _ in views][0] # 取view文件名（带后缀）
 
-        content = get_list_patt_content(PATT_URLPATTERNS, op_path) # 截取 urlpatterns 参数内容
+        content = djangotools.get_list_patt_content(retools.PATT_URLPATTERNS, op_path) # 截取 urlpatterns 参数内容
         
         if '函数视图' == vchoiceViewType:
             temp = views.split('.')[0] + '.' + vinputViewName # 函数视图
@@ -281,7 +281,7 @@ class ViewGenerateDialog(wx.Dialog):
         append_file_whole(view_path, vinputCodeReview+'\n') # 写入视图
         write_file(op_path, read_file(op_path).replace(content, new_content)) # 注册路由
 
-        TipsMessageOKBox(self, '路由添加成功', '成功')
+        RichMsgDialog.showOkMsgDialog(self, '路由添加成功', '成功')
 
     def onChoiceReturnType(self, e):
         """视图返回对象"""
@@ -337,10 +337,10 @@ class ViewGenerateDialog(wx.Dialog):
     def onInputUrlPath(self, e):
         """路由路径指定"""
         path = self.inputUrlPath.GetValue().strip()
-        if PATT_CAPTURE_URLSPATH_ARGS.search(path):
+        if retools.PATT_CAPTURE_URLSPATH_ARGS.search(path):
             args = [
                 _ if -1 == _.find(':') else _[_.find(':')+1:] 
-                for _ in PATT_CAPTURE_URLSPATH_ARGS.findall(path)
+                for _ in retools.PATT_CAPTURE_URLSPATH_ARGS.findall(path)
             ]
             self.argsStruct['func_args'] = args
         else:
@@ -352,7 +352,7 @@ class ViewGenerateDialog(wx.Dialog):
         app_name = self.choiceSelectFile.GetString(self.choiceSelectFile.GetSelection()).strip()
         
         if app_name:
-            root_name = get_app_rooturl_config_by_appname(app_name)
+            root_name = djangotools.get_app_rooturl_config_by_appname(app_name)
             if root_name:
                 if '/' != root_name[-1]:
                     root_name += '/'
@@ -365,7 +365,7 @@ class ViewGenerateDialog(wx.Dialog):
 
         # 路由函数参数填充
         if self.argsStruct.get('func_args'):
-            temp_template = patt_sub_only_capture_obj_add(PATT_FUNC_ARGS, ', '+', '.join(self.argsStruct['func_args']), temp_template)
+            temp_template = retools.patt_sub_only_capture_obj_add(retools.PATT_FUNC_ARGS, ', '+', '.join(self.argsStruct['func_args']), temp_template)
 
         # 路由方法名/类名
         if self.argsStruct.get('view_name'):
@@ -396,13 +396,13 @@ class ViewGenerateDialog(wx.Dialog):
             return
 
         if CON_VIEW_TYPE_FUNC == view_type:
-            self.views_template = get_views_base_func()
+            self.views_template = djangotools.get_views_base_func()
             self.inputCodeReview.SetValue(self.views_template)
             # 显示本视图类型下的特殊参数设置
             self._show_allctrls_withouttype()
 
         elif CON_VIEW_TYPE_CLASS == view_type:
-            self.views_template = get_views_base_class()
+            self.views_template = djangotools.get_views_base_class()
             self.inputCodeReview.SetValue(self.views_template)
             # 显示本视图类型下的特殊参数设置
             self.inputViewNameStaticBox.Show(True)

@@ -1,0 +1,87 @@
+button#add-board {
+  color: #ffffff;
+}
+button#add-board:hover {
+  cursor: pointer;
+  color: aquamarine;
+}
+button.modify-board {
+  color: #ad2e2e;
+}
+button.modify-board:hover {
+  cursor: pointer;
+  color: aquamarine;
+}
+main > section {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.8);
+}
+main > section > div {
+  height: 400px;
+  width: 300px;
+  background: #ffffff;
+  border-radius: 5px;
+}
+main > section > div > h3 {
+  text-align: center;
+  border-bottom: black 1px solid;
+  position: relative;
+  padding: 8px 0;
+}
+main > section > div > h3 > span {
+  position: absolute;
+  right: 8px;
+  top: 0;
+}
+main > section > div > h3 > span:hover {
+  cursor: pointer;
+  color: #50ace6;
+}
+main > section > div > form > label {
+  display: block;
+  margin: 12px 3px;
+}
+main > section > div > form > label > span {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 800;
+}
+main > section > div > form > label > input {
+  display: block;
+  border: #000000 1px solid;
+  width: 100%;
+  height: 32px;
+  font-size: 20px;
+  padding: 0 6px;
+}
+main > section > div > form > label > input::placeholder {
+  font-size: 14px;
+  font-weight: 100;
+}
+main > section > div > form > label > textarea {
+  display: block;
+  width: 100%;
+  height: 188px;
+  font-size: 18px;
+  padding: 6px;
+}
+main > section > div > form > div {
+  text-align: center;
+}
+main > section > div > form > div > button {
+  border-radius: 5px;
+  border: 1px solid black;
+  padding: 12px 24px;
+}
+main > section > div > form > div > button:hover {
+  cursor: pointer;
+  background: black;
+  color: #ffffff;
+}

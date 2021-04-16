@@ -1,0 +1,139 @@
+body > div#div-plugin {
+  display: none;
+  height: 100vh;
+  background: #353e47;
+  padding: 36px 12px 0;
+}
+body > div#div-plugin > div.div-bar-detail-block {
+  padding: 16px;
+  display: flex;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left {
+  width: 270px;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left > button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #3E4A56;
+  width: 270px;
+  height: 56px;
+  border-bottom: 1px solid #363e46;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left > button > div:nth-of-type(1) {
+  background: #7D868C;
+  height: 56px;
+  width: 12px;
+  border-bottom: 1px solid #363e46;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left > button > div:nth-of-type(2) {
+  width: 256px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  color: #ffffff;
+  padding-left: 18px;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left > button > div:nth-of-type(2):hover {
+  background: #353e46 !important;
+  border: 1px solid #7D868C !important;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left > button:nth-of-type(1) > div:nth-of-type(1) {
+  background: #54bfda;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left > button:nth-of-type(1) > div:nth-of-type(2) {
+  background: #363e46;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left > button:hover {
+  cursor: pointer;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-left > button:hover > div:nth-of-type(1) {
+  background: #54bfda !important;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right {
+  flex: 1;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content {
+  display: none;
+  padding: 0 16px 16px;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content:nth-of-type(1) {
+  display: block;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > header {
+  height: 74px;
+  padding: 0 16px;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > header > h3 {
+  color: #51b4ce;
+  height: 48px;
+  font-size: 24px;
+  font-weight: 300;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 8px 0;
+  padding: 0 0 14px;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > header > h3:hover {
+  cursor: pointer;
+  color: #f7c744;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > section {
+  padding: 0 16px;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > section > article {
+  margin-bottom: 36px;
+  display: flex;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > section > article > div:nth-of-type(1) {
+  flex: 1;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > section > article > div:nth-of-type(2) {
+  flex: 1;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > section > article > div > h4 {
+  color: #51b4ce;
+  font-size: 24px;
+  font-weight: 300;
+  padding: 0 0 14px;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > section > article > div > h4:hover {
+  cursor: pointer;
+  color: #f7c744;
+}
+body > div#div-plugin > div.div-bar-detail-block > div.div-bar-detail-right > div.div-bar-detail-right-content > section > article > div > p {
+  width: 90%;
+  color: #ffffff;
+  line-height: 1.5;
+}
+body > div#div-about {
+  display: none;
+  background: #353e47;
+  padding: 12px 12px 0;
+  padding-bottom: 120px;
+}
+body > div#div-about > h1 {
+  color: #51b4ce;
+  height: 48px;
+  font-size: 24px;
+  font-weight: 400;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  margin: 16px 0;
+  padding: 0 0 14px;
+}
+body > div#div-about > h1::before {
+  content: "#";
+  margin-right: 12px;
+}
+body > div#div-about > p {
+  width: 96%;
+  margin: 0 auto;
+  color: #ffffff;
+  line-height: 1.8;
+  text-indent: 2em;
+  font-size: 16px;
+}
+body > div#div-about > p::first-letter {
+  font-size: 20px;
+  color: #76d6ee;
+}

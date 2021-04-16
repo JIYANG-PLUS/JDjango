@@ -1,0 +1,67 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% load myfilter %}
+{% block title %}板块-交流区-四象生八卦{% endblock %}
+{% block style %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'blog/css/board.css' %}">
+{% if user.is_superuser %}
+<link rel="stylesheet" href="{% static 'blog/css/board_add.css' %}">
+{% endif %}
+{% endblock %}
+{% block script %}{{ block.super }}
+{% if user.is_superuser %}
+<script src="{% static 'blog/js/board_add.js' %}"></script>
+{% endif %}
+{% endblock %}
+{% block nav-li %}
+<li><a href="{% url 'blog:index' %}">交流区</a></li><i class="fa fa-chevron-right" aria-hidden="true"></i>
+<li>所有版块{% if user.is_superuser %}【<button id="add-board">新增板块</button>】{% endif %}</li>
+{% endblock %}
+{% block header-button %}{% endblock %}
+{% block main %}
+<div>
+    {% for board in boards %}
+    <section>
+        <h3><a href="{% url 'blog:boartoarticles' board.pk %}">{{ board.name }}<i class="fa fa-hand-pointer-o" aria-hidden="true"></i></a><span>{{ board.b_articles.count }}</span></h3>
+        <p>{{ board.description }}{% if user.is_superuser %}【<button class="modify-board" data-pk="{{ board.pk }}">修改板块</button>】{% endif %}</p>
+    </section>
+    {% endfor %}
+</div>
+{% if user.is_superuser %}
+<section class="section-add-board">
+    <div>
+        <h3>新增板块<span class="cancel">×</span></h3>
+        <form method="post">
+            {% csrf_token %}
+            <label>
+                <span>板块名</span>
+                <input type="text" required placeholder="不超过30个字符" name="add_name">
+            </label>
+            <label>
+                <span>板块描述</span>
+                <textarea name="add_description" required placeholder="尽量简洁"></textarea>
+            </label>
+            <div><button type="submit">新增</button></div>
+        </form>
+    </div>
+</section>
+<section class="section-modify-board">
+    <div>
+        <h3>修改板块<span class="cancel">×</span></h3>
+        <form method="post">
+            {% csrf_token %}
+            <label>
+                <span>板块名</span>
+                <input type="text" required placeholder="不超过30个字符" name="modify_name">
+            </label>
+            <label>
+                <span>板块描述</span>
+                <textarea name="modify_description" required placeholder="尽量简洁"></textarea>
+            </label>
+            <input type="hidden" name="modify_board_pk" value="">
+            <div><button type="submit">修改</button></div>
+        </form>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

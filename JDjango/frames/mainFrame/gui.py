@@ -8,7 +8,7 @@ class MainFrameGUI(wx.Frame, BaseData):
 
     def __init__(self, parent = None):
         BaseData.__init__(self)
-        wx.Frame.__init__(self, parent, id = wx.ID_ANY, title = CON_JDJANGO_TITLE, pos = wx.DefaultPosition, size = wx.Size(960, 540), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
+        wx.Frame.__init__(self, parent, -1, title = CON_JDJANGO_TITLE, pos = wx.DefaultPosition, size = wx.Size(1000, 580), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL)
         
         self._init_UI()  # 初始化界面布局
         self._init_menu()  # 初始化菜单栏
@@ -23,19 +23,28 @@ class MainFrameGUI(wx.Frame, BaseData):
         '''
             大容器（主要是描出四周的黑色边框）
         '''
-        panel = wx.Panel(self)
-        panelSizer = wx.BoxSizer(wx.VERTICAL)
-        panel.SetSizer(panelSizer)
-        panel.SetBackgroundColour(CON_COLOR_GREY)
+        self.panel = wx.Panel(self)
+        self.panelSizer = wx.BoxSizer(wx.VERTICAL)
+        self.panel.SetSizer(self.panelSizer)
+        # self.panel.SetBackgroundColour(CON_COLOR_GREY)
+        self.panel.SetBackgroundColour(CON_COLOR_MAIN)
+
+        '''
+            顶部弹出信息框
+        '''
+        self.infoBar = wx.InfoBar(self.panel)
+        self.panelSizer.Add(self.infoBar, 0, wx.EXPAND)
+        ###  使用方式  ###
+        # self.infoBar.ShowMessage("检测成功，具体内容详见输出窗口。", wx.ICON_INFORMATION)
+        # 可选第二参数：wx.ICON_NONE、wx.ICON_INFORMATION、wx.ICON_QUESTION、wx.ICON_WARNING、wx.ICON_ERROR
 
         '''
             实际存储容器（控件全部在这里）
         '''
-        self.midPanel = wx.Panel(panel)
+        self.midPanel = wx.Panel(self.panel)
         self.midPanelSizer = wx.BoxSizer(wx.VERTICAL)
         self.midPanel.SetSizer(self.midPanelSizer)
-        panelSizer.Add(self.midPanel, 1, wx.EXPAND | wx.ALL, 3)
-        self.midPanel.SetBackgroundColour(CON_COLOR_WHITE)
+        self.midPanel.SetBackgroundColour('#ffffff')
 
         '''
             自定义工具条
@@ -43,16 +52,105 @@ class MainFrameGUI(wx.Frame, BaseData):
         self._init_self_tools()
 
         '''
-            项目路径提示框（显示项目路径）
-        '''
-        self.path = wx.TextCtrl(self.midPanel, -1)
-        self.midPanelSizer.Add(self.path, 0, wx.EXPAND | wx.ALL, 5)
-
-        '''
             输出提示面板（实时显示操作反馈信息）
         '''
-        self.infos = wx.TextCtrl(self.midPanel, -1, style=wx.TE_MULTILINE)
-        self.midPanelSizer.Add(self.infos, 1, wx.EXPAND | wx.ALL, 5)
+        self._init_choicebook()
+        self._init_labelbook()
+
+    def _init_labelbook(self):
+        """初始化标签切换控件"""
+        self.auiNotebook = aui.AuiNotebook(
+            self.panel,
+            style = wx.aui.AUI_NB_TAB_SPLIT # 无删除按钮
+                # | wx.aui.AUI_NB_TAB_MOVE # 标签可移动变换位置（不允许启用，首个标签不允许删除）
+                | wx.aui.AUI_NB_SCROLL_BUTTONS # 左右溢出部分隐藏
+                # | wx.aui.AUI_NB_WINDOWLIST_BUTTON # 允许上下左右拖拽
+                | wx.aui.AUI_NB_CLOSE_BUTTON # 在最右边显示关掉窗口按钮
+                # | wx.aui.AUI_NB_CLOSE_ON_ACTIVE_TAB # 仅在激活标签上显示关掉窗口按钮
+                # | wx.aui.AUI_NB_CLOSE_ON_ALL_TABS # 在所有标签上显示关掉窗口按钮
+                # | wx.aui.AUI_NB_MIDDLE_CLICK_CLOSE
+                # | wx.aui.AUI_NB_TOP # 限定标签只能显示在最上方，不能随意拖拽
+                # | wx.aui.AUI_NB_BOTTOM # 限定标签只能显示在最下方，不能随意拖拽
+        )
+        
+        self.labelBook = LB.LabelBook(
+            self.auiNotebook, -1, 
+            agwStyle = LB.INB_FIT_BUTTON
+                | LB.INB_SHOW_ONLY_TEXT # 仅显示文本
+                | LB.INB_LEFT # 显示在右边
+                | LB.INB_BORDER # 画出边界
+                | LB.INB_DRAW_SHADOW # 描绘按钮阴影
+                # | LB.INB_GRADIENT_BACKGROUND # 绘制渐变色
+                | LB.INB_WEB_HILITE # hover超链接显示
+                | LB.INB_FIT_LABELTEXT
+                | LB.INB_BOLD_TAB_SELECTION
+        ) # 79 80 73 DFE0D9
+        self.labelBook.SetColour(LB.INB_TAB_AREA_BACKGROUND_COLOUR, '#2c3e50')
+        # self.labelBook.SetColour(LB.INB_ACTIVE_TAB_COLOUR, colour)
+        # self.labelBook.SetColour(LB.INB_TABS_BORDER_COLOUR, colour)
+        self.labelBook.SetColour(LB.INB_TEXT_COLOUR, '#ffffff')
+        # self.labelBook.SetColour(LB.INB_ACTIVE_TEXT_COLOUR, colour)
+        # self.labelBook.SetColour(LB.INB_HILITE_TAB_COLOUR, colour)
+        
+        self.panelSizer.Add(self.auiNotebook, 1, wx.EXPAND | wx.ALL, 5)
+
+        self.labelBook.AddPage(self.midPanel, '基本功能')
+        self.labelBook.AddPage(UrlsListPanel(self.panel), '路由')
+        self.labelBook.AddPage(wx.Panel(self.panel), '模型')
+        self.labelBook.AddPage(PipListCtrlPanel(self.panel), '三方库')
+        self.labelBook.AddPage(BatchExcelPanel(self.panel), '表格批处理')
+        self.labelBook.AddPage(wx.Panel(self.panel), '数据可视化')
+        self.labelBook.AddPage(wx.Panel(self.panel), '基爬虫API')
+        self.labelBook.AddPage(wx.Panel(self.panel), '人工智能API')
+        self.labelBook.AddPage(wx.Panel(self.panel), 'VUE快捷操作')
+        self.labelBook.AddPage(wx.Panel(self.panel), '命令')
+        self.labelBook.AddPage(WxPythonCtrlsPanel(self.panel), 'wxPython控件')
+
+        self.auiNotebook.AddPage(self.labelBook, '核心功能')
+        wx.CallAfter(self.auiNotebook.SendSizeEvent)
+
+        # self.labelBook.Refresh()
+
+    def _init_choicebook(self):
+        """初始化选择窗口"""
+        choicebook = wx.Choicebook(self.midPanel)
+        self.midPanelSizer.Add(choicebook, 1, wx.EXPAND | wx.ALL, 1)
+
+        '''
+            自定义消息命令行
+        '''
+        panel1 = wx.Panel(choicebook)
+        panel1Sizer = wx.BoxSizer(wx.VERTICAL)
+        panel1.SetSizer(panel1Sizer)
+
+        self.infos = wx.TextCtrl(panel1, -1, style=wx.TE_MULTILINE)
+        panel1Sizer.Add(self.infos, 1, wx.EXPAND | wx.ALL)
+
+        choicebook.AddPage(panel1, '自定义消息命令行')
+
+        '''
+            原生 Python Shell 命令行
+        '''
+        panel2 = wx.Panel(choicebook)
+        panel2Sizer = wx.BoxSizer(wx.VERTICAL)
+        panel2.SetSizer(panel2Sizer)
+
+        self.pyShell = wx.py.shell.Shell(panel2, introText='【此环境取自您的本机Python环境，即运行此程序的Python环境】')
+        panel2Sizer.Add(self.pyShell, 1, wx.EXPAND | wx.ALL, 0)
+
+        choicebook.AddPage(panel2, f'Python Shell（{sys.version}）')
+
+        '''
+            增强版 原生指令行
+        '''
+        panel3 = wx.Panel(choicebook)
+        panel3Sizer = wx.BoxSizer(wx.VERTICAL)
+        panel3.SetSizer(panel3Sizer)
+
+        self.pyShellMore = wx.py.crust.Crust(panel3)
+        panel3Sizer.Add(self.pyShellMore, 1, wx.EXPAND | wx.ALL, 0)
+
+        choicebook.AddPage(panel3, f'Python Shell增强版（{sys.version}）')
 
     def _init_menu(self):
         """设置工具栏"""
@@ -63,7 +161,6 @@ class MainFrameGUI(wx.Frame, BaseData):
         self._init_menu_perfix() # 单项修复 菜单项
         self._init_menu_admin() # 后台管理中心 菜单项
         self._init_menu_run() # 运行 菜单项
-        self._init_menu_integrate() # 集成 菜单项
         self._init_menu_helps() # 帮助 菜单项
         self._init_menu_quit() # 退出 菜单项
         
@@ -118,8 +215,7 @@ class MainFrameGUI(wx.Frame, BaseData):
         menus.Append(wx.ID_ANY, "&新建", menusCreate)
 
         menusCreateVersionProject =  wx.Menu()
-        self.create_project_1_10_0 = menusCreateVersionProject.Append(wx.ID_ANY, "&Django1.10.0", "Django1.10.0")
-        self.create_project = menusCreateVersionProject.Append(wx.ID_ANY, "&Django3.0.8", "Django3.0.8")
+        self.create_project = menusCreateVersionProject.Append(wx.ID_ANY, "&Django", "Django")
         menusCreate.Append(wx.ID_ANY, "&项目", menusCreateVersionProject)
         
         self._append_separator(menusCreate)
@@ -226,38 +322,6 @@ class MainFrameGUI(wx.Frame, BaseData):
         portProgress.Append(wx.ID_ANY, "&进程", progresser)
 
         self.portProgressKillProgress = progresser.Append(wx.ID_ANY, "&终止进程", "终止进程")
-        
-    def _init_menu_integrate(self):
-        """集成 菜单项"""
-        integrateMenu = wx.Menu()
-        self.topBar.Append(integrateMenu, "&集成")
-
-        kfenv = wx.Menu()
-        integrateMenu.Append(wx.ID_ANY, "&路由", kfenv)
-
-        restFramework = wx.Menu()
-        kfenv.Append(wx.ID_ANY, "&安装", restFramework)
-
-        self.djangorestframework = restFramework.Append(wx.ID_ANY, "&djangorestframework", "djangorestframework")
-        self.markdown = restFramework.Append(wx.ID_ANY, "&markdown", "markdown")
-        self.django_filter = restFramework.Append(wx.ID_ANY, "&django-filter", "django-filter")
-        self.drf_generators = restFramework.Append(wx.ID_ANY, "&drf-generators", "drf-generators")
-
-        self.registerkfenvRest = kfenv.Append(wx.ID_ANY, "&注册rest_framework", "注册rest_framework")
-        self.registerkfenvDrf = kfenv.Append(wx.ID_ANY, "&注册drf_generators", "注册drf_generators")
-        self.registerkfenvAll = kfenv.Append(wx.ID_ANY, "&一键注册", "一键注册")
-
-        self._append_separator(integrateMenu)
-        adminPFProject = wx.Menu()
-        integrateMenu.Append(wx.ID_ANY, "&皮肤", adminPFProject)
-
-        self.fastSimpleui = adminPFProject.Append(wx.ID_ANY, "&simpleui", "simpleui")
-
-        # adminPFProjectSimpleui = wx.Menu()
-        # adminPFProject.Append(wx.ID_ANY, "&simpleui", adminPFProjectSimpleui)
-
-        # self.installSimpleui = adminPFProjectSimpleui.Append(wx.ID_ANY, "&安装simpleui", "安装simpleui")
-        # self.registerSimpleui = adminPFProjectSimpleui.Append(wx.ID_ANY, "&注册simpleui", "注册simpleui")
 
     def _init_menu_quit(self):
         """退出"""
@@ -311,8 +375,8 @@ class MainFrameGUI(wx.Frame, BaseData):
         '''
             状态栏分为三份，比例为 1 : 2 : 1，0代表第一栏，以此类推。
         '''
-        sb = self.CreateStatusBar(3)
-        self.SetStatusWidths([-1, -2, -1])
+        sb = self.CreateStatusBar(4)
+        self.SetStatusWidths([-1, -2, -5, -1]) # 后期扩展
         self.SetStatusText("Ready", 0)
 
     def _init_self_tools(self):
@@ -323,7 +387,7 @@ class MainFrameGUI(wx.Frame, BaseData):
         toolPanel = wx.Panel(self.midPanel)
         toolPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         toolPanel.SetSizer(toolPanelSizer)
-        self.midPanelSizer.Add(toolPanel, 0, wx.EXPAND | wx.ALL, 5)
+        self.midPanelSizer.Add(toolPanel, 0, wx.EXPAND | wx.ALL, 0)
 
         '''
             自定义工具条 - 左侧
@@ -331,22 +395,26 @@ class MainFrameGUI(wx.Frame, BaseData):
         toolLeftPanel = wx.Panel(toolPanel)
         toolLeftPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         toolLeftPanel.SetSizer(toolLeftPanelSizer)
-        toolPanelSizer.Add(toolLeftPanel, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(toolLeftPanel, 0, wx.EXPAND | wx.ALL, 0)
 
         self.btn_select_project = buttons.GenButton(toolLeftPanel, -1, label='选择Django项目')
-        toolLeftPanelSizer.Add(self.btn_select_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_select_project, 0, wx.EXPAND | wx.ALL, 0)
 
         self.btn_check_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]校验')
-        toolLeftPanelSizer.Add(self.btn_check_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_check_project, 0, wx.EXPAND | wx.ALL, 0)
 
         self.btn_fixed_project = buttons.GenButton(toolLeftPanel, -1, label='[一键]修复')
-        toolLeftPanelSizer.Add(self.btn_fixed_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_fixed_project, 0, wx.EXPAND | wx.ALL, 0)
 
         self.btn_config_project = buttons.GenButton(toolLeftPanel, -1, label='选项/修改')
-        toolLeftPanelSizer.Add(self.btn_config_project, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_config_project, 0, wx.EXPAND | wx.ALL, 0)
 
         self.btn_clear_text = buttons.GenButton(toolLeftPanel, -1, label='清空')
-        toolLeftPanelSizer.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 2)
+        toolLeftPanelSizer.Add(self.btn_clear_text, 0, wx.EXPAND | wx.ALL, 0)
+        
+        self.btn_test = buttons.GenButton(toolLeftPanel, -1, label='测试按钮（后期删除）')
+        toolLeftPanelSizer.Add(self.btn_test, 0, wx.EXPAND | wx.ALL, 0)
+        self.btn_test.Show(False)
 
         '''
             自定义工具条 - 右侧
@@ -354,16 +422,13 @@ class MainFrameGUI(wx.Frame, BaseData):
         toolRightPanel = wx.Panel(toolPanel)
         toolRightPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         toolRightPanel.SetSizer(toolRightPanelSizer)
-        toolPanelSizer.Add(toolRightPanel, 1, wx.EXPAND | wx.ALL, 2)
-
-        # self.cmdTip = wx.StaticText(toolRightPanel, -1, "命令：")
-        # toolRightPanelSizer.Add(self.cmdTip, 0, wx.EXPAND | wx.ALL, 2)
+        toolPanelSizer.Add(toolRightPanel, 1, wx.EXPAND | wx.ALL, 0)
 
         self.cmdInput = wx.TextCtrl(toolRightPanel, -1, size=(200, -1))
-        toolRightPanelSizer.Add(self.cmdInput, 1, wx.EXPAND | wx.ALL, 2)
+        toolRightPanelSizer.Add(self.cmdInput, 1, wx.EXPAND | wx.ALL, 0)
         
         self.btn_exec = buttons.GenButton(toolRightPanel, -1, '执行/Enter')
-        toolRightPanelSizer.Add(self.btn_exec, 0, wx.EXPAND | wx.ALL, 2)
+        toolRightPanelSizer.Add(self.btn_exec, 0, wx.EXPAND | wx.ALL, 0)
 
     def _init_ctrls(self):
         """初始化控制器"""
@@ -392,9 +457,6 @@ class MainFrameGUI(wx.Frame, BaseData):
             # 临时存放 开始
             self.menuVSCode,
             self.helpsORM,
-            self.registerkfenvRest,
-            self.registerkfenvDrf,
-            self.registerkfenvAll,
             # """可用性失效，后期需修复"""
             self.shotcut_code,
             self.shotcut_command,

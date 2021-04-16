@@ -1,0 +1,125 @@
+body {
+    background: #ffffff;
+    & > header {
+        height: 70px;
+        display: flex;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(0, 0, 0, .2);
+        background: #155b7c;
+        color: #ffffff;
+        font-size: 24px;
+        position: sticky;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        & > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            &.header-logo {
+                width: 160px;
+                color: #ffffff;
+                position: relative;
+                &::after {
+                    content: '四象生八卦';
+                    font-size: 12px;
+                    position: absolute;
+                    right: -24px;
+                    bottom: 20px;
+                    color: rgb(239, 243, 2);
+                }
+            }
+            &.header-left {
+                flex: 1;
+                padding: 8px;
+                & > button {
+                    color: #ffffff;
+                    border: 1px solid #ffffff;
+                    padding: 6px;
+                    margin: 0 12px;
+                    width: 69px;
+                    &:hover {
+                        cursor: pointer;
+                        background: rgb(239, 243, 2) !important;
+                        color: black !important;
+                    }
+                }
+            }
+            &.header-right {
+                flex: 1;
+                padding: 8px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                & > div {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    & > a {
+                        color: #ffffff;
+                        font-size: 14px;
+                        margin: 0 6px;
+                        &:hover {
+                            color: #f79568;
+                            text-decoration: underline;
+                        }
+                    }
+                    &:nth-of-type(1) {
+                        margin-left: 24px;
+                    }
+                }
+            }
+        }
+    }
+    & > nav {
+        width: 95%;
+        margin: 0 auto;
+        padding: 12px 24px;
+        background: #155b7c;
+        color: #ffffff;
+        border-radius: 10px;
+        position: sticky;
+        top: 83px;
+        left: 0;
+        & > ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            & > li {
+                color: #c4bdbd;
+                & > a {
+                    color: #ffffff;
+                    text-decoration: underline;
+                    &:hover {
+                        color: yellow;
+                    }
+                }
+            }
+            & > i {
+                margin: 0 6px;
+            }
+        }
+        & > div {
+            position: absolute;
+            top: -14px;
+            height: 14px;
+            background: #155b7c;
+            width: 18px;
+            &:nth-of-type(1) {
+                left: 120px;
+            }
+            &:nth-of-type(2) {
+                right: 120px;
+            }
+        }
+    }
+    & > footer {
+        text-align: center;
+        padding: 24px 0;
+        background: #50ace6;
+        & > span {
+            color: #ffffff;
+        }
+    }
+}

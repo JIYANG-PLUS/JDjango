@@ -1,0 +1,41 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% load myfilter %}
+{% block title %}{{ article.title }}-交流区-四象生八卦{% endblock %}
+{% block style %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'blog/css/documentation.css' %}">
+{% endblock %}
+{% block script %}{{ block.super }}
+<script src="{% static 'blog/js/documentation.js' %}"></script>
+{% endblock %}
+{% block nav-li %}
+<li><a href="{% url 'blog:index' %}">交流区</a></li><i class="fa fa-chevron-right" aria-hidden="true"></i>
+<li><a href="{% url 'blog:boardetial' %}">所有版块</a></li><i class="fa fa-chevron-right" aria-hidden="true"></i>
+<li><a href="{% url 'blog:boartoarticles' article.board.pk %}">{{ article.board.name }}</a></li><i class="fa fa-chevron-right" aria-hidden="true"></i>
+<li>{{ article.title }}</li>
+{% endblock %}
+{% block header-button %}{% endblock %}
+{% block main %}
+<div>
+    <div class="a-title">
+        <h3>{{ article.title }}{% if article.isgood %}<span>【金选文章】</span>{% endif %}</h3>
+        <p class="a-title-label">
+            {% for l in article.label|split:"/" %}
+            <span><i class="fa fa-tag" aria-hidden="true"></i>{{ l }}</span>
+            {% endfor %}
+        </p>
+    </div>
+    <div class="abstract"><span>摘要：</span>{{ article.abstract }}</div>
+    {% for x in article.content|tojson %}
+    <article>{{ x }}</article>
+    {% endfor %}
+    <p class="name-time">【{{ article.author.username }}】</p>
+    <p class="name-time">【{{ article.create_time|date:"Y-m-d H:i:s" }}】</p>
+</div>
+<div>
+    <button id="btn-vote" data-flag="0"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i></button>
+    <div class="votes"><span id="num_votes">{{ article.votes }}</span></div>
+    <button id="btn-remark"><i class="fa fa-commenting" aria-hidden="true"></i></button>
+    <input type="text" name="pk" value="{{ article.pk }}">
+</div>
+{% endblock %}

@@ -1,0 +1,371 @@
+body {
+  height: 100vh;
+}
+body > main {
+  height: 100%;
+  display: flex;
+}
+body > main > div.left {
+  width: 120px;
+  height: 100%;
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+  background: #e5eceb;
+}
+body > main > div.left > div.back {
+  text-align: center;
+  margin: 12px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+body > main > div.left > div.back > a {
+  font-size: 32px;
+}
+body > main > div.left > div.back > a:hover {
+  color: #047ca1;
+}
+body > main > div.left > div.detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+body > main > div.left > div.detail > button {
+  color: #047ca1;
+  font-size: 18px;
+  margin: 6px 0;
+}
+body > main > div.left > div.detail > button:hover {
+  cursor: pointer;
+  color: #e912c5 !important;
+}
+body > main > div.left > div.detail > button:first-of-type {
+  color: #e912c5;
+}
+body > main > div.right {
+  flex: 1;
+  height: 100%;
+}
+body > main > div.right > div {
+  display: none;
+  padding: 16px 36px;
+}
+body > main > div.right > div > h3 {
+  font-size: 24px;
+  color: #4e2486;
+  margin-left: 2px;
+  margin-bottom: 20px;
+}
+body > main > div.right > div > h3 > i {
+  margin-right: 12px;
+}
+body > main > div.right > div > ul {
+  padding: 0 12px;
+  list-style-position: inside;
+  list-style-type: circle;
+}
+body > main > div.right > div > ul > li {
+  margin: 6px 0;
+}
+body > main > div.right > div#right-base-info {
+  display: block;
+}
+body > main > div.right > div#right-base-info > section {
+  margin: 12px 0;
+  padding: 12px 0;
+  background: #afe3f1;
+  border-left: 12px solid #047ca1;
+  padding-left: 12px;
+  font-size: 19px;
+  display: flex;
+  align-items: center;
+}
+body > main > div.right > div#right-base-info > section > span:first-of-type {
+  width: 135px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: right;
+  font-weight: 800;
+}
+body > main > div.right > div#right-base-info > section > span:nth-of-type(2) {
+  font-weight: 800;
+  font-size: 24px;
+  margin: 0 12px 0 6px;
+}
+body > main > div.right > div#right-base-info > section > span:last-of-type {
+  flex: 1;
+  text-decoration: underline;
+}
+body > main > div.right > div#right-base-info > section:hover {
+  border-left: 12px solid #e912c5;
+}
+body > main > div.right > div#right-only-code > div {
+  padding: 24px 12px;
+}
+body > main > div.right > div#right-only-code > div > p > button {
+  font-size: 18px;
+  font-weight: 800;
+  color: #4e2486;
+}
+body > main > div.right > div#right-only-code > div > p > button:hover {
+  cursor: pointer;
+  color: #e912c5;
+}
+body > main > div.right > div#right-only-code > div > p.p-info {
+  margin-top: 24px;
+}
+body > main > div.right > div#right-only-code > div > p.p-info > span:first-of-type {
+  padding: 6px 12px;
+  background: #047ca1;
+  color: #ffffff;
+}
+body > main > div.right > div#right-only-code > div > p.p-info > span:first-of-type::after {
+  content: '：';
+}
+body > main > div.right > div#right-only-code > div > p.p-info > span:last-of-type {
+  padding: 6px 12px;
+  background: #afe3f1;
+}
+body > main > div.right > div#right-only-code > div > p.p-info > button {
+  background: #ffffff;
+  color: black;
+  padding: 4px;
+}
+body > main > div.right > div#right-only-code > div > p.p-info > button:hover {
+  cursor: pointer;
+  color: #e912c5;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back {
+  display: none;
+  margin-top: 24px;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(1) {
+  display: flex;
+  align-items: center;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(1) > input[type='email'] {
+  padding: 6px 0 6px 12px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  width: 360px;
+  font-size: 18px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-right: none;
+  background: #e5eceb;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(1) > button {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background: #e5eceb;
+  height: 35px;
+  width: 120px;
+  border-left: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding: 0 6px;
+  font-weight: 800;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(1) > button:hover {
+  cursor: pointer;
+  color: #e912c5;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(2) {
+  display: none;
+  width: 480px;
+  align-items: center;
+  background: #e5eceb;
+  margin: 24px 0;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(2) > input {
+  flex: 1;
+  height: 33px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-right: none;
+  padding: 6px 0 6px 12px;
+  font-size: 16px;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(2) > input::placeholder {
+  font-weight: 100;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(2) > input:focus::placeholder {
+  font-weight: 800;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(2) > button {
+  flex: 1;
+  height: 33px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-left: none;
+  font-size: 16px;
+  font-weight: 800;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+body > main > div.right > div#right-only-code > div > div.send_and_back > div:nth-of-type(2) > button:hover {
+  cursor: pointer;
+  color: #e912c5;
+}
+body > main > div.right > div#right-valid-code {
+  overflow-y: scroll;
+  height: 100vh;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate {
+  padding: 24px 12px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > h4 {
+  font-size: 24px;
+  border-bottom: double 3px black;
+  margin-bottom: 12px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > h4 > i {
+  margin-right: 12px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > p::first-letter {
+  font-size: 20px;
+  font-weight: 800;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.first {
+  display: flex;
+  align-items: center;
+  margin: 24px 0 0 0;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.first > input {
+  width: 450px;
+  font-size: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-right: none;
+  padding: 2px 6px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.first > input::placeholder {
+  font-size: 14px;
+  font-weight: 100;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.first > input:focus::placeholder {
+  font-weight: 800;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.first > button {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-left: none;
+  height: 29px;
+  padding: 0 6px;
+  font-weight: 800;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.first > button:hover {
+  cursor: pointer;
+  color: #e912c5;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.second {
+  display: none;
+  margin: 12px 0;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.second > h5 {
+  color: #551a8b;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.second > h5 > i {
+  margin-right: 12px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.second > div {
+  border-left: 6px solid black;
+  margin: 6px 0;
+  padding: 0 6px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.second > div > span:first-of-type {
+  font-weight: 800;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.second > button {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-generate > div.second > button:hover {
+  cursor: pointer;
+  background: #4e2486;
+  color: #ffffff;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-history {
+  padding: 24px 12px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-history > h4 {
+  font-size: 24px;
+  border-bottom: double 3px black;
+  margin-bottom: 12px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-history > h4 > i {
+  margin-right: 12px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-history > table {
+  width: 100%;
+  text-align: center;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-history > table > thead {
+  font-size: 20px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-history > table > tbody {
+  font-size: 17px;
+}
+body > main > div.right > div#right-valid-code > div.right-valid-code-history > table > tbody > tr:hover {
+  background: #e2dfdf;
+}
+body > main > div.right > div#right-vaild-continue > div:first-of-type {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+}
+body > main > div.right > div#right-vaild-continue > div:first-of-type > input {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-right: none;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  font-size: 18px;
+  padding: 3px 6px;
+  width: 350px;
+}
+body > main > div.right > div#right-vaild-continue > div:first-of-type > input::placeholder {
+  font-weight: 100;
+  font-size: 14px;
+}
+body > main > div.right > div#right-vaild-continue > div:first-of-type > button {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-left: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  height: 29px;
+  padding: 0 6px;
+  font-weight: 800;
+}
+body > main > div.right > div#right-vaild-continue > div:first-of-type > button:hover {
+  cursor: pointer;
+  color: #e912c5;
+}
+body > main > div.right > div#right-vaild-continue > div.right-vaild-continue-2 {
+  display: none;
+  margin: 12px 0;
+}
+body > main > div.right > div#right-vaild-continue > div.right-vaild-continue-2 > h5 {
+  color: #551a8b;
+}
+body > main > div.right > div#right-vaild-continue > div.right-vaild-continue-2 > h5 > i {
+  margin-right: 12px;
+}
+body > main > div.right > div#right-vaild-continue > div.right-vaild-continue-2 > div {
+  border-left: 6px solid black;
+  margin: 6px 0;
+  padding: 0 6px;
+}
+body > main > div.right > div#right-vaild-continue > div.right-vaild-continue-2 > div > span:first-of-type {
+  font-weight: 800;
+}
+body > main > div.right > div#right-vaild-continue > div.right-vaild-continue-2 > button {
+  padding: 6px 12px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+body > main > div.right > div#right-vaild-continue > div.right-vaild-continue-2 > button:hover {
+  cursor: pointer;
+  background: #4e2486;
+  color: #ffffff;
+}

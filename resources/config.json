@@ -1,8 +1,10 @@
 {
-    "dirname": "C:\\Users\\PC\\Desktop\\TestORM",
-    "project_name": "TestORM",
+    "dirname": "C:\\Users\\PC\\Desktop\\JDjangoDemo",
+    "project_name": "JDjangoDemo",
     "app_names": [
-        "testAPP"
+        "account",
+        "blog",
+        "docs"
     ],
     "DATABASES": {
         "default": {
@@ -15,14 +17,14 @@
     "TIME_ZONE": "Asia/Shanghai",
     "USE_I18N": true,
     "USE_L10N": true,
-    "USE_TZ": true,
+    "USE_TZ": false,
     "STATIC_URL": "/static/",
     "ALLOWED_HOSTS": [
         "*"
     ],
     "X_FRAME_OPTIONS": null,
-    "SECRET_KEY": "0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs",
-    "CORS_ORIGIN_ALLOW_ALL": false,
+    "SECRET_KEY": "g&gmc75e^(=_9!1vmj$(391tk-ld@18$@f!d(q)f0e2hhx*xu#",
+    "CORS_ORIGIN_ALLOW_ALL": null,
     "TEMPLATES": [
         {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -40,5 +42,5 @@
             }
         }
     ],
-    "ROOT_URLCONF": "TestORM.urls"
+    "ROOT_URLCONF": "JDjangoDemo.urls"
 }

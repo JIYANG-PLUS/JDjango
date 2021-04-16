@@ -1,0 +1,112 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% load myfilter %}
+{% block title %}{{ plugin|index:1 }}-交流区-四象生八卦{% endblock %}
+{% block style %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'blog/css/explain.css' %}">
+{% endblock %}
+{% block script %}{{ block.super }}
+{% endblock %}
+{% block nav-li %}
+<li><a href="{% url 'blog:index' %}">交流区</a></li><i class="fa fa-chevron-right" aria-hidden="true"></i>
+<li>接口使用范例</li><i class="fa fa-chevron-right" aria-hidden="true"></i>
+<li>{{ plugin|index:1 }}</li>
+{% endblock %}
+{% block header-button %}{% endblock %}
+{% block main %}
+<article>
+    <h2><i class="fa fa-quote-left" aria-hidden="true"></i>范例使用的语言包括但不限于C、C++、C#、Java、Python3、JavaScript、PHP.（排序不分先后）<i class="fa fa-quote-right" aria-hidden="true"></i></h2>
+    {% with json_data=sample.content|tojson %}
+    {% if json_data|my_in:"python3" %}
+    <section>
+        <h3><i class="fa fa-file-code-o" aria-hidden="true"></i>Python3范例</h3>
+        {% for j in json_data.python3 %}
+        {% with temp=j|codeSplit %}
+        <p style="text-indent: {{ temp|index:0|multiply:2 }}em;">{{ temp|index:1 }}</p>
+        {% endwith %}
+        {% empty %}
+        <p>暂未收录本模块代码</p>
+        {% endfor %}
+    </section>
+    <div class="section-split"></div>
+    {% endif %}
+    {% if json_data|my_in:"javascript" %}
+    <section>
+        <h3><i class="fa fa-file-code-o" aria-hidden="true"></i>JavaScript范例</h3>
+        {% for j in json_data.javascript %}
+        {% with temp=j|codeSplit %}
+        <p style="text-indent: {{ temp|index:0|multiply:2 }}em;">{{ temp|index:1 }}</p>
+        {% endwith %}
+        {% empty %}
+        <p>暂未收录本模块代码</p>
+        {% endfor %}
+    </section>
+    <div class="section-split"></div>
+    {% endif %}
+    {% if json_data|my_in:"c" %}
+    <section>
+        <h3><i class="fa fa-file-code-o" aria-hidden="true"></i>C语言范例</h3>
+        {% for j in json_data.c %}
+        {% with temp=j|codeSplit %}
+        <p style="text-indent: {{ temp|index:0|multiply:2 }}em;">{{ temp|index:1 }}</p>
+        {% endwith %}
+        {% empty %}
+        <p>暂未收录本模块代码</p>
+        {% endfor %}
+    </section>
+    <div class="section-split"></div>
+    {% endif %}
+    {% if json_data|my_in:"c++" %}
+    <section>
+        <h3><i class="fa fa-file-code-o" aria-hidden="true"></i>C++范例</h3>
+        {% for j in json_data|my_dict:"c++" %}
+        {% with temp=j|codeSplit %}
+        <p style="text-indent: {{ temp|index:0|multiply:2 }}em;">{{ temp|index:1 }}</p>
+        {% endwith %}
+        {% empty %}
+        <p>暂未收录本模块代码</p>
+        {% endfor %}
+    </section>
+    <div class="section-split"></div>
+    {% endif %}
+    {% if json_data|my_in:"c#" %}
+    <section>
+        <h3><i class="fa fa-file-code-o" aria-hidden="true"></i>C#范例</h3>
+        {% for j in json_data|my_dict:"c#" %}
+        {% with temp=j|codeSplit %}
+        <p style="text-indent: {{ temp|index:0|multiply:2 }}em;">{{ temp|index:1 }}</p>
+        {% endwith %}
+        {% empty %}
+        <p>暂未收录本模块代码</p>
+        {% endfor %}
+    </section>
+    <div class="section-split"></div>
+    {% endif %}
+    {% if json_data|my_in:"php" %}
+    <section>
+        <h3><i class="fa fa-file-code-o" aria-hidden="true"></i>PHP范例</h3>
+        {% for j in json_data.php %}
+        {% with temp=j|codeSplit %}
+        <p style="text-indent: {{ temp|index:0|multiply:2 }}em;">{{ temp|index:1 }}</p>
+        {% endwith %}
+        {% empty %}
+        <p>暂未收录本模块代码</p>
+        {% endfor %}
+    </section>
+    <div class="section-split"></div>
+    {% endif %}
+    {% if json_data|my_in:"java" %}
+    <section>
+        <h3><i class="fa fa-file-code-o" aria-hidden="true"></i>Java范例</h3>
+        {% for j in json_data.java %}
+        {% with temp=j|codeSplit %}
+        <p style="text-indent: {{ temp|index:0|multiply:2 }}em;">{{ temp|index:1 }}</p>
+        {% endwith %}
+        {% empty %}
+        <p>暂未收录本模块代码</p>
+        {% endfor %}
+    </section>
+    {% endif %}
+    {% endwith %}
+</article>
+{% endblock %}

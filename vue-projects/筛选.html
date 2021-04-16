@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>筛选功能</title>
+</head>
+
+<body>
+    <div id="app">
+        <label>以name过滤：<input type="text" v-model="inputData"></label>
+        <ul>
+            <li v-for="(food, index) in filterFoods" :key="index">
+                name：{{ food.name }}、age：{{ food.age }}
+            </li>
+        </ul>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                inputData: '',
+                order: 1,
+                foods: [
+                    {name: 'AAAAAAA', age: 12},
+                    {name: 'BBBBBBB', age: 23},
+                    {name: 'CCCCCCC', age: 34},
+                ]
+            },
+            computed: {
+                filterFoods() {
+                    const {foods, inputData, order} = this
+                    var fFoods = foods.filter(obj => obj.name.indexOf(inputData)!==-1)
+                    if (0 !== order)
+                    {
+                        fFoods.reverse()
+                    }
+                    return fFoods
+                }
+            }
+        })
+    </script>
+</body>
+</html>

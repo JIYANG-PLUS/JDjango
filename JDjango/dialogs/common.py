@@ -4,12 +4,14 @@ from wx.lib import scrolledpanel
 import wx.html2
 import wx.grid
 
-from .dialogTips import *
-from ..tools._tools import *
-from ..tools._re import *
+from ..api._tools import *
 from ..settings import *
-from ..tools import environment as env
-from ..tools import models as toolModel
-from ..miniCmd.djangoCmd import *
+
 from ..constant import *
 from ..panels import *
+
+from ..api import djangotools
+from ..api import retools
+from ..api import environment as env
+
+from .MessageDialog import RichMsgDialog

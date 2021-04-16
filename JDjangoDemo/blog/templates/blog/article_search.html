@@ -1,0 +1,35 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% load myfilter %}
+{% block title %}搜索-交流区-四象生八卦{% endblock %}
+{% block style %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'blog/css/article_search.css' %}">
+{% endblock %}
+{% block script %}{{ block.super }}
+{% endblock %}
+{% block nav-li %}
+<li><a href="{% url 'blog:index' %}">交流区</a></li><i class="fa fa-chevron-right" aria-hidden="true"></i>
+<li>文章搜索</li><i class="fa fa-chevron-right" aria-hidden="true"></i>
+<li>本页面搜索关键词[{{ key }}]</li>
+{% endblock %}
+{% block header-button %}{% endblock %}
+{% block main %}
+{% for article in articles %}
+<article>
+    <div><i class="fa fa-unlock-alt" aria-hidden="true"></i></div>
+    <div class="content-item-detial">
+        <h4><a href="{% url 'blog:articledetial' article.pk %}">{{ article.title }}</a><i class="fa fa-hand-o-left" aria-hidden="true" style="margin-left: 12px;"></i></h4>
+        <div class="s1"><span>{{ article.modify_time|date:"Y-m-d H:i:s" }}</span></div>
+        <div class="s2">摘要：{{ article.abstract }}</div>
+        <div class="s3">
+            <i class="fa fa-tags" aria-hidden="true" style="color: rgb(199,83,0);"></i>
+            {% for a in article.label|split:"/" %}
+            <a>{{ a }}</a>
+            {% endfor %}
+        </div>
+    </div>
+</article>
+{% empty %}
+<p style="text-align: center;">无匹配文章</p>
+{% endfor %}
+{% endblock %}

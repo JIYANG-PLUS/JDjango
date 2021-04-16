@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>缓存</title>
+</head>
+
+<body>
+    <div id="app">
+        <button @click="add">添加</button>
+        <ul>
+            <li v-for="(food, index) in foods" :key="index">
+                name：{{ food.name }}、age：{{ food.age }}
+            </li>
+        </ul>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                /* 从LocalStorage中读数据 */
+                foods: JSON.parse(window.localStorage.getItem("foods") || '[]')
+            },
+            methods: {
+                add() {
+                    this.foods.push({name: "DDDDDDD", age: 45})
+                }
+            },
+            watch: { /* 深度监视 */
+                foods: {
+                    deep: true, /* 必须开启深度监视 */
+                    handler: function(newV, oldV) {
+                        window.localStorage.setItem("foods", JSON.stringify(this.foods))
+                    }
+                }
+            },
+            mounted: function() {
+                console.log(window.localStorage.getItem("foods"))
+            },
+            beforeCreate() {
+                console.log(6565)
+            },
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+/**
+ * 【暴露变量】：
+ * $route 代表组件下的路由，$router 代表路由器本身
+ */
+
+
+/**
+ * 【两大路由标签】：
+ * <router-link to="/">Home</router-link> # 跳转链接
+ * <router-link :to="{ name: 'user', params: { userId: 123 }}">User</router-link>
+ * <router-view/> # 跳转内容显示
+ * <keep-alive><router-view/></keep-alive> # 状态保存
+ * <router-view fid="1"/> # 标签传递值
+ */
+
+
+/**
+ * 【编程式路由跳转】（可用路由配置的 name 属性代表传递路由）：
+ * this.$router.push('/...') # 推入一个链接并打开（反映在浏览器的回退按钮）
+ * this.$router.replace('/...') # 替换当前链接
+ * this.$router.back() # 回退到上一个路由
+ * this.$router.go(1) # 1代表前进，-1代表后退，数值代表后退的步数
+ * window.history.length > 1 ? this.$router.go(-1) : this.$router.push('/') # 较完整后退写法
+ * 【push 的众多写法】
+ * $router.push('home')
+ * $router.push({ path: 'home' })
+ * $router.push({ path: `/user/${userId}` })
+ * $router.push({ name: 'user', params: { userId: '123' }})
+ * $router.push({ path: 'register', query: { plan: 'private' }})
+ */
+
+
+/**
+ * 【路由参数】：
+ * 模式1：'/user/:id'，id 可以是任意格式的值；使用 this.$route.params.id 获取参数值，可用 * 1 来获取数值类型
+ * 模式2：无申明传参（使用 ?name=jy&age=123 之类的传参）；使用 this.$route.query.name 获取参数值
+ *
+ * $route.params.pathMatch # 获取通配符匹配到的路径
+ */
+
+
+/**
+ * 【监听路由改变】：
+ * 方式1：使用 watch: { $route(to, from) { } }
+ * 方式2：使用 beforeRouteUpdate(to, from, next) { next() } # 2.2 版本新增
+ */
+
+
+/**
+ * 【样式】：
+ * 路由匹配成功样式：.router-link-active
+ */
+

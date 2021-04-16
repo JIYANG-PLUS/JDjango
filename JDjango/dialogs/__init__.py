@@ -4,7 +4,6 @@ from .dialogOption import *
 from .dialogORM import *
 from .dialogSettings import *
 from .dialogSQLite3 import *
-from .dialogTips import *
 from .dialogViews import *
 
 

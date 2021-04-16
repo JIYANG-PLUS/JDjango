@@ -1,0 +1,13 @@
+<div class="pages">
+    {% if articles.has_previous %}
+    <a href="?page={{ articles.previous_page_number }}">上一页</a>
+    {% else %}
+    <a>上一页</a>
+    {% endif %}
+    <span>第{{ articles.number }}页</span><span>/</span><span>共{{ articles.paginator.num_pages }}页</span>
+    {% if articles.has_next %}
+        <a href="?page={{ articles.next_page_number }}">下一页</a>
+    {% else %}
+        <a>下一页</a>
+    {% endif %}
+</div>

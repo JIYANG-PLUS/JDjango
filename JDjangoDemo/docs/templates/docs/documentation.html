@@ -1,0 +1,239 @@
+{% extends 'docs/base_documentation.html' %}
+{% load static %}
+{% load myfilter %}
+{% block title %}文档中心-四象生八卦{% endblock %}
+{% block style %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'docs/css/documentation.css' %}">
+{% if user.is_superuser %}
+<link rel="stylesheet" href="{% static 'docs/css/documentation_add_menu.css' %}">
+{% endif %}
+{% endblock %}
+{% block script %}{{ block.super }}
+<script src="{% static 'docs/js/documentation.js' %}"></script>
+{% if user.is_superuser %}
+<script src="{% static 'docs/js/documentation_add_menu.js' %}"></script>
+{% endif %}
+{% endblock %}
+{% block func %}
+<button id="btn-light" title="当前为白昼模式">
+    <i class="fa fa-lightbulb-o" aria-hidden="true"></i>
+    <span>切换到暗夜模式</span>
+</button>
+{% endblock %}
+{% block main %}
+<!-- 左侧区域 -->
+<div class="main-left">
+    <!-- MENU -->
+    <div class="main-left-menu">
+        <span>菜单导航栏</span>
+        <button id="btn-menu-s">收起</button>
+    </div>
+    <!-- HOME -->
+    <a class="main-left-home">
+        <span>文档中心</span>
+        {% if user.is_superuser %}
+        <button class="btn-add-rootmenu">+</button>
+        {% endif %}
+    </a>
+    <div class="menu-items">
+        {% for self, fath, level in all_menus %}
+        {% if self.isroot %}
+        <div data-flag="1" data-self="{{ self.pk }}" data-fath="{{ fath.pk }}" data-open="0" style="padding-left: {{ level|multiply:24 }}px;">
+            <a data-flag="1" data-self="{{ self.pk }}" data-fath="{{ fath.pk }}" data-open="0"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+            <span style="font-weight: 400;font-size: 18px;" data-pk="pk{{ self.pk }}">{{ self.name }}{% if self.marticles.count %}&nbsp;[{{ self.marticles.count }}]{% endif %}</span>
+            {% if user.is_superuser %}
+            <button class="btn-add-menu" data-pk="pk{{ self.pk }}">+</button>
+            <button class="btn-del-menu" data-pk="pk{{ self.pk }}">－</button>
+            <button class="btn-mod-menu" data-pk="pk{{ self.pk }}">?</button>
+            <button class="btn-add-plug" data-pk="pk{{ self.pk }}">#</button>
+            {% endif %}
+        </div>
+        {% else %}
+        <div data-flag="1" data-self="{{ self.pk }}" data-fath="{{ fath.pk }}" data-open="1" style="padding-left: {{ level|multiply:24 }}px;">
+            <a data-flag="1" data-self="{{ self.pk }}" data-fath="{{ fath.pk }}" data-open="1"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+            <span data-pk="pk{{ self.pk }}">{{ self.name }}{% if self.marticles.count %}&nbsp;[{{ self.marticles.count }}]{% endif %}</span>
+            {% if user.is_superuser %}
+            <button class="btn-add-menu" data-pk="pk{{ self.pk }}">+</button>
+            <button class="btn-del-menu" data-pk="pk{{ self.pk }}">－</button>
+            <button class="btn-mod-menu" data-pk="pk{{ self.pk }}">?</button>
+            <button class="btn-add-plug" data-pk="pk{{ self.pk }}">#</button>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<!-- 左侧区域缩小版 -->
+<div class="main-left-small">
+    <div>
+        <button id="btn-menu-z"><span>展</span><span>开</span></button>
+        <div><span>菜</span><span>单</span><span>导</span><span>航</span><span>栏</span></div>
+    </div>
+</div>
+<!-- 右侧区域 -->
+<div class="main-right">
+    <div class="main-right-search">
+        <div>接口文档</div>
+        <h2>所有的接口文档</h2>
+        <div><form action="" method="post">{% csrf_token %}
+            <input type="search" placeholder="所有的接口文档（本功能暂不开放）" autocomplete="off" name="main-right-search"><button type="submit" disabled><i class="fa fa-search" aria-hidden="true"></i></button>
+        </form></div>
+    </div>
+    
+    <div class="main-right-subMenu">
+        <!-- 激活状态为div -->
+        <div>已公开的文档</div>
+        <!-- <a>最近发布（功能待定）</a> -->
+    </div>
+    <!-- 内容列展示区域 -->
+    <div class="content">
+        <div class="js-content">
+            {% for article in articles %}
+            <div class="content-item">
+                <div><i class="fa fa-unlock-alt" aria-hidden="true"></i></div>
+                <div class="content-item-detial">
+                    <h4><a href="{% url 'docs:content_index' article.pk article.id %}">{{ article.title }}</a><i class="fa fa-hand-o-left" aria-hidden="true" style="margin-left: 12px;"></i></h4>
+                    <div class="s1"><span>Version: {{ article.version }}</span> - <span>{{ article.modify_time|date:"Y-m-d H:i:s" }}</span></div>
+                    <div class="s2">{{ article.abstract }}</div>
+                    <div class="s3">
+                        <i class="fa fa-tags" aria-hidden="true" style="color: rgb(199,83,0);"></i>
+                        {% for a in article.label|split:"/" %}
+                        <a>{{ a }}</a> 
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- 分页 -->
+        {% include 'docs/includes/paginator.html' %}
+    </div>
+</div>
+{% endblock %}
+{% block aside %}
+{% if user.is_superuser %}
+<div class="aside">
+    <div class="aside-add-menu">
+        <h1><span></span>新增子节点<button type="button" class="common-cancel">×</button></h1>
+        <form method="post">
+            <label>
+                <span class="must">节点名：</span>
+                <input type="text" placeholder="不超过30个字符" autocomplete="off" name="add-name" maxlength="30"  required>
+            </label>
+            <label>
+                <span class="must">节点描述：</span>
+                <textarea name="add-describe" cols="30" rows="10" placeholder="不超过255个字符" required></textarea>
+            </label>
+            <label>
+                <span>节点顺序：</span>
+                <input type="number" name="add-order" value="0">
+            </label>
+            <label>
+                <span>当前节点pk：</span>
+                <input type="number" name="add-pk" disabled>
+            </label>
+            <label>
+                <input type="checkbox" name="add-isroot">
+                <span>根节点</span>
+            </label>
+            <label>
+                <input type="checkbox" name="add-isvisible" checked>
+                <span>可见</span>
+            </label>
+            <button type="button" id="add-btn-submit">新&nbsp;增</button>
+        </form>
+    </div>
+    <div class="aside-del-menu">
+        <h1><span></span>确认删除？</h1>
+        <span id="del-pk"></span>
+        <div>
+            <button type="button" class="common-cancel">取消</button>
+            <button type="button" id="btn-del-menu">确定</button>
+        </div>
+    </div>
+    <div class="aside-mod-menu">
+        <h1><span></span>修改本节点<button type="button" class="common-cancel">×</button></h1>
+        <form method="post">
+            <label>
+                <span class="must">节点名：</span>
+                <input type="text" placeholder="不超过30个字符" autocomplete="off" name="mod-name" maxlength="30" required>
+            </label>
+            <label>
+                <span class="must">节点描述：</span>
+                <textarea name="mod-describe" cols="30" rows="10" placeholder="不超过255个字符" required></textarea>
+            </label>
+            <label>
+                <span>节点顺序：</span>
+                <input type="number" name="mod-order" value="0">
+            </label>
+            <label>
+                <span>当前节点pk：</span>
+                <input type="number" name="mod-pk" disabled>
+            </label>
+            <label>
+                <input type="checkbox" name="mod-isroot" disabled>
+                <span>根节点</span>
+            </label>
+            <label>
+                <input type="checkbox" name="mod-isvisible">
+                <span>可见</span>
+            </label>
+            <button type="button" id="mod-btn-submit">修&nbsp;改</button>
+        </form>
+    </div>
+    <div class="aside-add-plug">
+        <h1><span></span>新增插件文章<button type="button" class="common-cancel">×</button></h1>
+        <form method="post">
+            {% csrf_token %}
+            <label>
+                <span class="must">标题：</span>
+                <input type="text" placeholder="不超过100个字符" autocomplete="off" name="plugin_name" maxlength="100" required>
+            </label>
+            <label>
+                <span class="must">标签：</span>
+                <input type="text" placeholder="不超过100个字符" autocomplete="off" name="plugin_label" maxlength="100" required>
+            </label>
+            <label>
+                <span class="must">摘要：</span>
+                <input type="text" placeholder="不超过100个字符" autocomplete="off" name="plugin_abstract" maxlength="100" required>
+            </label>
+            <label>
+                <span class="must">版本号：</span>
+                <input type="text" placeholder="不超过30个字符" autocomplete="off" name="plugin_version" maxlength="30" required value="1.0.0">
+            </label>
+            <label>
+                <span class="must">内容：</span>
+                <textarea name="plugin_content" cols="30" rows="10" placeholder="尽量将内容压缩后上传" required></textarea>
+            </label>
+            <label>
+                <input type="checkbox" name="plugin_isvisible" checked>
+                <span>可见</span>
+            </label>
+            <input type="hidden" name="plugin_menu_pk" id="menu_pk" value="">
+            <button type="submit">新&nbsp;增</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block other-body %}
+<div id="div-mini-menu">
+    <div class="menu-items">
+        {% for self, fath, level in all_menus %}
+        {% if self.isroot %}
+        <div data-flag="1" data-self="{{ self.pk }}" data-fath="{{ fath.pk }}" data-open="0" style="padding-left: {{ level|multiply:24 }}px;">
+            <a data-flag="1" data-self="{{ self.pk }}" data-fath="{{ fath.pk }}" data-open="0"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+            <span data-pk="pk{{ self.pk }}">{{ self.name }}</span>
+        </div>
+        {% else %}
+        <div data-flag="1" data-self="{{ self.pk }}" data-fath="{{ fath.pk }}" data-open="1" style="padding-left: {{ level|multiply:24 }}px;">
+            <a data-flag="1" data-self="{{ self.pk }}" data-fath="{{ fath.pk }}" data-open="1"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+            <span data-pk="pk{{ self.pk }}">{{ self.name }}</span>
+            <div></div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

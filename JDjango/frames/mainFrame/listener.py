@@ -25,6 +25,7 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_config_project) # 选项/修改
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_exec) # 运行【命令】
         self.Bind(wx.EVT_BUTTON, self.onButtonClick, self.btn_clear_text) # 清空输入窗口
+        self.Bind(wx.EVT_BUTTON, self.OnTest, self.btn_test) # 测试按钮
 
         '''
             鼠标键盘监听
@@ -40,6 +41,7 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_MENU, self.onGenerate, self.menuGenerate)  # 代码生成点击事件
         self.Bind(wx.EVT_MENU, self.onMenusSettings, self.menusSettings)  # Settings
         self.Bind(wx.EVT_MENU, self.onMenuVSCode, self.menuVSCode)  # VSCode
+        self.Bind(wx.EVT_MENU, self.onLanguage, self.language)  # VSCode
 
         self.Bind(wx.EVT_MENU, self.onAppsCheck, self.apps_check) # 检测
         self.Bind(wx.EVT_MENU, self.onAppsFix, self.apps_fix) # 修复
@@ -60,7 +62,6 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_MENU, self.onUrlsFix, self.urls_fix) # 修复路由
 
         self.Bind(wx.EVT_MENU, self.onCreateProject, self.create_project) # 新建项目
-        self.Bind(wx.EVT_MENU, self.onCreateProject1100, self.create_project_1_10_0) # 新建项目
 
         self.Bind(wx.EVT_MENU, self.onPortProgressRun, self.portProgressRun) # 运行
         self.Bind(wx.EVT_MENU, self.onPortProgressStop, self.portProgressStop) # 停止
@@ -79,21 +80,10 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_MENU, self.onPortProgressPipInstall, self.portProgressPipInstall) # install
         self.Bind(wx.EVT_MENU, self.onPortProgressPipFreeze, self.portProgressPipFreeze) # freeze
         self.Bind(wx.EVT_MENU, self.onPortProgressCollectstatic, self.portProgressCollectstatic) # collectstatic
-        self.Bind(wx.EVT_MENU, self.onDjangorestframework, self.djangorestframework) # restframework
-        self.Bind(wx.EVT_MENU, self.onDrfGenerators, self.drf_generators) # drf_generators
-        self.Bind(wx.EVT_MENU, self.onMarkdown, self.markdown) # markdown
-        self.Bind(wx.EVT_MENU, self.onDjango_filter, self.django_filter) # django_filter
-        # self.Bind(wx.EVT_MENU, self.onInstallSimpleui, self.installSimpleui) # pip install simpleui
-        # self.Bind(wx.EVT_MENU, self.onRegisterSimpleui, self.registerSimpleui) # 注册 simpleui
-        self.Bind(wx.EVT_MENU, self.onFastSimpleui, self.fastSimpleui) # 一键配置 simpleui
-        self.Bind(wx.EVT_MENU, self.onRegisterkfenvRest, self.registerkfenvRest) # 注册rest_framework
-        self.Bind(wx.EVT_MENU, self.onRegisterkfenvDrf, self.registerkfenvDrf) # 注册drf_generators
-        self.Bind(wx.EVT_MENU, self.onRegisterkfenvAll, self.registerkfenvAll) # 一键全部注册rest_framework、drf_generators
 
         '''
             系统工具栏
         '''
-        # self.Bind(wx.EVT_TOOL, self., self.shotcut_file)
         self.Bind(wx.EVT_TOOL, self.onPortProgressRun, self.shotcut_run)
         self.Bind(wx.EVT_TOOL, self.onPortProgressStop, self.shotcut_stop)
         self.Bind(wx.EVT_TOOL, self.onMenuVSCode, self.shotcut_code)
@@ -102,6 +92,12 @@ class MainFrameListener(MainFrameGUIControl):
         self.Bind(wx.EVT_TOOL, self.onPortProgressMakemigrations, self.shotcut_makemigration)
         self.Bind(wx.EVT_TOOL, self.onPortProgressMigrate, self.shotcut_migrate)
         self.Bind(wx.EVT_TOOL, self.onPortProgressPipInstall, self.shotcut_pipinstall)
+
+        '''
+            AuiNotebook
+        '''
+        self.Bind(wx.aui.EVT_AUINOTEBOOK_PAGE_CLOSE, self.onAuiNotebookClose, self.auiNotebook)
+
 
         '''
             其它

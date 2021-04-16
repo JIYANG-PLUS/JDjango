@@ -1,0 +1,402 @@
+body {
+    height: 100vh;
+    & > main {
+        height: 100%;
+        display: flex;
+        & > div.left {
+            width: 120px;
+            height: 100%;
+            border-right: 1px solid rgba(0,0,0,.3);
+            background: rgb(229,236,235);
+            & > div {
+                &.back {
+                    text-align: center;
+                    margin: 12px 0;
+                    padding-bottom: 12px;
+                    border-bottom: 1px solid rgba(0,0,0,.3);
+                    & > a {
+                        font-size: 32px;
+                        &:hover {
+                            color: rgb(4,124,161);
+                        }
+                    }
+                }
+                &.detail {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    & > button {
+                        color: rgb(4,124,161);
+                        font-size: 18px;
+                        margin: 6px 0;
+                        &:hover {
+                            cursor: pointer;
+                            color: rgb(233, 18, 197) !important;
+                        }
+                        &:first-of-type {
+                            color: rgb(233, 18, 197);
+                        }
+                    }
+                }
+            }
+        }
+        & > div.right {
+            flex: 1;
+            height: 100%;
+            & > div {
+                display: none;
+                padding: 16px 36px;
+                & > h3 {
+                    font-size: 24px;
+                    color: #4e2486;
+                    margin-left: 2px;
+                    margin-bottom: 20px;
+                    & > i {
+                        margin-right: 12px;
+                    }
+                }
+                & > ul {
+                    padding: 0 12px;
+                    list-style-position: inside;
+                    list-style-type: circle;
+                    & > li {
+                        margin: 6px 0;
+                    }
+                }
+            }
+            & > div#right-base-info {
+                display: block;
+                & > section {
+                    margin: 12px 0;
+                    padding: 12px 0;
+                    background: rgb(175, 227, 241);
+                    border-left: 12px solid rgb(4,124,161);
+                    padding-left: 12px;
+                    font-size: 19px;
+                    display: flex;
+                    align-items: center;
+                    & > span {
+                        &:first-of-type {
+                            width: 135px;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            text-align: right;
+                            font-weight: 800;
+                        }
+                        &:nth-of-type(2) {
+                            font-weight: 800;
+                            font-size: 24px;
+                            margin: 0 12px 0 6px;
+                        }
+                        &:last-of-type {
+                            flex: 1;
+                            text-decoration: underline;
+                        }
+                    }
+                    &:hover {
+                        border-left: 12px solid rgb(233, 18, 197);
+                    }
+                }
+            }
+            & > div#right-only-code {
+                & > div {
+                    padding: 24px 12px;
+                    & > p {
+                        & > button {
+                            font-size: 18px;
+                            font-weight: 800;
+                            color: #4e2486;
+                            &:hover {
+                                cursor: pointer;
+                                color: rgb(233, 18, 197);
+                            }
+                        }
+                        &.p-info {
+                            margin-top: 24px;
+                            & > span {
+                                &:first-of-type {
+                                    padding: 6px 12px;
+                                    background: rgb(4,124,161);
+                                    color: #ffffff;
+                                    &::after {
+                                        content: '：';
+                                    }
+                                }
+                                &:last-of-type {
+                                    padding: 6px 12px;
+                                    background: rgb(175, 227, 241);
+                                }
+                            }
+                            & > button {
+                                background: #ffffff;
+                                color: black;
+                                padding: 4px;
+                                &:hover {
+                                    cursor: pointer;
+                                    color: rgb(233, 18, 197);
+                                }
+                            }
+                        }
+                    }
+                    & > div.send_and_back {
+                        display: none;
+                        margin-top: 24px;
+                        & > div {
+                            &:nth-of-type(1) {
+                                display: flex;
+                                align-items: center;
+                                & > input[type='email'] {
+                                    padding: 6px 0 6px 12px;
+                                    border: 1px solid rgba(0,0,0,.3);
+                                    width: 360px;
+                                    font-size: 18px;
+                                    border-top-left-radius: 5px;
+                                    border-bottom-left-radius: 5px;
+                                    border-right: none;
+                                    background: rgb(229,236,235);
+                                }
+                                & > button {
+                                    border: 1px solid rgba(0,0,0,.3);
+                                    background: rgb(229,236,235);
+                                    height: 35px;
+                                    width: 120px;
+                                    border-left: none;
+                                    border-top-right-radius: 5px;
+                                    border-bottom-right-radius: 5px;
+                                    padding: 0 6px;
+                                    font-weight: 800;
+                                    &:hover {
+                                        cursor: pointer;
+                                        color: rgb(233, 18, 197);
+                                    }
+                                }
+                            }
+                            &:nth-of-type(2) {
+                                display: none;
+                                width: 480px;
+                                align-items: center;
+                                background: rgb(229,236,235);
+                                margin: 24px 0;
+                                & > input {
+                                    flex: 1;
+                                    height: 33px;
+                                    border: 1px solid rgba(0,0,0,.3);
+                                    border-top-left-radius: 5px;
+                                    border-bottom-left-radius: 5px;
+                                    border-right: none;
+                                    padding: 6px 0 6px 12px;
+                                    font-size: 16px;
+                                    &::placeholder {
+                                        font-weight: 100;
+                                    }
+                                    &:focus {
+                                        &::placeholder {
+                                            font-weight: 800;
+                                        }
+                                    }
+                                }
+                                & > button {
+                                    flex: 1;
+                                    height: 33px;
+                                    border: 1px solid rgba(0,0,0,.3);
+                                    border-left: none;
+                                    font-size: 16px;
+                                    font-weight: 800;
+                                    border-top-right-radius: 5px;
+                                    border-bottom-right-radius: 5px;
+                                    &:hover {
+                                        cursor: pointer;
+                                        color: rgb(233, 18, 197);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & > div#right-valid-code {
+                overflow-y: scroll;
+                height: 100vh;
+                & > div.right-valid-code-generate {
+                    padding: 24px 12px;
+                    & > h4 {
+                        font-size: 24px;
+                        border-bottom: double 3px black;
+                        margin-bottom: 12px;
+                        & > i {
+                            margin-right: 12px;
+                        }
+                    }
+                    & > p {
+                        &::first-letter {
+                            font-size: 20px;
+                            font-weight: 800;
+                        }
+                    }
+                    & > div.first {
+                        display: flex;
+                        align-items: center;
+                        margin: 24px 0 0 0;
+                        & > input {
+                            width: 450px;
+                            font-size: 20px;
+                            border: 1px solid rgba(0,0,0,.3);
+                            border-top-left-radius: 5px;
+                            border-bottom-left-radius: 5px;
+                            border-right: none;
+                            padding: 2px 6px;
+                            &::placeholder {
+                                font-size: 14px;
+                                font-weight: 100;
+                            }
+                            &:focus {
+                                &::placeholder {
+                                    font-weight: 800;
+                                }
+                            }
+                        }
+                        & > button {
+                            border: 1px solid rgba(0,0,0,.3);
+                            border-top-right-radius: 5px;
+                            border-bottom-right-radius: 5px;
+                            border-left: none;
+                            height: 29px;
+                            padding: 0 6px;
+                            font-weight: 800;
+                            &:hover {
+                                cursor: pointer;
+                                color: rgb(233, 18, 197);
+                            }
+                        }
+                    }
+                    & > div.second {
+                        display: none;
+                        margin: 12px 0;
+                        & > h5 {
+                            color: rgb(85,26,139);
+                            & > i {
+                                margin-right: 12px;
+                            }
+                        }
+                        & > div {
+                            border-left: 6px solid black;
+                            margin: 6px 0;
+                            padding: 0 6px;
+                            & > span {
+                                &:first-of-type {
+                                    font-weight: 800;
+                                }
+                            }
+                        }
+                        & > button {
+                            padding: 6px 12px;
+                            border-radius: 5px;
+                            border: 1px solid rgba(0,0,0,.3);
+                            &:hover {
+                                cursor: pointer;
+                                background: #4e2486;
+                                color: #ffffff;
+                            }
+                        }
+                    }
+                }
+                & > div.right-valid-code-history {
+                    padding: 24px 12px;
+                    & > h4 {
+                        font-size: 24px;
+                        border-bottom: double 3px black;
+                        margin-bottom: 12px;
+                        & > i {
+                            margin-right: 12px;
+                        }
+                    }
+                    & > table {
+                        width: 100%;
+                        text-align: center;
+                        & > thead {
+                            font-size: 20px;
+                        }
+                        & > tbody {
+                            font-size: 17px;
+                            & > tr {
+                                &:hover {
+                                    background: #e2dfdf;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & > div#right-modify-info {
+                
+            }
+            & > div#right-vaild-continue {
+                & > div {
+                    &:first-of-type {
+                        display: flex;
+                        align-items: center;
+                        margin: 24px 0;
+                        & > input {
+                            border: 1px solid rgba(0,0,0,.3);
+                            border-right: none;
+                            border-top-left-radius: 5px;
+                            border-bottom-left-radius: 5px;
+                            font-size: 18px;
+                            padding: 3px 6px;
+                            width: 350px;
+                            &::placeholder {
+                                font-weight: 100;
+                                font-size: 14px;
+                            }
+                        }
+                        & > button {
+                            border: 1px solid rgba(0,0,0,.3);
+                            border-left: none;
+                            border-top-right-radius: 5px;
+                            border-bottom-right-radius: 5px;
+                            height: 29px;
+                            padding: 0 6px;
+                            font-weight: 800;
+                            &:hover {
+                                cursor: pointer;
+                                color: rgb(233, 18, 197);
+                            }
+                        }
+                    }
+                    &.right-vaild-continue-2 {
+                        display: none;
+                        margin: 12px 0;
+                        & > h5 {
+                            color: rgb(85,26,139);
+                            & > i {
+                                margin-right: 12px;
+                            }
+                        }
+                        & > div {
+                            border-left: 6px solid black;
+                            margin: 6px 0;
+                            padding: 0 6px;
+                            & > span {
+                                &:first-of-type {
+                                    font-weight: 800;
+                                }
+                            }
+                        }
+                        & > button {
+                            padding: 6px 12px;
+                            border-radius: 5px;
+                            border: 1px solid rgba(0,0,0,.3);
+                            &:hover {
+                                cursor: pointer;
+                                background: #4e2486;
+                                color: #ffffff;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

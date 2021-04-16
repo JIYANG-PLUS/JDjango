@@ -1,5 +1,5 @@
 from .listener import *
-import subprocess
+from ..sqliteFrame import *
 
 """
 作用：实现事件功能
@@ -11,87 +11,6 @@ class MainFrameFuncs(MainFrameListener):
         super().__init__(parent=parent)
         self.order_container = (self.cmdCodes, self.info_cmdCodes,)
 
-        self.name_rest_framework = "'rest_framework'"
-        self.name_drf_generators = "'drf_generators'"
-        self.name_simpleui = "'simpleui'"
-
-    @VirtualEnvMustExistDecorator()
-    def onFastSimpleui(self, e):
-        """一键配置simpleui"""
-        self.onInstallSimpleui(e)
-        self.onRegisterSimpleui(e)
-        self.fastSimpleui.Enable(False)
-        TipsMessageOKBox(self, "simpleui皮肤使用成功！", '成功')
-
-    @RegisterOriginOrderDecorator(msg = 'simpleui')
-    @VirtualEnvMustExistDecorator()
-    def onInstallSimpleui(self, e):
-        """pip install simpleui"""
-        return (
-            subprocess.Popen(f'{env.getPipOrderArgs()} simpleui==2021.3', shell=True)
-            , *self.order_container
-        )
-
-    def onRegisterSimpleui(self, e):
-        """注册 simpleui"""
-        add_oneline_to_listattr(get_django_settings_path(), PATT_INSTALLED_APPS, self.name_simpleui, position=1)
-
-    @RegisterOriginOrderDecorator(msg = 'drf-generators')
-    @VirtualEnvMustExistDecorator()
-    def onDrfGenerators(self, e):
-        """pip install drf-generators"""
-        return (
-            subprocess.Popen(f'{env.getPipOrderArgs()} drf-generators', shell=True)
-            , *self.order_container
-        )
-
-    def onRegisterkfenvRest(self, e):
-        """注册rest_framework"""
-        add_oneline_to_listattr(get_django_settings_path(), PATT_INSTALLED_APPS, self.name_rest_framework)
-        TipsMessageOKBox(self, "rest_framework注册成功", '成功')
-
-    def onRegisterkfenvDrf(self, e):
-        """注册drf_generators"""
-        add_oneline_to_listattr(get_django_settings_path(), PATT_INSTALLED_APPS, self.name_drf_generators)
-        TipsMessageOKBox(self, "drf_generators注册成功", '成功')
-
-    def onRegisterkfenvAll(self, e):
-        """一键全部注册rest_framework、drf_generators"""
-        idatas = [self.name_rest_framework, self.name_drf_generators, ]
-        add_lines_to_listattr(
-            get_django_settings_path()
-            , PATT_INSTALLED_APPS
-            , idatas
-        )
-        TipsMessageOKBox(self, ', '.join([_.strip("'") for _ in idatas])+'注册成功', '成功')
-
-    @RegisterOriginOrderDecorator(msg = 'django-filter')
-    @VirtualEnvMustExistDecorator()
-    def onDjango_filter(self, e):
-        """pip install django-filter"""
-        return (
-            subprocess.Popen(f'{env.getPipOrderArgs()} django-filter', shell=True)
-            , *self.order_container
-        )
-
-    @RegisterOriginOrderDecorator(msg = 'markdown')
-    @VirtualEnvMustExistDecorator()
-    def onMarkdown(self, e):
-        """pip install markdown"""
-        return (
-            subprocess.Popen(f'{env.getPipOrderArgs()} markdown', shell=True)
-            , *self.order_container
-        )
-
-    @RegisterOriginOrderDecorator(msg = 'djangorestframework')
-    @VirtualEnvMustExistDecorator()
-    def onDjangorestframework(self, e):
-        """pip install djangorestframework"""
-        return (
-            subprocess.Popen(f'{env.getPipOrderArgs()} djangorestframework', shell=True)
-            , *self.order_container
-        )
-
     def onHelpsORM(self, e):
         """ORM帮助（一键生成）"""
         dlg = ORMDialog(self)
@@ -100,17 +19,18 @@ class MainFrameFuncs(MainFrameListener):
 
     def onMenuVSCode(self, e):
         """外部发起VSCode编辑"""
-        dlg_tip = wx.MessageDialog(self, f"打开之前请确认您已经安装了Visual Studio Code，并且已经配置了code环境。", CON_TIPS_COMMON, wx.CANCEL | wx.OK)
-        if dlg_tip.ShowModal() == wx.ID_OK:
+        # 检测是否配置code命令环境
+        if wx.Shell("code -v"):
             dirname = get_configs(CONFIG_PATH)['dirname']
             self.cmdVscode = subprocess.Popen(f'code {dirname}', shell=True)
             self.cmdCodes.append(self.cmdVscode)
             self.info_cmdCodes[self.cmdVscode] = '开启VSCode编辑器'
-        dlg_tip.Close(True)
+        else:
+            self.infoBar.ShowMessage(f'未检测到code命令', wx.ICON_ERROR)
 
     def onPortProgressVirtualView(self, e):
         """查看虚拟环境路径"""
-        TipsMessageOKBox(self, env.getPython3Env(), '虚拟环境路径')
+        RichMsgDialog.showOkMsgDialog(self, env.getPython3Env(), '虚拟环境路径')
 
     @RegisterOriginOrderDecorator(msg = 'collectstatic')
     @VirtualEnvMustExistDecorator()
@@ -186,10 +106,6 @@ class MainFrameFuncs(MainFrameListener):
             , *self.order_container
         )
 
-    def onCreateProject1100(self, e):
-        """创建Django1.10.0项目"""
-        TipsMessageOKBox(self, '待考虑的功能。', '提示')
-
     def onPortProgressVirtual(self, e):
         """创建虚拟环境"""
         # venv.create(env_dir, system_site_packages=False, clear=False, symlinks=False, with_pip=False, prompt=None)
@@ -198,7 +114,7 @@ class MainFrameFuncs(MainFrameListener):
             env_dir = dlg.GetPath()
             t = len(os.listdir(env_dir))
             if t > 0:
-                TipsMessageOKBox(self, f'检测到选择的文件夹下存在其它文件，禁止操作。', '提示')
+                self.infoBar.ShowMessage(f'检测到选择的文件夹下存在其它文件，禁止操作。', wx.ICON_ERROR)
             else:
                 venv.create(env_dir, system_site_packages=False, clear=True, symlinks=False, with_pip=True, prompt=None)
                 # 分操作系统自动绑定python解释器
@@ -206,13 +122,13 @@ class MainFrameFuncs(MainFrameListener):
                 if 'windows' == this_platform:
                     temp_path = os.path.join(env_dir, 'Scripts', 'python.exe')
                     env.setPython3Env(temp_path)
-                    TipsMessageOKBox(self, f'创建并绑定成功，命令路径：{temp_path}', '提示')
+                    self.infoBar.ShowMessage(f'创建并绑定成功，命令路径：{temp_path}', wx.ICON_INFORMATION)
                 elif 'darwin' == this_platform:
                     temp_path = os.path.join(env_dir, 'bin', 'python')
                     env.setPython3Env(temp_path)
-                    TipsMessageOKBox(self, f'创建并绑定成功，命令路径：{temp_path}', '提示')
+                    self.infoBar.ShowMessage(f'创建并绑定成功，命令路径：{temp_path}', wx.ICON_INFORMATION)
                 else:
-                    TipsMessageOKBox(self, f'创建成功，虚拟目录：{env_dir}', '提示')
+                    self.infoBar.ShowMessage(f'创建成功，虚拟目录：{env_dir}', wx.ICON_INFORMATION)
         dlg.Destroy()
 
     def onPortProgressKillProgress(self, e):
@@ -221,7 +137,7 @@ class MainFrameFuncs(MainFrameListener):
         if dlg.ShowModal() == wx.ID_OK:
             port = dlg.GetValue()
             env.killProgress(port = port)
-            TipsMessageOKBox(self, '已终止', '提示信息')
+            self.infoBar.ShowMessage(f'已终止。', wx.ICON_INFORMATION)
         dlg.Close(True)
 
     def onPortProgressFaster(self, e):
@@ -233,44 +149,44 @@ class MainFrameFuncs(MainFrameListener):
             if 'pip' in os.listdir(rpath):
                 pip_path = os.path.join(rpath, 'pip')
                 if 'pip.ini' in os.listdir(pip_path):
-                    TipsMessageOKBox(self, '当前环境已配置镜像。', '重复提醒')
+                    self.infoBar.ShowMessage(f'当前环境已配置镜像。', wx.ICON_WARNING)
                 else:
                     # TEMPLATE_DIR
                     write_file(os.path.join(pip_path, 'pip.ini'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
-                    TipsMessageOKBox(self, '配置成功！', '提示')
+                    self.infoBar.ShowMessage(f'配置镜像环境成功。', wx.ICON_INFORMATION)
             else:
                 pip_path = os.path.join(rpath, 'pip')
                 os.mkdir(pip_path)
                 write_file(os.path.join(pip_path, 'pip.ini'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
-                TipsMessageOKBox(self, '配置成功！', '提示')
+                self.infoBar.ShowMessage(f'配置镜像环境成功。', wx.ICON_INFORMATION)
         elif 'linux' == platform: # 理论上，Mac和Linux配置镜像环境步骤一致
             if '.pip' in os.listdir(rpath):
                 pip_path = os.path.join(rpath, '.pip')
                 if 'pip.conf' in os.listdir(pip_path):
-                    TipsMessageOKBox(self, '当前环境已配置镜像。', '重复提醒')
+                    self.infoBar.ShowMessage(f'当前环境已配置镜像。', wx.ICON_WARNING)
                 else:
                     write_file(os.path.join(pip_path, 'pip.conf'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
-                    TipsMessageOKBox(self, '配置成功！', '提示')
+                    self.infoBar.ShowMessage(f'配置镜像环境成功。', wx.ICON_INFORMATION)
             else:
                 pip_path = os.path.join(rpath, '.pip')
                 os.mkdir(pip_path)
                 write_file(os.path.join(pip_path, 'pip.conf'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
-                TipsMessageOKBox(self, '配置成功！', '提示')
+                self.infoBar.ShowMessage(f'配置镜像环境成功。', wx.ICON_INFORMATION)
         elif 'darwin' == platform:
             if '.pip' in os.listdir(rpath):
                 pip_path = os.path.join(rpath, '.pip')
                 if 'pip.conf' in os.listdir(pip_path):
-                    TipsMessageOKBox(self, '当前环境已配置镜像。', '重复提醒')
+                    self.infoBar.ShowMessage(f'当前环境已配置镜像。', wx.ICON_WARNING)
                 else:
                     write_file(os.path.join(pip_path, 'pip.conf'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
-                    TipsMessageOKBox(self, '配置成功！', '提示')
+                    self.infoBar.ShowMessage(f'配置镜像环境成功。', wx.ICON_INFORMATION)
             else:
                 pip_path = os.path.join(rpath, '.pip')
                 os.mkdir(pip_path)
                 write_file(os.path.join(pip_path, 'pip.conf'), read_file(os.path.join(TEMPLATE_DIR, 'pip', 'pip.ini')))
-                TipsMessageOKBox(self, '配置成功！', '提示')
+                self.infoBar.ShowMessage(f'配置镜像环境成功。', wx.ICON_INFORMATION)
         else:
-            TipsMessageOKBox(self, '未知系统', '提示')
+            self.infoBar.ShowMessage(f'未知系统', wx.ICON_WARNING)
 
     def onModelsProxyGenerate(self, e):
         """创建代理模型"""
@@ -281,7 +197,7 @@ class MainFrameFuncs(MainFrameListener):
             self.server.terminate()
             env.killProgress()
         except:
-            self.infos.AppendText(out_infos(f"网站未正常启动或启动异常，导致关闭失败。", level=3))
+            self.infoBar.ShowMessage(f'网站未正常启动或启动异常，导致关闭失败。', wx.ICON_ERROR)
         else:
             self.infos.AppendText(out_infos(f"网站已关闭。", level=1))
             self.portProgressRun.Enable(True)
@@ -289,31 +205,33 @@ class MainFrameFuncs(MainFrameListener):
 
             self.sys_toolbar.EnableTool(self.shotcut_run.GetId(), True)
             self.sys_toolbar.EnableTool(self.shotcut_stop.GetId(), False)
+            self.infoBar.ShowMessage(f'网站已关闭。', wx.ICON_INFORMATION)
 
     def onPortProgressVirtualChoice(self, e):
         """选择虚拟环境"""
         dlg = wx.FileDialog(self, "选择虚拟环境下的python.exe文件", "", "", "*.*", wx.FD_OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             env.setPython3Env(os.path.join(dlg.GetDirectory(), dlg.GetFilename()))
-            wx.MessageBox(f'虚拟环境绑定成功！', CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
+            self.infoBar.ShowMessage(f'虚拟环境绑定成功！', wx.ICON_INFORMATION)
         dlg.Close(True)
     
     def onHelpSeeOrKill(self, e):
         """查看或终止进程"""
-        TipsMessageOKBox(self, CON_MSG_PROGRESS_USE, CON_TIPS_COMMON)
+        RichMsgDialog.showOkMsgDialog(self, CON_MSG_PROGRESS_USE, CON_TIPS_COMMON)
 
     @VirtualEnvMustExistDecorator()
     def onPortProgressRun(self, e):
         """子进程运行Django"""
         port = env.getDjangoRunPort()
+        host = env.getDjangoRunHost()
         try:
             self.server = subprocess.Popen(f'{env.getDjangoOrderArgs()} runserver {port}', shell=True) # , stderr=subprocess.PIPE, stdout=subprocess.PIPE
         except:
             self.infos.AppendText(out_infos(f"虚拟环境错误，或项目路径错误，或端口被占用。", level=3))
         else:
             import webbrowser
-            webbrowser.open(f"http://127.0.0.1:{port}/admin/")
-            self.infos.AppendText(out_infos(f"网站正在运行，根路由：http://127.0.0.1:{port}。可复制到浏览器打开", level=1))
+            webbrowser.open(f"{host}:{port}/admin/")
+            self.infos.AppendText(out_infos(f"网站正在运行，根路由：{host}:{port}。可复制到浏览器打开", level=1))
             self.portProgressRun.Enable(False)
             self.portProgressStop.Enable(True)
 
@@ -322,14 +240,18 @@ class MainFrameFuncs(MainFrameListener):
 
     def onModelsGenerate(self, e):
         """创建模型"""
-        dlg = ModelsCreateDialog(self)
-        dlg.ShowModal()
-        dlg.Close(True)
+        # dlg = ModelsCreateDialog(self)
+        # dlg.ShowModal()
+        # dlg.Close(True)
+        self.auiNotebook.AddPage(AutoGenModelsPanel(self.auiNotebook), '新增模型', select=True)
+        self.auiNotebook.SetSelection(self.auiNotebook.GetPageCount())
 
     def onSqliteManageTool(self, e):
         """跨平台的Sqlite工具"""
-        manager = os.path.join(os.path.dirname(BASE_DIR), 'sqlite3Manager.pyw')
-        subprocess.Popen(f'{env.getRealPythonOrder()} {manager}', shell=True)
+        subFrame = SQLiteManageFrame(None)
+        subFrame.Show()
+        # manager = os.path.join(os.path.dirname(BASE_DIR), 'sqlite3Manager.pyw')
+        # subprocess.Popen(f'{env.getRealPythonOrder()} {manager}', shell=True)
 
     def onMenusSettings(self, e):
         """Settings"""
@@ -352,7 +274,7 @@ class MainFrameFuncs(MainFrameListener):
     def onUrlsFix(self, e):
         """修复路由"""
         for _ in self.unurls:
-            fix_urls(_) # 逐个修复
+            djangotools.fix_urls(_) # 逐个修复
             self.infos.AppendText(out_infos(f"{_}注册完成！", level=1))
         else:
             self.unurls.clear()
@@ -367,7 +289,7 @@ class MainFrameFuncs(MainFrameListener):
         # 只针对以本工具生成的app，而不是Django原生命令python manage.py startapp ...
         # 路由必须在主路径urls.py中用include()函数注册
         # 默认未每个应用程序注册ulrs，取environment.py中的urls别名
-        self.unurls = set(judge_in_main_urls()) # 全局监测
+        self.unurls = set(djangotools.judge_in_main_urls()) # 全局监测
         if len(self.unurls) <= 0:
             self._open_checked_fix_btn('urls', f_type='close')
             self.infos.AppendText(out_infos(f"路由检测完成，无已知错误。", level=1))
@@ -384,9 +306,11 @@ class MainFrameFuncs(MainFrameListener):
 
     def onViewsGenerateFunc(self, e):
         """多样式新增视图"""
-        dlg = ViewGenerateDialog(self)
-        dlg.ShowModal()
-        dlg.Close(True)
+        # dlg = ViewGenerateDialog(self)
+        # dlg.ShowModal()
+        # dlg.Close(True)
+        self.auiNotebook.AddPage(AutoGenViewsPanel(self.auiNotebook), '新增视图', select=True)
+        self.auiNotebook.SetSelection(self.auiNotebook.GetPageCount()) # 页签焦点切换
 
     def onFontsMinus(self, e):
         """显示框字体减小"""
@@ -412,7 +336,7 @@ class MainFrameFuncs(MainFrameListener):
         aboutInfo.SetDescription(T_("一种快速编写Django的辅助工具！QQ交流群：781517315"))
         aboutInfo.SetCopyright("(C) 2020-2021")
         aboutInfo.SetWebSite("https://github.com/JIYANG-PLUS/JDjango")
-        aboutInfo.AddDeveloper("笔小芯 -- jiyangj@foxmail.com")
+        aboutInfo.AddDeveloper("笔小芯 -- jiyangj@foxmail.com\n感谢：@coshare")
 
         wx.adv.AboutBox(aboutInfo)
 
@@ -440,18 +364,16 @@ class MainFrameFuncs(MainFrameListener):
         dlg = wx.TextEntryDialog(None, u"请输入应用程序名：", u"创建应用程序", u"")
         if dlg.ShowModal() == wx.ID_OK:
             message = dlg.GetValue()  # 获取文本框中输入的值
-            returnStatus = startapp(message)
+            returnStatus = djangotools.startapp(message)
             if 0 == returnStatus:
                 self.unapps.add(message)
                 url_alias = [os.path.basename(_).split('.')[0] for _ in env.getUrlsAlias()][0]
                 self.unurls.add(f'{message}.{url_alias}')
                 self.infos.AppendText(out_infos(f"{message}应用程序创建成功！", level=1))
-                dlg_tip = wx.MessageDialog(None, f"{message}创建成功！", CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
-                if dlg_tip.ShowModal() == wx.ID_OK: pass
-                dlg_tip.Close(True)
                 self.onAppsFix(e) # 自动完成注册
                 self.onUrlsFix(e) # 自动完成路由注册
                 self._init_config() # 重新初始化 配置文件【此操作为敏感操作】
+                self.infoBar.ShowMessage(f"{message}应用程序创建成功！", wx.ICON_INFORMATION)
             else:
                 dlg_tip = wx.MessageDialog(None, f"{message}应用程序名已存在，或不符合纯字母+数字命名的约定！", CON_TIPS_COMMON, wx.OK | wx.ICON_INFORMATION)
                 if dlg_tip.ShowModal() == wx.ID_OK: pass
@@ -465,8 +387,10 @@ class MainFrameFuncs(MainFrameListener):
             self.onSelectProjectRoot()
         elif bId == self.btn_check_project.GetId(): # 检测/校验项目
             self.onCheckGlobalProject(e)
+            self.infoBar.ShowMessage("检测成功，具体内容详见输出窗口。", wx.ICON_INFORMATION)
         elif bId == self.btn_fixed_project.GetId(): # 修复项目
             self.onFixGlobalProject(e)
+            self.infoBar.ShowMessage(f"修复成功！", wx.ICON_INFORMATION)
         elif bId == self.btn_config_project.GetId(): # 项目配置和修改
             dlg = SettingsDialog(self)
             dlg.ShowModal()
@@ -528,7 +452,8 @@ class MainFrameFuncs(MainFrameListener):
             filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
             if 'manage.py' == filename:
-                self.path.SetValue(f'当前项目路径：{self.dirname}')
+                # self.path.SetValue(f'当前项目路径：{self.dirname}') 【为了美观而放弃】
+                self.SetStatusText(f'{self.dirname}', 2)
                 try:
                     self._init_config() # 初始化配置文件
                 except Exception as e:
@@ -541,6 +466,7 @@ class MainFrameFuncs(MainFrameListener):
                     self.infos.Clear()
                     # self.path.Clear()
                     self.infos.AppendText(out_infos(f'项目{os.path.basename(self.dirname)}导入成功！', level=1))
+                    self.infoBar.ShowMessage(f'项目{os.path.basename(self.dirname)}导入成功！', wx.ICON_INFORMATION)
             else:
                 self.infos.AppendText(out_infos('项目导入失败，请选择Django项目根路径下的manage.py文件。', level=3))
         dlg.Close(True)
@@ -550,7 +476,7 @@ class MainFrameFuncs(MainFrameListener):
         apps = get_configs(CONFIG_PATH)['app_names'] # 实际的 所有 应用程序
         flag = 0
         with open(self.path_settings, 'r', encoding='utf-8') as f:
-            settings_apps = eval(get_list_patt_content_contain_code(PATT_INSTALLED_APPS, f.read()))
+            settings_apps = eval(djangotools.get_list_patt_content_contain_code(retools.PATT_INSTALLED_APPS, f.read()))
         for app in apps:
             if app not in settings_apps:
                 self.unapps.add(app)
@@ -571,7 +497,7 @@ class MainFrameFuncs(MainFrameListener):
         """修复未注册应用"""
         try:
             content = read_file(self.path_settings)
-            temp = PATT_INSTALLED_APPS.search(content).group(0)
+            temp = retools.PATT_INSTALLED_APPS.search(content).group(0)
             INSTALLED_APPS = temp.split('\n')
             for _ in self.unapps:
                 INSTALLED_APPS.insert(-1, f"    '{_}',")
@@ -599,10 +525,6 @@ class MainFrameFuncs(MainFrameListener):
         dlg.ShowModal()
         dlg.Close(True)
 
-    def OnTest(self, e):
-        """开发用，测试函数"""
-        TipsMessageOKBox(self, "有效", CON_TIPS_COMMON)
-
     def onCloseWindow(self, e):
         """窗口关闭前操作"""
         if self.timer is not None:
@@ -610,5 +532,24 @@ class MainFrameFuncs(MainFrameListener):
             self.timer = None
         self.Destroy()
 
-    def DoSearch(self,  text):
+    def DoSearch(self, text):
         return True
+
+    def onAuiNotebookClose(self, e):
+        """切换标签关闭前"""
+        # print(self.auiNotebook.GetPageText(self.auiNotebook.GetCurrentPage()))
+        if (0 == e.GetSelection()):
+            # e.Skip()
+            # e.StopPropagation()
+            e.Veto() # 否决掉事件的发生
+            self.infoBar.ShowMessage(f"核心标签不允许关闭！", wx.ICON_WARNING)
+
+    def onLanguage(self, e):
+        """语言"""
+        self.auiNotebook.AddPage(wx.Panel(self.auiNotebook), '测试', select=True)
+        self.auiNotebook.SetSelection(self.auiNotebook.GetPageCount())
+
+    def OnTest(self, e):
+        """开发用，测试函数"""
+        r = RichMsgDialog.showAskQuestionDialog(self, '测试', '标题')
+        print(r)

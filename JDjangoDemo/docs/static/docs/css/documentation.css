@@ -1,0 +1,387 @@
+@import 'adapt_base_documentation.css';
+main {
+  background-color: #ffffff;
+  display: flex;
+}
+main > div.main-left {
+  border-right: 1px solid rgba(0, 0, 0, 0.01);
+  width: 430px;
+  min-height: 700px;
+  background: #E5ECEB;
+}
+main > div.main-left > div.main-left-menu {
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #047ca1;
+}
+main > div.main-left > div.main-left-menu > span {
+  flex: 1;
+  display: inline-block;
+  margin-left: 10px;
+  color: #e4f1f5;
+}
+main > div.main-left > div.main-left-menu > button {
+  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 43px;
+  height: 100%;
+  color: #e4f1f5;
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+main > div.main-left > div.main-left-menu > button:hover {
+  cursor: pointer;
+}
+main > div.main-left > a.main-left-home {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 9px 0;
+}
+main > div.main-left > a.main-left-home > span {
+  color: #333E48;
+  font-size: 15px;
+  padding: 0 10px 0 20px;
+}
+main > div.main-left > a.main-left-home > span::before {
+  content: '';
+}
+main > div.main-left > a.main-left-home:hover > span {
+  color: #ff7817 !important;
+}
+main > div.main-left > a.main-left-home > button {
+  font-size: 20px;
+  margin-right: 12px;
+}
+main > div.main-left > a.main-left-home > button:hover {
+  cursor: pointer;
+  color: #ff7817 !important;
+}
+main > div.main-left > div.menu-items > div {
+  background: #ffffff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 9px 0;
+  padding-left: 37px;
+  position: relative;
+}
+main > div.main-left > div.menu-items > div > a > span {
+  color: #333E48;
+  font-size: 15px;
+  padding: 0 10px 0 20px;
+}
+main > div.main-left > div.menu-items > div > a > span::before {
+  content: '';
+}
+main > div.main-left > div.menu-items > div > a:hover {
+  cursor: pointer;
+}
+main > div.main-left > div.menu-items > div > a[data-flag="0"]::before {
+  content: '';
+}
+main > div.main-left > div.menu-items > div > a[data-flag="1"]::before {
+  content: '';
+}
+main > div.main-left > div.menu-items > div[data-open="1"] {
+  display: none;
+}
+main > div.main-left > div.menu-items > div > span {
+  margin-left: 12px;
+}
+main > div.main-left > div.menu-items > div > span:hover {
+  cursor: pointer;
+  color: #ff7817 !important;
+}
+main > div.main-left > div.menu-items > div > button {
+  position: absolute;
+  font-size: 20px;
+}
+main > div.main-left > div.menu-items > div > button:hover {
+  cursor: pointer;
+  color: #ff7817;
+}
+main > div.main-left > div.menu-items > div > button.btn-add-menu {
+  right: 60px;
+}
+main > div.main-left > div.menu-items > div > button.btn-del-menu {
+  right: 30px;
+}
+main > div.main-left > div.menu-items > div > button.btn-mod-menu {
+  right: 12px;
+}
+main > div.main-left > div.menu-items > div > button.btn-add-plug {
+  right: 90px;
+}
+main > div.main-left-small {
+  display: none;
+}
+main > div.main-left-small > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 43px;
+}
+main > div.main-left-small > div > button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #347b9d;
+  color: #ffffff;
+  width: 100%;
+  padding: 10px;
+}
+main > div.main-left-small > div > button:hover {
+  cursor: pointer;
+}
+main > div.main-left-small > div > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #e6eceb;
+  width: 100%;
+  color: #353e47;
+  padding-top: 20px;
+}
+main > div.main-left-small > div > div > span {
+  font-size: 20px;
+}
+main > div.main-right {
+  flex: 1;
+  padding: 0 15px;
+}
+main > div.main-right > div.main-right-search {
+  margin: 16px 0;
+}
+main > div.main-right > div.main-right-search > div:nth-of-type(1) {
+  height: 45px;
+  margin: 15px 0 0 0;
+  text-align: center;
+  color: #333E48;
+  font-size: 30px;
+}
+main > div.main-right > div.main-right-search > div:nth-of-type(2) > form {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  height: 45px;
+}
+main > div.main-right > div.main-right-search > div:nth-of-type(2) > form > input {
+  flex: 1;
+  background: #FFFFFF;
+  padding: 1px 36px 1px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  font-size: 24px;
+}
+main > div.main-right > div.main-right-search > div:nth-of-type(2) > form > input::placeholder {
+  font-weight: 100;
+  font-size: 18px;
+}
+main > div.main-right > div.main-right-search > div:nth-of-type(2) > form > input:focus::placeholder {
+  font-weight: 400;
+  font-size: 18px;
+}
+main > div.main-right > div.main-right-search > div:nth-of-type(2) > form > button {
+  width: 53px;
+  background: #E5ECEB;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  font-size: 24px;
+}
+main > div.main-right > div.main-right-search > div:nth-of-type(2) > form > button:hover {
+  cursor: pointer;
+  color: #C75300;
+}
+main > div.main-right > div.main-right-search > h2 {
+  color: #333E48;
+  margin: 29.05px 0;
+  font-size: 35px;
+  text-align: center;
+}
+main > div.main-right > div.main-right-subMenu {
+  height: 74px;
+  display: flex;
+  padding-left: 50px;
+}
+main > div.main-right > div.main-right-subMenu > div {
+  background: #E5ECEB;
+  font-size: 18px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+main > div.main-right > div.main-right-subMenu > a {
+  display: inline-block;
+  color: #000000;
+  font-size: 18px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+main > div.main-right > div.content {
+  background: #E5ECEB;
+  padding: 1.6px 32px;
+}
+main > div.main-right > div.content > div.js-content > div.content-item {
+  background: #f7f7f7;
+  margin: 16px 0;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(1) {
+  color: #FFFFFF;
+  font-size: 16px;
+  background: #333E48;
+  padding: 8px;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) {
+  padding: 0 16px;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > h4 {
+  margin: 10px 0;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > h4 > a {
+  color: #333E48;
+  font-size: 18px;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > h4 > a:hover {
+  color: #ff6b00 !important;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > h4 > i {
+  color: #c75300;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > div.s1 {
+  color: #333E48;
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > div.s1 > span:nth-of-type(1) {
+  color: #C75300;
+  font-size: 16px;
+  font-weight: bold;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > div.s1 > span:nth-of-type(2) {
+  color: #333E48;
+  font-size: 16px;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > div.s2 {
+  color: #333E48;
+  font-size: 16px;
+  margin: 0 0 8px;
+  word-break: break-all;
+}
+main > div.main-right > div.content > div.js-content > div.content-item > div:nth-of-type(2) > div.s3 > a {
+  margin: 0 0 16px;
+  display: inline-block;
+  height: 30px;
+  color: #FFFFFF;
+  background: #11809F;
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+main > div.main-right > div.content > div.pages {
+  padding: 0 16px;
+  height: 40px;
+  text-align: center;
+  margin: 26px 0 12px 0;
+}
+main > div.main-right > div.content > div.pages > a {
+  font-weight: bold;
+  color: #333E48;
+  border-radius: 5px;
+  padding: 10px;
+}
+main > div.main-right > div.content > div.pages > a:hover {
+  cursor: pointer;
+  color: #047ca1;
+}
+div.func {
+  background: #eff5f4;
+  height: 67px;
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  position: sticky;
+  top: 70px;
+  left: 0;
+  z-index: 100;
+}
+div.func > button {
+  height: 60px;
+  border: 1px solid rgba(0, 0, 0, 0);
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+div.func > button > i {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: #a39b9b 1px solid;
+  font-size: 24px;
+}
+div.func > button > span {
+  margin-left: 10px;
+  color: #333E48;
+}
+div.func > button:hover {
+  cursor: pointer;
+  border: 1px solid black;
+  border-radius: 5px;
+}
+div.func > button:hover > i {
+  background-color: #333e48;
+  color: #ffffff;
+}
+div#div-mini-menu {
+  display: none;
+  width: 100%;
+  position: fixed;
+  z-index: 100;
+  top: 70px;
+  background: #333e48;
+  color: #ffffff;
+  left: 0;
+  padding-bottom: 120px;
+}
+div#div-mini-menu > div.menu-items > div {
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(33, 183, 222, 0.8);
+}
+div#div-mini-menu > div.menu-items > div > span {
+  font-size: 18px;
+  margin-left: 12px;
+}
+div#div-mini-menu > div.menu-items > div > span:hover {
+  cursor: pointer;
+  color: #ff7817 !important;
+}
+div#div-mini-menu > div.menu-items > div > a {
+  margin-right: 24px;
+}
+div#div-mini-menu > div.menu-items > div > a:hover {
+  cursor: pointer;
+}
+div#div-mini-menu > div.menu-items > div > div {
+  flex: 1;
+  background: red;
+}
+div#div-mini-menu > div.menu-items > div[data-open="1"] {
+  display: none;
+}

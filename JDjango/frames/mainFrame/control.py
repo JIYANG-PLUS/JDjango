@@ -23,7 +23,7 @@ class MainFrameGUIControl(MainFrameGUI):
     def _control_able(self):
         """可见性、可用性控制"""
         self.infos.SetEditable(False)
-        self.path.SetEditable(False)
+        # self.path.SetEditable(False)
         self.portProgressRun.Enable(False)
         self.portProgressStop.Enable(False)
 
@@ -95,5 +95,5 @@ class MainFrameGUIControl(MainFrameGUI):
             self.infos.AppendText(out_infos('项目残缺，无法校验。请检查本项目是否为Django项目。', level=3))
             return
         else:
-            set_configs(self.path_settings, configs) # 第三个参数测试用
+            djangotools.set_configs(self.path_settings, configs)
             dump_json(CONFIG_PATH, configs)  # 写入配置文件

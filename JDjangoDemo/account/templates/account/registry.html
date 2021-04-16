@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}注册-四象生八卦{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'account/css/registry.css' %}">
+{% endblock %}
+{% block script %}
+<script src="{% static 'account/js/registry.js' %}"></script>
+{% endblock %}
+{% block body %}
+<main>
+    <div class="title">欢迎加入&nbsp;&nbsp;<a href="{% url 'docs:index' %}">四象生八卦</a></div>
+    <h1>创建新账户</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label class="username"><span>用户名</span><input type="text" autocomplete="off" required name="username" maxlength="6"></label>
+        <p><span>不超过6个字符。</span></p>
+        <label class="email"><span>验证邮箱</span><input type="email" autocomplete="off" placeholder="@qq.com、@foxmail.com、@163.com" required name="email"></label>
+        <p><span>仅支持QQ邮箱和网易邮箱：@qq.com、@foxmail.com、@163.com。</span></p>
+        <label class="pwd"><span>密码<button type="button" id="btn-see"><i class="fa fa-eye-slash" aria-hidden="true"></i></button></span><input type="password" autocomplete="off" placeholder="数字、字母、英文标点" required name="password"  maxlength="12" minlength="8"></label>
+        <p><span>密码长度必须介于8~12之间，由数字+字母+英文标点符号组成。</span></p>
+        <span>已有账号？<a href="{% url 'account:login' %}">去登录</a></span>
+        <div>
+            <input name="code" type="text" maxlength="8" placeholder="此处输入8位验证码" disabled><button type="button" id="send-code">获取邮箱验证码</button>
+        </div>
+        <button id="create" type="button">创&nbsp;&nbsp;建</button>
+    </form>
+</main>
+<div class="msg-back">
+    <div class="error">
+        <div class="error-msg"></div>
+        <span>【点击任意处关闭】</span>
+    </div>
+</div>
+<div class="success">
+    <div>
+        <div class="success-msg">注册成功</div>
+        <i class="fa fa-hand-o-right" aria-hidden="true"></i>
+        <i class="fa fa-home" aria-hidden="true"  onclick="location.href='/docs/'"></i>
+    </div>
+</div>
+<footer></footer>
+<aside></aside>
+{% endblock %}

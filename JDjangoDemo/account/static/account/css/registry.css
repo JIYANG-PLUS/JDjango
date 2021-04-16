@@ -1,0 +1,195 @@
+a {
+  color: #0366cc;
+}
+body {
+  background: #ffffff;
+}
+body > main {
+  color: #24292E;
+  font-size: 14px;
+  margin: 64px 0 0;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+body > main > div.title {
+  color: #6a737d;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+body > main > h1 {
+  color: #24292e;
+  font-size: 48px;
+  margin: 0 0 16px;
+}
+body > main > form > label {
+  display: block;
+  height: 68px;
+  width: 544px;
+  margin: 16px 0;
+}
+body > main > form > label > span {
+  display: block;
+  width: 544px;
+  height: 21px;
+  margin: 0 0 6px;
+  color: #24292e;
+  font-size: 18px;
+  font-weight: 400;
+}
+body > main > form > label > span::before {
+  content: "*";
+  color: red;
+  margin-right: 6px;
+}
+body > main > form > label > span > button {
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+  font-size: 24px;
+}
+body > main > form > label > span > button:hover {
+  cursor: pointer;
+}
+body > main > form > label > input {
+  display: block;
+  background: #fafbfc;
+  margin: 0 5px 0 0;
+  padding: 4px 12px;
+  border: 1px solid rgba(100, 100, 100, 0.2);
+  border-radius: 5px;
+  font-size: 16px;
+  width: 544px;
+  height: 40px;
+}
+body > main > form > label > input:focus {
+  border: #bdd1f1 solid 4px;
+}
+body > main > form > label > input::placeholder {
+  font-weight: 100;
+  font-size: 10px;
+  color: #b4b4b4;
+}
+body > main > form > span {
+  display: block;
+  text-align: right;
+  font-size: 12px;
+}
+body > main > form > span > a:hover {
+  text-decoration: underline;
+}
+body > main > form > button {
+  display: none;
+  height: 55px;
+  width: 544px;
+  color: #ffffff;
+  font-size: 14px;
+  margin: 38px 0;
+  background: #0366cc;
+  border-radius: 8px;
+}
+body > main > form > p {
+  color: #b4b4b4;
+}
+body > main > form > p > span {
+  border-bottom: 1px dotted red;
+  font-size: 12px;
+}
+body > main > form > div {
+  display: flex;
+  margin-top: 32px;
+}
+body > main > form > div > input {
+  flex: 1;
+  border: 1px solid black;
+  border-radius: 5px;
+  height: 43px;
+  padding: 8px;
+  font-size: 18px;
+  margin-right: 16px;
+}
+body > main > form > div > input::placeholder {
+  font-weight: 100;
+  font-size: 16px;
+  color: #b4b4b4;
+}
+body > main > form > div > input:focus {
+  border: 4px solid #0366cc;
+}
+body > main > form > div > input:disabled {
+  background: #ffffff;
+  border: 4px solid #ffffff;
+}
+body > main > form > div > input:disabled::placeholder {
+  color: #ffffff;
+}
+body > main > form > div > button {
+  background: #333e48;
+  color: #ffffff;
+  width: 135px;
+  height: 43px;
+  padding: 0 6px;
+  border-radius: 5px;
+}
+body > main > form > div > button:hover {
+  cursor: pointer;
+  background: #6698e2;
+}
+body > div.msg-back,
+body > div.success {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background: rgba(240, 240, 240, 0.9);
+}
+body > div.msg-back > div,
+body > div.success > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body > div.msg-back > div > div,
+body > div.success > div > div {
+  text-indent: 2em;
+  padding: 6px;
+  font-size: 36px;
+  font-weight: 800;
+}
+body > div.msg-back > div > div.error-msg,
+body > div.success > div > div.error-msg {
+  color: red;
+}
+body > div.msg-back > div > div.success-msg,
+body > div.success > div > div.success-msg {
+  color: green;
+}
+body > div.msg-back > div > button,
+body > div.success > div > button {
+  font-size: 24px;
+  font-size: 18px;
+  border-radius: 5px;
+  color: #ffffff;
+}
+body > div.msg-back > div > button:hover,
+body > div.success > div > button:hover {
+  cursor: pointer;
+  background: #71a3d6;
+}
+body > div.success > div > i {
+  font-size: 24px;
+  margin: 0 12px;
+}
+body > div.success > div > i:nth-of-type(2) {
+  font-size: 36px;
+}
+body > div.success > div > i:nth-of-type(2):hover {
+  cursor: pointer;
+  color: greenyellow;
+}

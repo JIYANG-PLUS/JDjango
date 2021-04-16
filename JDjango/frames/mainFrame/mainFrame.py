@@ -35,7 +35,8 @@ class MainFrameFinalGUI(MainFrameFuncs):
                     self.infos.AppendText(out_infos('历史项目失效，已被移除，请重新选择！', level=3))
                     return
                 if 'manage.py' in os.listdir(self.dirname):
-                    self.path.SetValue(f'当前项目路径：{self.dirname}')
+                    # self.path.SetValue(f'当前项目路径：{self.dirname}')
+                    self.SetStatusText(f'{self.dirname}', 2)
                     try:
                         self._init_config() # 初始化配置文件
                     except Exception as e:
@@ -61,13 +62,14 @@ class MainFrameFinalGUI(MainFrameFuncs):
         now_time = time.localtime(time.time())
         format_time = time.strftime('%Y-%m-%d %H:%M:%S', now_time)
         self.SetStatusText(f'系统时间：{format_time}', 1)  # 这里的1代表将时间放入状态栏的第二部分上
+        
         try:
             if (None == self.server.poll()):
-                self.SetStatusText("网站正在运行中", 2)
+                self.SetStatusText("网站正在运行中", 3)
             else:
-                self.SetStatusText("网站已关闭", 2)
+                self.SetStatusText("网站已关闭", 3)
         except:
-            self.SetStatusText("网站已关闭", 2)
+            self.SetStatusText("网站已关闭", 3)
 
         # 监听指令
         for i, _ in enumerate(self.cmdCodes[::-1]):
@@ -75,6 +77,7 @@ class MainFrameFinalGUI(MainFrameFuncs):
                 if (None != _.poll()):
                     t_info = self.info_cmdCodes[_]
                     info = f"【{t_info}】指令执行完成！"
+                    self.infoBar.ShowMessage(f"【{t_info}】指令执行完成！", wx.ICON_INFORMATION)
                     self.infos.AppendText(out_infos(info, level=1))
                     # 往进程添加提示信息
                     import subprocess
@@ -86,13 +89,6 @@ class MainFrameFinalGUI(MainFrameFuncs):
                     self.cmdCodes.pop(i)
             except:
                 self.infos.AppendText(out_infos(f"程序级错误，请联系作者修复。", level=3))
-
-        # 按钮监听 不可用
-        # simpleui是否启用
-        try:
-            if djcmd.judge_installed_library(name='simpleui'):
-                self.fastSimpleui.Enable(False)
-        except: ...
 
     def __del__(self):
         """释放资源"""

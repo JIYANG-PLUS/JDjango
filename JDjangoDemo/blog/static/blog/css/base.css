@@ -1,0 +1,125 @@
+body {
+  background: #ffffff;
+}
+body > header {
+  height: 70px;
+  display: flex;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  background: #155b7c;
+  color: #ffffff;
+  font-size: 24px;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+body > header > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+body > header > div.header-logo {
+  width: 160px;
+  color: #ffffff;
+  position: relative;
+}
+body > header > div.header-logo::after {
+  content: '四象生八卦';
+  font-size: 12px;
+  position: absolute;
+  right: -24px;
+  bottom: 20px;
+  color: #eff302;
+}
+body > header > div.header-left {
+  flex: 1;
+  padding: 8px;
+}
+body > header > div.header-left > button {
+  color: #ffffff;
+  border: 1px solid #ffffff;
+  padding: 6px;
+  margin: 0 12px;
+  width: 69px;
+}
+body > header > div.header-left > button:hover {
+  cursor: pointer;
+  background: #eff302 !important;
+  color: black !important;
+}
+body > header > div.header-right {
+  flex: 1;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+body > header > div.header-right > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body > header > div.header-right > div > a {
+  color: #ffffff;
+  font-size: 14px;
+  margin: 0 6px;
+}
+body > header > div.header-right > div > a:hover {
+  color: #f79568;
+  text-decoration: underline;
+}
+body > header > div.header-right > div:nth-of-type(1) {
+  margin-left: 24px;
+}
+body > nav {
+  width: 95%;
+  margin: 0 auto;
+  padding: 12px 24px;
+  background: #155b7c;
+  color: #ffffff;
+  border-radius: 10px;
+  position: sticky;
+  top: 83px;
+  left: 0;
+}
+body > nav > ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+}
+body > nav > ul > li {
+  color: #c4bdbd;
+}
+body > nav > ul > li > a {
+  color: #ffffff;
+  text-decoration: underline;
+}
+body > nav > ul > li > a:hover {
+  color: yellow;
+}
+body > nav > ul > i {
+  margin: 0 6px;
+}
+body > nav > div {
+  position: absolute;
+  top: -14px;
+  height: 14px;
+  background: #155b7c;
+  width: 18px;
+}
+body > nav > div:nth-of-type(1) {
+  left: 120px;
+}
+body > nav > div:nth-of-type(2) {
+  right: 120px;
+}
+body > footer {
+  text-align: center;
+  padding: 24px 0;
+  background: #50ace6;
+}
+body > footer > span {
+  color: #ffffff;
+}

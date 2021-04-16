@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}密码重置成功-四象生八卦{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'account/css/reset_success.css' %}">
+{% endblock %}
+{% block script %}
+<script src="{% static 'account/js/reset_success.js' %}"></script>
+{% endblock %}
+{% block body %}
+<main>
+    <span>密码重置成功</span>
+    <span><span id="second">10</span>秒后自动跳转到主页</span>
+    <a href="{% url 'docs:index' %}">立即跳转</a>
+</main>
+{% endblock %}

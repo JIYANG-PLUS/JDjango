@@ -1,0 +1,223 @@
+{% extends 'docs/base_documentation.html' %}
+{% load static %}
+{% load myfilter %}
+{% block title %}{{ article.title }}-文档中心-四象生八卦{% endblock %}
+{% block navh1 %}{{ block.super }}&nbsp;【{{ article.menu.name }}】{% endblock %}
+{% block navh1-small %}{{ block.super }}&nbsp;【{{ article.menu.name }}】{% endblock %}
+{% block style %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'docs/css/content.css' %}">
+<link rel="stylesheet" href="{% static 'docs/css/adapt_content.css' %}">
+{% if user.is_superuser %}
+<link rel="stylesheet" href="{% static 'docs/css/content_link_blog.css' %}">
+{% endif %}
+{% endblock %}
+{% block script %}{{ block.super }}
+<script src="{% static 'docs/js/content.js' %}"></script>
+{% if user.is_superuser %}
+<script src="{% static 'docs/js/content_link_blog.js' %}"></script>
+<script src="{% static 'docs/js/content_link_plugin.js' %}"></script>
+{% endif %}
+{% endblock %}
+{% block outFunc %}<div class="func"></div>{% endblock %}
+{% block nav-li %}
+<li><span class="nav-li"><a href="{% url 'blog:index' %}" target="_blank">交流区</a></span><span class="sep-li">|</span></li>
+<li><span class="nav-li"><a href="{% url 'docs:index' %}">接口文档</a></span><span class="sep-li">|</span></li>
+<li><span class="nav-li">{{ article.title }}</span></li>
+{% endblock %}
+{% block main %}
+<div class="main-left"></div>
+<article>
+    <h1>
+        {{ article.title }} <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+        <div>
+            {% if sampleId %}
+            <a href="{% url 'blog:pluginsampledetial' sampleId article.id %}" target="_blank">代码样例</a>
+            {% else %}
+            <a>暂无代码样例</a>
+            {% endif %}
+            {% if user.is_superuser %}
+            {% if article.author.pk == user.pk %}
+            <button id="btn-modify-article">修改本文</button>
+            {% endif %}
+            {% if isinsert %}
+            <button>已绑定</button>
+            {% else %}
+            <button id="btn-insert-plugin">绑定接口</button>
+            {% endif %}
+            {% endif %}
+        </div>
+    </h1>
+    <div class="little-info">
+        <span>作者：{{ article.author.username }}</span><span>版本号：{{ article.version }}</span><span>最后一次修订：{{ article.modify_time|date:"Y-m-d H:i:s" }}</span>
+    </div>
+    <div class="article-label">
+        {% for label in article.label|split:"/" %}
+        <span><i class="fa fa-tag" aria-hidden="true" style="color: rgb(199,83,0);margin-right: 2px;"></i>{{ label }}</span>
+        {% endfor %}
+    </div>
+    <p>【接口32位唯一码：{% if article.aurls %}{{ article.aurls.only_code }}{% else %}请联系管理员生成接口唯一码{% endif %}】</p>
+    <div class="abstract">
+        <h2>接口简述</h2>
+        <p>{{ article.abstract }}</p>
+    </div>
+    {% with json_data=article.content|tojson %}
+    <!-- 正文分解【语法分解】 -->
+    <div class="article-detial">
+        <div class="request-method">
+            <span><span>请求方式</span><span>{{ json_data.method }}</span></span>
+            <span><span>协议</span><span>{{ json_data.agreement }}</span></span>
+            <span><span>返回值类型</span><span>{{ json_data.return }}</span></span>
+            <span><span>MD5</span><span>{{ json_data.MD5 }}</span></span>
+            <span><span>可继承</span><span>{{ json_data.extend }}</span></span>
+        </div>
+        <div class="ph">
+            <p class="url">
+                <span>接口链接</span><span id="copy-content">{{ json_data.url }}</span>
+            </p>
+            <button class="copy">拷贝</button>
+            <span id="copy-success">OK</span>
+        </div>
+        <table>
+            <caption>参数<span>有序调用时，请按下表顺序传递参数</span></caption>
+            <thead>
+                <tr>
+                    <th>参数</th>
+                    <th>类型</th>
+                    <th>说明</th>
+                    <th>需求</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in json_data.args %}
+                <tr>
+                    <td>{{ d.name }}</td>
+                    <td>{{ d.type }}</td>
+                    <td>{{ d.description }}</td>
+                    <td>{{ d.request }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="samples">
+            <p><span>无序调用（样例）</span><span id="span-disorder">{{ json_data.url }}{{ json_data.test.disorder }}</span><button id="copy-disorder">拷贝</button><span id="disorder-ok">OK</span></p>
+            <p><span>有序调用（样例）</span><span id="span-order">{{ json_data.url }}{{ json_data.test.order }}</span><button id="copy-order">拷贝</button><span id="order-ok">OK</span></p>
+        </div>
+        <table>
+            <caption>返回字段</caption>
+            <thead>
+                <tr>
+                    <th>返回字段</th>
+                    <th>类型</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in json_data.result %}
+                <tr>
+                    <td>{{ d.name }}</td>
+                    <td>{{ d.type }}</td>
+                    <td>{{ d.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table>
+            <caption>请求状态码</caption>
+            <thead>
+                <tr>
+                    <th>状态码</th>
+                    <th>含义</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in json_data.status %}
+                <tr>
+                    <td>{{ d.code }}</td>
+                    <td>{{ d.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endwith %}
+    <div class="footer">
+        <span>END{% if user.is_superuser %}
+            {% if article.iswrite %}
+            <span id="btn_touch_modify">代码修改样例</span>
+            {% else %}
+            <span id="btn_touch_add"><i class="fa fa-commenting-o" aria-hidden="true"></i></span>
+            {% endif %}
+        {% endif %}</span>
+    </div>
+</article>
+<div class="main-right"></div>
+{% if user.is_superuser %}
+<div class="div-link-blog">
+    <form method="POST" id="form-addnew">
+        {% csrf_token %}
+        <button type="button" class="form-cancel"><i class="fa fa-times" aria-hidden="true"></i></button>
+        <h3>关联新增<span>pk={{ article.pk }}</span></h3>
+        <textarea name="content" cols="45" rows="25" required></textarea>
+        <button type="submit" class="submit" id="add">新增</button>
+    </form>
+    <form method="POST" id="form-modify">
+        {% csrf_token %}
+        <button type="button" class="form-cancel"><i class="fa fa-times" aria-hidden="true"></i></button>
+        <h3>关联修改<span>id={{ article.id }}</span></h3>
+        <textarea name="content-modify" cols="45" rows="25" required></textarea>
+        <input type="hidden" name="id" value="{{ article.id }}">
+        <button type="submit" class="submit" id="modify">修改</button>
+    </form>
+</div>
+<div class="aside-add-plug">
+    <div>
+        <h1><span></span>修改插件文章<button type="button" class="common-cancel">×</button></h1>
+        <form method="post">
+            {% csrf_token %}
+            <label>
+                <span class="must">标题：</span>
+                <input type="text" placeholder="不超过100个字符" autocomplete="off" name="plugin_name" maxlength="100" required>
+            </label>
+            <label>
+                <span class="must">标签：</span>
+                <input type="text" placeholder="不超过100个字符" autocomplete="off" name="plugin_label" maxlength="100" required>
+            </label>
+            <label>
+                <span class="must">摘要：</span>
+                <input type="text" placeholder="不超过100个字符" autocomplete="off" name="plugin_abstract" maxlength="100" required>
+            </label>
+            <label>
+                <span class="must">版本号：</span>
+                <input type="text" placeholder="不超过30个字符" autocomplete="off" name="plugin_version" maxlength="30" required value="1.0.0">
+            </label>
+            <label>
+                <span class="must">内容：</span>
+                <textarea name="plugin_content" cols="30" rows="10" placeholder="尽量将内容压缩后上传" required></textarea>
+            </label>
+            <label>
+                <input type="checkbox" name="plugin_isvisible" checked>
+                <span>可见</span>
+            </label>
+            <input type="hidden" name="plugin_menu_pk" id="menu_pk" value="{{ article.pk }}">
+            <button type="submit">提&nbsp;交</button>
+        </form>
+    </div>
+</div>
+<div class="div-insert-plugin">
+    <form method="post">
+        {% csrf_token %}
+        <h3>关联绑定接口<button type="button" id="btn-insert-cancel">X</button></h3>
+        <label>
+            <span>接口链接：</span>
+            <input type="text" name="link_use_linke" readonly>
+        </label>
+        <label>
+            <span>可用：</span>
+            <input type="checkbox" name="link_use_valid" checked>
+        </label>
+        <input type="hidden" name="article_pk" value="{{ article.pk }}">
+        <div><button type="submit">关联新增</button></div>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

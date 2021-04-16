@@ -1,0 +1,285 @@
+[
+    {
+        "page-name" : "基本配置",
+        "categorys" : [
+            {
+                "name" : "基本",
+                "objs" : [
+                    {
+                        "key" : "SECRET_KEY",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "ALLOWED_HOSTS",
+                        "default" : [],
+                        "type" : "ArrayStringProperty"
+                    },
+                    {
+                        "key" : "DEBUG",
+                        "default" : true,
+                        "type" : "BoolProperty"
+                    }
+                ]
+            },
+            {
+                "name" : "语言",
+                "objs" : [
+                    {
+                        "key" : "LANGUAGE_CODE",
+                        "type" : "EnumProperty",
+                        "labels" : ["中文", "英文"],
+                        "choices" : [0, 1],
+                        "default" : 0
+                    },
+                    {
+                        "key" : "USE_L10N",
+                        "default" : true,
+                        "type" : "BoolProperty"
+                    },
+                    {
+                        "key" : "USE_I18N",
+                        "default" : true,
+                        "type" : "BoolProperty"
+                    }
+                ]
+            },
+            {
+                "name" : "时区",
+                "objs" : [
+                    {
+                        "key" : "TIME_ZONE",
+                        "type" : "EnumProperty",
+                        "labels" : ["伦敦时区", "上海时区", "美国芝加哥"],
+                        "choices" : [0, 1, 2],
+                        "default" : 0
+                    },
+                    {
+                        "key" : "USE_TZ",
+                        "default" : true,
+                        "type" : "BoolProperty"
+                    }
+                ]
+            },
+            {
+                "name" : "静态文件",
+                "objs" : [
+                    {
+                        "key" : "STATIC_URL",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "MEDIA_URL",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "STATIC_ROOT",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "MEDIA_ROOT",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "STATICFILES_DIRS",
+                        "default" : [],
+                        "type" : "ArrayStringProperty"
+                    }
+                ]
+            },
+            {
+                "name" : "路由",
+                "objs" : [
+                    {
+                        "key" : "ROOT_URLCONF",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    }
+                ]
+            }
+        ],
+        "matching" : {
+            "中文" : ["zh-Hans", "zh_Hans"],
+            "英文" : ["en-us", "en_us"],
+            "伦敦时区" : ["UTC"],
+            "上海时区" : ["Asia/Shanghai"],
+            "美国芝加哥" : ["America/Chicago"]
+        }
+    },
+    {
+        "page-name" : "发送邮件",
+        "categorys" : [
+            {
+                "name" : "发送邮件",
+                "objs" : [
+                    {
+                        "key" : "EMAIL_BACKEND",
+                        "type" : "EnumProperty",
+                        "labels" : [
+                            "SMTP后端",
+                            "控制台后端",
+                            "文件后端",
+                            "内存后端",
+                            "虚拟后端"
+                        ],
+                        "choices" : [0, 1, 2, 3, 4],
+                        "default" : 0
+                    },
+                    {
+                        "key" : "EMAIL_FILE_PATH",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "EMAIL_HOST",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "EMAIL_HOST_PASSWORD",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "EMAIL_HOST_USER",
+                        "default" : "",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "EMAIL_SUBJECT_PREFIX",
+                        "default" : "[JDjango] ",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "EMAIL_USE_LOCALTIME",
+                        "default" : false,
+                        "type" : "BoolProperty"
+                    },
+                    {
+                        "key" : "EMAIL_USE_TLS",
+                        "default" : false,
+                        "type" : "BoolProperty"
+                    },
+                    {
+                        "key" : "EMAIL_USE_SSL",
+                        "default" : false,
+                        "type" : "BoolProperty"
+                    },
+                    {
+                        "key" : "EMAIL_SSL_CERTFILE",
+                        "default" : "",
+                        "type" : "FileProperty"
+                    },
+                    {
+                        "key" : "EMAIL_SSL_KEYFILE",
+                        "default" : "",
+                        "type" : "FileProperty"
+                    },
+                    {
+                        "key" : "EMAIL_TIMEOUT",
+                        "default" : -1,
+                        "type" : "IntProperty"
+                    },
+                    {
+                        "key" : "EMAIL_PORT",
+                        "default" : 25,
+                        "type" : "IntProperty"
+                    }
+
+                ]
+            }
+        ],
+        "matching" : {
+            "SMTP后端" : ["django.core.mail.backends.smtp.EmailBackend"],
+            "控制台后端" : ["django.core.mail.backends.console.EmailBackend"],
+            "文件后端" : ["django.core.mail.backends.filebased.EmailBackend"],
+            "内存后端" : ["django.core.mail.backends.locmem.EmailBackend"],
+            "虚拟后端" : ["django.core.mail.backends.dummy.EmailBackend"]
+        }
+    },
+    {
+        "page-name" : "用户认证",
+        "categorys" : [
+            {
+                "name" : "用户认证",
+                "objs" : [
+                    {
+                        "key" : "AUTH_USER_MODEL",
+                        "default" : "auth.User",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "LOGIN_REDIRECT_URL",
+                        "default" : "/accounts/profile/",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "LOGIN_URL",
+                        "default" : "/accounts/login/",
+                        "type" : "StringProperty"
+                    },
+                    {
+                        "key" : "PASSWORD_RESET_TIMEOUT",
+                        "default" : 259200,
+                        "type" : "IntProperty"
+                    },
+                    {
+                        "key" : "AUTHENTICATION_BACKENDS",
+                        "default" :  ["django.contrib.auth.backends.ModelBackend"],
+                        "type" : "ArrayStringProperty"
+                    },
+                    {
+                        "key" : "AUTH_PASSWORD_VALIDATORS",
+                        "default" :  [],
+                        "type" : "ArrayStringProperty"
+                    },
+                    {
+                        "key" : "PASSWORD_HASHERS",
+                        "default" :  [
+                            "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+                            "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+                            "django.contrib.auth.hashers.Argon2PasswordHasher",
+                            "django.contrib.auth.hashers.BCryptSHA256PasswordHasher"
+                        ],
+                        "type" : "ArrayStringProperty"
+                    }
+                ]
+            }
+        ],
+        "matching" : {
+
+        }
+    },
+    {
+        "page-name" : "三方",
+        "categorys" : [
+            {
+                "name" : "跨域",
+                "objs" : [
+                    {
+                        "key" : "CORS_ORIGIN_ALLOW_ALL",
+                        "default" : false,
+                        "type" : "BoolProperty"
+                    }
+                ]
+            },
+            {
+                "name" : "IFrame支持",
+                "objs" : [
+                    {
+                        "key" : "X_FRAME_OPTIONS",
+                        "default" : false,
+                        "type" : "BoolProperty"
+                    }
+                ]
+            }
+        ],
+        "matching" : {
+
+        }
+    }
+]

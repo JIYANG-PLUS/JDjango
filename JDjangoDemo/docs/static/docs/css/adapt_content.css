@@ -1,0 +1,12 @@
+@media screen and (max-width: 828px) {
+  div.div-title,
+  div.h-right {
+    display: none !important;
+  }
+  div.div-title-small {
+    display: flex !important;
+  }
+  div.h-left > a {
+    width: 400px !important;
+  }
+}

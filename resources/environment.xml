@@ -1,13 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
 <jdjango>
 
+    <rename>cesium</rename>
+
     <page>
         <font-size>13</font-size>
     </page>
 
     <env>
         <platform>Windows</platform>
-        <python3>C:\Users\PC\Desktop\venv\Scripts\python.exe</python3>
+        <host>http://127.0.0.1</host>
+        <python3>C:\Users\PC\Desktop\demoEnv\Scripts\python.exe</python3>
         <port>8868</port>
         <encoding>
             <li>utf-8</li>

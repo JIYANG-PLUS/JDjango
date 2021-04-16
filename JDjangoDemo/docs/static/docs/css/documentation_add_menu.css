@@ -1,0 +1,167 @@
+aside > div.aside {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+aside > div.aside > div {
+  height: 700px;
+  width: 400px;
+  background: #333e48;
+  color: #ffffff;
+  border-radius: 10px;
+  border: 2px white solid;
+}
+aside > div.aside > div > h1 {
+  text-align: center;
+  margin: 8px 0;
+  padding-bottom: 12px;
+  border-bottom: double 6px white;
+  position: relative;
+}
+aside > div.aside > div > h1 > button {
+  position: absolute;
+  right: 18px;
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 30px;
+}
+aside > div.aside > div > h1 > button:hover {
+  cursor: pointer;
+  color: #C75300;
+}
+aside > div.aside > div.aside-add-menu > form,
+aside > div.aside > div.aside-add-plug > form,
+aside > div.aside > div.aside-mod-menu > form {
+  width: 92%;
+  margin: 0 auto;
+}
+aside > div.aside > div.aside-add-menu > form > label,
+aside > div.aside > div.aside-add-plug > form > label,
+aside > div.aside > div.aside-mod-menu > form > label {
+  display: block;
+  margin: 12px 0;
+}
+aside > div.aside > div.aside-add-menu > form > label > input[type='text'],
+aside > div.aside > div.aside-add-plug > form > label > input[type='text'],
+aside > div.aside > div.aside-mod-menu > form > label > input[type='text'] {
+  display: block;
+  width: 100%;
+  height: 24px;
+  padding: 16px;
+  font-size: 18px;
+  margin: 0 auto;
+  margin-top: 12px;
+}
+aside > div.aside > div.aside-add-menu > form > label > input[type='text']::placeholder,
+aside > div.aside > div.aside-add-plug > form > label > input[type='text']::placeholder,
+aside > div.aside > div.aside-mod-menu > form > label > input[type='text']::placeholder {
+  font-size: 12px;
+  color: #beb8b8;
+}
+aside > div.aside > div.aside-add-menu > form > label > textarea,
+aside > div.aside > div.aside-add-plug > form > label > textarea,
+aside > div.aside > div.aside-mod-menu > form > label > textarea {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  font-size: 18px;
+  padding: 12px;
+  margin-top: 12px;
+}
+aside > div.aside > div.aside-add-menu > form > label > textarea::placeholder,
+aside > div.aside > div.aside-add-plug > form > label > textarea::placeholder,
+aside > div.aside > div.aside-mod-menu > form > label > textarea::placeholder {
+  font-size: 12px;
+  color: #beb8b8;
+}
+aside > div.aside > div.aside-add-menu > form > label > input[type='checkbox'],
+aside > div.aside > div.aside-add-plug > form > label > input[type='checkbox'],
+aside > div.aside > div.aside-mod-menu > form > label > input[type='checkbox'] {
+  display: inline-block;
+  height: 15px;
+  width: 15px;
+}
+aside > div.aside > div.aside-add-menu > form > label > input[type='number'],
+aside > div.aside > div.aside-add-plug > form > label > input[type='number'],
+aside > div.aside > div.aside-mod-menu > form > label > input[type='number'] {
+  display: inline-block;
+  height: 25px;
+  width: 55px;
+  padding: 4px;
+  border-radius: 5px;
+}
+aside > div.aside > div.aside-add-menu > form > button,
+aside > div.aside > div.aside-add-plug > form > button,
+aside > div.aside > div.aside-mod-menu > form > button {
+  display: block;
+  width: 90px;
+  background: #ffffff;
+  background-clip: content-box;
+  color: #333e48;
+  margin: 0 auto;
+  margin-top: 36px;
+  border: double 6px #ffffff;
+  border-radius: 5px;
+  height: 50px;
+  font-size: 24px;
+}
+aside > div.aside > div.aside-add-menu > form > button:hover,
+aside > div.aside > div.aside-add-plug > form > button:hover,
+aside > div.aside > div.aside-mod-menu > form > button:hover {
+  cursor: pointer;
+  background: #333e48;
+  color: #ffffff;
+  border: double 6px #98c3eb;
+}
+aside > div.aside > div.aside-del-menu {
+  height: 145px;
+}
+aside > div.aside > div.aside-del-menu > span {
+  display: none;
+}
+aside > div.aside > div.aside-del-menu > div {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+aside > div.aside > div.aside-del-menu > div > button {
+  display: block;
+  width: 180px;
+  background: #ffffff;
+  background-clip: content-box;
+  color: #333e48;
+  margin: 0 auto;
+  border: double 6px #ffffff;
+  border-radius: 5px;
+  height: 60px;
+  font-size: 18px;
+}
+aside > div.aside > div.aside-del-menu > div > button:hover {
+  cursor: pointer;
+  background: #556d83;
+  color: #ffffff;
+  border: double 6px #98c3eb;
+}
+aside > div.aside > div.aside-del-menu > div > button#btn-del-menu:hover {
+  background: red;
+}
+aside > div.aside > div.aside-add-plug {
+  height: 100vh;
+  overflow-y: scroll;
+}
+.must::before {
+  content: '*';
+  color: red;
+  font-weight: 400;
+  margin-right: 8px;
+}
+div.menu-items > div:hover {
+  background: yellowgreen !important;
+}

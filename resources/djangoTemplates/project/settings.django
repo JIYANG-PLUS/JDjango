@@ -1,7 +1,7 @@
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SECRET_KEY = '0&h&tmu$z3hr_)6s!ew((t4g$-**l4!z#a-@jwvko=upke@qjs'
+SECRET_KEY = '${secret_key}'
 DEBUG = True
 
 DEFAULT_CHARSET = 'utf-8'

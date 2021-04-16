@@ -64,14 +64,14 @@ class AdminCreateSimpleDialog(wx.Dialog):
         """下拉框选择App值更新事件"""
         key = e.GetString() # 获取当前选中的应用程序名
         self.listBoxModels.Clear() # 清空列表内容，用于展示当前选中app下的所有模型
-        already_regieter_models = get_admin_register_models()
+        already_regieter_models = djangotools.get_admin_register_models()
         if key.strip():
             APP_PATH = os.path.join(get_configs(CONFIG_PATH)['dirname'], key) # 路径定位到当前app下
             if os.path.exists(APP_PATH) and os.path.isdir(APP_PATH):
                 pys = glob.glob(os.path.join(APP_PATH, '**', '*.py'), recursive=True) # 先取所有归属当前app下的文件路径
                 alias = [os.path.basename(_) for _ in env.getModelsAlias()] # 取所有模型别名（如：models.py）
                 pathModels = [_ for _ in pys if os.path.basename(_) in alias] # 以别名为依据，过滤所有文件中可能的模型文件
-                for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in toolModel.get_models_from_modelspy(_) if mo not in already_regieter_models]:
+                for obj in [(mo, os.path.basename(_)) for _ in pathModels for mo in djangotools.get_models_from_modelspy(_) if mo not in already_regieter_models]:
                     self.listBoxModels.Append(' ------ '.join(obj)) # 赋值的同时标注模块的来源，用 ' ------ ' 隔开
 
     def onButtonClick(self, e):
@@ -106,7 +106,7 @@ class AdminCreateSimpleDialog(wx.Dialog):
             for _ in alias:
                 # 下面将在所有的模块别名路径中写入注册数据【可能有点不合理】
                 insert_path = os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _) # 因为 _ 别名是包含紧邻app路径之后的路径，所以理论上不管层级有多深，都可以找的到
-                write_admin_base(insert_path, importData) # 写入注册代码
+                djangotools.write_admin_base(insert_path, importData) # 写入注册代码
             wx.MessageBox(f'{"、".join(models)}注册成功！', '提示', wx.OK | wx.ICON_INFORMATION) # 提示成功
         dlg.Close(True)
 
@@ -164,29 +164,29 @@ class AdminRenameDialog(wx.Dialog):
         value_title = self.inputTitle.GetValue().strip()
         result = []
         if value_header and 'None' != value_header: # 只要不为空，覆盖式赋值
-            headers = get_site_header()
+            headers = djangotools.get_site_header()
             len_headers = len(headers)
             if len_headers > 0:
                 if len_headers > 1:
-                    set_site_header(value_header, mode = 2) # 若有两个及以上命名，则删除所有，再任选一处命名
+                    djangotools.set_site_header(value_header, mode = 2) # 若有两个及以上命名，则删除所有，再任选一处命名
                 else:
-                    set_site_header(value_header, mode = 1) # 若只有一个命名，则修改本处命名
+                    djangotools.set_site_header(value_header, mode = 1) # 若只有一个命名，则修改本处命名
             else:
-                set_site_header(value_header, mode = 0) # 若没有命名过，则任选一处命名
+                djangotools.set_site_header(value_header, mode = 0) # 若没有命名过，则任选一处命名
             result.append(True)
         else:
             result.append(False)
 
         if value_title and 'None' != value_title:
-            titles = get_site_title()
+            titles = djangotools.get_site_title()
             len_titles = len(titles)
             if len_titles > 0:
                 if len_titles > 1:
-                    set_site_title(value_title, mode = 2) # 若有两个及以上命名，则删除所有，再任选一处命名
+                    djangotools.set_site_title(value_title, mode = 2) # 若有两个及以上命名，则删除所有，再任选一处命名
                 else:
-                    set_site_title(value_title, mode = 1) # 若只有一个命名，则修改本处命名
+                    djangotools.set_site_title(value_title, mode = 1) # 若只有一个命名，则修改本处命名
             else:
-                set_site_title(value_title, mode = 0) # 若没有命名过，则任选一处命名
+                djangotools.set_site_title(value_title, mode = 0) # 若没有命名过，则任选一处命名
             result.append(True)
         else:
             result.append(False)
@@ -205,7 +205,7 @@ class AdminRenameDialog(wx.Dialog):
             wx.MessageBox(f'未做任何修改', '错误', wx.OK | wx.ICON_INFORMATION)
 
     def _init_data(self):
-        headers = get_site_header()
+        headers = djangotools.get_site_header()
         len_headers = len(headers)
         if len_headers > 0:
             self.inputHeader.SetValue(f'{headers[0]}')
@@ -216,7 +216,7 @@ class AdminRenameDialog(wx.Dialog):
         else:
             self.inputHeader.SetValue(f'None')
             self.msgName.SetValue(f'读取正常')
-        titles = get_site_title()
+        titles = djangotools.get_site_title()
         len_titles = len(titles)
         if len_titles > 0:
             self.inputTitle.SetValue(f'{titles[0]}')
@@ -288,10 +288,10 @@ class ProjectCreateDialog(wx.Dialog):
         if not os.path.exists(path) or not os.path.isdir(path):
             wx.MessageBox(f'非法路径', '错误', wx.OK | wx.ICON_INFORMATION)
             return
-        if '' == name or not PATT_CHARS.match(name):
+        if '' == name or not retools.PATT_CHARS.match(name):
             wx.MessageBox(f'项目名称非法', '错误', wx.OK | wx.ICON_INFORMATION)
             return
-        status = startproject(path, name)
+        status = djangotools.startproject(path, name)
         if 0 == status:
             wx.MessageBox(f'项目{name}创建成功', '成功', wx.OK | wx.ICON_INFORMATION)
             self.Close()

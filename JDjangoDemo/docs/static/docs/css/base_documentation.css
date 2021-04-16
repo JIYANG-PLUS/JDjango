@@ -1,0 +1,279 @@
+@import 'base_documentation_bar_detail.css';
+a {
+  color: #21b7de;
+}
+body > header {
+  background: #333e48;
+  height: 70px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+body > header > div.h-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 4px;
+}
+body > header > div.h-left > div {
+  margin-left: 24px;
+  width: 320px;
+  position: relative;
+  z-index: 100;
+}
+body > header > div.h-left > div > a {
+  color: #FFFFFF;
+  font-size: 32px;
+}
+body > header > div.h-left > div > a::after {
+  content: 'Developer';
+  font-size: 24px;
+  font-weight: 100;
+}
+body > header > div.h-left > div > span {
+  display: none;
+  color: #FFFFFF;
+  font-size: 32px;
+  position: relative;
+}
+body > header > div.h-left > div > span:hover {
+  cursor: pointer;
+  color: #21b7de;
+}
+body > header > div.h-left > div > span > i:nth-of-type(2) {
+  display: none;
+}
+body > header > div.h-right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body > header > div.h-right > div {
+  margin: 0 12px;
+}
+body > header > div.h-right > div#h-right-classify > button {
+  display: inline-block;
+  height: 70px;
+  color: white;
+  font-size: 16px;
+  margin-left: 16px;
+  position: relative;
+}
+body > header > div.h-right > div#h-right-classify > button:hover {
+  cursor: pointer;
+  color: #f7c744 !important;
+}
+body > header > div.h-right > div#h-right-classify > button > span > i {
+  margin-left: 3px;
+}
+body > header > div.h-right > div#h-right-classify > button > div {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 38%;
+  height: 12px;
+  width: 12px;
+  border: 6px solid;
+  border-color: #333e48 #333e48 #f7c744 #333e48;
+}
+body > header > div.h-right > div#h-right-classify > a {
+  color: white;
+  font-size: 16px;
+  margin-left: 16px;
+}
+body > header > div.h-right > div#h-right-classify > a:hover {
+  color: #f7c744 !important;
+}
+body > header > div.h-right > div#h-right-search {
+  display: none;
+}
+body > header > div.h-right > div#h-right-search > form {
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body > header > div.h-right > div#h-right-search > form > input[type='search'] {
+  height: 40px;
+  width: 335px;
+  font-size: 24px;
+  padding: 1px 36px 1px 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+body > header > div.h-right > div#h-right-search > form > input[type='search']::placeholder {
+  font-weight: 100;
+  font-size: 18px;
+}
+body > header > div.h-right > div#h-right-search > form > input[type='search']:focus::placeholder {
+  font-weight: 400;
+  font-size: 18px;
+}
+body > header > div.h-right > div#h-right-search > form > button {
+  height: 40px;
+  width: 50px;
+  background-color: #e6eceb;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+body > header > div.h-right > div#h-right-search > form > button:hover {
+  cursor: pointer;
+  background: #a4a8ad;
+}
+body > header > div.h-right > div:nth-of-type(3) {
+  display: flex;
+}
+body > header > div.h-right > div:nth-of-type(3) > button {
+  margin-right: 12px;
+  position: relative;
+}
+body > header > div.h-right > div:nth-of-type(3) > button#btn-cancel {
+  display: none;
+}
+body > header > div.h-right > div:nth-of-type(3) > button:hover {
+  cursor: pointer;
+}
+body > header > div.h-right > div:nth-of-type(3) > button::before {
+  content: '';
+  display: block;
+  height: 22px;
+  width: 22px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+body > header > div.h-right > div:nth-of-type(3) > button > object {
+  height: 22px;
+  width: 22px;
+}
+body > header > div.h-right > div:nth-of-type(3) > a {
+  color: #ffffff;
+}
+body > header > div.h-right > div:nth-of-type(3) > a:hover {
+  color: #f7c744;
+}
+body > header > div.h-right > span {
+  color: rgba(255, 255, 255, 0.3);
+}
+body > div.nav > div {
+  width: 100%;
+}
+body > div.nav > div.div-title {
+  background: #333e48;
+  height: 150px;
+  padding: 0 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+body > div.nav > div.div-title > ul {
+  list-style: none;
+}
+body > div.nav > div.div-title > ul > li {
+  float: left;
+  font-size: 16px;
+}
+body > div.nav > div.div-title > ul > li > span.nav-li {
+  display: inline-block;
+  color: #ffffff;
+}
+body > div.nav > div.div-title > ul > li > span.nav-li > a {
+  color: #21b7de;
+  border-bottom: dotted #21b7de 1px;
+}
+body > div.nav > div.div-title > ul > li > span.nav-li > a:hover {
+  color: #0d819e;
+}
+body > div.nav > div.div-title > ul > li > span.sep-li {
+  color: white;
+  display: inline-block;
+  margin: 0 6px;
+}
+body > div.nav > div.div-title > h1 {
+  color: #FFFFFF;
+  font-size: 37px;
+  font-weight: 400;
+}
+body > div.nav > div.div-title-small {
+  background: #333e48;
+  height: 71px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  color: #FFFFFF;
+  font-size: 28px;
+  font-weight: 400;
+}
+body > footer {
+  padding: 32px 0;
+  background: #333e48;
+  color: #a39e8a;
+  text-align: center;
+}
+body > div#logoutin {
+  position: fixed;
+  top: 70px;
+  right: 0;
+  z-index: 1000;
+  width: 170px;
+  height: 120px;
+  background: #ffffff;
+  border: 1px solid #3d90b9;
+  display: none;
+}
+body > div#logoutin > div {
+  margin: 1px;
+  padding: 1px;
+  height: 100%;
+  border: 6px solid #739fec;
+  border-radius: 5px;
+}
+body > div#logoutin > div > div {
+  height: 30px;
+  padding: 0 8px;
+}
+body > div#logoutin > div > div:nth-of-type(1) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #3d90b9;
+  color: #ffffff;
+}
+body > div#logoutin > div > div:nth-of-type(1) > button {
+  color: #ffffff;
+  font-size: 18px;
+}
+body > div#logoutin > div > div:nth-of-type(1) > button:hover {
+  cursor: pointer;
+  color: #f7c744;
+}
+body > div#logoutin > div > div:nth-of-type(2) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+body > div#logoutin > div > div:nth-of-type(2) > a {
+  color: #333e48;
+}
+body > div#logoutin > div > div:nth-of-type(2) > a:hover {
+  cursor: pointer;
+  color: #ee722e;
+}
+body > div#logoutin > div > div:nth-of-type(3) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  color: #397f9c;
+}
+body > div#logoutin > div > div:nth-of-type(3) > a:hover {
+  cursor: pointer;
+  color: #ee722e;
+}

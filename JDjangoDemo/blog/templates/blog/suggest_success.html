@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}意见提交成功-交流区-四象生八卦{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'blog/css/suggest_success.css' %}">
+{% endblock %}
+{% block script %}
+<script src="{% static 'blog/js/suggest_success.js' %}"></script>
+{% endblock %}
+{% block body %}
+<main>
+    <span>{{ info }}成功</span>
+    <span><span id="second">10</span>秒后自动跳转到交流区</span>
+    <a href="{% url 'blog:index' %}">立即跳转</a>
+</main>
+{% endblock %}

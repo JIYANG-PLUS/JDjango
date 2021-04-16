@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}base-documentation{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'docs/css/base_documentation.css' %}">
+{% endblock %}
+{% block script %}
+<script src="{% static 'docs/js/base_documentation_bar.js' %}"></script>
+<script src="{% static 'docs/js/base_documentation_bar_detial_plugin.js' %}"></script>
+{% endblock %}
+{% block body %}
+<!-- 头部 -->
+<header>
+    <div class="h-left">
+        <div>
+            <span id="span-small-menu-all">
+                <i class="fa fa-list" aria-hidden="true"></i>
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </span>
+            <a href="{% url 'docs:index' %}">四象生八卦</a>
+        </div>
+    </div>
+    <div class="h-right">
+        <div id="h-right-classify">
+            <button id="btn-plugin"><span>常用接口<i class="fa fa-angle-down" aria-hidden="true" id="i-plugin"></i></span><div id="classify-triangle-plugin"></div></button>
+            <button id="btn-about"><span>关于本站<i class="fa fa-angle-down" aria-hidden="true" id="i-about"></i></span><div id="classify-triangle-about"></div></button>
+            <a href="{% url 'blog:index' %}" target="_blank">交流区</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'account:userinfo' user.pk %}">个人中心</a>
+            {% endif %}
+        </div>
+        <span id="h-right-split">|</span>
+        <div id="h-right-search"><form action="" method="post">{% csrf_token %}
+            <input type="search" placeholder="站点搜索（本功能暂不开放）" autocomplete="off" name="h-right-search">
+            <button type="submit" disabled><i class="fa fa-search" aria-hidden="true" style="font-size: 24px;"></i></button>
+        </form></div>
+        <div>
+            <button id="btn-cancel"><object data="{% static 'docs/svg/cancel.svg' %}"></object></button>
+            <button id="btn-search"><object data="{% static 'docs/svg/search.svg' %}"></object></button>
+            {% if user.is_authenticated %}
+            <a id="a-logout" href="{% url 'account:logout' %}">退出</a>
+            {% else %}
+            <button id="btn-login"><object data="{% static 'docs/svg/user.svg' %}"></object></button>
+            {% endif %}
+        </div>
+    </div>
+</header>
+<!-- 导航和子标题显示 -->
+<div class="nav">
+    {% block nav %}
+    <div class="div-title">
+        <ul>
+            {% block nav-li %}
+            <li><span class="nav-li"><a href="{% url 'blog:index' %}" target="_blank">交流区</a></span><span class="sep-li">|</span></li>
+            <li><span class="nav-li"><a href="{% url 'docs:index' %}">接口文档</a></span></li>
+            {% endblock %}
+        </ul>
+        <hr class="clear">
+        <h1><span>{% block navh1 %}接口文档{% endblock %}</span></h1>
+    </div>
+    <div class="div-title-small">{% block navh1-small %}接口文档{% endblock %}</div>
+    {% endblock %}
+</div>
+<!-- 全局功能按钮 -->
+{% block outFunc %}<div class="func">{% block func %}{% endblock %}</div>{% endblock %}
+<!-- 内容显示区域 -->
+<main>{% block main %}{% endblock %}</main>
+<!-- 页脚 -->
+<footer>
+    <div>Copyright@2020&nbsp;&nbsp;四象生八卦</div>
+</footer>
+<!-- 其它无关内容 -->
+<aside>{% block aside %}{% endblock %}</aside>
+<!-- 页面切换部分 -->
+<div id="div-plugin">
+    <div class="div-bar-detail-block">
+        <div class="div-bar-detail-left">
+            <button id="btn-1">
+                <div></div>
+                <div>暂无</div>
+            </button>
+        </div>
+        <div class="div-bar-detail-right">
+            <div class="div-bar-detail-right-content" id="div-b-right-content1">
+                <header>
+                    <h3>暂无</h3>
+                </header>
+                <section>
+                    <article>
+                        <div>
+                            <h4>示例1</h4>
+                            <p>内容不多，此处功能暂时搁置。</p>
+                        </div>
+                        <div>
+                            <h4>示例2</h4>
+                            <p>内容不多，此处功能暂时搁置。</p>
+                        </div>
+                    </article>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="div-about">
+    <h1>本站的始末</h1>
+    <p>在本站建设的初期，我还不熟悉CSS、JS、以及Less工具，我所具备的技能全部是后端语言，如Python、C、C++、Java等。</p>
+    <p>2020疫情期间，我的大学生涯正式画上“遗憾”的句号。还没有毕业时，我就去南通某地面试金蝶的二开工作，也就是所谓的实习（本来是为了混个实习报告），这一待就待了差不多半年，这半年里我接触了.net开发，做的是金蝶的云星空产品，慢慢的上手后就开始无聊起来。一成不变的流程：提出需求->确定需求->具体化需求->工作分配->写插件->测BUG->改插件->循环中->测试环境通过->部署正式环境->这并不代表结束【无止境循环中】。</p>
+    <p>项目总有空档期，这期间我开始接触前端的东西。说实话我开始很抵触CSS，感觉它挺复杂的（后来熟悉后发现也就那样）。慢慢的，将JS也学了，前后花费了半个月时间。这半个月里，我写了两个小网站，不断用到Django。之所以用Django是因为我很早之前就接触了Django，对它熟。</p>
+    <p>这一切的一切都奠定了本站的诞生。</p>
+    <h1>本站用到的所有技术及工具</h1>
+    <p>重要说明：本站未使用任何的前端框架，除了Ajax的其它一切均由原生JS和原生CSS实现，所以本站并不是一个很好的学习模仿范例（对于那些喜欢前沿技术的人来说）。</p>
+    <p>涉及技术：C、Python3.7.x、Django2.2.9、Django3.0.2、JavaScript、CSS、HTML、Less、Ajax、SVG、JSON等。</p>
+    <p>涉及工具：VSCode、GitHub Desktop、PS等。</p>
+    <p>为了使前后端更友好的交互，本站采用了Ajax技术，本来打算用原生JS处理GET请求。后来觉得麻烦，直接使用了<a href="https://jquery.com/" target="_blank">JQuery</a>。</p>
+    <p>为了保证接口的执行效率，在必要的时候，我会将核心功能用C编写，经由Python调用，以此弥补Python的部分缺点。</p>
+    <p>因为本站严格遵循Django的MVC和MTV设计模式，所以后面会慢慢加入更多的功能，这很容易实现。</p>
+    <p>本站开始的所有图标都是用SVG写的，后来觉得麻烦，直接用的<a href="http://www.fontawesome.com.cn/" target="_blank">Font Awesome</a>的免费图标。</p>
+    <p>本站的风格模仿自<a href="https://developer.arm.com/documentation/search/5eec6e36e24a5e02d07b2557" target="_blank">ARM</a>（ARM竟然改风格了！还好我剽的快。可是！ARM现在的风格我更喜欢！！！以后有时间就照新风格改改！）</p>
+    <h1>本站正在做的事以及将要做的事</h1>
+    <p>“四象生八卦”这个名字取自“太极生两仪，两仪生四象，四象生八卦”。道德经说过：“道生一，一生二，二生三，三生万物”，那我就“四象生八卦”吧。</p>
+    <p>本站目前是想做一个接口分享网站，接口目前均来自于本人的编写，后期将征集更多臭味相投的小伙伴一起搞建设，这些接口的源码未来均会开源在GitHub上。</p>
+    <p>接口建设在目前是主要矛盾，当它慢慢成熟后，我会利用现有的接口开发一些有意思的应用。</p>
+    <h1>后记</h1>
+    <p>本站建设的初衷仅仅是为了方便我练习与分享各类算法的现实应用，至于能发展成什么样，并不是现在的我考虑的，所以您将会看到很多我设计的很随意的元素（想到就实现，无草稿实现）。</p>
+    <p>后期会将慢慢蚕食人工智能等领域，这将是一个极度漫长的过程，我没有100%把握坚持走下去，但只要有这个“感觉”存在，我就会一直走下去。</p>
+    <p>本站不变宗旨：从0到1，从无到有！</p>
+</div>
+<div id="logoutin">
+    <div>
+        <div><span>账户</span><button id="logoutin_cancel">x</button></div>
+        <div><a href="{% url 'account:login' %}">登录</a></div>
+        <div><a href="{% url 'account:registry' %}">注册</a></div>
+    </div>
+</div>
+{% block other-body %}
+{% endblock %}
+{% endblock %}

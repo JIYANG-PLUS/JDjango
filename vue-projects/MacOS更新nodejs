@@ -1,0 +1,56 @@
+sudo npm cache clean -f
+
+# 安装node版本管理工具n
+sudo npm install -g n
+
+// 安装最新版node.js
+sudo n stable
+
+# npm更新到最新版
+sudo npm install npm@latest -g
+
+node -v
+npm -v
+
+
+================== 更新node ==================
+# 方法一：
+sudo npm cache clean -f //清除nodejs的cache：
+sudo npm install -g n //使用npm安装n模块
+npm view node versions // node所有版本
+sudo n latest // 升级到最新版本
+sudo n stable // 升级到稳定版本
+sudo n xx.xx // 升级到具体版本号
+
+
+# 方法二：
+brew update
+(1).更新homebrew,如果出现The /usr/local directory is not writable.则需要更改权限 ，然后输入：sudo chown -R $(whoami) /usr/local
+(2).升级完以后，会弹出这个
+Homebrew no longer needs to have ownership of /usr/local. If you wish you can
+return /usr/local to its default ownership with 
+sudo chown root:wheel /usr/local
+(3). 按提示输入下边的命令，更改会原来的权限
+sudo chown root:wheel /usr/local
+--------------------
+接下来更新node
+brew upgrade node
+
+
+================== 更新npm ==================
+sudo npm install npm@latest -g //升级到最新版
+sudo npm install npm@xx -g //升级到指定版本
+npm version // 查看版本详情
+npm view npm version // npm最新版本
+npm view npm versions // npm所有版本
+npm list //  插件清单
+
+
+
+
+-- MacOS nvm 版本管理
+    nvm install 14.16.0 # 安装版本
+    nvm alias default 14.16.0 # 切换版本
+
+
+www.bootcdn.cn # 链接资源

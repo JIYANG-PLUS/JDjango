@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}密码重置-四象生八卦{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'account/css/emailreset.css' %}">
+{% endblock %}
+{% block script %}
+<script src="{% static 'account/js/emailreset.js' %}"></script>
+{% endblock %}
+{% block body %}
+<header>
+    <!-- <div onclick="location.href='/docs/'">LOGO设计中</div> -->
+</header>
+<main>
+    <h1>您的用户名：{{ name }}</h1>
+    <div>
+        <form method="post">
+            {% csrf_token %}
+            <label>
+                <span>密码长度必须介于8~12之间，由数字+字母+英文标点符号组成。<i class="fa fa-eye-slash" aria-hidden="true" id="eye"></i></span>
+                <input type="password" autocomplete="off" placeholder="新密码" name="password" required maxlength="12" minlength="8"><div><i class="fa" aria-hidden="true" id="msg"></i></div>
+            </label>
+            <span id="error-info"></span>
+            <button type="submit" id="send" disabled><span id="info">确&nbsp;认&nbsp;重&nbsp;置</span><span id="time"></span></button>
+        </form>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,204 @@
+a {
+    color: rgb(3, 102, 204);
+}
+body {
+    background: #ffffff;
+    & > main {
+        color: #24292E;
+        font-size: 14px;
+        margin: 64px 0 0;
+        padding: 0 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        & > div.title {
+            color: #6a737d;
+            font-size: 14px;
+            margin: 0 0 16px;
+        }
+        & > h1 {
+            color: #24292e;
+            font-size: 48px;
+            margin: 0 0 16px;
+        }
+        & > form {
+            & > label {
+                display: block;
+                height: 68px;
+                width: 544px;
+                margin: 16px 0;
+                & > span {
+                    display: block;
+                    width: 544px;
+                    height: 21px;
+                    margin: 0 0 6px;
+                    color: #24292e;
+                    font-size: 18px;
+                    font-weight: 400;
+                    &::before {
+                        content: "*";
+                        color: red;
+                        margin-right: 6px;
+                    }
+                    & > button {
+                        width: 20px;
+                        height: 20px;
+                        margin-left: 8px;
+                        font-size: 24px;
+                        &:hover {
+                            cursor: pointer;
+                        }
+                    }
+                }
+                & > input {
+                    display: block;
+                    background: #fafbfc;
+                    margin: 0 5px 0 0;
+                    padding: 4px 12px;
+                    border: 1px solid rgba(100, 100, 100, .2);
+                    border-radius: 5px;
+                    font-size: 16px;
+                    width: 544px;
+                    height: 40px;
+                    &:focus {
+                        border: #bdd1f1 solid 4px;
+                    }
+                    &::placeholder {
+                        font-weight: 100;
+                        font-size: 10px;
+                        color: rgb(180, 180, 180);
+                    }
+                }
+            }
+            & > span {
+                display: block;
+                text-align: right;
+                font-size: 12px;
+                &>a:hover {
+                    text-decoration: underline;
+                }
+            }
+            & > button {
+                display: none;
+                height: 55px;
+                width: 544px;
+                color: #ffffff;
+                font-size: 14px;
+                margin: 38px 0;
+                background: rgb(3, 102, 204);
+                border-radius: 8px;
+            }
+            & > p {
+                color: rgb(180, 180, 180);
+                & > span {
+                    border-bottom: 1px dotted red;
+                    font-size: 12px;
+                }
+            }
+            & > div {
+                display: flex;
+                margin-top: 32px;
+                & > input {
+                    flex: 1;
+                    border: 1px solid black;
+                    border-radius: 5px;
+                    height: 43px;
+                    padding: 8px;
+                    font-size: 18px;
+                    margin-right: 16px;
+                    &::placeholder {
+                        font-weight: 100;
+                        font-size: 16px;
+                        color: rgb(180, 180, 180);
+                    }
+                    &:focus {
+                        border: 4px solid rgb(3, 102, 204);
+                    }
+                    &:disabled {
+                        background: #ffffff;
+                        border: 4px solid #ffffff;
+                        &::placeholder {
+                            color: #ffffff;
+                        }
+                    }
+                }
+                & > button {
+                    background: rgb(51,62,72);
+                    color: #ffffff;
+                    width: 135px;
+                    height: 43px;
+                    padding: 0 6px;
+                    border-radius: 5px;
+                    &:hover {
+                        cursor: pointer;
+                        background: rgb(102, 152, 226);
+                    }
+                }
+            }
+        }
+    }
+
+    & > footer {
+    }
+
+    & > aside {
+    }
+    & > div.msg-back,
+    & > div.success {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: none;
+        width: 100vw;
+        height: 100vh;
+        justify-content: center;
+        align-items: center;
+        background: rgba(240, 240, 240, .9);
+        & > div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            & > div {
+                text-indent: 2em;
+                padding: 6px;
+                font-size: 36px;
+                font-weight: 800;
+                &.error-msg {
+                    color: red;
+                }
+                &.success-msg {
+                    color: green;
+                }
+            }
+            & > button {
+                font-size: 24px;
+                font-size: 18px;
+                border-radius: 5px;
+                color: #ffffff;
+                &:hover {
+                    cursor: pointer;
+                    background: #71a3d6;
+                }
+            }
+        }
+    }
+    & > div.success {
+        & > div {
+            & > i {
+                font-size: 24px;
+                margin: 0 12px;
+                &:nth-of-type(1) {
+
+                }
+                &:nth-of-type(2) {
+                    font-size: 36px;
+                    &:hover {
+                        cursor: pointer;
+                        color: greenyellow;
+                    }
+                }
+            }
+        }
+    }
+}

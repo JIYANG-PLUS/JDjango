@@ -63,7 +63,7 @@ class ModelsCreateDialog(wx.Dialog):
         """脚注提示信息字体初始化"""
         for _ in self.readmeStaticTexts:
             _.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
-            _.SetForegroundColour(CON_COLOR_BLUE)
+            _.SetForegroundColour(CON_COLOR_MAIN)
 
     def _init_label_font(self):
         """标签提示信息字体初始化"""
@@ -83,10 +83,10 @@ class ModelsCreateDialog(wx.Dialog):
         selectFilePanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.selectFilePanel.SetSizer(selectFilePanelSizer)
         self.panelSizer.Add(self.selectFilePanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.selectFilePanel.SetBackgroundColour(CON_COLOR_BLUE) # CON_COLOR_PURE_WHITE
+        self.selectFilePanel.SetBackgroundColour(CON_COLOR_MAIN) # CON_COLOR_PURE_WHITE
 
         self.labelSelectFile = wx.StaticText(self.selectFilePanel, -1, "请在右侧下拉列表选择模型所属的应用程序")
-        self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',] + SCONFIGS.app_names)
+        self.choiceSelectFile = wx.Choice(self.selectFilePanel, -1, choices=[' ',] + djangotools.SCONFIGS.app_names())
         selectFilePanelSizer.Add(self.labelSelectFile, 0, wx.EXPAND | wx.ALL, 2)
         selectFilePanelSizer.Add(self.choiceSelectFile, 1, wx.EXPAND | wx.ALL, 2)
         self.labelSelectFile.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
@@ -97,7 +97,7 @@ class ModelsCreateDialog(wx.Dialog):
         toolPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.toolPanel.SetSizer(toolPanelSizer)
         self.panelSizer.Add(self.toolPanel, 0, wx.EXPAND | wx.ALL, 2)
-        self.toolPanel.SetBackgroundColour(CON_COLOR_BLUE)
+        self.toolPanel.SetBackgroundColour(CON_COLOR_MAIN)
 
         self.btnAddNew = buttons.GenButton(self.toolPanel, -1, '新增字段')
         self.btnResetInput = buttons.GenButton(self.toolPanel, -1, '重置字段')
@@ -629,7 +629,7 @@ class ModelsCreateDialog(wx.Dialog):
         # 显示和隐藏Meta按钮，用于空间的合理布局
         self.btnShowUnshowMeta = buttons.GenButton(self.panel, -1, '【显示】Meta元数据（表级参数设置）')
         self.panelSizer.Add(self.btnShowUnshowMeta, 0, wx.EXPAND | wx.ALL, 2)
-        self.btnShowUnshowMeta.SetBackgroundColour(CON_COLOR_BLUE)
+        self.btnShowUnshowMeta.SetBackgroundColour(CON_COLOR_MAIN)
         self.btnShowUnshowMeta.SetForegroundColour(CON_COLOR_WHITE)
 
         self.metaScollPanel = scrolledpanel.ScrolledPanel(self.panel, -1, size=(730,444))
@@ -986,7 +986,7 @@ class ModelsCreateDialog(wx.Dialog):
 
         if fid == self.metaAbstractOption.GetId():
             if 0 == status_abstract:
-                TipsMessageOKBox(self, '抽象模型不会在数据库中建表，并且表级的一些参数设置将对子类无效。', '警告')
+                RichMsgDialog.showOkMsgDialog(self, '抽象模型不会在数据库中建表，并且表级的一些参数设置将对子类无效。', '警告')
 
     def onBtnShowUnshowMeta(self, e):
         """显示和隐藏Meta按钮，用于空间的合理布局"""
@@ -1045,7 +1045,7 @@ class <model_name>(models.Model):
     def onBtnPreview(self, e):
         """预览待插入代码"""
         model_code = self._generate_create_code()
-        CodePreviewBox(self, model_code)
+        RichMsgDialog.showScrolledMsgDialog(self, model_code, "代码预览")
 
     def _get_fields_attrs(self):
         """获取字段参数输出字符串"""
@@ -1283,7 +1283,7 @@ class <model_name>(models.Model):
             # 同时只能有一个显式主键存在
             if len([_ for _ in self.allRows if CON_YES==_['primary_key']]) > 0:
                 self.radiosFiledPrimary.SetSelection(1)
-                TipsMessageOKBox(self, '一个模型只能拥有一个显式主键，若想对此字段设置主键，请使用隐式方式：null=False且unique=True。', '警告')
+                RichMsgDialog.showOkMsgDialog(self, '一个模型只能拥有一个显式主键，若想对此字段设置主键，请使用隐式方式：null=False且unique=True。', '警告')
                 return
 
             # 自动赋值默认值None
@@ -1312,16 +1312,16 @@ class <model_name>(models.Model):
             # 避免在CharField之类的字段中使用 null=True 【用户选中时给予提示】
             # 当 CharField 同时具有 unique=True 和 blank=True 时。 在这种情况下，需要设置 null=True
             if field_type in CON_CHAR_FIELDS and 0 == status_null:
-                TipsMessageOKBox(self, '字符类型的字段设置null=True会出现两种可能的值，如非必要，请勿选择。', '警告')
+                RichMsgDialog.showOkMsgDialog(self, '字符类型的字段设置null=True会出现两种可能的值，如非必要，请勿选择。', '警告')
             
             if 'BooleanField' == field_type and 0 == status_null:
-                TipsMessageOKBox(self, 'BooleanField字段在2.1版本之前不支持设置null=True，新版本可以。不建议使用NullBooleanField。', '警告')
+                RichMsgDialog.showOkMsgDialog(self, 'BooleanField字段在2.1版本之前不支持设置null=True，新版本可以。不建议使用NullBooleanField。', '警告')
 
         elif fid == self.radiosFiledBlank.GetId():
             if field_type in CON_CHAR_FIELDS and 0 == status_unique and 0 == status_blank:
                 self.radiosFiledNull.SetSelection(0)
                 self.radiosFiledNull.Enable(False) # 同时锁定无法修改
-                TipsMessageOKBox(self, '字符类型的字段同时设置unique=True和blank=True时，必须设置null=True。', '警告')
+                RichMsgDialog.showOkMsgDialog(self, '字符类型的字段同时设置unique=True和blank=True时，必须设置null=True。', '警告')
             if 0 != status_blank:
                 self.radiosFiledNull.Enable(True) # 不是同时选中的状态，解锁null字段
 
@@ -1329,14 +1329,14 @@ class <model_name>(models.Model):
             if field_type in CON_CHAR_FIELDS and 0 == status_unique and 0 == status_blank:
                 self.radiosFiledNull.SetSelection(0)
                 self.radiosFiledNull.Enable(False) # 同时锁定无法修改
-                TipsMessageOKBox(self, '字符类型的字段同时设置unique=True和blank=True时，必须设置null=True。', '警告')
+                RichMsgDialog.showOkMsgDialog(self, '字符类型的字段同时设置unique=True和blank=True时，必须设置null=True。', '警告')
             if 0 != status_unique:
                 self.radiosFiledNull.Enable(True) # 不是同时选中的状态，解锁null字段
 
         elif fid == self.radiosFiledEditable.GetId():
             # BinaryField字段在2.1版本之前不支持editable=True
             if 'BinaryField' == field_type and 0 == status_editable:
-                TipsMessageOKBox(self, 'Django2.1版本之前（不包括2.1），不支持设置editable=True。', '警告')
+                RichMsgDialog.showOkMsgDialog(self, 'Django2.1版本之前（不包括2.1），不支持设置editable=True。', '警告')
         
         elif fid == self.radiosAutoNow.GetId():
             if 0 == status_autonow:
@@ -1382,11 +1382,11 @@ class <model_name>(models.Model):
         """模型字段名设置时自动触发值更新"""
         field_name = self.inputFieldModelName.GetValue().strip()
         # 每次取最新的一次输入字符
-        if PATT_CHARS.match(field_name):
+        if retools.PATT_CHARS.match(field_name):
             self.inputFieldDatabaseName.SetValue(field_name)
             self.inputFieldRemarkName.SetValue(field_name.replace('_', ' '))
         else:
-            self.inputFieldModelName.SetValue(PATT_CHARS_REVERSED.sub('', field_name))
+            self.inputFieldModelName.SetValue(retools.PATT_CHARS_REVERSED.sub('', field_name))
             self.inputFieldModelName.SetInsertionPointEnd() # 光标定位到最后
 
     def onInputMaxLength(self, e):
@@ -1396,8 +1396,8 @@ class <model_name>(models.Model):
             self.inputMaxLength.SetValue('')
             return
         if v and isinstance(v, str): # 此处条件分支解决递归错误问题
-            if not PATT_DIGITS_WHOLE.match(v):
-                self.inputMaxLength.SetValue(PATT_DIGITS_REVERSED.sub('', v))
+            if not retools.PATT_DIGITS_WHOLE.match(v):
+                self.inputMaxLength.SetValue(retools.PATT_DIGITS_REVERSED.sub('', v))
                 self.inputMaxLength.SetInsertionPointEnd()
 
     def onInputMaxDigits(self, e):
@@ -1407,8 +1407,8 @@ class <model_name>(models.Model):
             self.inputMaxDigits.SetValue('')
             return
         if v and isinstance(v, str):
-            if not PATT_DIGITS_WHOLE.match(v):
-                self.inputMaxDigits.SetValue(PATT_DIGITS_REVERSED.sub('', v))
+            if not retools.PATT_DIGITS_WHOLE.match(v):
+                self.inputMaxDigits.SetValue(retools.PATT_DIGITS_REVERSED.sub('', v))
                 self.inputMaxDigits.SetInsertionPointEnd()
 
     def onInputRelatedName(self, e):
@@ -1423,8 +1423,8 @@ class <model_name>(models.Model):
             self.inputDecimalPlaces.SetValue('')
             return
         if v and isinstance(v, str):
-            if not PATT_DIGITS_WHOLE.match(v):
-                self.inputDecimalPlaces.SetValue(PATT_DIGITS_REVERSED.sub('', v))
+            if not retools.PATT_DIGITS_WHOLE.match(v):
+                self.inputDecimalPlaces.SetValue(retools.PATT_DIGITS_REVERSED.sub('', v))
                 self.inputDecimalPlaces.SetInsertionPointEnd()
 
     def _disable_all_args(self):
@@ -1481,7 +1481,7 @@ class <model_name>(models.Model):
         # 显示和隐藏按钮，用于空间的合理布局
         self.btnShowUnshowTable = buttons.GenButton(self.panel, -1, '【显示】待新增字段表格数据')
         self.panelSizer.Add(self.btnShowUnshowTable, 0, wx.EXPAND | wx.ALL, 2)
-        self.btnShowUnshowTable.SetBackgroundColour(CON_COLOR_BLUE)
+        self.btnShowUnshowTable.SetBackgroundColour(CON_COLOR_MAIN)
         self.btnShowUnshowTable.SetForegroundColour(CON_COLOR_WHITE)
 
         # 表格
@@ -1552,15 +1552,15 @@ class <model_name>(models.Model):
             if dlg_tip.ShowModal() == wx.ID_OK:
                 result = self.removeRows(row_indexs)
                 if not result:
-                    TipsMessageOKBox(self, '删除成功！', '提示')
+                    RichMsgDialog.showOkMsgDialog(self, '删除成功！', '提示')
                 else:
                     if isinstance(result, list):
-                        TipsMessageOKBox(self, f"{'、'.join(result)}删除失败！", '提示')
+                        RichMsgDialog.showOkMsgDialog(self, f"{'、'.join(result)}删除失败！", '提示')
                     else:
-                        TipsMessageOKBox(self, '未知错误，删除失败。', '提示')
+                        RichMsgDialog.showOkMsgDialog(self, '未知错误，删除失败。', '提示')
             dlg_tip.Close(True)
         else:
-            TipsMessageOKBox(self, '无选择行可删除。', '警告')
+            RichMsgDialog.showOkMsgDialog(self, '无选择行可删除。', '警告')
 
     def _init_header(self):
         """初始化列名"""
@@ -1652,13 +1652,13 @@ class <model_name>(models.Model):
             self.selectFilePathField()
         elif CON_FOREIGNFIELD == field_type:
             self.selectForeignKey()
-            # TipsMessageOKBox(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
+            # RichMsgDialog.showOkMsgDialog(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
         elif CON_MANYTOMANYFIELD == field_type:
             self.selectManyToManyField()
-            # TipsMessageOKBox(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
+            # RichMsgDialog.showOkMsgDialog(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
         elif CON_ONETOONEFIELD == field_type:
             self.selectOneToOneField()
-            # TipsMessageOKBox(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
+            # RichMsgDialog.showOkMsgDialog(self, '在创建关联字段时，默认在【被关联模型】数据库表中新增<当前模型名小写>_id列。', '提示')
 
         self.choiceFieldType.Enable(False) # 一旦选择将锁定字段的重新选择，可点击【重置字段】解锁
 
@@ -1736,39 +1736,39 @@ class <model_name>(models.Model):
                 tfieldremark.append(_['remarker'])
 
             if vinputFieldModelName in tfield_name or vinputFieldDatabaseName in tfield_dbname or ('' != vinputFieldRemarkName and vinputFieldRemarkName in tfieldremark):
-                TipsMessageOKBox(self, '字段属性名、数据库列名、字段备注均不能重复。', '警告')
+                RichMsgDialog.showOkMsgDialog(self, '字段属性名、数据库列名、字段备注均不能重复。', '警告')
                 return
 
             # 必填项检测
             if not vchoiceFieldType: # 字段类型必选
-                TipsMessageOKBox(self, '请选择字段类型！', '错误')
+                RichMsgDialog.showOkMsgDialog(self, '请选择字段类型！', '错误')
                 return
 
             if not vinputFieldModelName: # 字段属性名必填
-                TipsMessageOKBox(self, '请填写【字段属性名】！', '错误')
+                RichMsgDialog.showOkMsgDialog(self, '请填写【字段属性名】！', '错误')
                 return
 
             if (con_getFieldTypeName(vchoiceFieldType) in CON_OWN_MAX_LENGTH_FILEDS) and (not vinputMaxLength): # 所有有max_length属性的字段，必填max_length
-                TipsMessageOKBox(self, '【长度上限】max_length必填！', '错误')
+                RichMsgDialog.showOkMsgDialog(self, '【长度上限】max_length必填！', '错误')
                 return
 
             if 'DecimalField' == con_getFieldTypeName(vchoiceFieldType):
                 if not vinputMaxDigits:
-                    TipsMessageOKBox(self, '【实数总位数】必填！', '错误')
+                    RichMsgDialog.showOkMsgDialog(self, '【实数总位数】必填！', '错误')
                     return
                 else:
                     maxdigits = int(vinputMaxDigits)
                     dicimalplaces = int(vinputDecimalPlaces if vinputDecimalPlaces else '0')
                     if maxdigits < dicimalplaces:
-                        TipsMessageOKBox(self, '【实数总位数】必需大于等于【小数总位数】！', '错误')
+                        RichMsgDialog.showOkMsgDialog(self, '【实数总位数】必需大于等于【小数总位数】！', '错误')
                         return
 
             if con_getFieldTypeName(vchoiceFieldType) in CON_FOREIGN_FIELDS:
                 if not vchoiceSelectModel:
-                    TipsMessageOKBox(self, '【A、关联关系模型】必填！', '错误')
+                    RichMsgDialog.showOkMsgDialog(self, '【A、关联关系模型】必填！', '错误')
                     return
                 if not vchoiceSelectDelRule:
-                    TipsMessageOKBox(self, '【B、删除规则（on_delete）】必选！', '错误')
+                    RichMsgDialog.showOkMsgDialog(self, '【B、删除规则（on_delete）】必选！', '错误')
                     return
 
             # 待插入的行
@@ -1841,7 +1841,7 @@ class <model_name>(models.Model):
                     self.choicesFiledUniqueForYear.Append(_['field_name'])
 
             self.panel.Layout()
-            TipsMessageOKBox(self, '字段添加成功，可在（待新增字段表格数据）中查看已添加字段信息。', '成功')
+            RichMsgDialog.showOkMsgDialog(self, '字段添加成功，可在（待新增字段表格数据）中查看已添加字段信息。', '成功')
 
         dlg_tip.Close(True)
 
@@ -1904,7 +1904,7 @@ class <model_name>(models.Model):
             for _ in alias:
                 # 下面将在所有的模块别名路径中写入注册数据【可能有点不合理】
                 insert_path = os.path.join(get_configs(CONFIG_PATH)['dirname'], appName, _) # 因为 _ 别名是包含紧邻app路径之后的路径，所以理论上不管层级有多深，都可以找的到
-                write_admin_base(insert_path, importData) # 写入注册代码
+                djangotools.write_admin_base(insert_path, importData) # 写入注册代码
 
     def onBtnExecSave(self, e):
         """保存"""
@@ -1920,24 +1920,24 @@ class <model_name>(models.Model):
                         # 将代码追加到对应的应用程序中
                         app_name = self.choiceSelectFile.GetString(self.choiceSelectFile.GetSelection()).strip()
                         if app_name:
-                            temp_path = get_models_path_by_appname(app_name)
+                            temp_path = djangotools.get_models_path_by_appname(app_name)
                             if len(temp_path) > 0:
                                 append_file_whole(temp_path[0], model_code) # 默认写入第一个模型文件
                                 self._auto_register_model(app_name, model_name) # 自动注册
-                                TipsMessageOKBox(self, '保存成功', '成功')
+                                RichMsgDialog.showOkMsgDialog(self, '保存成功', '成功')
                             else:
-                                TipsMessageOKBox(self, '程序缺失模型文件', '错误')
+                                RichMsgDialog.showOkMsgDialog(self, '程序缺失模型文件', '错误')
                         else:
-                            TipsMessageOKBox(self, '请先选择模型所属的应用程序。', '错误')
+                            RichMsgDialog.showOkMsgDialog(self, '请先选择模型所属的应用程序。', '错误')
                     else:
-                        TipsMessageOKBox(self, '未输入模型名称', '错误')
+                        RichMsgDialog.showOkMsgDialog(self, '未输入模型名称', '错误')
                 dlg.Close(True)
             dlg_tip.Close(True)
         else:
             check_result = self._checkFiledsNameIsConflict()
             conflict_info = '、'.join(check_result[1])
             if check_result[0]:
-                TipsMessageOKBox(self, f'{conflict_info} 字段名称与模型内置API名称冲突，请删除后重新新增字段。', '错误')
+                RichMsgDialog.showOkMsgDialog(self, f'{conflict_info} 字段名称与模型内置API名称冲突，请删除后重新新增字段。', '错误')
                 return
             dlg = wx.TextEntryDialog(self, u"模型命名：", u"保存模型", u"")
             if dlg.ShowModal() == wx.ID_OK:
@@ -1947,17 +1947,17 @@ class <model_name>(models.Model):
                     # 将代码追加到对应的应用程序中
                     app_name = self.choiceSelectFile.GetString(self.choiceSelectFile.GetSelection()).strip()
                     if app_name:
-                        temp_path = get_models_path_by_appname(app_name)
+                        temp_path = djangotools.get_models_path_by_appname(app_name)
                         if len(temp_path) > 0:
                             append_file_whole(temp_path[0], model_code) # 默认写入第一个模型文件
                             self._auto_register_model(app_name, model_name) # 自动注册
-                            TipsMessageOKBox(self, '保存成功', '成功')
+                            RichMsgDialog.showOkMsgDialog(self, '保存成功', '成功')
                         else:
-                            TipsMessageOKBox(self, '程序缺失模型文件', '错误')
+                            RichMsgDialog.showOkMsgDialog(self, '程序缺失模型文件', '错误')
                     else:
-                        TipsMessageOKBox(self, '请先选择模型所属的应用程序', '错误')
+                        RichMsgDialog.showOkMsgDialog(self, '请先选择模型所属的应用程序', '错误')
                 else:
-                    TipsMessageOKBox(self, '未输入模型名称', '错误')
+                    RichMsgDialog.showOkMsgDialog(self, '未输入模型名称', '错误')
             dlg.Close(True)
 
     def _open_required_args(self):

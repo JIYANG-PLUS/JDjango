@@ -1,0 +1,219 @@
+main > div.div-link-blog {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.9);
+}
+main > div.div-link-blog > form {
+  height: 700px;
+  width: 500px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+main > div.div-link-blog > form > h3 {
+  margin: 12px 0;
+}
+main > div.div-link-blog > form > h3 > span {
+  padding: 3px;
+  margin-left: 12px;
+  background: black;
+  color: #ffffff;
+}
+main > div.div-link-blog > form > textarea {
+  padding: 12px;
+  font-size: 18px;
+}
+main > div.div-link-blog > form > button.form-cancel {
+  color: black;
+  margin: 6px 0;
+  font-size: 36px;
+}
+main > div.div-link-blog > form > button.form-cancel:hover {
+  color: red;
+  cursor: pointer;
+}
+main > div.div-link-blog > form > button.submit {
+  padding: 6px;
+  margin: 12px 0;
+  font-size: 36px;
+  border: 1px black solid;
+  border-radius: 5px;
+}
+main > div.div-link-blog > form > button.submit:hover {
+  background: black;
+  color: #ffffff;
+  cursor: pointer;
+}
+main > div.aside-add-plug {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.9);
+}
+main > div.aside-add-plug > div {
+  height: 100vh;
+  overflow-y: scroll;
+  width: 400px;
+  background: #333e48;
+  color: #ffffff;
+  border-radius: 10px;
+  border: 2px white solid;
+}
+main > div.aside-add-plug > div > h1 {
+  text-align: center;
+  margin: 8px 0;
+  padding-bottom: 12px;
+  border-bottom: double 6px white;
+  position: relative;
+}
+main > div.aside-add-plug > div > h1 > button {
+  position: absolute;
+  right: 18px;
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 30px;
+}
+main > div.aside-add-plug > div > h1 > button:hover {
+  cursor: pointer;
+  color: #C75300;
+}
+main > div.aside-add-plug > div > form {
+  width: 92%;
+  margin: 0 auto;
+}
+main > div.aside-add-plug > div > form > label {
+  display: block;
+  margin: 12px 0;
+}
+main > div.aside-add-plug > div > form > label > input[type='text'] {
+  display: block;
+  width: 100%;
+  height: 24px;
+  padding: 16px;
+  font-size: 18px;
+  margin: 0 auto;
+  margin-top: 12px;
+}
+main > div.aside-add-plug > div > form > label > input[type='text']::placeholder {
+  font-size: 12px;
+  color: #beb8b8;
+}
+main > div.aside-add-plug > div > form > label > textarea {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+  font-size: 18px;
+  padding: 12px;
+  margin-top: 12px;
+}
+main > div.aside-add-plug > div > form > label > textarea::placeholder {
+  font-size: 12px;
+  color: #beb8b8;
+}
+main > div.aside-add-plug > div > form > label > input[type='checkbox'] {
+  display: inline-block;
+  height: 15px;
+  width: 15px;
+}
+main > div.aside-add-plug > div > form > label > input[type='number'] {
+  display: inline-block;
+  height: 25px;
+  width: 55px;
+  padding: 4px;
+  border-radius: 5px;
+}
+main > div.aside-add-plug > div > form > button {
+  display: block;
+  width: 90px;
+  background: #ffffff;
+  background-clip: content-box;
+  color: #333e48;
+  margin: 0 auto;
+  margin-top: 36px;
+  border: double 6px #ffffff;
+  border-radius: 5px;
+  height: 50px;
+  font-size: 24px;
+}
+main > div.aside-add-plug > div > form > button:hover {
+  cursor: pointer;
+  background: #333e48;
+  color: #ffffff;
+  border: double 6px #98c3eb;
+}
+main > div.div-insert-plugin {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  height: 100vh;
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.9);
+}
+main > div.div-insert-plugin > form {
+  height: 250px;
+  width: 300px;
+  background: #f5f5f5;
+}
+main > div.div-insert-plugin > form > h3 {
+  padding: 12px 0;
+  border-bottom: #333e48 solid 1px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+main > div.div-insert-plugin > form > h3 > button {
+  font-weight: 800;
+  margin-left: 12px;
+}
+main > div.div-insert-plugin > form > h3 > button:hover {
+  color: #C75300;
+  cursor: pointer;
+}
+main > div.div-insert-plugin > form > label {
+  display: block;
+  margin: 12px 6px;
+}
+main > div.div-insert-plugin > form > label > span {
+  display: block;
+  font-weight: 800;
+  font-size: 16px;
+  margin: 6px 0;
+}
+main > div.div-insert-plugin > form > label > input[type="text"] {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  width: 100%;
+  font-size: 18px;
+}
+main > div.div-insert-plugin > form > div {
+  text-align: center;
+}
+main > div.div-insert-plugin > form > div > button {
+  padding: 6px;
+  margin: 12px 0;
+  font-size: 19px;
+  border: 1px black solid;
+  border-radius: 5px;
+}
+main > div.div-insert-plugin > form > div > button:hover {
+  background: black;
+  color: #ffffff;
+  cursor: pointer;
+}

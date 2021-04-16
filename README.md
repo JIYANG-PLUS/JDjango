@@ -1,17 +1,21 @@
-# JDjango（此项目在GitHub上暂时停止更新，目前选项配置功能模块不可用，已移至Gitee上更新）
- 一个写Django项目的辅助工具
-<h1>V1.0.0版本实现功能：</h1>
-<ol>
- <li>检测app是否均在INSTALLED_APPS中注册</li>
- <li>自动修复未注册的app</li>
- <li>一键生成完整的app框架</li>
- <li>可修改项目名称</li>
- <li>命令行功能和仿Linux命令实现</li>
-</ol>
-<p>由于功能太多，本处不再显示已有功能，待程序略加完善后，再统一说明各个板块和功能。</p>
-<h2>2021年2月5日08:06:51</h2>
-<p>实现的功能实在越来越多，得花点时间整理代码，再次重构项目，为了方便日后新功能的加入。</p>
-<p>代码减少计划：随着功能的越来越多，代码越来越多，产生了很多的冗余代码。本人计划将代码量缩减50%及以上。（目前差不多累积了4000-5000行代码）</p>
-<h2>2021年2月7日09:14:13</h2>
-<p>项目准备往 Django + vue 的方向调整。JDjango主要是对二者的路由及权限管理。JDjango的定位是一个管理前+后端项目的管理软件。并不是一个文本编辑软件，也不是一个对外提供扩展的软件。</p>
-<p>目前刚构思2个月，太少了。若我能一直更新下去，那么我有信心在2年内找到真正的方向，那时候将重构整个项目（所有代码重写）。</p>
+待功能逐渐完善后的其它愿望清单：
+1、自然语言处理代码生成（代码片段指令化）；
+2、极规范项目文档自动生成项目代码（实施 即 开发 的职能转换）；
+3、软件功能的可插拔功能（似补丁，非补丁）；
+4、数据库迁移功能的实现
+
+### 感谢老哥@coshare的全程参与
+### （https://code.visualstudio.com/api）准备将本工具集成到 VSCode 中，即为 VSCode 写个插件
+### JDjango
+ 编写Django、vue的辅助工具
+### 软件相关截图（支持Window、MacOS、Linux平台）
+【支持一键打开VSCode编辑器，支持Django几乎所有的原生指令，支持运行和终止Web环境、、、、、、】
+![主页](https://images.gitee.com/uploads/images/2021/0329/103952_46c8f101_8370039.png "屏幕截图.png")
+![三方库管理](https://images.gitee.com/uploads/images/2021/0329/104029_369f2984_8370039.png "屏幕截图.png")
+![模型创建](https://images.gitee.com/uploads/images/2021/0329/104454_2427a606_8370039.png "屏幕截图.png")
+![ORM一键生成](https://images.gitee.com/uploads/images/2021/0329/104536_a8496bda_8370039.png "屏幕截图.png")
+![配置文件管理](https://images.gitee.com/uploads/images/2021/0329/104729_96f0fe03_8370039.png "屏幕截图.png")
+![邮件配置](https://images.gitee.com/uploads/images/2021/0329/104930_bd1c78ae_8370039.png "屏幕截图.png")
+![数据库切换](https://images.gitee.com/uploads/images/2021/0329/104746_b5b5bd33_8370039.png "屏幕截图.png")
+![独立的项目代码生成器](https://images.gitee.com/uploads/images/2021/0329/104826_8745ec00_8370039.png "屏幕截图.png")
+正在嵌入vue项目

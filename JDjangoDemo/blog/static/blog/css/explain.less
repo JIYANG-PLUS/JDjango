@@ -1,0 +1,41 @@
+main {
+    & > article {
+        width: 800px;
+        margin: 36px auto;
+        & > h2 {
+            font-size: 16px;
+            margin-bottom: 24px;
+            & > i {
+                color: #f79568;
+                &:nth-of-type(1) {
+                    margin-right: 12px;
+                }
+                &:nth-of-type(2) {
+                    margin-left: 12px;
+                }
+            }
+        }
+        & > section {
+            & > h3 {
+                color: rgb(21,91,124);
+                margin-bottom: 12px;
+                & > i {
+                    margin-right: 12px;
+                }
+            }
+            & > p {
+                margin: 2px 0;
+                padding: 4px 12px;
+                border-left: 5px solid black;
+                background: #f5f5f5;
+                word-break: break-all;
+            }
+        }
+    }
+}
+
+div.section-split {
+    margin: 36px 0;
+    height: 3px;
+    border: 3px double rgb(21,91,124);
+}

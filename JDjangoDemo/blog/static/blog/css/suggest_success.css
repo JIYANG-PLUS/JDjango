@@ -1,0 +1,25 @@
+body {
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+}
+body > main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 80px;
+}
+body > main > span {
+  margin: 18px;
+  font-size: 32px;
+}
+body > main > span:nth-of-type(2) > span {
+  margin: 0 12px;
+}
+body > main > a {
+  margin-top: 18px;
+  font-size: 24px;
+}

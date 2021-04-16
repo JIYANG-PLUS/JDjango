@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}个人中心-四象生八卦{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'account/css/userinfo.css' %}">
+{% endblock %}
+{% block script %}
+<script src="{% static 'account/js/userinfo.js' %}"></script>
+{% endblock %}
+{% block body %}
+<main>
+    <div class="left">
+        <div class="back"><a href="{% url 'docs:index' %}"><i class="fa fa-home" aria-hidden="true"></i></a></div>
+        <div class="detail">
+            <button id="btn-base-info">基本信息</button>
+            <button id="btn-only-code">唯一码</button>
+            <button id="btn-valid-code">授权码</button>
+            <button id="btn-continue">续约</button>
+            <button id="btn-modify-info">修改信息</button>
+        </div>
+    </div>
+    <div class="right">
+        <!-- 基本信息 -->
+        <div id="right-base-info">
+            <h3><i class="fa fa-address-card" aria-hidden="true"></i>基本信息</h3>
+            <section>
+                <span><span>用</span><span>户</span><span>名</span></span><span>:</span><span>{{ user.username }}</span>
+            </section>
+            <section>
+                <span><span>名</span><span>字</span></span><span>:</span><span>{{ user.first_name }}</span>
+            </section>
+            <section>
+                <span><span>姓</span><span>氏</span></span><span>:</span><span>{{ user.last_name }}</span>
+            </section>
+            <section>
+                <span><span>电</span><span>子</span><span>邮</span><span>件</span><span>地</span><span>址</span></span><span>:</span><span>{{ user.email }}</span>
+            </section>
+            <section>
+                <span><span>注</span><span>册</span><span>日</span><span>期</span></span><span>:</span><span>{{ user.date_joined|date:"Y-m-d H:i:s" }}</span>
+            </section>
+        </div>
+        <div id="right-only-code">
+            <h3><i class="fa fa-cog" aria-hidden="true"></i>唯一码</h3>
+            <ul>
+                <li>唯一码是唯一标识用户的字符串编码。</li>
+                <li>唯一码由32位随机数字和字符组成，经由MD5加密，用于加密认证。</li>
+                <li>唯一码请勿透露给第三者，它是调用接口的凭证之一。</li>
+                <li>考虑到一些原因，唯一码设计为非自动生成，需由用户自主决定是否生成。</li>
+            </ul>
+            <div>
+                {% if user.other_info %}
+                <p class="p-info"><span>您的唯一码</span><span id="token-code">{{ user.other_info.token }}</span><button id="copy-only-code"><i class="fa fa-clipboard" aria-hidden="true"></i></button></p>
+                {% else %}
+                <p>您还未生成唯一码，<button type="button" id="show_generate_only_code">生成</button>？</p>
+                <div class="send_and_back">
+                    <div class="div-send-code"><input type="email" value="{{ user.email }}" disabled><button id="get_code">获取验证码</button></div>
+                    <span></span>
+                    <div class="div-generate-code"><input type="text" placeholder="填入8位验证码"><button id="generate_code">生成 / Generate</button></div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div id="right-valid-code">
+            <h3><i class="fa fa-handshake-o" aria-hidden="true"></i>授权码</h3>
+            <ul>
+                <li>授权码能够让每个用户拥有对接各个接口的权利。</li>
+                <li>一个授权码对应一个用户和接口的组合，一个用户使用不同的授权码对接相应的接口。</li>
+                <li>默认每个用户初始状态都没有使用任何接口的权利，需申请后才可使用。</li>
+                <li>授权码由8位随机数字和字符组成。</li>
+                <li>每个授权码均有限制属性，默认限制调用次数为100次。</li>
+            </ul>
+            <div class="right-valid-code-generate">
+                <h4><i class="fa fa-plus-square-o" aria-hidden="true"></i>申请授权码</h4>
+                <p>请先验证您需要使用的接口，下方输入接口的32位唯一码（从接口介绍详情页获得）。</p>
+                <p>若管理员未激活32位接口唯一码（不同于用户的32位唯一码），请联系管理员激活。</p>
+                <div class="first">
+                    <input type="text" placeholder="32位接口唯一码" id="input-plugin-32only"><button id="btn-plugin-32only">验证</button>
+                </div>
+                <div class="second">
+                    <h5><i class="fa fa-check" aria-hidden="true"></i>您正在验证的接口信息：</h5>
+                    <div><span>接口名：</span><span id="second-name"></span></div>
+                    <div><span>接口链接：</span><span id="second-link"></span></div>
+                    <div><span>可用：</span><span id="second-valid"></span></div>
+                    <button type="button" id="btn-sure-sq">确认申请</button>
+                </div>
+            </div>
+            <div class="right-valid-code-history">
+                <h4><i class="fa fa-check-circle-o" aria-hidden="true"></i>您已申请的授权码</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>接口名称</th>
+                            <th>接口链接</th>
+                            <th>授权码</th>
+                            <th>剩余调用次数</th>
+                            <th>续约次数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in user.ulimits.all %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ u.plugin.article.title }}</td>
+                            <td>{{ u.plugin.url }}</td>
+                            <td>{{ u.access_code }}</td>
+                            <td>{{ u.times }}</td>
+                            <td>{{ u.continue_times }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td>None</td>
+                            <td>None</td>
+                            <td>None</td>
+                            <td>None</td>
+                            <td>None</td>
+                            <td>None</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="right-vaild-continue">
+            <h3><i class="fa fa-battery-quarter" aria-hidden="true"></i>续约</h3>
+            <p>允许续约的几种情况（并列关系）：</p>
+            <ul>
+                <li>先决条件1：续约者必须为本站的合法用户。</li>
+                <li>先决条件2：要续约的接口必须存在并激活了32位接口唯一码。</li>
+                <li>先决条件3：合法用户必须已经申请并使用过接口，才可进行续约操作。</li>
+                <li>情况1：接口的剩余调用次数小于等于10，允许续约，但有100的上限。</li>
+                <li>情况2：本站的伙伴用户，无剩余调用次数限制，可无上限续约，理论上，上限不超过100万次。</li>
+                <li>如何成为本站的伙伴用户？暂无途径。</li>
+            </ul>
+            <div>
+                <input type="text" placeholder="请输入32位接口唯一码" id="continue-plugin-32only"><button type="button" id="continue-valid">验证</button>
+            </div>
+            <div class="right-vaild-continue-2">
+                <h5><i class="fa fa-check" aria-hidden="true"></i>您将续约的接口信息：</h5>
+                <div><span>接口名：</span><span id="con-second-name">南京地铁</span></div>
+                <div><span>接口链接：</span><span id="con-second-link">http://www.gdsjh.com</span></div>
+                <button type="button" id="continue-do">续约（直接到达上限100）</button>
+            </div>
+        </div>
+        <div id="right-modify-info">
+            <h3><i class="fa fa-user-plus" aria-hidden="true"></i>修改信息</h3>
+            <p>考虑到初期并无太多个性化需求，故暂不开放修改信息功能。</p>
+        </div>
+    </div>
+</main>
+{% endblock %}

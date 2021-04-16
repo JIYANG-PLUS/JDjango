@@ -1,0 +1,142 @@
+main {
+    flex: 1;
+    overflow: auto;
+    height: 100%;
+    margin-bottom: 69px;
+    & > div {
+        width: 90%;
+        margin: 36px auto;
+        display: flex;
+        flex-wrap: wrap;
+        & > section {
+            border: 1px solid black;
+            min-width: 180px;
+            max-width: 280px;
+            border-radius: 10px;
+            margin: 12px;
+            display: flex;
+            flex-direction: column;
+            & > h3 {
+                color: #ffffff;
+                padding: 12px;
+                background: rgb(80,172,230);
+                text-align: center;
+                font-size: 24px;
+                border-top-left-radius: 10px;
+                border-top-right-radius: 10px;
+                position: relative;
+                & > a {
+                    color: #ffffff;
+                    &:hover {
+                        color: #000000;
+                    }
+                    & > i {
+                        margin-left: 12px;
+                    }
+                }
+                & > span {
+                    position: absolute;
+                    width: 20px;
+                    height: 20px;
+                    background: yellow;
+                    top: 0;
+                    left: 0;
+                    font-size: 12px;
+                    color: #000000;
+                    border-top-left-radius: 10px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+            & > p {
+                flex: 1;
+                padding: 12px;
+                color: #000000;
+                background: #ddd6d6;
+                border-bottom-left-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+        }
+    }
+    & > section {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0,0,0,.8);
+        & > div {
+            height: 250px;
+            width: 300px;
+            background: #ffffff;
+            border-radius: 5px;
+            & > h3 {
+                text-align: center;
+                border-bottom: black 1px solid;
+                position: relative;
+                padding: 8px 0;
+                & > span {
+                    position: absolute;
+                    right: 8px;
+                    top: 0;
+                    &:hover {
+                        cursor: pointer;
+                        color: rgb(80,172,230);
+                    }
+                }
+            }
+            & > form {
+                & > label {
+                    display: block;
+                    margin: 12px 3px;
+                    & > span {
+                        display: block;
+                        margin-bottom: 6px;
+                        font-weight: 800;
+                    }
+                    & > input {
+                        display: block;
+                        border: #000000 1px solid;
+                        width: 100%;
+                        height: 32px;
+                        font-size: 20px;
+                        padding: 0 6px;
+                        &::placeholder {
+                            font-size: 14px;
+                            font-weight: 100;
+                        }
+                    }
+                }
+                & > div {
+                    text-align: center;
+                    & > button {
+                        border-radius: 5px;
+                        border: 1px solid black;
+                        padding: 12px 24px;
+                        &:hover {
+                            cursor: pointer;
+                            background: black;
+                            color: #ffffff;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+body {
+    height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    & > footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+}

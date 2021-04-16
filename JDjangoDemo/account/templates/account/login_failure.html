@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}登录失败-四象生八卦{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'account/css/login_failure.css' %}">
+{% endblock %}
+{% block body %}
+<main>
+    <div class="logo">LOGO设计中</div>
+    <h1>登录失败</h1>
+    <div id="reason">
+        <h2>可能的失败原因：</h2>
+        <ul>
+            <li>用户名错误</li>
+            <li>密码错误</li>
+            <li>用户名和密码均错误</li>
+            <li>账户未注册</li>
+            <li>数据库服务器错误，未响应（概率极低）</li>
+        </ul>
+    </div>
+    <div id="try">
+        <p>用户名或密码输入错误？<a href="">点此重新登录</a></p>
+        <p>忘记密码？忘记用户名？<a href="{% url 'account:passwordreset' %}">点此找回用户名和密码</a></p>
+        <p>还未注册过本站？<a href="{% url 'account:registry' %}">点此注册新账号</a></p>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,74 @@
+main {
+  margin-bottom: 69px;
+  flex: 1;
+  overflow: auto;
+  height: 100%;
+}
+main > article {
+  width: 88%;
+  background: #f7f7f7;
+  margin: 16px auto;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+main > article > div:nth-of-type(1) {
+  color: #FFFFFF;
+  font-size: 16px;
+  background: #333E48;
+  padding: 8px;
+}
+main > article > div:nth-of-type(2) {
+  padding: 0 16px;
+}
+main > article > div:nth-of-type(2) > h4 {
+  margin: 10px 0;
+}
+main > article > div:nth-of-type(2) > h4 > a {
+  color: #333E48;
+  font-size: 18px;
+}
+main > article > div:nth-of-type(2) > h4 > a:hover {
+  color: #ff6b00 !important;
+}
+main > article > div:nth-of-type(2) > h4 > i {
+  color: #c75300;
+}
+main > article > div:nth-of-type(2) > div.s1 {
+  color: #333E48;
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+main > article > div:nth-of-type(2) > div.s1 > span:nth-of-type(1) {
+  color: #C75300;
+  font-size: 16px;
+  font-weight: bold;
+}
+main > article > div:nth-of-type(2) > div.s1 > span:nth-of-type(2) {
+  color: #333E48;
+  font-size: 16px;
+}
+main > article > div:nth-of-type(2) > div.s2 {
+  color: #333E48;
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+main > article > div:nth-of-type(2) > div.s3 > a {
+  margin: 0 0 16px;
+  display: inline-block;
+  height: 30px;
+  color: #FFFFFF;
+  background: #11809F;
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+body {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+body > footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}

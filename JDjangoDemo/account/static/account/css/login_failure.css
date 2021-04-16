@@ -1,0 +1,51 @@
+body {
+  background: #f5f5f5;
+}
+body > main {
+  width: 460px;
+  margin: 0 auto;
+  margin-top: 45px;
+}
+body > main > div.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px;
+}
+body > main > h1 {
+  text-align: center;
+  padding: 18px 0;
+  border-bottom: 1px solid black;
+}
+body > main > div#reason {
+  margin: 32px 0;
+}
+body > main > div#reason > h2::before {
+  content: '#';
+  font-weight: 800;
+  margin-right: 12px;
+}
+body > main > div#reason > ul {
+  list-style-position: inside;
+}
+body > main > div#reason > ul > li {
+  padding: 0 0 0 24px;
+  font-size: 22px;
+}
+body > main > div#try > p {
+  font-size: 24px;
+  margin: 16px 0;
+}
+body > main > div#try > p::before {
+  content: '#';
+  font-weight: 800;
+  margin-right: 12px;
+}
+body > main > div#try > p > a {
+  font-size: 16px;
+  text-decoration: underline;
+  color: #2323c4;
+}
+body > main > div#try > p > a:hover {
+  color: yellowgreen;
+}
